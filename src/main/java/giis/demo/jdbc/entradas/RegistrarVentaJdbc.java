@@ -9,8 +9,8 @@ import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.List;
 
-import giis.demo.model.Butaca;
-import giis.demo.model.VentaDeEntradas;
+import giis.demo.model.entradas.Butaca;
+import giis.demo.model.entradas.VentaDeEntradas;
 
 public class RegistrarVentaJdbc implements ServiceJdbc{
 	

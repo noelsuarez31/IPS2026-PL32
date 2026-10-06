@@ -4,12 +4,12 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
-import giis.demo.model.Butaca;
-import giis.demo.model.Partido;
-import giis.demo.model.VentaDeEntradas;
-import giis.demo.model.enumerados.TipoSeccion;
-import giis.demo.model.enumerados.TipoTribuna;
-import giis.demo.model.exceptions.SinDisponibilidadException;
+import giis.demo.model.entradas.Butaca;
+import giis.demo.model.entradas.Partido;
+import giis.demo.model.entradas.VentaDeEntradas;
+import giis.demo.model.entradas.enumerados.TipoSeccion;
+import giis.demo.model.entradas.enumerados.TipoTribuna;
+import giis.demo.exceptions.SinDisponibilidadException;
 import giis.demo.ui.VentanaPrincipal;
 
 import java.awt.Color;

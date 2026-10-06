@@ -6,9 +6,9 @@ import java.util.List;
 import java.util.Random;
 
 import giis.demo.jdbc.JDBC;
-import giis.demo.model.enumerados.TipoSeccion;
-import giis.demo.model.enumerados.TipoTribuna;
-import giis.demo.model.exceptions.SinDisponibilidadException;
+import giis.demo.model.entradas.enumerados.TipoSeccion;
+import giis.demo.model.entradas.enumerados.TipoTribuna;
+import giis.demo.exceptions.SinDisponibilidadException;
 
 
 public class VentaDeEntradas {
