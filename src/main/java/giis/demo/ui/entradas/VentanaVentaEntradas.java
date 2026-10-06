@@ -4,12 +4,12 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
-import giis.demo.exceptions.SinDisponibilidadException;
 import giis.demo.model.entradas.Butaca;
 import giis.demo.model.entradas.Partido;
 import giis.demo.model.entradas.VentaDeEntradas;
 import giis.demo.model.entradas.enumerados.TipoSeccion;
 import giis.demo.model.entradas.enumerados.TipoTribuna;
+import giis.demo.exceptions.SinDisponibilidadException;
 import giis.demo.ui.VentanaPrincipal;
 
 import java.awt.Color;
@@ -26,6 +26,13 @@ import java.sql.SQLException;
 import java.util.List;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import giis.demo.exceptions.SinDisponibilidadException;
+import giis.demo.model.entradas.Butaca;
+import giis.demo.model.entradas.Partido;
+import giis.demo.model.entradas.VentaDeEntradas;
+import giis.demo.model.entradas.enumerados.TipoSeccion;
+import giis.demo.model.entradas.enumerados.TipoTribuna;
+import giis.demo.ui.VentanaPrincipal;
 
 public class VentanaVentaEntradas extends JFrame {
 
@@ -401,6 +408,7 @@ public class VentanaVentaEntradas extends JFrame {
 
 		VentanaVentaConfirmacion vvc = new VentanaVentaConfirmacion(this);
 		vvc.setVisible(true);
+		venta.close();
 		this.dispose();
 
 	}
@@ -411,7 +419,14 @@ public class VentanaVentaEntradas extends JFrame {
 			btVolver.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 
-					volverAlMenu();
+					try {
+						volverAlMenu();
+					} catch (SQLException e1) {
+						
+						System.err.print("Se ha producido un error al cerra la conexión con la BBDD");
+						e1.printStackTrace();
+
+					}
 
 				}
 			});
@@ -425,10 +440,12 @@ public class VentanaVentaEntradas extends JFrame {
 
 	/**
 	 * Método para volver al menú principal
+	 * @throws SQLException 
 	 */
-	private void volverAlMenu() {
+	private void volverAlMenu() throws SQLException {
 
 		this.vp.setVisible(true);
+		venta.close();
 		this.dispose();
 
 	}

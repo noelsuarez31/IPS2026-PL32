@@ -1,5 +1,7 @@
 package giis.demo.jdbc;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -11,7 +13,6 @@ import giis.demo.model.entradas.Partido;
 import giis.demo.model.entradas.enumerados.TipoSeccion;
 import giis.demo.model.entradas.enumerados.TipoTribuna;
 
-
 public class JDBC {
 	/**
 	 * Obtiene las butacas libres disponibles
@@ -21,10 +22,10 @@ public class JDBC {
 	 * @return las butcas libres
 	 * @throws SQLException
 	 */
-	public static List<Butaca> getFreeButacas(int idPartido, TipoTribuna tribuna, TipoSeccion seccion)
+	public List<Butaca> getFreeButacas(int idPartido, TipoTribuna tribuna, TipoSeccion seccion)
 			throws SQLException {
 
-		return ButacaJdbc.getFreeButacas(idPartido, tribuna, seccion);
+		return ButacaJdbc.getFreeButacas(con, idPartido, tribuna, seccion);
 
 	}
 	
@@ -33,9 +34,9 @@ public class JDBC {
 	 * @return los partidos disponibles
 	 * @throws SQLException
 	 */
-	public static List<Partido> getPartidos() throws SQLException {
+	public List<Partido> getPartidos() throws SQLException {
 
-		return PartidoJdbc.getPartidos();
+		return PartidoJdbc.getPartidos(con);
 
 	}
 	
@@ -45,9 +46,18 @@ public class JDBC {
 	 * @param butacasSeleccionadas
 	 * @throws SQLException
 	 */
-	public static void almacenar(int idPartido, List<Butaca> butacasSeleccionadas) throws SQLException {
+	public void almacenar(int idPartido, List<Butaca> butacasSeleccionadas) throws SQLException {
 		
-		RegistrarVentaJdbc.registrar(idPartido, butacasSeleccionadas);
+		RegistrarVentaJdbc.registrar(con,idPartido, butacasSeleccionadas);
+		
+	}
+	
+	public void close() throws SQLException{
+		
+		if(con!=null && !con.isClosed()) {
+			
+			con.close();
+		}
 		
 	}
 

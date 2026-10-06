@@ -2,7 +2,6 @@ package giis.demo.jdbc.entradas;
 
 import java.sql.Connection;
 import java.sql.Date;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -22,12 +21,13 @@ public class PartidoJdbc implements ServiceJdbc {
 	 * @return los partido disponibles
 	 * @throws SQLException
 	 */
-	public static List<Partido> getPartidos() throws SQLException {
+	public static List<Partido> getPartidos(Connection con) throws SQLException {
 
 		List<Partido> partidos = new ArrayList<Partido>();
 
-		try (Connection con = DriverManager.getConnection(URL_GROUP2); 
-				PreparedStatement ps = con.prepareStatement(QUERY_MATCH)) {
+			
+		
+			try(PreparedStatement ps = con.prepareStatement(QUERY_MATCH)) {
 
 			ps.setString(1, LocalDate.now().toString());//Para mostrar partidos que
 			//Aun no se haya jugado

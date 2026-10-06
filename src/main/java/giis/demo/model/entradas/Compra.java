@@ -4,7 +4,6 @@ import java.util.Date;
 
 import giis.demo.model.entradas.enumerados.TipoVenta;
 
-
 public class Compra {
 	
 	private int id_venta;
