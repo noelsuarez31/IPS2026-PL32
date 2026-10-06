@@ -190,8 +190,8 @@ public class VentanaAñadirEquipo extends JFrame {
 		
 		tbJugadores = new JTable(modeloJugadores);
 		/* Añadimos los jugadores */
-		//TODO
-		añadirJugadoresATabla(modeloJugadores, (CategoriaEquipo) cbCategoriaEquipo.getSelectedItem());
+		CategoriaEquipo categoriaSeleccionada = club.obtenerObjetoCategoria((String) cbCategoriaEquipo.getSelectedItem());
+		añadirJugadoresATabla(modeloJugadores, categoriaSeleccionada);
 		scrJugadores.setViewportView(tbJugadores);
 		
 		JScrollPane scrollPanePrincipal = new JScrollPane(pnCentro);

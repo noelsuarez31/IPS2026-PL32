@@ -16,6 +16,7 @@ import giis.demo.model.empleado.BaseEmpleado;
 import giis.demo.model.empleado.EmpleadoDeportivo;
 import giis.demo.model.empleado.Entrenador;
 import giis.demo.model.empleado.Posicion;
+import giis.demo.ui.equipo.Categoria;
 
 
 
@@ -243,5 +244,20 @@ public class AñadirEquipoService {
 		}
 		
 		return tecnicosAdicionales;
+	}
+
+	public CategoriaEquipo obtenerObjetoCategoria(String nombreCategoriaSeleccionada) {
+		String queryCategoria = "SELECT * FROM CategoriaEquipo WHERE nombre=?";
+		
+		try(Connection con = jdbc.abrirConexion();
+				PreparedStatement pst = con.prepareStatement(queryCategoria);){
+			pst.setString(1, nombreCategoriaSeleccionada);
+			
+			ResultSet rsCategoria = pst.executeQuery();
+			while(rsCategoria.next()) {
+				return new CategoriaEquipo(nombreCategoriaSeleccionada, rsCategoria.getInt(2), 
+						rsCategoria.getInt(3), rsCategoria.getInt(4), rsCategoria.getString(5));
+			}
+		}
 	}
 }
