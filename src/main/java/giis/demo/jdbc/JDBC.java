@@ -14,7 +14,28 @@ import giis.demo.model.entradas.enumerados.TipoSeccion;
 import giis.demo.model.entradas.enumerados.TipoTribuna;
 
 public class JDBC {
+
+	//public static final String DRIVER_GROUP2 = "org.sqlite.JDBC";
+	public static final String URL_GROUP2 = "jdbc:sqlite:DemoDB.db";
 	
+	private Connection con;
+	
+	/**
+	 * Constructor de la clase, inicializa la conexion
+	 */
+	public JDBC() {
+		
+		try {
+			
+			con = DriverManager.getConnection(URL_GROUP2);
+			
+		} catch (SQLException e) {
+			
+			e.printStackTrace();
+		}
+		
+	}
+
 	/**
 	 * Obtiene las butacas libres disponibles
 	 * @param idPartido
@@ -53,6 +74,10 @@ public class JDBC {
 		
 	}
 	
+	/**
+	 * Cierra la conexion
+	 * @throws SQLException
+	 */
 	public void close() throws SQLException{
 		
 		if(con!=null && !con.isClosed()) {

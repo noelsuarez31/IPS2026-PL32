@@ -12,7 +12,7 @@ import giis.demo.model.entradas.enumerados.TipoSeccion;
 import giis.demo.model.entradas.enumerados.TipoTribuna;
 
 
-public class ButacaJdbc implements ServiceJdbc{
+public class ButacaJdbc {
 
 	
 	private static final String QUERY_FREE_BUTACAS = "SELECT id_butaca, fila, asiento FROM butaca "

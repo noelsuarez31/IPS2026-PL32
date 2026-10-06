@@ -11,7 +11,7 @@ import java.util.List;
 import giis.demo.model.entradas.Butaca;
 import giis.demo.model.entradas.VentaDeEntradas;
 
-public class RegistrarVentaJdbc implements ServiceJdbc{
+public class RegistrarVentaJdbc {
 	
 	
 	private static final String QUERY_INSERTVENTAS = "INSERT INTO Venta(fecha, concepto, tipo, total) VALUES (?,?,?,?) ";
