@@ -23,13 +23,13 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 
-import giis.demo.exceptions.TeamException;
 import giis.demo.model.empleado.EmpleadoDeportivo;
 import giis.demo.model.empleado.Entrenador;
 import giis.demo.model.equipo.AñadirEquipoService;
@@ -50,12 +50,10 @@ public class VentanaAñadirEquipo extends JFrame {
 	private JPanel pnCategoriaEquipo;
 	private JLabel lbCategoriaEquipo;
 	private JComboBox<CategoriaEquipo> cbCategoriaEquipo;
-	private JTable tbJugadores;
-	private JList<EmpleadoDeportivo> listRestoTecnicos;
 	private JComboBox<String> cbTipoEquipo;
 	private JPanel pnCentro;
 	private JPanel pnCuerpoTecnico;
-	private	JLabel lbPrimerEntrenador;
+	private JLabel lbPrimerEntrenador;
 	private JComboBox<Entrenador> cbPrimerEntrenador;
 	private JComboBox<Entrenador> cbSegundoEntrenador;
 	private JPanel pnPrimerYSegundoEntrenador;
@@ -63,15 +61,20 @@ public class VentanaAñadirEquipo extends JFrame {
 	private JPanel pnRestoDeTecnicos;
 	private JLabel lbRestoTecnicosTitulo;
 	private DefaultListModel<EmpleadoDeportivo> modeloListaRestoTecnicos;
+	private JList<EmpleadoDeportivo> listRestoTecnicos;
 	private JScrollPane scrRestoTecnicos;
 	private JPanel pnJugadores;
 	private JScrollPane scrJugadores;
 	private DefaultTableModel modeloJugadores;
+	private JTable tbJugadores;
 	private JScrollPane scrPanelPrincipal;
 	private JPanel pnInferior;
 	private JButton btnAtras;
 	private JButton btnCrearEquipo;
-	
+	private JPanel pnNombreEquipo;
+	private JLabel lbNombreEquipo;
+	private JTextField txNombreEquipo;
+
 	public VentanaAñadirEquipo(VentanaPrincipal vPrincipal) {
 		this.vPrincipal = vPrincipal;
 		this.club = this.vPrincipal.getAñadirEquipoService();
@@ -80,237 +83,369 @@ public class VentanaAñadirEquipo extends JFrame {
 		setTitle("Creacion de equipos");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 886, 577);
+		
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(new BorderLayout(0, 0));
 		
+		contentPane.add(getPnSuperior(), BorderLayout.NORTH);
+		contentPane.add(getScrPanelPrincipal(), BorderLayout.CENTER);
+		contentPane.add(getPnInferior(), BorderLayout.SOUTH);
+	}
 	
-		pnSuperior = new JPanel();
-		contentPane.add(pnSuperior, BorderLayout.NORTH);
-		pnSuperior.setLayout(new GridLayout(0, 2, 0, 0));
-		
-		pnTipoEquipo = new JPanel();
-		pnSuperior.add(pnTipoEquipo);
-		
-		lbTipoEquipo = new JLabel("Tipo de Equipo:");
-		lbTipoEquipo.setFont(new Font("Tahoma", Font.PLAIN, 18));
-		pnTipoEquipo.add(lbTipoEquipo);
-		
-		pnCategoriaEquipo = new JPanel();
-		pnSuperior.add(pnCategoriaEquipo);
-		
-		lbCategoriaEquipo = new JLabel("Categoria del Equipo:");
-		lbCategoriaEquipo.setFont(new Font("Tahoma", Font.PLAIN, 18));
-		pnCategoriaEquipo.add(lbCategoriaEquipo);
-		
-		cbCategoriaEquipo = new JComboBox<CategoriaEquipo>();
-		cbCategoriaEquipo.setFont(new Font("Tahoma", Font.PLAIN, 18));
-		pnCategoriaEquipo.add(cbCategoriaEquipo);
-		
-		cbTipoEquipo = new JComboBox<String>();
-		cbTipoEquipo.setModel(new DefaultComboBoxModel<String>( new String[] {"Profesional", "En formacion"}));
-		
-		cbTipoEquipo.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				String seleccionado = (String) cbTipoEquipo.getSelectedItem();
-		        
-		        if (seleccionado != null) {
-		            List<CategoriaEquipo> categorias = club.obtenerCategoriasPorTipo(seleccionado);
-		            cbCategoriaEquipo.setModel(new DefaultComboBoxModel<CategoriaEquipo>(categorias.toArray(new CategoriaEquipo[0])));
-		            
-		            if(cbCategoriaEquipo.getItemCount() > 0) {
-		            	cbCategoriaEquipo.setSelectedIndex(0);
-		            }
-		        }
+	private JPanel getPnSuperior() {
+		if (pnSuperior == null) {
+			pnSuperior = new JPanel();
+			pnSuperior.setLayout(new GridLayout(0, 3, 0, 0));
+			pnSuperior.add(getPnNombreEquipo());
+			pnSuperior.add(getPnTipoEquipo());
+			pnSuperior.add(getPnCategoriaEquipo());
+		}
+		return pnSuperior;
+	}
+	
+	private JPanel getPnTipoEquipo() {
+		if (pnTipoEquipo == null) {
+			pnTipoEquipo = new JPanel();
+			pnTipoEquipo.add(getLbTipoEquipo());
+			pnTipoEquipo.add(getCbTipoEquipo());
+		}
+		return pnTipoEquipo;
+	}
+	
+	private JLabel getLbTipoEquipo() {
+		if (lbTipoEquipo == null) {
+			lbTipoEquipo = new JLabel("Tipo de Equipo:");
+			lbTipoEquipo.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		}
+		return lbTipoEquipo;
+	}
+	
+	private JComboBox<String> getCbTipoEquipo() {
+		if (cbTipoEquipo == null) {
+			cbTipoEquipo = new JComboBox<String>();
+			cbTipoEquipo.setModel(new DefaultComboBoxModel<String>(new String[] {"Profesional", "En formacion"}));
+			cbTipoEquipo.setFont(new Font("Tahoma", Font.PLAIN, 18));
+			cbTipoEquipo.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					String seleccionado = (String) cbTipoEquipo.getSelectedItem();
+			        if (seleccionado != null) {
+			            List<CategoriaEquipo> categorias = club.obtenerCategoriasPorTipo(seleccionado);
+			            getCbCategoriaEquipo().setModel(new DefaultComboBoxModel<CategoriaEquipo>(categorias.toArray(new CategoriaEquipo[0])));
+			            if(getCbCategoriaEquipo().getItemCount() > 0) {
+			            	getCbCategoriaEquipo().setSelectedIndex(0);
+			            }
+			        }
+				}
+			});
+			if (cbTipoEquipo.getItemCount() > 0) {
+				cbTipoEquipo.setSelectedIndex(0); 
 			}
-		});
-		
-		// Para que haya uno seleccionado
-		if (cbTipoEquipo.getItemCount() > 0) {
-			cbTipoEquipo.setSelectedIndex(0); 
 		}
-		
-		cbTipoEquipo.setFont(new Font("Tahoma", Font.PLAIN, 18));
-		pnTipoEquipo.add(cbTipoEquipo);
-		
-		pnCentro = new JPanel();
-		contentPane.add(pnCentro, BorderLayout.CENTER);
-		pnCentro.setLayout(new BorderLayout(0, 0));
-		
-		pnCuerpoTecnico = new JPanel();
-		pnCuerpoTecnico.setBorder(new TitledBorder(null, "Cuerpo T\u00E9cnico", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		pnCentro.add(pnCuerpoTecnico, BorderLayout.NORTH);
-		
-		lbPrimerEntrenador = new JLabel("Primer entrenador:");
-		lbPrimerEntrenador.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		
-		cbPrimerEntrenador = new JComboBox<Entrenador>();
-		cbPrimerEntrenador.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		
-		cbSegundoEntrenador = new JComboBox<Entrenador>();
-		cbSegundoEntrenador.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		
-		List<Entrenador> tecnicos = club.obtenerEntrenadoresDisponibles();
-		pnCuerpoTecnico.setLayout(new BorderLayout(0, 0));
-		cbPrimerEntrenador.setModel(new DefaultComboBoxModel<Entrenador>(tecnicos.toArray(new Entrenador[0])));
-		cbSegundoEntrenador.setModel(new DefaultComboBoxModel<Entrenador>(tecnicos.toArray(new Entrenador[0])));
-		
-		pnPrimerYSegundoEntrenador = new JPanel();
-		
-		lbSegundoEntrenador = new JLabel("Segundo entrenador:");
-		lbSegundoEntrenador.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		pnPrimerYSegundoEntrenador.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
-		pnPrimerYSegundoEntrenador.add(lbPrimerEntrenador);
-		pnPrimerYSegundoEntrenador.add(cbPrimerEntrenador);
-		pnPrimerYSegundoEntrenador.add(lbSegundoEntrenador);
-		pnPrimerYSegundoEntrenador.add(cbSegundoEntrenador);
-		
-		pnCuerpoTecnico.add(pnPrimerYSegundoEntrenador, BorderLayout.NORTH);
-		
-		pnRestoDeTecnicos = new JPanel(new BorderLayout(0,3));
-		
-		lbRestoTecnicosTitulo = new JLabel("Si quieres añadir técnicos adicionales, seleccionalos:");
-		lbRestoTecnicosTitulo.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		pnRestoDeTecnicos.add(lbRestoTecnicosTitulo, BorderLayout.NORTH);
-		
-		modeloListaRestoTecnicos = new DefaultListModel<>();
-		List<EmpleadoDeportivo> listaRestoTecnicos = club.obtenerRestoTecnicos();
-		for (EmpleadoDeportivo tecnico : listaRestoTecnicos) {
-		    modeloListaRestoTecnicos.addElement(tecnico);
+		return cbTipoEquipo;
+	}
+	
+	private JPanel getPnCategoriaEquipo() {
+		if (pnCategoriaEquipo == null) {
+			pnCategoriaEquipo = new JPanel();
+			pnCategoriaEquipo.add(getLbCategoriaEquipo());
+			pnCategoriaEquipo.add(getCbCategoriaEquipo());
 		}
-		
-		listRestoTecnicos = new JList<EmpleadoDeportivo>(modeloListaRestoTecnicos);
-		// Habilitamos la selección múltiple 
-		listRestoTecnicos.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-		listRestoTecnicos.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		
-		scrRestoTecnicos = new JScrollPane(listRestoTecnicos);
-		scrRestoTecnicos.setPreferredSize(new Dimension(0, 90)); // Altura compacta controlada
-		pnRestoDeTecnicos.add(scrRestoTecnicos, BorderLayout.CENTER);
-		
-		pnCuerpoTecnico.add(pnRestoDeTecnicos);
-		
-		pnJugadores = new JPanel();
-		pnJugadores.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, new Color(255, 255, 255), new Color(160, 160, 160)), "Seleccion de jugadores (Min.7)", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
-		pnCentro.add(pnJugadores, BorderLayout.CENTER);
-		pnJugadores.setLayout(new BorderLayout(0, 0));
-		
-		scrJugadores = new JScrollPane();
-		pnJugadores.add(scrJugadores, BorderLayout.CENTER);
-		
-		/* Configuramos el modelo de la tabla de jugadores */
-		modeloJugadores = new DefaultTableModel(
+		return pnCategoriaEquipo;
+	}
+	
+	private JLabel getLbCategoriaEquipo() {
+		if (lbCategoriaEquipo == null) {
+			lbCategoriaEquipo = new JLabel("Categoria del Equipo:");
+			lbCategoriaEquipo.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		}
+		return lbCategoriaEquipo;
+	}
+	
+	private JComboBox<CategoriaEquipo> getCbCategoriaEquipo() {
+		if (cbCategoriaEquipo == null) {
+			cbCategoriaEquipo = new JComboBox<CategoriaEquipo>();
+			cbCategoriaEquipo.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		}
+		return cbCategoriaEquipo;
+	}
+	
+	private JScrollPane getScrPanelPrincipal() {
+		if (scrPanelPrincipal == null) {
+			scrPanelPrincipal = new JScrollPane(getPnCentro());
+			scrPanelPrincipal.getVerticalScrollBar().setUnitIncrement(16);
+		}
+		return scrPanelPrincipal;
+	}
+	
+	private JPanel getPnCentro() {
+		if (pnCentro == null) {
+			pnCentro = new JPanel();
+			pnCentro.setLayout(new BorderLayout(0, 0));
+			pnCentro.add(getPnCuerpoTecnico(), BorderLayout.NORTH);
+			pnCentro.add(getPnJugadores(), BorderLayout.CENTER);
+		}
+		return pnCentro;
+	}
+	
+	private JPanel getPnCuerpoTecnico() {
+		if (pnCuerpoTecnico == null) {
+			pnCuerpoTecnico = new JPanel();
+			pnCuerpoTecnico.setBorder(new TitledBorder(null, "Cuerpo T\u00E9cnico", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+			pnCuerpoTecnico.setLayout(new BorderLayout(0, 0));
+			pnCuerpoTecnico.add(getPnPrimerYSegundoEntrenador(), BorderLayout.NORTH);
+			pnCuerpoTecnico.add(getPnRestoDeTecnicos(), BorderLayout.CENTER);
+		}
+		return pnCuerpoTecnico;
+	}
+	
+	private JPanel getPnPrimerYSegundoEntrenador() {
+		if (pnPrimerYSegundoEntrenador == null) {
+			pnPrimerYSegundoEntrenador = new JPanel();
+			pnPrimerYSegundoEntrenador.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+			pnPrimerYSegundoEntrenador.add(getLbPrimerEntrenador());
+			pnPrimerYSegundoEntrenador.add(getCbPrimerEntrenador());
+			pnPrimerYSegundoEntrenador.add(getLbSegundoEntrenador());
+			pnPrimerYSegundoEntrenador.add(getCbSegundoEntrenador());
+		}
+		return pnPrimerYSegundoEntrenador;
+	}
+	
+	private JLabel getLbPrimerEntrenador() {
+		if (lbPrimerEntrenador == null) {
+			lbPrimerEntrenador = new JLabel("Primer entrenador:");
+			lbPrimerEntrenador.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		}
+		return lbPrimerEntrenador;
+	}
+	
+	private JComboBox<Entrenador> getCbPrimerEntrenador() {
+		if (cbPrimerEntrenador == null) {
+			cbPrimerEntrenador = new JComboBox<Entrenador>();
+			cbPrimerEntrenador.setFont(new Font("Tahoma", Font.PLAIN, 15));
+			List<Entrenador> tecnicos = club.obtenerEntrenadoresDisponibles();
+			cbPrimerEntrenador.setModel(new DefaultComboBoxModel<Entrenador>(tecnicos.toArray(new Entrenador[0])));
+		}
+		return cbPrimerEntrenador;
+	}
+	
+	private JLabel getLbSegundoEntrenador() {
+		if (lbSegundoEntrenador == null) {
+			lbSegundoEntrenador = new JLabel("Segundo entrenador:");
+			lbSegundoEntrenador.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		}
+		return lbSegundoEntrenador;
+	}
+	
+	private JComboBox<Entrenador> getCbSegundoEntrenador() {
+		if (cbSegundoEntrenador == null) {
+			cbSegundoEntrenador = new JComboBox<Entrenador>();
+			cbSegundoEntrenador.setFont(new Font("Tahoma", Font.PLAIN, 15));
+			List<Entrenador> tecnicos = club.obtenerEntrenadoresDisponibles();
+			cbSegundoEntrenador.setModel(new DefaultComboBoxModel<Entrenador>(tecnicos.toArray(new Entrenador[0])));
+		}
+		return cbSegundoEntrenador;
+	}
+	
+	private JPanel getPnRestoDeTecnicos() {
+		if (pnRestoDeTecnicos == null) {
+			pnRestoDeTecnicos = new JPanel(new BorderLayout(0, 3));
+			pnRestoDeTecnicos.add(getLbRestoTecnicosTitulo(), BorderLayout.NORTH);
+			pnRestoDeTecnicos.add(getScrRestoTecnicos(), BorderLayout.CENTER);
+		}
+		return pnRestoDeTecnicos;
+	}
+	
+	private JLabel getLbRestoTecnicosTitulo() {
+		if (lbRestoTecnicosTitulo == null) {
+			lbRestoTecnicosTitulo = new JLabel("Si quieres añadir técnicos adicionales, seleccionalos:");
+			lbRestoTecnicosTitulo.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		}
+		return lbRestoTecnicosTitulo;
+	}
+	
+	private JScrollPane getScrRestoTecnicos() {
+		if (scrRestoTecnicos == null) {
+			scrRestoTecnicos = new JScrollPane(getListRestoTecnicos());
+			scrRestoTecnicos.setPreferredSize(new Dimension(0, 90));
+		}
+		return scrRestoTecnicos;
+	}
+	
+	private JList<EmpleadoDeportivo> getListRestoTecnicos() {
+		if (listRestoTecnicos == null) {
+			modeloListaRestoTecnicos = new DefaultListModel<>();
+			List<EmpleadoDeportivo> listaRestoTecnicosDatos = club.obtenerRestoTecnicos();
+			for (EmpleadoDeportivo tecnico : listaRestoTecnicosDatos) {
+			    modeloListaRestoTecnicos.addElement(tecnico);
+			}
+			listRestoTecnicos = new JList<EmpleadoDeportivo>(modeloListaRestoTecnicos);
+			listRestoTecnicos.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+			listRestoTecnicos.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		}
+		return listRestoTecnicos;
+	}
+	
+	private JPanel getPnJugadores() {
+		if (pnJugadores == null) {
+			pnJugadores = new JPanel();
+			pnJugadores.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, new Color(255, 255, 255), new Color(160, 160, 160)), "Seleccion de jugadores (Min.7)", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
+			pnJugadores.setLayout(new BorderLayout(0, 0));
+			pnJugadores.add(getScrJugadores(), BorderLayout.CENTER);
+		}
+		return pnJugadores;
+	}
+	
+	private JScrollPane getScrJugadores() {
+		if (scrJugadores == null) {
+			scrJugadores = new JScrollPane();
+			scrJugadores.setViewportView(getTbJugadores());
+		}
+		return scrJugadores;
+	}
+	
+	private JTable getTbJugadores() {
+		if (tbJugadores == null) {
+			tbJugadores = new JTable(getModeloJugadores());
+			CategoriaEquipo categoriaSeleccionada = club.obtenerObjetoCategoria((String) getCbCategoriaEquipo().getSelectedItem());
+			añadirJugadoresATabla(getModeloJugadores(), categoriaSeleccionada);
+		}
+		return tbJugadores;
+	}
+	
+	private DefaultTableModel getModeloJugadores() {
+		if (modeloJugadores == null) {
+			modeloJugadores = new DefaultTableModel(
 	            new Object[]{"Seleccionar", "Nombre", "Edad", "Posición"}, 0
 	        ) {
 	            @Override
 	            public Class<?> getColumnClass(int columnIndex) {
-	                if (columnIndex == 0) return Boolean.class; // Checkbox
+	                if (columnIndex == 0) return Boolean.class;
 	                return super.getColumnClass(columnIndex);
 	            }
 
 	            @Override
 	            public boolean isCellEditable(int row, int column) {
-	                return column == 0; // Solo deja clickear el checkbox
+	                return column == 0;
 	            }
 	        };
-		
-		tbJugadores = new JTable(modeloJugadores);
-		
-		/* Añadimos los jugadores */
-		CategoriaEquipo categoriaSeleccionada = club.obtenerObjetoCategoria((String) cbCategoriaEquipo.getSelectedItem());
-		añadirJugadoresATabla(modeloJugadores, categoriaSeleccionada);
-		scrJugadores.setViewportView(tbJugadores);
-		
-		scrPanelPrincipal = new JScrollPane(pnCentro);
-		scrPanelPrincipal.getVerticalScrollBar().setUnitIncrement(16);
-		contentPane.add(scrPanelPrincipal, BorderLayout.CENTER);
-		
-		pnInferior = new JPanel();
-		FlowLayout flowLayout = (FlowLayout) pnInferior.getLayout();
-		flowLayout.setHgap(15);
-		flowLayout.setAlignment(FlowLayout.RIGHT);
-		contentPane.add(pnInferior, BorderLayout.SOUTH);
-		
-		btnAtras = new JButton("Atras");
-		btnAtras.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				//TODO
-				dispose();
-			}
-		});
-		btnAtras.setFont(new Font("Tahoma", Font.PLAIN, 18));
-		pnInferior.add(btnAtras);
-		
-		btnCrearEquipo = new JButton("Crear equipo");
-		btnCrearEquipo.setFont(new Font("Tahoma", Font.PLAIN, 18));
-		
-		btnCrearEquipo.addActionListener(new ActionListener() {
-		    public void actionPerformed(ActionEvent e) {
-		        // --- 1. RECOGER JUGADORES (Código de antes) ---
-		        List<EmpleadoDeportivo> jugadoresSeleccionados = new ArrayList<>();
-		        for (int i = 0; i < modeloJugadores.getRowCount(); i++) {
-		            Boolean seleccionado = (Boolean) modeloJugadores.getValueAt(i, 0);
-		            if (seleccionado != null && seleccionado) {
-		                jugadoresSeleccionados.add(club.obtenerJugadoresDisponibles((CategoriaEquipo) cbCategoriaEquipo.getSelectedItem()).get(i));
-		            }
-		        }
+		}
+		return modeloJugadores;
+	}
+	
+	private JPanel getPnInferior() {
+		if (pnInferior == null) {
+			pnInferior = new JPanel();
+			FlowLayout flowLayout = (FlowLayout) pnInferior.getLayout();
+			flowLayout.setHgap(15);
+			flowLayout.setAlignment(FlowLayout.RIGHT);
+			pnInferior.add(getBtnAtras());
+			pnInferior.add(getBtnCrearEquipo());
+		}
+		return pnInferior;
+	}
+	
+	private JButton getBtnAtras() {
+		if (btnAtras == null) {
+			btnAtras = new JButton("Atras");
+			btnAtras.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					dispose();
+				}
+			});
+			btnAtras.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		}
+		return btnAtras;
+	}
+	
+	private JButton getBtnCrearEquipo() {
+		if (btnCrearEquipo == null) {
+			btnCrearEquipo = new JButton("Crear equipo");
+			btnCrearEquipo.setFont(new Font("Tahoma", Font.PLAIN, 18));
+			btnCrearEquipo.addActionListener(new ActionListener() {
+			    public void actionPerformed(ActionEvent e) {
+			        List<EmpleadoDeportivo> jugadoresSeleccionados = new ArrayList<>();
+			        for (int i = 0; i < getModeloJugadores().getRowCount(); i++) {
+			            Boolean seleccionado = (Boolean) getModeloJugadores().getValueAt(i, 0);
+			            if (seleccionado != null && seleccionado) {
+			                try {
+								jugadoresSeleccionados.add(club.obtenerJugadoresDisponibles((CategoriaEquipo) getCbCategoriaEquipo().getSelectedItem()).get(i));
+							} catch (Exception ex) {
+					            JOptionPane.showMessageDialog(null, ex.getMessage(), "Error de validación", JOptionPane.ERROR_MESSAGE);
+					        }
+			            }
+			        }
 
-		        // --- 2. RECOGER ENTRENADORES ---
-		        List<Entrenador> entrenadoresSeleccionados = new ArrayList<>();
-		        List<EmpleadoDeportivo> restoTecnicosSeleccionados = new ArrayList<>();
-		        
-		        // A. Coger los obligatorios de los ComboBox
-		        Entrenador primerEntrenador = (Entrenador) cbPrimerEntrenador.getSelectedItem();
-		        Entrenador segundoEntrenador = (Entrenador) cbSegundoEntrenador.getSelectedItem();
-		        
-		        if (primerEntrenador != null) {
-		        	entrenadoresSeleccionados.add(primerEntrenador);
-		        }
-		        
-		        // Evitar que elijan al mismo tío de primer y segundo entrenador
-		        if (segundoEntrenador != null && !segundoEntrenador.equals(primerEntrenador)) {
-		            entrenadoresSeleccionados.add(segundoEntrenador);
-		        }
+			        List<Entrenador> entrenadoresSeleccionados = new ArrayList<>();
+			        List<EmpleadoDeportivo> restoTecnicosSeleccionados = new ArrayList<>();
+			        
+			        Entrenador primerEntrenador = (Entrenador) getCbPrimerEntrenador().getSelectedItem();
+			        Entrenador segundoEntrenador = (Entrenador) getCbSegundoEntrenador().getSelectedItem();
+			        
+			        if (primerEntrenador != null) {
+			        	entrenadoresSeleccionados.add(primerEntrenador);
+			        }
+			        
+			        if (segundoEntrenador != null && !segundoEntrenador.equals(primerEntrenador)) {
+			            entrenadoresSeleccionados.add(segundoEntrenador);
+			        }
 
-		        // B. Coger los técnicos adicionales seleccionados en la JList de forma directa
-		        List<EmpleadoDeportivo> restoTecnicosSeleccionadosLista = listRestoTecnicos.getSelectedValuesList();
-		        for (EmpleadoDeportivo otroTecnicoMarcado : restoTecnicosSeleccionadosLista) {
-		            // Solo lo añadimos si no estaba ya elegido en los combos principales
-		            if (!restoTecnicosSeleccionados.contains(otroTecnicoMarcado)) {
-		                restoTecnicosSeleccionados.add(otroTecnicoMarcado);
-		            }
-		        }
+			        List<EmpleadoDeportivo> restoTecnicosSeleccionadosLista = getListRestoTecnicos().getSelectedValuesList();
+			        for (EmpleadoDeportivo otroTecnicoMarcado : restoTecnicosSeleccionadosLista) {
+			            if (!restoTecnicosSeleccionados.contains(otroTecnicoMarcado)) {
+			                restoTecnicosSeleccionados.add(otroTecnicoMarcado);
+			            }
+			        }
 
-		        // --- 3. RECOGER TIPO Y CATEGORÍA ---
-		        String tipo = (String) cbTipoEquipo.getSelectedItem();
-		        CategoriaEquipo categoria = (CategoriaEquipo) cbCategoriaEquipo.getSelectedItem();
+			        String nombre = (String) getTxNombreEquipo().getText();
+			        String tipo = (String) getCbTipoEquipo().getSelectedItem();
+			        CategoriaEquipo categoria = (CategoriaEquipo) getCbCategoriaEquipo().getSelectedItem();
 
-		        // --- 4. LLAMAR A LA CAPA DE NEGOCIO ---
-		        try {
-		            club.añadirEquipoProfesional(jugadoresSeleccionados, entrenadoresSeleccionados, tipo, categoria);
-		            JOptionPane.showMessageDialog(null, "¡Equipo creado con éxito!");
-		            // Aquí podrías vaciar el formulario o cerrar la ventana
-		        } catch (TeamException ex) {
-		            JOptionPane.showMessageDialog(null, ex.getMessage(), "Error de validación", JOptionPane.ERROR_MESSAGE);
-		        }
-		    }
-		});
-		pnInferior.add(btnCrearEquipo);
-
+			        try {
+			            club.añadirEquipo(jugadoresSeleccionados, entrenadoresSeleccionados, restoTecnicosSeleccionados, tipo, categoria, nombre);
+			            JOptionPane.showMessageDialog(null, "¡Equipo creado con éxito!");
+			        } catch (Exception ex) {
+			            JOptionPane.showMessageDialog(null, ex.getMessage(), "Error de validación", JOptionPane.ERROR_MESSAGE);
+			        }
+			    }
+			});
+		}
+		return btnCrearEquipo;
 	}
 
 	private void añadirJugadoresATabla(DefaultTableModel modeloJugadores, CategoriaEquipo categoria) {
 		List<EmpleadoDeportivo> listaJugadores = this.club.obtenerJugadoresDisponibles(categoria);
-        
         for (EmpleadoDeportivo jugador : listaJugadores) {
             modeloJugadores.addRow(new Object[]{
-                false, // Checkbox desmarcado por defecto
+                false,
                 jugador.getNombre() + " " + jugador.getApellido(), 
                 jugador.calcularEdad(), 
                 jugador.getPosicion()
             });
         }
 	}
-
+	private JPanel getPnNombreEquipo() {
+		if (pnNombreEquipo == null) {
+			pnNombreEquipo = new JPanel();
+			pnNombreEquipo.add(getLbNombreEquipo());
+			pnNombreEquipo.add(getTxNombreEquipo());
+		}
+		return pnNombreEquipo;
+	}
+	private JLabel getLbNombreEquipo() {
+		if (lbNombreEquipo == null) {
+			lbNombreEquipo = new JLabel("Nombre del equipo:");
+			lbNombreEquipo.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		}
+		return lbNombreEquipo;
+	}
+	private JTextField getTxNombreEquipo() {
+		if (txNombreEquipo == null) {
+			txNombreEquipo = new JTextField();
+			txNombreEquipo.setFont(new Font("Tahoma", Font.PLAIN, 18));
+			txNombreEquipo.setColumns(10);
+		}
+		return txNombreEquipo;
+	}
 }

@@ -6,8 +6,6 @@ public class Equipo {
 
 	private int idEquipo;
 	private String nombre;
-//	private List<EmpleadoDeportivo> jugadores;
-//	private List<Entrenador> entrenadores;
 	private String tipoEquipo;
 	private CategoriaEquipo categoriaEquipo;
 	private boolean isPropio;
@@ -22,5 +20,25 @@ public class Equipo {
 	
 	public void setIsPropio(boolean isPropio) {
 		this.isPropio = isPropio;
+	}
+	
+	public int getIdEquipo() {
+		return this.idEquipo;
+	}
+	
+	public String getNombre() {
+		return this.nombre;
+	}
+	
+	public String getTipoEquipo() {
+		return this.tipoEquipo;
+	}
+	
+	public boolean getIsPropio() {
+		return this.isPropio;
+	}
+	
+	public CategoriaEquipo getCategoriaEquipo() {
+		return this.categoriaEquipo;
 	}
 }

@@ -56,4 +56,8 @@ public abstract class BaseEmpleado {
 	public String getApellido() {
 		return this.apellido;
 	}
+	
+	public String getDni() {
+		return this.dni;
+	}
 }
