@@ -1,8 +1,7 @@
 package giis.demo.jdbc.tienda;
 
-import giis.demo.jdbc.entradas.ServiceJdbc;
 
-public class VentaJdbc implements ServiceJdbc{
+public class VentaJdbc {
 	
 	
 
