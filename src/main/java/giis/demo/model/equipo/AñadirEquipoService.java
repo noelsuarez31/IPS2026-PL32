@@ -16,8 +16,7 @@ import giis.demo.model.empleado.BaseEmpleado;
 import giis.demo.model.empleado.EmpleadoDeportivo;
 import giis.demo.model.empleado.Entrenador;
 import giis.demo.model.empleado.Posicion;
-import giis.demo.ui.equipo.Categoria;
-
+import giis.demo.model.equipo.CategoriaEquipo;
 
 
 public class AñadirEquipoService {
