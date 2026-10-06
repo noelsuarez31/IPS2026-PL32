@@ -3744,3 +3744,61 @@ INSERT INTO "venta" VALUES (24,'2026-10-04','ENTRADAS PARA EL PARTIDO 1','ENTRAD
 INSERT INTO "venta" VALUES (25,'2026-10-04','ENTRADAS PARA EL PARTIDO 1','ENTRADAS',30.0);
 INSERT INTO "venta" VALUES (26,'2026-10-04','ENTRADAS PARA EL PARTIDO 1','ENTRADAS',30.0);
 INSERT INTO "venta" VALUES (27,'2026-10-06','ENTRADAS PARA EL PARTIDO 1','ENTRADAS',120.0);
+INSERT INTO "CategoriaEquipo" ("id_categoria", "nombre", "edad_minima", "edad_maxima", "tipo_equipo") VALUES 
+(1, 'Primer equipo', 23, 40, 'Profesional'),
+(2, 'Filial', 23, 40, 'Profesional'),
+(3, 'Regional', 23, 40, 'En formacion'),
+(4, 'Juvenil', 17, 19, 'En formacion');
+INSERT INTO "Equipo2" ("id_equipo", "nombre", "es_propio", "tipo_equipo", "id_categoria") VALUES 
+(1, 'Real Oviedo A', 1, 'Primer equipo', 1),
+(2, 'Real Oviedo B', 1, 'Filial', 2);
+INSERT INTO "BaseEmpleado" ("dni", "nombre", "apellido", "salario", "fecha_nacimiento", "numero_de_telefono") 
+VALUES ('11111111A', 'Borja', 'Bastón', 3000.00, '1992-08-24', '611223344');
+INSERT INTO "BaseEmpleado" ("dni", "nombre", "apellido", "salario", "fecha_nacimiento", "numero_de_telefono") 
+VALUES ('22222222B', 'Jimmy', 'Suárez', 2500.00, '1996-12-31', '622334455');
+INSERT INTO "BaseEmpleado" ("dni", "nombre", "apellido", "salario", "fecha_nacimiento", "numero_de_telefono") 
+VALUES ('33333333C', 'Javier', 'Calleja', 6000.00, '1978-05-12', '633445566');
+INSERT INTO "BaseEmpleado" ("dni", "nombre", "apellido", "salario", "fecha_nacimiento", "numero_de_telefono") 
+VALUES ('44444444D', 'Nacho', 'González', 2200.00, '1985-03-15', '644556677');
+INSERT INTO "BaseEmpleado" ("dni", "nombre", "apellido", "salario", "fecha_nacimiento", "numero_de_telefono") 
+VALUES ('55555555E', 'Sergio', 'Tella', 1900.00, '1990-07-20', '655667788');
+INSERT INTO "BaseEmpleado" ("dni", "nombre", "apellido", "salario", "fecha_nacimiento", "numero_de_telefono")
+VALUES ('66666666F', 'Daniel', 'Tellado', 1400.00, '1990-05-05', '632437172');
+INSERT INTO "BaseEmpleado" ("dni", "nombre", "apellido", "salario", "fecha_nacimiento", "numero_de_telefono") 
+VALUES ('77777777G', 'Lucas', 'Vázquez', 1500.00, '2008-03-10', '677889900');
+INSERT INTO "BaseEmpleado" ("dni", "nombre", "apellido", "salario", "fecha_nacimiento", "numero_de_telefono") 
+VALUES ('88888888H', 'Mateo', 'Alonso', 1200.00, '2009-05-14', '688990011'); 
+INSERT INTO "BaseEmpleado" ("dni", "nombre", "apellido", "salario", "fecha_nacimiento", "numero_de_telefono") 
+VALUES ('99999999I', 'Alejandro', 'Pérez', 1300.00, '2007-01-20', '699001122'); 
+INSERT INTO "BaseEmpleado" ("dni", "nombre", "apellido", "salario", "fecha_nacimiento", "numero_de_telefono") 
+VALUES ('12345678J', 'David', 'Villa', 2800.00, '2000-12-03', '612345678');
+INSERT INTO "BaseEmpleado" ("dni", "nombre", "apellido", "salario", "fecha_nacimiento", "numero_de_telefono") 
+VALUES ('87654321K', 'Santi', 'Cazorla', 3200.00, '1990-06-15', '687654321');
+INSERT INTO "BaseEmpleado" ("dni", "nombre", "apellido", "salario", "fecha_nacimiento", "numero_de_telefono") 
+VALUES ('11223344L', 'Diego', 'Mariño', 2100.00, '1990-05-09', '611223355'); 
+INSERT INTO "BaseEmpleado" ("dni", "nombre", "apellido", "salario", "fecha_nacimiento", "numero_de_telefono") 
+VALUES ('55667788M', 'Manu', 'García', 2400.00, '1998-01-02', '655667799');
+INSERT INTO "BaseEmpleado" ("dni", "nombre", "apellido", "salario", "fecha_nacimiento", "numero_de_telefono") 
+VALUES ('99887766N', 'Pelayo', 'Fernández', 1100.00, '2008-09-18', '699887766'); 
+INSERT INTO "BaseEmpleado" ("dni", "nombre", "apellido", "salario", "fecha_nacimiento", "numero_de_telefono") 
+VALUES ('33445566O', 'Pablo', 'Álvarez', 2000.00, '1995-11-25', '633445577'); 
+INSERT INTO "BaseEmpleado" ("dni", "nombre", "apellido", "salario", "fecha_nacimiento", "numero_de_telefono") 
+VALUES ('77889900P', 'Gaspar', 'Campos', 2600.00, '2000-03-30', '677889911'); 
+INSERT INTO "EmpleadoDeportivo" ("dni", "posicion") VALUES ('11111111A', 'JUGADOR');
+INSERT INTO "EmpleadoDeportivo" ("dni", "posicion") VALUES ('22222222B', 'JUGADOR');
+INSERT INTO "EmpleadoDeportivo" ("dni", "posicion") VALUES ('33333333C', 'ENTRENADOR');
+INSERT INTO "EmpleadoDeportivo" ("dni", "posicion") VALUES ('66666666F', 'ENTRENADOR');
+INSERT INTO "EmpleadoDeportivo" ("dni", "posicion") VALUES ('44444444D', 'TECNICO_ADICIONAL');
+INSERT INTO "EmpleadoDeportivo" ("dni", "posicion") VALUES ('55555555E', 'TECNICO_ADICIONAL');
+INSERT INTO "EmpleadoDeportivo" ("dni", "posicion") VALUES ('77777777G', 'JUGADOR');
+INSERT INTO "EmpleadoDeportivo" ("dni", "posicion") VALUES ('88888888H', 'JUGADOR');
+INSERT INTO "EmpleadoDeportivo" ("dni", "posicion") VALUES ('99999999I', 'JUGADOR');
+INSERT INTO "EmpleadoDeportivo" ("dni", "posicion") VALUES ('12345678J', 'JUGADOR');
+INSERT INTO "EmpleadoDeportivo" ("dni", "posicion") VALUES ('87654321K', 'JUGADOR');
+INSERT INTO "EmpleadoDeportivo" ("dni", "posicion") VALUES ('11223344L', 'JUGADOR');
+INSERT INTO "EmpleadoDeportivo" ("dni", "posicion") VALUES ('55667788M', 'JUGADOR');
+INSERT INTO "EmpleadoDeportivo" ("dni", "posicion") VALUES ('99887766N', 'JUGADOR');
+INSERT INTO "EmpleadoDeportivo" ("dni", "posicion") VALUES ('33445566O', 'JUGADOR');
+INSERT INTO "EmpleadoDeportivo" ("dni", "posicion") VALUES ('77889900P', 'JUGADOR');
+INSERT INTO "Entrenador" ("dni", "tipo_entrenador") VALUES ('33333333C', 'Primer Entrenador');
+INSERT INTO "Entrenador" ("dni", "tipo_entrenador") VALUES ('66666666F', 'Segundo Entrenador');

@@ -15,7 +15,7 @@ import giis.demo.model.equipo.CategoriaEquipo;
 
 public class EmpleadoDeportivoJdbc {
 	public final static String QUERY_GET_ADITIONAL_MANAGERS = "SELECT * FROM EmpleadoDeportivo WHERE posicion=?";
-	public final static String QUERY_GET_COMPLETE_ADITIONAL_MANAGERS = "SELECT nombre, apellido, salario, fechaNacimiento, numeroDeTelefono FROM"
+	public final static String QUERY_GET_COMPLETE_ADITIONAL_MANAGERS = "SELECT nombre, apellido, salario, fecha_nacimiento, numero_de_telefono FROM"
 			+ " EmpleadoDeportivo ed, BaseEmpleado bd WHERE ed.dni=bd.dni and ed.dni=?";
 	
 	public final static String QUERY_GET_PLAYERS = "SELECT * FROM EmpleadoDeportivo WHERE posicion = ?";
@@ -59,17 +59,18 @@ public class EmpleadoDeportivoJdbc {
 				String dni = rsJugadores.getString(1);
 	
 				try(PreparedStatement pst2 = con.prepareStatement(QUERY_GET_COMPLETE_PLAYERS);){
+					pst2.setString(1,dni);
 					ResultSet rsJugadorCompleto = pst2.executeQuery();
 					
 					while(rsJugadorCompleto.next()) {
-						jugadores.add(new EmpleadoDeportivo(dni, rsJugadorCompleto.getString(1), rsJugadorCompleto.getString(2),
-								rsJugadorCompleto.getBigDecimal(3), LocalDate.parse(rsJugadorCompleto.getString(4)), rsJugadorCompleto.getString(5), Posicion.JUGADOR));
+						jugadores.add(new EmpleadoDeportivo(dni, rsJugadorCompleto.getString(2), rsJugadorCompleto.getString(3),
+								rsJugadorCompleto.getBigDecimal(4), LocalDate.parse(rsJugadorCompleto.getString(5)), rsJugadorCompleto.getString(6), Posicion.JUGADOR));
 					}
 				}
 			}
 		}
 		
-		if(categoria.getNombre().equals("Primer Equipo") || categoria.getNombre().equals("Filial")) {
+		if(categoria.getNombre().equals("Primer equipo") || categoria.getNombre().equals("Filial")) {
 			return jugadores;
 		}
 		

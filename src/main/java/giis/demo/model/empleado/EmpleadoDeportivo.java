@@ -35,7 +35,7 @@ public class EmpleadoDeportivo extends BaseEmpleado{
 	}
 
 	public int calcularEdad() {
-		return Period.between(LocalDate.now(), fechaDeNacimiento).getYears();
+	    return Period.between(fechaDeNacimiento, LocalDate.now()).getYears();
 	}
 	
 	@Override

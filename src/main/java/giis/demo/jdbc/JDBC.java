@@ -103,8 +103,8 @@ public class JDBC {
 		return EmpleadoDeportivoJdbc.obtenerRestoTecnicos(con);
 	}
 
-	public List<CategoriaEquipo> obtenerCategoriasPorTipo(String tipo) throws SQLException {
-		return CategoriaEquipoJdbc.obtenerCategoriasPorTipo(con, tipo);
+	public List<String> obtenerNombreDeCategoriasPorTipo(String tipo) throws SQLException {
+		return CategoriaEquipoJdbc.obtenerNombreDeCategoriasPorTipo(con, tipo);
 	}
 
 	public List<EmpleadoDeportivo> obtenerJugadoresDisponibles(CategoriaEquipo categoria) throws SQLException {

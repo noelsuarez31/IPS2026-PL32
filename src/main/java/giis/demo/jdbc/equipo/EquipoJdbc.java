@@ -11,13 +11,13 @@ import giis.demo.model.empleado.Entrenador;
 import giis.demo.model.equipo.Equipo;
 
 public class EquipoJdbc {
-	public final static String QUERY_GET_CATEGORY_ID = "SELECT id_category FROM CategoriaEquipo WHERE nombre=?";
+	public final static String QUERY_GET_CATEGORY_ID = "SELECT id_categoria FROM CategoriaEquipo WHERE nombre=?";
 	
-	public final static String QUERY_CREATE_TEAM = "INSERT INTO equipo VALUES "
+	public final static String QUERY_CREATE_TEAM = "INSERT INTO Equipo2 VALUES "
 			+ "(?,?,?,?,?)";
 	
 	public final static String QUERY_SAVE_TEAM_MEMBERS = 
-			"UPDATE EmpleadoDeportivo SET idEquipo=? WHERE dni=?";
+			"UPDATE EmpleadoDeportivo SET id_equipo=? WHERE dni=?";
 	
 	public static void almacenarEquipo(Connection con, Equipo equipo, List<EmpleadoDeportivo> jugadores, List<Entrenador> entrenadores, List<EmpleadoDeportivo> tecnicosAdicionales) throws SQLException {
 

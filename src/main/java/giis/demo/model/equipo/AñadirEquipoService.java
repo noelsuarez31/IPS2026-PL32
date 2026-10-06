@@ -15,7 +15,7 @@ import giis.demo.model.empleado.Posicion;
 public class AñadirEquipoService {
 	private BaseEmpleado empleadoActivo;
 	private JDBC jdbc = new JDBC();
-	private int ultimoIdEquipo = 5;
+	private int ultimoIdEquipo = 0;
 	
 	public void seleccionarEmpleadoActivo(BaseEmpleado empleado) {
 		if(empleado == null) {
@@ -68,7 +68,7 @@ public class AñadirEquipoService {
 	}
 	
 	private int siguienteIdEquipo() {
-		return ultimoIdEquipo +1;
+		return ++ultimoIdEquipo;
 	}
 
 	private void pedirPermiso(Posicion posicionRequerida) throws UnauthorizedException{
@@ -135,13 +135,13 @@ public class AñadirEquipoService {
 		}
 	}
 	
-	public List<CategoriaEquipo> obtenerCategoriasPorTipo(String tipo) {
+	public List<String> obtenerNombreDeCategoriasPorTipo(String tipo) {
 		if(tipo == null) {
 			throw new TeamException("Tipo es nulo");
 		}
 		
 		try {
-			return jdbc.obtenerCategoriasPorTipo(tipo);
+			return jdbc.obtenerNombreDeCategoriasPorTipo(tipo);
 		} catch (SQLException e) {
 			throw new TeamException("SQLException: Error al obtener las categorias por tipo");
 		}
