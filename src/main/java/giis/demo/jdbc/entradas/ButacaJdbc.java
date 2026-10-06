@@ -8,9 +8,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import giis.demo.model.Butaca;
-import giis.demo.model.enumerados.TipoSeccion;
-import giis.demo.model.enumerados.TipoTribuna;
+import giis.demo.model.entradas.Butaca;
+import giis.demo.model.entradas.enumerados.TipoSeccion;
+import giis.demo.model.entradas.enumerados.TipoTribuna;
+
 
 
 public class ButacaJdbc implements ServiceJdbc{

@@ -4,8 +4,8 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
+import giis.demo.ui.entradas.VentanaVentaEntradas;
 import giis.demo.ui.tienda.VentanaTienda;
-import giis.demo.ui.vendedorEntradas.VentanaVentaEntradas;
 
 import java.awt.Color;
 import javax.swing.JMenuBar;

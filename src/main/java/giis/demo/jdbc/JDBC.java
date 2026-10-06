@@ -6,13 +6,13 @@ import java.util.List;
 import giis.demo.jdbc.entradas.ButacaJdbc;
 import giis.demo.jdbc.entradas.PartidoJdbc;
 import giis.demo.jdbc.entradas.RegistrarVentaJdbc;
-import giis.demo.model.Butaca;
-import giis.demo.model.Partido;
-import giis.demo.model.enumerados.TipoSeccion;
-import giis.demo.model.enumerados.TipoTribuna;
+import giis.demo.model.entradas.Butaca;
+import giis.demo.model.entradas.Partido;
+import giis.demo.model.entradas.enumerados.TipoSeccion;
+import giis.demo.model.entradas.enumerados.TipoTribuna;
+
 
 public class JDBC {
-
 	/**
 	 * Obtiene las butacas libres disponibles
 	 * @param idPartido

@@ -5,10 +5,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import giis.demo.exceptions.SinDisponibilidadException;
 import giis.demo.jdbc.JDBC;
-import giis.demo.model.enumerados.TipoSeccion;
-import giis.demo.model.enumerados.TipoTribuna;
-import giis.demo.model.exceptions.SinDisponibilidadException;
+import giis.demo.model.entradas.enumerados.TipoSeccion;
+import giis.demo.model.entradas.enumerados.TipoTribuna;
 
 
 public class VentaDeEntradas {

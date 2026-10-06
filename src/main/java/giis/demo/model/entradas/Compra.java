@@ -2,7 +2,8 @@ package giis.demo.model.entradas;
 
 import java.util.Date;
 
-import giis.demo.model.enumerados.TipoVenta;
+import giis.demo.model.entradas.enumerados.TipoVenta;
+
 
 public class Compra {
 	

@@ -10,7 +10,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import giis.demo.model.Partido;
+import giis.demo.model.entradas.Partido;
 
 public class PartidoJdbc implements ServiceJdbc {
 

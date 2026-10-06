@@ -1,7 +1,7 @@
 package giis.demo.model.entradas;
 
-import giis.demo.model.enumerados.TipoSeccion;
-import giis.demo.model.enumerados.TipoTribuna;
+import giis.demo.model.entradas.enumerados.TipoSeccion;
+import giis.demo.model.entradas.enumerados.TipoTribuna;
 
 public class Butaca {
 	
