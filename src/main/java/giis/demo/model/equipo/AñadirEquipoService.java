@@ -32,18 +32,18 @@ public class AñadirEquipoService {
 		this.empleadoActivo = empleado;
 	}
 	
-	public void añadirEquipoProfesional(List<EmpleadoDeportivo> jugadores, List<Entrenador> entrenadores,
-			String tipo, CategoriaEquipo categoria){
+	public void añadirEquipo(List<EmpleadoDeportivo> jugadores, List<Entrenador> entrenadores,
+			String tipo, CategoriaEquipo categoria, String nombreEquipo){
 		pedirPermiso(Posicion.GERENTE);
 		
-		Equipo equipo = crearEquipo(jugadores, entrenadores, tipo, categoria);
+		Equipo equipo = crearEquipo(jugadores, entrenadores, tipo, categoria, nombreEquipo);
 		
 		equipos.add(equipo);
 	}
 	
 	public Equipo crearEquipo(List<EmpleadoDeportivo> jugadores, List<Entrenador> entrenadores,
-			String tipo, CategoriaEquipo categoria) throws TeamException{
-		if(jugadores == null || entrenadores == null || tipo == null || categoria == null) {
+			String tipo, CategoriaEquipo categoria, String nombre) throws TeamException{
+		if(jugadores == null || entrenadores == null || tipo == null || categoria == null || nombre == null) {
 			throw new TeamException("No se admiten valores nulos");
 		}
 		
@@ -68,7 +68,7 @@ public class AñadirEquipoService {
 			throw new TeamException("Tipo de equipo invalido: Solo se admite profesional/en formacion");
 		}
 		
-		return new Equipo(siguienteIdEquipo(), jugadores, entrenadores, tipo, categoria);
+		return new Equipo(siguienteIdEquipo(), nombre, tipo, categoria);
 	}
 	
 	private int siguienteIdEquipo() {

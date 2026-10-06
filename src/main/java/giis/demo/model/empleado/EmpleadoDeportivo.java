@@ -15,6 +15,8 @@ public class EmpleadoDeportivo extends BaseEmpleado{
 	private String numeroDeTelefono;
 	private Posicion posicion;
 	
+	private int idEquipo;
+	
 	public EmpleadoDeportivo(String dni, String nombre, String apellido, BigDecimal salario,
 			LocalDate fechaDeNacimiento, String numeroTelefono, Posicion posicion) {
 		super(dni, nombre, apellido, salario, fechaDeNacimiento, numeroTelefono);
@@ -39,5 +41,9 @@ public class EmpleadoDeportivo extends BaseEmpleado{
 	@Override
 	public String toString() {
 		return String.format("%s, %s", getApellido(), getNombre());
+	}
+	
+	public void setIdEquipo(int idEquipo) {
+		this.idEquipo = idEquipo;
 	}
 }

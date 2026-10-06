@@ -34,20 +34,47 @@ import giis.demo.model.empleado.EmpleadoDeportivo;
 import giis.demo.model.empleado.Entrenador;
 import giis.demo.model.equipo.AñadirEquipoService;
 import giis.demo.model.equipo.CategoriaEquipo;
+import giis.demo.ui.VentanaPrincipal;
 
 public class VentanaAñadirEquipo extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	
+	private VentanaPrincipal vPrincipal;
 	private AñadirEquipoService club;
 	
 	private JPanel contentPane;
-	private JTable tbRestoTecnicos;
+	private JPanel pnSuperior;
+	private JPanel pnTipoEquipo;
+	private JLabel lbTipoEquipo;
+	private JPanel pnCategoriaEquipo;
+	private JLabel lbCategoriaEquipo;
+	private JComboBox<CategoriaEquipo> cbCategoriaEquipo;
 	private JTable tbJugadores;
 	private JList<EmpleadoDeportivo> listRestoTecnicos;
-
-	public VentanaAñadirEquipo(AñadirEquipoService club) {
-		this.club = club;
+	private JComboBox<String> cbTipoEquipo;
+	private JPanel pnCentro;
+	private JPanel pnCuerpoTecnico;
+	private	JLabel lbPrimerEntrenador;
+	private JComboBox<Entrenador> cbPrimerEntrenador;
+	private JComboBox<Entrenador> cbSegundoEntrenador;
+	private JPanel pnPrimerYSegundoEntrenador;
+	private JLabel lbSegundoEntrenador;
+	private JPanel pnRestoDeTecnicos;
+	private JLabel lbRestoTecnicosTitulo;
+	private DefaultListModel<EmpleadoDeportivo> modeloListaRestoTecnicos;
+	private JScrollPane scrRestoTecnicos;
+	private JPanel pnJugadores;
+	private JScrollPane scrJugadores;
+	private DefaultTableModel modeloJugadores;
+	private JScrollPane scrPanelPrincipal;
+	private JPanel pnInferior;
+	private JButton btnAtras;
+	private JButton btnCrearEquipo;
+	
+	public VentanaAñadirEquipo(VentanaPrincipal vPrincipal) {
+		this.vPrincipal = vPrincipal;
+		this.club = this.vPrincipal.getAñadirEquipoService();
 		
 		setIconImage(Toolkit.getDefaultToolkit().getImage("C:\\Users\\IkerNuevo\\Downloads\\uniovi_solo_escudo_color.png"));
 		setTitle("Creacion de equipos");
@@ -59,29 +86,29 @@ public class VentanaAñadirEquipo extends JFrame {
 		contentPane.setLayout(new BorderLayout(0, 0));
 		
 	
-		JPanel pnSuperior = new JPanel();
+		pnSuperior = new JPanel();
 		contentPane.add(pnSuperior, BorderLayout.NORTH);
 		pnSuperior.setLayout(new GridLayout(0, 2, 0, 0));
 		
-		JPanel pnTipoEquipo = new JPanel();
+		pnTipoEquipo = new JPanel();
 		pnSuperior.add(pnTipoEquipo);
 		
-		JLabel lbTipoEquipo = new JLabel("Tipo de Equipo:");
+		lbTipoEquipo = new JLabel("Tipo de Equipo:");
 		lbTipoEquipo.setFont(new Font("Tahoma", Font.PLAIN, 18));
 		pnTipoEquipo.add(lbTipoEquipo);
 		
-		JPanel pnCategoriaEquipo = new JPanel();
+		pnCategoriaEquipo = new JPanel();
 		pnSuperior.add(pnCategoriaEquipo);
 		
-		JLabel lbCategoriaEquipo = new JLabel("Categoria del Equipo:");
+		lbCategoriaEquipo = new JLabel("Categoria del Equipo:");
 		lbCategoriaEquipo.setFont(new Font("Tahoma", Font.PLAIN, 18));
 		pnCategoriaEquipo.add(lbCategoriaEquipo);
 		
-		JComboBox<CategoriaEquipo> cbCategoriaEquipo = new JComboBox<CategoriaEquipo>();
+		cbCategoriaEquipo = new JComboBox<CategoriaEquipo>();
 		cbCategoriaEquipo.setFont(new Font("Tahoma", Font.PLAIN, 18));
 		pnCategoriaEquipo.add(cbCategoriaEquipo);
 		
-		JComboBox<String> cbTipoEquipo = new JComboBox<String>();
+		cbTipoEquipo = new JComboBox<String>();
 		cbTipoEquipo.setModel(new DefaultComboBoxModel<String>( new String[] {"Profesional", "En formacion"}));
 		
 		cbTipoEquipo.addActionListener(new ActionListener() {
@@ -107,21 +134,21 @@ public class VentanaAñadirEquipo extends JFrame {
 		cbTipoEquipo.setFont(new Font("Tahoma", Font.PLAIN, 18));
 		pnTipoEquipo.add(cbTipoEquipo);
 		
-		JPanel pnCentro = new JPanel();
+		pnCentro = new JPanel();
 		contentPane.add(pnCentro, BorderLayout.CENTER);
 		pnCentro.setLayout(new BorderLayout(0, 0));
 		
-		JPanel pnCuerpoTecnico = new JPanel();
+		pnCuerpoTecnico = new JPanel();
 		pnCuerpoTecnico.setBorder(new TitledBorder(null, "Cuerpo T\u00E9cnico", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		pnCentro.add(pnCuerpoTecnico, BorderLayout.NORTH);
 		
-		JLabel lbPrimerEntrenador = new JLabel("Primer entrenador:");
+		lbPrimerEntrenador = new JLabel("Primer entrenador:");
 		lbPrimerEntrenador.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		
-		JComboBox<Entrenador> cbPrimerEntrenador = new JComboBox<Entrenador>();
+		cbPrimerEntrenador = new JComboBox<Entrenador>();
 		cbPrimerEntrenador.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		
-		JComboBox<Entrenador> cbSegundoEntrenador = new JComboBox<Entrenador>();
+		cbSegundoEntrenador = new JComboBox<Entrenador>();
 		cbSegundoEntrenador.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		
 		List<Entrenador> tecnicos = club.obtenerEntrenadoresDisponibles();
@@ -129,9 +156,9 @@ public class VentanaAñadirEquipo extends JFrame {
 		cbPrimerEntrenador.setModel(new DefaultComboBoxModel<Entrenador>(tecnicos.toArray(new Entrenador[0])));
 		cbSegundoEntrenador.setModel(new DefaultComboBoxModel<Entrenador>(tecnicos.toArray(new Entrenador[0])));
 		
-		JPanel pnPrimerYSegundoEntrenador = new JPanel();
+		pnPrimerYSegundoEntrenador = new JPanel();
 		
-		JLabel lbSegundoEntrenador = new JLabel("Segundo entrenador:");
+		lbSegundoEntrenador = new JLabel("Segundo entrenador:");
 		lbSegundoEntrenador.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		pnPrimerYSegundoEntrenador.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 		pnPrimerYSegundoEntrenador.add(lbPrimerEntrenador);
@@ -141,13 +168,13 @@ public class VentanaAñadirEquipo extends JFrame {
 		
 		pnCuerpoTecnico.add(pnPrimerYSegundoEntrenador, BorderLayout.NORTH);
 		
-		JPanel pnRestoDeTecnicos = new JPanel(new BorderLayout(0,3));
+		pnRestoDeTecnicos = new JPanel(new BorderLayout(0,3));
 		
-		JLabel lbRestoTecnicosTitulo = new JLabel("Si quieres añadir técnicos adicionales, seleccionalos:");
+		lbRestoTecnicosTitulo = new JLabel("Si quieres añadir técnicos adicionales, seleccionalos:");
 		lbRestoTecnicosTitulo.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		pnRestoDeTecnicos.add(lbRestoTecnicosTitulo, BorderLayout.NORTH);
 		
-		DefaultListModel<EmpleadoDeportivo> modeloListaRestoTecnicos = new DefaultListModel<>();
+		modeloListaRestoTecnicos = new DefaultListModel<>();
 		List<EmpleadoDeportivo> listaRestoTecnicos = club.obtenerRestoTecnicos();
 		for (EmpleadoDeportivo tecnico : listaRestoTecnicos) {
 		    modeloListaRestoTecnicos.addElement(tecnico);
@@ -158,22 +185,22 @@ public class VentanaAñadirEquipo extends JFrame {
 		listRestoTecnicos.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		listRestoTecnicos.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		
-		JScrollPane scrRestoTecnicos = new JScrollPane(listRestoTecnicos);
+		scrRestoTecnicos = new JScrollPane(listRestoTecnicos);
 		scrRestoTecnicos.setPreferredSize(new Dimension(0, 90)); // Altura compacta controlada
 		pnRestoDeTecnicos.add(scrRestoTecnicos, BorderLayout.CENTER);
 		
 		pnCuerpoTecnico.add(pnRestoDeTecnicos);
 		
-		JPanel pnJugadores = new JPanel();
+		pnJugadores = new JPanel();
 		pnJugadores.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, new Color(255, 255, 255), new Color(160, 160, 160)), "Seleccion de jugadores (Min.7)", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
 		pnCentro.add(pnJugadores, BorderLayout.CENTER);
 		pnJugadores.setLayout(new BorderLayout(0, 0));
 		
-		JScrollPane scrJugadores = new JScrollPane();
+		scrJugadores = new JScrollPane();
 		pnJugadores.add(scrJugadores, BorderLayout.CENTER);
 		
 		/* Configuramos el modelo de la tabla de jugadores */
-		DefaultTableModel modeloJugadores = new DefaultTableModel(
+		modeloJugadores = new DefaultTableModel(
 	            new Object[]{"Seleccionar", "Nombre", "Edad", "Posición"}, 0
 	        ) {
 	            @Override
@@ -189,22 +216,23 @@ public class VentanaAñadirEquipo extends JFrame {
 	        };
 		
 		tbJugadores = new JTable(modeloJugadores);
+		
 		/* Añadimos los jugadores */
 		CategoriaEquipo categoriaSeleccionada = club.obtenerObjetoCategoria((String) cbCategoriaEquipo.getSelectedItem());
 		añadirJugadoresATabla(modeloJugadores, categoriaSeleccionada);
 		scrJugadores.setViewportView(tbJugadores);
 		
-		JScrollPane scrollPanePrincipal = new JScrollPane(pnCentro);
-		scrollPanePrincipal.getVerticalScrollBar().setUnitIncrement(16);
-		contentPane.add(scrollPanePrincipal, BorderLayout.CENTER);
+		scrPanelPrincipal = new JScrollPane(pnCentro);
+		scrPanelPrincipal.getVerticalScrollBar().setUnitIncrement(16);
+		contentPane.add(scrPanelPrincipal, BorderLayout.CENTER);
 		
-		JPanel pnInferior = new JPanel();
+		pnInferior = new JPanel();
 		FlowLayout flowLayout = (FlowLayout) pnInferior.getLayout();
 		flowLayout.setHgap(15);
 		flowLayout.setAlignment(FlowLayout.RIGHT);
 		contentPane.add(pnInferior, BorderLayout.SOUTH);
 		
-		JButton btnAtras = new JButton("Atras");
+		btnAtras = new JButton("Atras");
 		btnAtras.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				//TODO
@@ -214,7 +242,7 @@ public class VentanaAñadirEquipo extends JFrame {
 		btnAtras.setFont(new Font("Tahoma", Font.PLAIN, 18));
 		pnInferior.add(btnAtras);
 		
-		JButton btnCrearEquipo = new JButton("Crear equipo");
+		btnCrearEquipo = new JButton("Crear equipo");
 		btnCrearEquipo.setFont(new Font("Tahoma", Font.PLAIN, 18));
 		
 		btnCrearEquipo.addActionListener(new ActionListener() {
