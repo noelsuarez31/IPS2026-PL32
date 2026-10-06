@@ -15,9 +15,9 @@ import giis.demo.model.entradas.enumerados.TipoTribuna;
 
 public class JDBC {
 	
-	public static final String URL_GROUP2 = "jdbc:sqlite:C:\\Users\\Gaby\\iCloudDrive\\Documents\\0 - ESTUDIOS\\6- UNIVERSIDAD\\3- TERCERO DE CARRERA\\1- PRIMER SEMESTRE\\INGENIERÍA DEL PROCESO SOFTWARE\\PRÁCTICA\\BBDD\\BBDD-IPS.db";
+	public static final String URL_GROUP2 = "jdbc:sqlite:DemoDB.db";
 	
-	private static Connection con;
+	private Connection con;
 	
 	public JDBC() {
 		
@@ -67,6 +67,15 @@ public class JDBC {
 	public void almacenar(int idPartido, List<Butaca> butacasSeleccionadas) throws SQLException {
 		
 		RegistrarVentaJdbc.registrar(con,idPartido, butacasSeleccionadas);
+		
+	}
+	
+	public void close() throws SQLException{
+		
+		if(con!=null && !con.isClosed()) {
+			
+			con.close();
+		}
 		
 	}
 
