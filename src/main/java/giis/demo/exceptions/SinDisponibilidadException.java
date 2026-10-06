@@ -12,8 +12,8 @@ public class SinDisponibilidadException extends Exception {
 	 */
 	public SinDisponibilidadException(String string) {
 		
-		System.err.println(string);
-		
+		super(string);
+
 	}
 
 }
