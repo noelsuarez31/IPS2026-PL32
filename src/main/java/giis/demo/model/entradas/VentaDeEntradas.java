@@ -165,5 +165,11 @@ public class VentaDeEntradas {
 		jdbc.almacenar(id_Partido, butacas_Seleccionadas);
 		
 	}	
-
+	
+	public void close() throws SQLException {
+		
+		jdbc.close();
+		
+	}
+	
 }

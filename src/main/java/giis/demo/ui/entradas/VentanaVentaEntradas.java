@@ -401,6 +401,7 @@ public class VentanaVentaEntradas extends JFrame {
 
 		VentanaVentaConfirmacion vvc = new VentanaVentaConfirmacion(this);
 		vvc.setVisible(true);
+		venta.close();
 		this.dispose();
 
 	}
@@ -411,7 +412,14 @@ public class VentanaVentaEntradas extends JFrame {
 			btVolver.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 
-					volverAlMenu();
+					try {
+						volverAlMenu();
+					} catch (SQLException e1) {
+						
+						System.err.print("Se ha producido un error al cerra la conexión con la BBDD");
+						e1.printStackTrace();
+
+					}
 
 				}
 			});
@@ -425,10 +433,12 @@ public class VentanaVentaEntradas extends JFrame {
 
 	/**
 	 * Método para volver al menú principal
+	 * @throws SQLException 
 	 */
-	private void volverAlMenu() {
+	private void volverAlMenu() throws SQLException {
 
 		this.vp.setVisible(true);
+		venta.close();
 		this.dispose();
 
 	}
