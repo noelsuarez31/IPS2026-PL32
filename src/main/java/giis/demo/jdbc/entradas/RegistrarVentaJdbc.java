@@ -1,7 +1,6 @@
 package giis.demo.jdbc.entradas;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -25,9 +24,8 @@ public class RegistrarVentaJdbc implements ServiceJdbc{
 	 * @param butacas
 	 * @throws SQLException
 	 */
-	public static void registrar(int idPartido, List<Butaca> butacas) throws SQLException {
+	public static void registrar(Connection con, int idPartido, List<Butaca> butacas) throws SQLException {
 
-		try (Connection con = DriverManager.getConnection(URL_GROUP2)) {
 			
 			con.setAutoCommit(false);
 			
@@ -42,7 +40,6 @@ public class RegistrarVentaJdbc implements ServiceJdbc{
 				throw e;
 			}
 
-		}
 
 	}
 	

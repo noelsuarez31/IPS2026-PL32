@@ -20,6 +20,7 @@ public class VentaDeEntradas {
 	
 	private int idPartido;
 	private List<Butaca> butacasSeleccionadas;
+	private JDBC jdbc = new JDBC();
 	
 	/**
 	 * Constructor por defecto de la clase
@@ -51,7 +52,7 @@ public class VentaDeEntradas {
 			throw new IllegalArgumentException("No se pueden comprar más de 15 entradas");
 		}
 		
-		List<Butaca> butacasDisponibles = JDBC.getFreeButacas(partido.getId_partido(), tribuna, seccion);
+		List<Butaca> butacasDisponibles = jdbc.getFreeButacas(partido.getId_partido(), tribuna, seccion);
 		
 		butacasSeleccionadas = seleccionarAsientosContiguos(butacasDisponibles, numEntradas);
 		
@@ -154,14 +155,14 @@ public class VentaDeEntradas {
 	 */
 	public Partido[] getPartidos() throws SQLException {
 		
-		Partido[] partido = JDBC.getPartidos().toArray(new Partido[0]);
+		Partido[] partido = jdbc.getPartidos().toArray(new Partido[0]);
 		return partido;
 		
 	}
 
 	public void almacenar(int id_Partido, List<Butaca> butacas_Seleccionadas) throws SQLException {
 		
-		JDBC.almacenar(id_Partido, butacas_Seleccionadas);
+		jdbc.almacenar(id_Partido, butacas_Seleccionadas);
 		
 	}	
 
