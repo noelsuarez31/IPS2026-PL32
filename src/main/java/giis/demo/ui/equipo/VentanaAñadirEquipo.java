@@ -413,6 +413,7 @@ public class VentanaAñadirEquipo extends JFrame {
 			            club.añadirEquipo(jugadoresSeleccionados, entrenadoresSeleccionados, restoTecnicosSeleccionados, tipo, categoria, nombre);
 			            JOptionPane.showMessageDialog(null, "¡Equipo creado con éxito!");
 			            dispose();
+			            vPrincipal.setVisible(true);
 			        } catch (Exception ex) {
 			            JOptionPane.showMessageDialog(null, ex.getMessage(), "Error de validación", JOptionPane.ERROR_MESSAGE);
 			        }
