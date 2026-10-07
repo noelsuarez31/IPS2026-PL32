@@ -456,7 +456,6 @@ public class VentanaVentaEntradas extends JFrame {
 		VentanaVentaConfirmacion vvc = new VentanaVentaConfirmacion(this);
 
 		vvc.setVisible(true);
-		this.dispose();
 	}
 
 	/**

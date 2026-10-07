@@ -5,11 +5,13 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JLabel;
 import javax.swing.JButton;
+import javax.swing.JDialog;
+
 import java.awt.Color;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
-public class VentanaVentaConfirmacion extends JFrame {
+public class VentanaVentaConfirmacion extends JDialog {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
@@ -22,6 +24,7 @@ public class VentanaVentaConfirmacion extends JFrame {
 	 * Create the frame.
 	 */
 	public VentanaVentaConfirmacion(VentanaVentaEntradas vve) {
+		setModal(true);
 		setTitle("Confirmación de compra");
 		
 		this.vve = vve;
@@ -38,13 +41,12 @@ public class VentanaVentaConfirmacion extends JFrame {
 		contentPane.add(getLbConfirmacion());
 		contentPane.add(getBtFinalizar());
 		this.setLocationRelativeTo(null);
-
 	}
 
 	private JLabel getLbConfirmacion() {
 		if (lbConfirmacion == null) {
 			lbConfirmacion = new JLabel("Se ha realizado la compra de las entradas.");
-			lbConfirmacion.setBounds(126, 133, 337, 20);
+			lbConfirmacion.setBounds(163, 131, 337, 20);
 		}
 		return lbConfirmacion;
 	}
