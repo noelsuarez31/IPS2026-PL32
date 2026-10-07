@@ -16,6 +16,15 @@ public class AñadirEquipoService {
 	private BaseEmpleado empleadoActivo;
 	private JDBC jdbc = new JDBC();
 	
+	/**
+	 * Llama al metodo de jdbc que almacena el equipo en la BBDD
+	 * @param jugadores
+	 * @param entrenadores
+	 * @param tecnicosAdicionales
+	 * @param tipo
+	 * @param categoria
+	 * @param nombreEquipo
+	 */
 	public void añadirEquipo(List<EmpleadoDeportivo> jugadores, List<Entrenador> entrenadores, List<EmpleadoDeportivo> tecnicosAdicionales,
 			String tipo, CategoriaEquipo categoria, String nombreEquipo) {
 		// pedirPermiso(Posicion.GERENTE);
@@ -30,6 +39,19 @@ public class AñadirEquipoService {
 		}
 	}
 	
+	/**
+	 * Crea el equipo a partir de los jugadores, entrenadores y tecnicos adicionales
+	 * y el tipo, categoria y nombre del equipo, haciendo validaciones en los campos
+	 * correspondientes
+	 * @param jugadores
+	 * @param entrenadores
+	 * @param tecnicosAdicionales
+	 * @param tipo
+	 * @param categoria
+	 * @param nombre
+	 * @return
+	 * @throws TeamException
+	 */
 	private Equipo crearEquipo(List<EmpleadoDeportivo> jugadores, List<Entrenador> entrenadores, List<EmpleadoDeportivo> tecnicosAdicionales,
 			String tipo, CategoriaEquipo categoria, String nombre) throws TeamException{
 		if(jugadores == null || entrenadores == null || tecnicosAdicionales == null || tipo == null || categoria == null || nombre == null) {
@@ -79,6 +101,10 @@ public class AñadirEquipoService {
 		return true;
 	}
 
+	/**
+	 * Llama al metodo de jdbc que obtiene los entrenadores sin equipo
+	 * @return
+	 */
 	public List<Entrenador> obtenerEntrenadoresDisponibles() {
 		try {
 			return jdbc.obtenerEntrenadoresDisponibles();
@@ -99,6 +125,12 @@ public class AñadirEquipoService {
 		}
 	}
 	
+	/**
+	 * Llama al metodo de jdbc que obtiene el nombre de las categorias
+	 * segun el tipo de equipo
+	 * @param tipo
+	 * @return
+	 */
 	public List<String> obtenerNombreDeCategoriasPorTipo(String tipo) {
 		if(tipo == null) {
 			throw new TeamException("Tipo es nulo");
@@ -111,6 +143,10 @@ public class AñadirEquipoService {
 		}
 	}
 
+	/**
+	 * Llama al metodo de jdbc que obtiene los tecnicos adicionales sin equipo
+	 * @return
+	 */
 	public List<EmpleadoDeportivo> obtenerRestoTecnicos() {
 		try {
 			return jdbc.obtenerRestoTecnicos();
@@ -128,20 +164,20 @@ public class AñadirEquipoService {
 	}
 	
 	// Gestion de roles
-		public void seleccionarEmpleadoActivo(BaseEmpleado empleado) {
-			if(empleado == null) {
-				throw new TeamException("El empleado seleccionado no puede ser null");
-			}
-			this.empleadoActivo = empleado;
+	public void seleccionarEmpleadoActivo(BaseEmpleado empleado) {
+		if (empleado == null) {
+			throw new TeamException("El empleado seleccionado no puede ser null");
 		}
-		
-		private void pedirPermiso(Posicion posicionRequerida) throws UnauthorizedException{
-			if(posicionRequerida == null) {
-				throw new UnauthorizedException("Posicion requerida no puede ser null");
-			}
-			
-			if(empleadoActivo.getPosicion() != posicionRequerida) {
-				throw new UnauthorizedException("Posicion del empleado no es la requerida");
-			}
+		this.empleadoActivo = empleado;
+	}
+
+	private void pedirPermiso(Posicion posicionRequerida) throws UnauthorizedException {
+		if (posicionRequerida == null) {
+			throw new UnauthorizedException("Posicion requerida no puede ser null");
 		}
+
+		if (empleadoActivo.getPosicion() != posicionRequerida) {
+			throw new UnauthorizedException("Posicion del empleado no es la requerida");
+		}
+	}
 }

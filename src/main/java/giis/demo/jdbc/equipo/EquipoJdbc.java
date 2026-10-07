@@ -20,6 +20,18 @@ import giis.demo.model.equipo.Equipo;
         
         public final static String QUERY_CHECK_MEMBER_TEAM = "SELECT id_equipo FROM EmpleadoDeportivo WHERE dni=?";
         
+        /**
+         * Almacena un equipo en la BBDD. Saca el id_equipo de la BBDD (autoincremental).
+         * Comprueba que los jugadores, los entrenadores y los miembros del cuerpo tecnico adicional
+         * no tienen equipo asignado (ya que no se pueden repetir). Si no lo tienen,
+         * les asigna el id_equipo correspondiente
+         * @param con
+         * @param equipo
+         * @param jugadores
+         * @param entrenadores
+         * @param tecnicosAdicionales
+         * @throws SQLException
+         */
         public static void almacenarEquipo(Connection con, 
                 Equipo equipo, List<EmpleadoDeportivo> jugadores, List<Entrenador> entrenadores, List<EmpleadoDeportivo> tecnicosAdicionales) throws SQLException {
 
