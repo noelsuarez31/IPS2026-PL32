@@ -120,4 +120,8 @@ public class JDBC {
 		EquipoJdbc.almacenarEquipo(con, equipo, jugadores, entrenadores, tecnicosAdicionales);
 	}
 
+	public Connection getCon() {
+		return con;
+	}
+
 }

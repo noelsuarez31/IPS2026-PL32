@@ -386,8 +386,13 @@ public class VentanaAñadirEquipo extends JFrame {
 			        	entrenadoresSeleccionados.add(primerEntrenador);
 			        }
 			        
-			        if (segundoEntrenador != null && !segundoEntrenador.equals(primerEntrenador)) {
-			            entrenadoresSeleccionados.add(segundoEntrenador);
+			        if (segundoEntrenador != null) {
+			            if(!segundoEntrenador.esMismoEntrenador(primerEntrenador)) {
+			            	entrenadoresSeleccionados.add(segundoEntrenador);
+			            } else {
+			            	JOptionPane.showMessageDialog(null, "El primer y el segundo entrenador no pueden ser la misma persona");
+			            }
+			        	
 			        }
 
 			        List<EmpleadoDeportivo> restoTecnicosSeleccionadosLista = getListRestoTecnicos().getSelectedValuesList();
@@ -398,12 +403,16 @@ public class VentanaAñadirEquipo extends JFrame {
 			        }
 
 			        String nombre = (String) getTxNombreEquipo().getText();
+			        if(nombre == null) {
+			        	JOptionPane.showMessageDialog(null, "El nombre del equipo no puede ser vacio");
+			        }
 			        String tipo = (String) getCbTipoEquipo().getSelectedItem();
 			        CategoriaEquipo categoria = club.obtenerObjetoCategoria((String) getCbCategoriaEquipo().getSelectedItem());
 
 			        try {
 			            club.añadirEquipo(jugadoresSeleccionados, entrenadoresSeleccionados, restoTecnicosSeleccionados, tipo, categoria, nombre);
 			            JOptionPane.showMessageDialog(null, "¡Equipo creado con éxito!");
+			            dispose();
 			        } catch (Exception ex) {
 			            JOptionPane.showMessageDialog(null, ex.getMessage(), "Error de validación", JOptionPane.ERROR_MESSAGE);
 			        }

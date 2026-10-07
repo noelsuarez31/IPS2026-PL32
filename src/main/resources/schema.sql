@@ -105,11 +105,10 @@ CREATE TABLE IF NOT EXISTS "CategoriaEquipo" (
 );
 
 CREATE TABLE IF NOT EXISTS "Equipo2" (
-	"id_equipo"	INTEGER,
-	"nombre" TEXT NOT NULL,
-	"es_propio"	INTEGER NOT NULL CHECK("es_propio" IN (0, 1)),
-	"tipo_equipo" TEXT NOT NULL,
-	"id_categoria" INTEGER NOT NULL,
-	PRIMARY KEY("id_equipo"),
-	FOREIGN KEY("id_categoria") REFERENCES "CategoriaEquipo"("id_categoria") ON DELETE CASCADE ON UPDATE CASCADE
+    "id_equipo" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "nombre" TEXT NOT NULL,
+    "es_propio" INTEGER NOT NULL CHECK("es_propio" IN (0, 1)),
+    "tipo_equipo" TEXT NOT NULL,
+    "id_categoria" INTEGER NOT NULL,
+    FOREIGN KEY("id_categoria") REFERENCES "CategoriaEquipo"("id_categoria") ON DELETE CASCADE ON UPDATE CASCADE
 );

@@ -15,25 +15,18 @@ import giis.demo.model.empleado.Posicion;
 public class AñadirEquipoService {
 	private BaseEmpleado empleadoActivo;
 	private JDBC jdbc = new JDBC();
-	private int ultimoIdEquipo = 0;
-	
-	public void seleccionarEmpleadoActivo(BaseEmpleado empleado) {
-		if(empleado == null) {
-			throw new TeamException("El empleado seleccionado no puede ser null");
-		}
-		this.empleadoActivo = empleado;
-	}
 	
 	public void añadirEquipo(List<EmpleadoDeportivo> jugadores, List<Entrenador> entrenadores, List<EmpleadoDeportivo> tecnicosAdicionales,
 			String tipo, CategoriaEquipo categoria, String nombreEquipo) {
-		pedirPermiso(Posicion.GERENTE);
+		// pedirPermiso(Posicion.GERENTE);
 		
 		Equipo equipo = crearEquipo(jugadores, entrenadores, tecnicosAdicionales, tipo, categoria, nombreEquipo);
 		
 		try {
 			jdbc.almacenarEquipo(equipo, jugadores, entrenadores, tecnicosAdicionales);
-		} catch (SQLException e) {
-			throw new TeamException("SQLException: Error al almacenar el equipo en la BBDD");
+		} catch (SQLException sqle) {
+			throw new TeamException(sqle.getMessage());
+			// throw new TeamException("SQLException: Error al almacenar el equipo en la BBDD");
 		}
 	}
 	
@@ -55,7 +48,7 @@ public class AñadirEquipoService {
 			throw new TeamException("Edad invalida de algunos jugadores para esta categoria");
 		}
 		
-		if(entrenadores.size() < Equipo.NUM_MIN_ENTRENADORES || !cuerpoTecnicoCompleto(entrenadores)) {
+		if(entrenadores.size() < Equipo.NUM_MIN_ENTRENADORES) {
 			throw new TeamException("Requisitos de cuerpo tecnico no cumplidos: "
 					+ "Debe de haber un primer y un segundo entrenador");
 		}
@@ -64,21 +57,7 @@ public class AñadirEquipoService {
 			throw new TeamException("Tipo de equipo invalido: Solo se admite profesional/en formacion");
 		}
 		
-		return new Equipo(siguienteIdEquipo(), nombre, tipo, categoria);
-	}
-	
-	private int siguienteIdEquipo() {
-		return ++ultimoIdEquipo;
-	}
-
-	private void pedirPermiso(Posicion posicionRequerida) throws UnauthorizedException{
-		if(posicionRequerida == null) {
-			throw new UnauthorizedException("Posicion requerida no puede ser null");
-		}
-		
-		if(empleadoActivo.getPosicion() != posicionRequerida) {
-			throw new UnauthorizedException("Posicion del empleado no es la requerida");
-		}
+		return new Equipo(nombre, tipo, categoria);
 	}
 	
 	private boolean jugadoresEdadValida(List<EmpleadoDeportivo> jugadores, CategoriaEquipo categoria) {
@@ -98,21 +77,6 @@ public class AñadirEquipoService {
 		}
 		
 		return true;
-	}
-
-	private boolean cuerpoTecnicoCompleto(List<Entrenador> entrenadores) {
-		boolean hayPrimerEntrenador = false;
-		boolean haySegundoEntrenador = false;
-		
-		for(Entrenador entrenador : entrenadores) {
-			if(entrenador.esPrimerEntrenador()) {
-				hayPrimerEntrenador = true;
-			} else if(entrenador.esSegundoEntrenador()) {
-				haySegundoEntrenador = true;
-			}
-		}
-		
-		return hayPrimerEntrenador && haySegundoEntrenador;
 	}
 
 	public List<Entrenador> obtenerEntrenadoresDisponibles() {
@@ -162,4 +126,22 @@ public class AñadirEquipoService {
 			throw new TeamException("SQLException: Error al obtener la categoria");
 		}
 	}
+	
+	// Gestion de roles
+		public void seleccionarEmpleadoActivo(BaseEmpleado empleado) {
+			if(empleado == null) {
+				throw new TeamException("El empleado seleccionado no puede ser null");
+			}
+			this.empleadoActivo = empleado;
+		}
+		
+		private void pedirPermiso(Posicion posicionRequerida) throws UnauthorizedException{
+			if(posicionRequerida == null) {
+				throw new UnauthorizedException("Posicion requerida no puede ser null");
+			}
+			
+			if(empleadoActivo.getPosicion() != posicionRequerida) {
+				throw new UnauthorizedException("Posicion del empleado no es la requerida");
+			}
+		}
 }

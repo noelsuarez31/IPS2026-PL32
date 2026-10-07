@@ -60,4 +60,12 @@ public abstract class BaseEmpleado {
 	public String getDni() {
 		return this.dni;
 	}
+	
+	public LocalDate getFechaNacimiento() {
+		return this.fechaNacimiento;
+	}
+	
+	public String getNumeroTelefono() {
+		return this.numeroDeTelefono;
+	}
 }

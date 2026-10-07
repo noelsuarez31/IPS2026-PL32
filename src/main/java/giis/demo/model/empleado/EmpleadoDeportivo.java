@@ -7,12 +7,6 @@ import java.time.Period;
 import giis.demo.exceptions.EmployeeException;
 
 public class EmpleadoDeportivo extends BaseEmpleado{
-	private String dni;
-	private String nombre;
-	private String apellido;
-	private BigDecimal salario;
-	private LocalDate fechaDeNacimiento;
-	private String numeroDeTelefono;
 	private Posicion posicion;
 	
 	private int idEquipo;
@@ -35,7 +29,7 @@ public class EmpleadoDeportivo extends BaseEmpleado{
 	}
 
 	public int calcularEdad() {
-	    return Period.between(fechaDeNacimiento, LocalDate.now()).getYears();
+	    return Period.between(getFechaNacimiento(), LocalDate.now()).getYears();
 	}
 	
 	@Override
