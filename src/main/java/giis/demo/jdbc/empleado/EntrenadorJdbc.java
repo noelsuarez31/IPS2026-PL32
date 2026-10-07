@@ -15,7 +15,7 @@ import giis.demo.model.empleado.Entrenador;
 public class EntrenadorJdbc {
 	public final static String QUERY_GET_MANAGERS = "SELECT * FROM Entrenador";
 	public final static String QUERY_GET_COMPLETE_MANAGERS = "SELECT nombre, apellido, salario, fecha_nacimiento, numero_de_telefono FROM"
-			+ " EmpleadoDeportivo ed, BaseEmpleado bd WHERE ed.dni=bd.dni and ed.dni=?";
+			+ " EmpleadoDeportivo ed, BaseEmpleado bd WHERE ed.dni=bd.dni and ed.dni=? AND ed.id_equipo IS NULL";
 	
 	public static List<Entrenador> obtenerEntrenadoresDisponibles(Connection con) throws SQLException {
 		

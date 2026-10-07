@@ -14,11 +14,11 @@ import giis.demo.model.empleado.Posicion;
 import giis.demo.model.equipo.CategoriaEquipo;
 
 public class EmpleadoDeportivoJdbc {
-	public final static String QUERY_GET_ADITIONAL_MANAGERS = "SELECT * FROM EmpleadoDeportivo WHERE posicion=?";
+	public final static String QUERY_GET_ADITIONAL_MANAGERS = "SELECT * FROM EmpleadoDeportivo WHERE posicion=? AND id_equipo IS NULL";
 	public final static String QUERY_GET_COMPLETE_ADITIONAL_MANAGERS = "SELECT nombre, apellido, salario, fecha_nacimiento, numero_de_telefono FROM"
 			+ " EmpleadoDeportivo ed, BaseEmpleado bd WHERE ed.dni=bd.dni and ed.dni=?";
 	
-	public final static String QUERY_GET_PLAYERS = "SELECT * FROM EmpleadoDeportivo WHERE posicion = ?";
+	public final static String QUERY_GET_PLAYERS = "SELECT * FROM EmpleadoDeportivo WHERE posicion = ? AND id_equipo IS NULL";
 	public final static String QUERY_GET_COMPLETE_PLAYERS = "SELECT * FROM BaseEmpleado be, EmpleadoDeportivo ed "
 			+ "WHERE be.dni=ed.dni AND ed.dni=?";
 	

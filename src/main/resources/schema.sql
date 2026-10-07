@@ -96,12 +96,10 @@ CREATE TABLE IF NOT EXISTS "Entrenador" (
 
 CREATE TABLE IF NOT EXISTS "CategoriaEquipo" (
     "nombre" TEXT NOT NULL,
-    "id_categoria" INTEGER,
+    "id_categoria" INTEGER PRIMARY KEY AUTOINCREMENT,
     "edad_minima" INTEGER NOT NULL,
     "edad_maxima" INTEGER NOT NULL,
-    "tipo_equipo" TEXT NOT NULL,
-	
-	PRIMARY KEY("id_categoria")
+    "tipo_equipo" TEXT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS "Equipo2" (

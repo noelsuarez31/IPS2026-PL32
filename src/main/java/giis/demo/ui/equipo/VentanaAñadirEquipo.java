@@ -22,13 +22,11 @@ import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
-import javax.swing.table.DefaultTableModel;
 
 import giis.demo.model.empleado.EmpleadoDeportivo;
 import giis.demo.model.empleado.Entrenador;
@@ -92,6 +90,8 @@ public class VentanaAñadirEquipo extends JFrame {
 		contentPane.add(getPnSuperior(), BorderLayout.NORTH);
 		contentPane.add(getScrPanelPrincipal(), BorderLayout.CENTER);
 		contentPane.add(getPnInferior(), BorderLayout.SOUTH);
+		
+		this.setLocationRelativeTo(null);
 	}
 	
 	private JPanel getPnSuperior() {
@@ -391,6 +391,7 @@ public class VentanaAñadirEquipo extends JFrame {
 			            	entrenadoresSeleccionados.add(segundoEntrenador);
 			            } else {
 			            	JOptionPane.showMessageDialog(null, "El primer y el segundo entrenador no pueden ser la misma persona");
+			            	return;
 			            }
 			        	
 			        }
@@ -403,9 +404,11 @@ public class VentanaAñadirEquipo extends JFrame {
 			        }
 
 			        String nombre = (String) getTxNombreEquipo().getText();
-			        if(nombre == null) {
+			        if(nombre == null || nombre.isEmpty()) {
 			        	JOptionPane.showMessageDialog(null, "El nombre del equipo no puede ser vacio");
+			        	return;
 			        }
+			       
 			        String tipo = (String) getCbTipoEquipo().getSelectedItem();
 			        CategoriaEquipo categoria = club.obtenerObjetoCategoria((String) getCbCategoriaEquipo().getSelectedItem());
 

@@ -22,8 +22,9 @@ public class CategoriaEquipoJdbc {
 			
 			ResultSet rsCategoria = pst.executeQuery();
 			while(rsCategoria.next()) {
-				categoria = new CategoriaEquipo(nombreCategoriaSeleccionada, rsCategoria.getInt(2), 
-						rsCategoria.getInt(3), rsCategoria.getInt(4), rsCategoria.getString(5));
+				categoria = new CategoriaEquipo(nombreCategoriaSeleccionada, rsCategoria.getInt(3),
+						rsCategoria.getInt(4), rsCategoria.getString(5));
+				categoria.setIdCategoria(rsCategoria.getInt(2));
 				return categoria;
 			}
 		}
