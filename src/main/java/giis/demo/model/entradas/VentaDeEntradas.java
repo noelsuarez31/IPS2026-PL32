@@ -53,11 +53,32 @@ public class VentaDeEntradas {
 			throw new IllegalArgumentException("No se pueden comprar más de 15 entradas");
 		}
 		
-		butacasDisponibles = jdbc.getFreeButacas(partido.getId_partido(), tribuna, seccion);
+		butacasDisponibles = getButcasLibres(partido, tribuna, seccion);
 		
 		butacasSeleccionadas = seleccionarAsientosContiguos(butacasDisponibles, numEntradas);
 		
 		return butacasSeleccionadas;
+		
+	}
+	
+	/**
+	 * Obtiene las butacas disponibles y selecciona el numero de butacas indicadas si es posible en la tribuna y seccion dadas y para un partido en concreto
+	 * ayudandose de un metodo auxiliar
+	 * @param partido
+	 * @param tribuna
+	 * @param seccion
+	 * @param numEntradas
+	 * @return las butacas seleccionadas según los criterios dados
+	 * @throws SQLException
+	 * @throws SinDisponibilidadException
+	 */
+	public List<Butaca> getButcasLibres(Partido partido, TipoTribuna tribuna, TipoSeccion seccion) throws SQLException {
+		
+		this.idPartido=partido.getId_partido();
+		butacasDisponibles = jdbc.getFreeButacas(partido.getId_partido(), tribuna, seccion);
+		
+		
+		return butacasDisponibles;
 		
 	}
 	

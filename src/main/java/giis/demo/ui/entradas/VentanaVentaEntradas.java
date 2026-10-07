@@ -30,17 +30,14 @@ import javax.swing.JButton;
 import java.sql.SQLException;
 import java.util.List;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.event.ActionEvent;
 import java.awt.GridLayout;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
-import giis.demo.exceptions.SinDisponibilidadException;
-import giis.demo.model.entradas.Butaca;
-import giis.demo.model.entradas.Partido;
-import giis.demo.model.entradas.VentaDeEntradas;
-import giis.demo.model.entradas.enumerados.TipoSeccion;
-import giis.demo.model.entradas.enumerados.TipoTribuna;
-import giis.demo.ui.VentanaPrincipal;
 
 public class VentanaVentaEntradas extends JFrame {
 
@@ -84,6 +81,9 @@ public class VentanaVentaEntradas extends JFrame {
 	private JButton btVolver;
 	private JButton btConfirma;
 
+	private MostrarAsientos ma;
+	private CerrarVentana cv;
+
 	/**
 	 * Create the frame.
 	 * 
@@ -91,13 +91,18 @@ public class VentanaVentaEntradas extends JFrame {
 	 */
 	public VentanaVentaEntradas(VentanaPrincipal vp) throws SQLException {
 
+		this.ma = new MostrarAsientos();
+		this.cv = new CerrarVentana();
+
+		this.addWindowListener(cv);
+
 		this.setTitle("Compra de entradas");
 		this.setResizable(false);
 
 		this.vp = vp;
 		this.venta = new VentaDeEntradas();
 
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		setBounds(100, 100, 1000, 587);
 
 		contentPane = new JPanel();
@@ -120,6 +125,8 @@ public class VentanaVentaEntradas extends JFrame {
 
 			btBuscarAsientos.setEnabled(false);
 		}
+
+		obtenerInfoAsientos();
 	}
 
 	/**
@@ -199,6 +206,7 @@ public class VentanaVentaEntradas extends JFrame {
 			cbTribuna = new JComboBox<TipoTribuna>();
 			cbTribuna.setToolTipText("Selecciona la tribuna para la entrada");
 			cbTribuna.setModel(new DefaultComboBoxModel<TipoTribuna>(venta.getTipoTribuna()));
+			cbTribuna.addItemListener(ma);
 		}
 
 		return cbTribuna;
@@ -222,6 +230,7 @@ public class VentanaVentaEntradas extends JFrame {
 			cbSeccion = new JComboBox<TipoSeccion>();
 			cbSeccion.setModel(new DefaultComboBoxModel<TipoSeccion>(venta.getTipoSeccion()));
 			cbSeccion.setToolTipText("Selecciona la sección para la entrada");
+			cbSeccion.addItemListener(ma);
 		}
 
 		return cbSeccion;
@@ -269,6 +278,7 @@ public class VentanaVentaEntradas extends JFrame {
 			cbPartido = new JComboBox<Partido>();
 			cbPartido.setModel(new DefaultComboBoxModel<Partido>(venta.getPartidos()));
 			cbPartido.setToolTipText("Selecciona el partido para la entrada");
+			cbPartido.addItemListener(ma);
 		}
 
 		return cbPartido;
@@ -433,7 +443,6 @@ public class VentanaVentaEntradas extends JFrame {
 		VentanaVentaConfirmacion vvc = new VentanaVentaConfirmacion(this);
 
 		vvc.setVisible(true);
-		venta.close();
 		this.dispose();
 	}
 
@@ -481,6 +490,7 @@ public class VentanaVentaEntradas extends JFrame {
 			}
 
 			// Renderer para cambiar el aspecto de las celdas
+
 			tablaAsientos.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
 				@Override
 				public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
@@ -698,5 +708,64 @@ public class VentanaVentaEntradas extends JFrame {
 			btConfirma.setBackground(new Color(128, 255, 128));
 		}
 		return btConfirma;
+	}
+
+	private class CerrarVentana extends WindowAdapter {
+
+		@Override
+		public void windowClosing(WindowEvent ew) {
+
+			try {
+				venta.close();
+			} catch (SQLException e) {
+
+				JOptionPane.showMessageDialog(null, "No se ha podido cerrar la conexion con la base de datos", "Error",
+						JOptionPane.ERROR_MESSAGE);
+				System.err.println("Error al cerrar la BBDD");
+				e.printStackTrace();
+			}
+
+			dispose();
+
+		}
+
+	}
+
+	/**
+	 * Método privado para actualizar la tabla de los asientos dependiendo si está ocupado, reservado o libre
+	 */
+	private void obtenerInfoAsientos() {
+
+		Partido partido = (Partido) cbPartido.getSelectedItem();
+		TipoTribuna tribuna = (TipoTribuna) cbTribuna.getSelectedItem();
+		TipoSeccion seccion = (TipoSeccion) cbSeccion.getSelectedItem();
+
+		try {
+
+			venta.getButcasLibres(partido, tribuna, seccion);
+
+		} catch (SQLException e1) {
+
+			System.err.println("Se ha producido un error con la BBDD");
+			e1.printStackTrace();
+
+		}
+
+		tablaAsientos.repaint();
+
+	}
+
+	private class MostrarAsientos implements ItemListener {
+
+		@Override
+		public void itemStateChanged(ItemEvent e) {
+
+			if (e.getStateChange() == ItemEvent.SELECTED) {
+
+				obtenerInfoAsientos();
+				
+			}
+
+		}
 	}
 }
