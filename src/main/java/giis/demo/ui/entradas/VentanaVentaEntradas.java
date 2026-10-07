@@ -34,6 +34,13 @@ import java.awt.event.ActionEvent;
 import java.awt.GridLayout;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
+import giis.demo.exceptions.SinDisponibilidadException;
+import giis.demo.model.entradas.Butaca;
+import giis.demo.model.entradas.Partido;
+import giis.demo.model.entradas.VentaDeEntradas;
+import giis.demo.model.entradas.enumerados.TipoSeccion;
+import giis.demo.model.entradas.enumerados.TipoTribuna;
+import giis.demo.ui.VentanaPrincipal;
 
 public class VentanaVentaEntradas extends JFrame {
 

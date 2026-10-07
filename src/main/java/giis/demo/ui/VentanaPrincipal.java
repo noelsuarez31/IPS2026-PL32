@@ -5,7 +5,9 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import giis.demo.ui.tienda.VentanaTienda;
+import giis.demo.model.equipo.AñadirEquipoService;
 import giis.demo.ui.entradas.VentanaVentaEntradas;
+import giis.demo.ui.equipo.VentanaAñadirEquipo;
 
 import java.awt.Color;
 import javax.swing.JMenuBar;
@@ -19,6 +21,7 @@ import java.awt.event.ActionEvent;
 public class VentanaPrincipal extends JFrame {
 	
 	private GestionaTienda gestionaTienda = new GestionaTienda();
+	private AñadirEquipoService añadirEquipo = new AñadirEquipoService();
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
@@ -33,6 +36,7 @@ public class VentanaPrincipal extends JFrame {
 	private JMenuItem mniVender;
 	private JMenu mnTienda;
 	private JMenuItem mntmVerTienda;
+	private JMenuItem mntmAñadirEquipo;
 
 	/**
 	 * Create the frame.
@@ -57,6 +61,15 @@ public class VentanaPrincipal extends JFrame {
 		this.setLocationRelativeTo(null);
 
 	}
+	
+	public AñadirEquipoService getAñadirEquipoService() {
+		return this.añadirEquipo;
+	}
+	
+	public GestionaTienda getGestionaTienda() {
+		return this.gestionaTienda;
+	}
+	
 	private JMenuBar getMenuBar_1() {
 		if (menuBar == null) {
 			menuBar = new JMenuBar();
@@ -109,6 +122,7 @@ public class VentanaPrincipal extends JFrame {
 		if (mnGerente == null) {
 			mnGerente = new JMenu("Gerente");
 			mnGerente.setMnemonic('G');
+			mnGerente.add(getMntmAñadirEquipo());
 		}
 		return mnGerente;
 	}
@@ -177,5 +191,23 @@ public class VentanaPrincipal extends JFrame {
 			mntmVerTienda.addActionListener(gestionaTienda);
 		}
 		return mntmVerTienda;
+	}
+	private JMenuItem getMntmAñadirEquipo() {
+		if (mntmAñadirEquipo == null) {
+			mntmAñadirEquipo = new JMenuItem("Añadir equipo");
+			mntmAñadirEquipo.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					abrirVentanaAñadirEquipo();
+				}
+			});
+		}
+		return mntmAñadirEquipo;
+	}
+	
+	private void abrirVentanaAñadirEquipo() {
+		VentanaAñadirEquipo vAñadirEquipo = new VentanaAñadirEquipo(this);
+		this.setVisible(false);
+		vAñadirEquipo.setVisible(true);
+		
 	}
 }
