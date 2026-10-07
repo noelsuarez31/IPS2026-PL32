@@ -6,14 +6,13 @@ Drop table if exists Entrada;
 drop table if exists Venta;
 drop table if exists Partido;
 drop table if exists Butaca;
-drop table if exists Equipo;
 
 drop table if exists BaseEmpleado;
 drop table if exists EmpleadoDeportivo;
 drop table if exists EmpleadoNoDeportivo;
 drop table if exists Entrenador;
 drop table if exists CategoriaEquipo;
-drop table if exists Equipo2;
+drop table if exists Equipo;
 
 CREATE TABLE IF NOT EXISTS "butaca" (
 	"id_butaca"	INTEGER,
@@ -35,12 +34,6 @@ CREATE TABLE IF NOT EXISTS "entrada" (
 	FOREIGN KEY("id_butaca") REFERENCES "butaca"("id_butaca"),
 	FOREIGN KEY("id_partido") REFERENCES "partido"("id_partido"),
 	FOREIGN KEY("id_venta") REFERENCES "venta"("id_venta")
-);
-CREATE TABLE IF NOT EXISTS "equipo" (
-	"id_equipo"	INTEGER,
-	"name"	TEXT NOT NULL,
-	"es_propio"	INTEGER NOT NULL CHECK("es_propio" IN (0, 1)),
-	PRIMARY KEY("id_equipo")
 );
 CREATE TABLE IF NOT EXISTS "partido" (
 	"id_partido"	INTEGER,
@@ -102,7 +95,7 @@ CREATE TABLE IF NOT EXISTS "CategoriaEquipo" (
     "tipo_equipo" TEXT NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS "Equipo2" (
+CREATE TABLE IF NOT EXISTS "Equipo" (
     "id_equipo" INTEGER PRIMARY KEY AUTOINCREMENT,
     "nombre" TEXT NOT NULL,
     "es_propio" INTEGER NOT NULL CHECK("es_propio" IN (0, 1)),

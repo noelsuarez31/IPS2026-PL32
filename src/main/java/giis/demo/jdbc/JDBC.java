@@ -108,26 +108,67 @@ public class JDBC {
 		
 	}
 
+	/**
+	 * Devuelve el objeto categoria con todos los atributos a partir del nombre
+	 * de la categoria
+	 * @param nombreCategoriaSeleccionada
+	 * @return
+	 * @throws SQLException
+	 */
 	public CategoriaEquipo obtenerObjetoCategoria(String nombreCategoriaSeleccionada) throws SQLException {
 		return CategoriaEquipoJdbc.obtenerObjetoCategoria(con, nombreCategoriaSeleccionada);
 	}
 
+	/**
+	 * Devuelve una lista con empleados deportivos cuya posicion es TECNICO_ADICIONAL
+	 * @return
+	 * @throws SQLException
+	 */
 	public List<EmpleadoDeportivo> obtenerRestoTecnicos() throws SQLException {
 		return EmpleadoDeportivoJdbc.obtenerRestoTecnicos(con);
 	}
 
+	/**
+	 * Devuelve una lista con el nombre de las categorias para un tipo
+	 * de equipo correspondiente
+	 * @param tipo
+	 * @return
+	 * @throws SQLException
+	 */
 	public List<String> obtenerNombreDeCategoriasPorTipo(String tipo) throws SQLException {
 		return CategoriaEquipoJdbc.obtenerNombreDeCategoriasPorTipo(con, tipo);
 	}
 
+	/**
+	 * Devuelve una lista con los empleados deportivos cuya posicion es JUGADOR
+	 * y no tienen equipo asignado
+	 * @param categoria
+	 * @return
+	 * @throws SQLException
+	 */
 	public List<EmpleadoDeportivo> obtenerJugadoresDisponibles(CategoriaEquipo categoria) throws SQLException {
 		return EmpleadoDeportivoJdbc.obtenerJugadoresDisponibles(con, categoria);
 	}
 
+	/**
+	 * Devuelve una lista de entrenadores que no tienen equipo asignado
+	 * @return
+	 * @throws SQLException
+	 */
 	public List<Entrenador> obtenerEntrenadoresDisponibles() throws SQLException {
 		return EntrenadorJdbc.obtenerEntrenadoresDisponibles(con);
 	}
 
+	/**
+	 * Almacena el equipo creado en la BBDD. Validando que los jugadores, entrenadores
+	 * y tecnicos adicionales no tengan un equipo asignado ya. Les asigna el id del 
+	 * nuevo equipo.
+	 * @param equipo
+	 * @param jugadores
+	 * @param entrenadores
+	 * @param tecnicosAdicionales
+	 * @throws SQLException
+	 */
 	public void almacenarEquipo(Equipo equipo, List<EmpleadoDeportivo> jugadores, 
 			List<Entrenador> entrenadores, List<EmpleadoDeportivo> tecnicosAdicionales) throws SQLException {
 		EquipoJdbc.almacenarEquipo(con, equipo, jugadores, entrenadores, tecnicosAdicionales);
