@@ -1,10 +1,31 @@
 package giis.demo.model.entradas;
 
+import java.util.Objects;
+
 import giis.demo.model.entradas.enumerados.TipoSeccion;
 import giis.demo.model.entradas.enumerados.TipoTribuna;
 
 public class Butaca {
 	
+	@Override
+	public int hashCode() {
+		return Objects.hash(Integer.valueOf(asiento), Integer.valueOf(fila), Integer.valueOf(id_butaca), seccion,
+				tribuna);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Butaca other = (Butaca) obj;
+		return asiento == other.asiento && fila == other.fila
+				&& seccion == other.seccion && tribuna == other.tribuna;
+	}
+
 	private int id_butaca;
 	private TipoTribuna tribuna;
 	private TipoSeccion seccion;

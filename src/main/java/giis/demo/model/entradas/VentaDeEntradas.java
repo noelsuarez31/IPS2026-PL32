@@ -20,6 +20,7 @@ public class VentaDeEntradas {
 	
 	private int idPartido;
 	private List<Butaca> butacasSeleccionadas;
+	private List<Butaca> butacasDisponibles;
 	private JDBC jdbc = new JDBC();
 	
 	/**
@@ -52,7 +53,7 @@ public class VentaDeEntradas {
 			throw new IllegalArgumentException("No se pueden comprar más de 15 entradas");
 		}
 		
-		List<Butaca> butacasDisponibles = jdbc.getFreeButacas(partido.getId_partido(), tribuna, seccion);
+		butacasDisponibles = jdbc.getFreeButacas(partido.getId_partido(), tribuna, seccion);
 		
 		butacasSeleccionadas = seleccionarAsientosContiguos(butacasDisponibles, numEntradas);
 		
@@ -159,6 +160,7 @@ public class VentaDeEntradas {
 		return partido;
 		
 	}
+	
 
 	public void almacenar(int id_Partido, List<Butaca> butacas_Seleccionadas) throws SQLException {
 		
@@ -169,6 +171,14 @@ public class VentaDeEntradas {
 	public void close() throws SQLException {
 		
 		jdbc.close();
+		
+	}
+
+	public boolean isOccupied(int id_partido, TipoTribuna tipoTribuna, TipoSeccion tipoSeccion, int fila, int asiento) {
+		
+		Butaca butaca = new Butaca(id_partido, tipoTribuna, tipoSeccion, fila, asiento);
+		
+		return !butacasDisponibles.contains(butaca);
 		
 	}
 	

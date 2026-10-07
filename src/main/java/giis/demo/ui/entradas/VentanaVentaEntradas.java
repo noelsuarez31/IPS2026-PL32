@@ -211,7 +211,7 @@ public class VentanaVentaEntradas extends JFrame {
 	private JComboBox<TipoSeccion> getCbSeccion() {
 
 		if (cbSeccion == null) {
-			
+
 			cbSeccion = new JComboBox<TipoSeccion>();
 			cbSeccion.setModel(new DefaultComboBoxModel<TipoSeccion>(venta.getTipoSeccion()));
 			cbSeccion.setToolTipText("Selecciona la sección para la entrada");
@@ -424,7 +424,7 @@ public class VentanaVentaEntradas extends JFrame {
 		venta.almacenar(venta.getIdPartido(), venta.getButacasSeleccionadas());
 
 		VentanaVentaConfirmacion vvc = new VentanaVentaConfirmacion(this);
-		
+
 		vvc.setVisible(true);
 		venta.close();
 		this.dispose();
@@ -441,57 +441,71 @@ public class VentanaVentaEntradas extends JFrame {
 		venta.close();
 		this.dispose();
 	}
+
 	private JPanel getPanelVisualizacion() {
 		JPanel panelVisualizacion = new JPanel(new BorderLayout(5, 5));
-	    panelVisualizacion.setBackground(Color.WHITE);
-	    panelVisualizacion.add(getTablaAsientos(), BorderLayout.CENTER);
-	    panelVisualizacion.add(getPanelLeyenda(), BorderLayout.SOUTH);
-	    panelVisualizacion.add(getPanelTitulo(), BorderLayout.NORTH);
+		panelVisualizacion.setBackground(Color.WHITE);
+		panelVisualizacion.add(getTablaAsientos(), BorderLayout.CENTER);
+		panelVisualizacion.add(getPanelLeyenda(), BorderLayout.SOUTH);
+		panelVisualizacion.add(getPanelTitulo(), BorderLayout.NORTH);
 
-	    return panelVisualizacion;
+		return panelVisualizacion;
 	}
-	
+
 	public JTable getTablaAsientos() {
-		
-		if(tablaAsientos == null) {
-			
+
+		if (tablaAsientos == null) {
+
 			tablaAsientos = new JTable(10, 15);
-		    tablaAsientos.setEnabled(false);
+			tablaAsientos.setEnabled(false);
 
-		    tablaAsientos.setTableHeader(null);
-		    tablaAsientos.setRowHeight(22);
+			tablaAsientos.setTableHeader(null);
+			tablaAsientos.setRowHeight(22);
 
-		    for (int i = 0; i < 15; i++) {
-		        tablaAsientos.getColumnModel().getColumn(i).setPreferredWidth(25);
-		    }
+			for (int i = 0; i < 15; i++) {
+				tablaAsientos.getColumnModel().getColumn(i).setPreferredWidth(25);
+			}
 
-		    for (int fila = 0; fila < 10; fila++) {
-		        for (int asiento = 0; asiento < 15; asiento++) {
-		            tablaAsientos.setValueAt(asiento + 1, fila, asiento);
-		        }
-		    }
+			for (int fila = 0; fila < 10; fila++) {
+				for (int asiento = 0; asiento < 15; asiento++) {
 
-		    // Renderer para cambiar el aspecto de las celdas
-		    tablaAsientos.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
-		        @Override
-		        public Component getTableCellRendererComponent(
-		                JTable table, Object value, boolean isSelected,
-		                boolean hasFocus, int row, int column) {
+					tablaAsientos.setValueAt(asiento + 1, fila, asiento);
+				}
+			}
 
-		            Component c = super.getTableCellRendererComponent(
-		                    table, value, isSelected, hasFocus, row, column);
+			// Renderer para cambiar el aspecto de las celdas
+			tablaAsientos.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+				@Override
+				public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
+						boolean hasFocus, int row, int column) {
 
-		            c.setBackground(Color.GREEN);
-		            c.setForeground(Color.BLACK);
-		            setHorizontalAlignment(CENTER);
+					Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+					c.setBackground(Color.GREEN);
 
-		            return c;
-		        }
-		    });
-		    
+					try {
+
+						if (venta.isOccupied(((Partido) getCbPartido().getSelectedItem()).getId_partido(),
+								((TipoTribuna) getCbTribuna().getSelectedItem()),
+								((TipoSeccion) getCbSeccion().getSelectedItem()), row + 1, column + 1)) {
+
+							c.setBackground(Color.RED);
+
+						}
+
+					} catch (Exception e) {
+						c.setBackground(Color.WHITE);
+					}
+
+					c.setForeground(Color.BLACK);
+					setHorizontalAlignment(CENTER);
+
+					return c;
+				}
+			});
+
 		}
 		return tablaAsientos;
-		
+
 	}
 
 	private JPanel getPanelLeyenda() {
@@ -506,6 +520,7 @@ public class VentanaVentaEntradas extends JFrame {
 		}
 		return panelLeyenda;
 	}
+
 	private JButton getBtVerde() {
 		if (btVerde == null) {
 			btVerde = new JButton("");
@@ -513,6 +528,7 @@ public class VentanaVentaEntradas extends JFrame {
 		}
 		return btVerde;
 	}
+
 	private JLabel getLbLibre() {
 		if (lbLibre == null) {
 			lbLibre = new JLabel("Libre");
@@ -521,6 +537,7 @@ public class VentanaVentaEntradas extends JFrame {
 		}
 		return lbLibre;
 	}
+
 	private JButton getBtRojo() {
 		if (btRojo == null) {
 			btRojo = new JButton("");
@@ -529,6 +546,7 @@ public class VentanaVentaEntradas extends JFrame {
 		}
 		return btRojo;
 	}
+
 	private JLabel getLbOcupado() {
 		if (lbOcupado == null) {
 			lbOcupado = new JLabel("Ocupado");
@@ -537,6 +555,7 @@ public class VentanaVentaEntradas extends JFrame {
 		}
 		return lbOcupado;
 	}
+
 	private JPanel getPanelTitulo() {
 		if (panelTitulo == null) {
 			panelTitulo = new JPanel();
@@ -545,6 +564,7 @@ public class VentanaVentaEntradas extends JFrame {
 		}
 		return panelTitulo;
 	}
+
 	private JLabel getLbTitulo() {
 		if (lbTitulo == null) {
 			lbTitulo = new JLabel("Visualización de asientos");
@@ -552,6 +572,7 @@ public class VentanaVentaEntradas extends JFrame {
 		}
 		return lbTitulo;
 	}
+
 	private JPanel getPanelInfo() {
 		if (panelInfo == null) {
 			panelInfo = new JPanel();
@@ -563,6 +584,7 @@ public class VentanaVentaEntradas extends JFrame {
 		}
 		return panelInfo;
 	}
+
 	private JLabel getLbAsientosReservados() {
 		if (lbAsientosReservados == null) {
 			lbAsientosReservados = new JLabel("Asientos:");
@@ -570,6 +592,7 @@ public class VentanaVentaEntradas extends JFrame {
 		}
 		return lbAsientosReservados;
 	}
+
 	private JTextField getTfAsientosObtenidos() {
 		if (tfAsientosObtenidos == null) {
 			tfAsientosObtenidos = new JTextField();
@@ -581,6 +604,7 @@ public class VentanaVentaEntradas extends JFrame {
 		}
 		return tfAsientosObtenidos;
 	}
+
 	private JLabel getLbPrecio() {
 		if (lbPrecio == null) {
 			lbPrecio = new JLabel("Total:");
@@ -588,6 +612,7 @@ public class VentanaVentaEntradas extends JFrame {
 		}
 		return lbPrecio;
 	}
+
 	private JTextField getTfPrecio() {
 		if (tfPrecio == null) {
 			tfPrecio = new JTextField();
@@ -598,6 +623,7 @@ public class VentanaVentaEntradas extends JFrame {
 		}
 		return tfPrecio;
 	}
+
 	private JPanel getPanelBotones() {
 		if (panelBotones == null) {
 			panelBotones = new JPanel();
@@ -609,25 +635,26 @@ public class VentanaVentaEntradas extends JFrame {
 		}
 		return panelBotones;
 	}
+
 	private JButton getBtVolver() {
 		if (btVolver == null) {
 			btVolver = new JButton("Volver al menú");
 			btVolver.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					
+
 					try {
-						
+
 						volverAlMenu();
-						
+
 					} catch (SQLException e1) {
-						
+
 						JOptionPane.showMessageDialog(null,
 								"Se ha producido un error al cerrar la conexión con la base de datos", "Error",
 								JOptionPane.ERROR_MESSAGE);
 						System.err.print("Se ha producido un error al cerrar la conexión con la BBDD");
 						e1.printStackTrace();
 					}
-					
+
 				}
 			});
 			btVolver.setToolTipText("Pulsa para volver a la pestaña inicial");
@@ -636,25 +663,27 @@ public class VentanaVentaEntradas extends JFrame {
 		}
 		return btVolver;
 	}
+
 	private JButton getBtConfirma() {
 		if (btConfirma == null) {
 			btConfirma = new JButton("Confirmar compra");
 			btConfirma.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					
+
 					try {
-						
+
 						mostrarConfirmacionReserva();
-						
+
 					} catch (SQLException e1) {
-						
-						JOptionPane.showMessageDialog(null, "No se ha podido completar la compra, vuelva a intentarlo", "Aviso", 
-								JOptionPane.WARNING_MESSAGE); 
-						
+
+						JOptionPane.showMessageDialog(null, "No se ha podido completar la compra, vuelva a intentarlo",
+								"Aviso", JOptionPane.WARNING_MESSAGE);
+
 						reiniciar();
-						System.err.println( "No se ha podido realizar la compra de las entradas por un error " + e1.getMessage());
+						System.err.println(
+								"No se ha podido realizar la compra de las entradas por un error " + e1.getMessage());
 					}
-					
+
 				}
 			});
 			btConfirma.setMnemonic('F');

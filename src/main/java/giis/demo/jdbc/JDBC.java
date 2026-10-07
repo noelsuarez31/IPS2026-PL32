@@ -44,8 +44,7 @@ public class JDBC {
 	 * @return las butcas libres
 	 * @throws SQLException
 	 */
-	public List<Butaca> getFreeButacas(int idPartido, TipoTribuna tribuna, TipoSeccion seccion)
-			throws SQLException {
+	public List<Butaca> getFreeButacas(int idPartido, TipoTribuna tribuna, TipoSeccion seccion)throws SQLException {
 
 		return ButacaJdbc.getFreeButacas(con, idPartido, tribuna, seccion);
 
@@ -72,6 +71,20 @@ public class JDBC {
 		
 		RegistrarVentaJdbc.registrar(con,idPartido, butacasSeleccionadas);
 		
+	}
+	
+	/**
+	 * Obtiene todas las butacas en una tribuna y sección
+	 * @param idPartido
+	 * @param tribuna
+	 * @param seccion
+	 * @return butacas de una tribuna y seccion
+	 * @throws SQLException
+	 */
+	public List<Butaca> getAllButacas(int idPartido, TipoTribuna tribuna, TipoSeccion seccion) throws SQLException {
+
+		return ButacaJdbc.getAllButacas(con, idPartido, tribuna, seccion);
+
 	}
 	
 	/**
