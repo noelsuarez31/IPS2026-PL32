@@ -14,7 +14,7 @@ import giis.demo.model.equipo.Equipo;
     public class EquipoJdbc {
         public final static String QUERY_GET_CATEGORY_ID = "SELECT id_categoria FROM CategoriaEquipo WHERE nombre=?";
         
-        public final static String QUERY_CREATE_TEAM = "INSERT INTO Equipo2 (nombre, es_propio, tipo_equipo, id_categoria) VALUES (?,?,?,?)";
+        public final static String QUERY_CREATE_TEAM = "INSERT INTO Equipo (nombre, es_propio, tipo_equipo, id_categoria) VALUES (?,?,?,?)";
         
         public final static String QUERY_SAVE_TEAM_MEMBERS = "UPDATE EmpleadoDeportivo SET id_equipo=? WHERE dni=?";
         

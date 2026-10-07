@@ -5,12 +5,11 @@ delete from Entrada;
 delete from Venta;
 delete from Partido;
 delete from Butaca;
-delete from Equipo;
 delete from Entrenador;
 delete from EmpleadoDeportivo;
 delete from EmpleadoNoDeportivo;
 delete from BaseEmpleado;
-delete from Equipo2;
+delete from Equipo;
 delete from CategoriaEquipo;
 
 INSERT INTO "butaca" VALUES (1,'A','A',1,1);
@@ -3715,11 +3714,6 @@ INSERT INTO "entrada" VALUES (99,1,27,80,30.0);
 INSERT INTO "entrada" VALUES (100,1,27,81,30.0);
 INSERT INTO "entrada" VALUES (101,1,27,82,30.0);
 INSERT INTO "entrada" VALUES (102,1,27,83,30.0);
-INSERT INTO "equipo" VALUES (1,'Real Oviedo',1);
-INSERT INTO "equipo" VALUES (2,'Real Oviedo B',1);
-INSERT INTO "equipo" VALUES (3,'Sporting',0);
-INSERT INTO "equipo" VALUES (4,'Racing',0);
-INSERT INTO "equipo" VALUES (5,'Levante',0);
 INSERT INTO "partido" VALUES (1,'2026-10-18',1,3);
 INSERT INTO "partido" VALUES (2,'2026-11-02',1,4);
 INSERT INTO "partido" VALUES (3,'2026-11-15',2,5);
@@ -3755,7 +3749,7 @@ INSERT INTO "CategoriaEquipo" ("nombre", "edad_minima", "edad_maxima", "tipo_equ
 ('Filial', 23, 40, 'Profesional'),
 ('Regional', 23, 40, 'En formacion'),
 ('Juvenil', 17, 19, 'En formacion');
-INSERT INTO "Equipo2" ("id_equipo", "nombre", "es_propio", "tipo_equipo", "id_categoria") VALUES 
+INSERT INTO "Equipo" ("id_equipo", "nombre", "es_propio", "tipo_equipo", "id_categoria") VALUES 
 (1, 'Real Oviedo A', 1, 'Primer equipo', 1),
 (2, 'Real Oviedo B', 1, 'Filial', 2);
 INSERT INTO "BaseEmpleado" ("dni", "nombre", "apellido", "salario", "fecha_nacimiento", "numero_de_telefono") 
