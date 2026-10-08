@@ -3714,9 +3714,7 @@ INSERT INTO "entrada" VALUES (99,1,27,80,30.0);
 INSERT INTO "entrada" VALUES (100,1,27,81,30.0);
 INSERT INTO "entrada" VALUES (101,1,27,82,30.0);
 INSERT INTO "entrada" VALUES (102,1,27,83,30.0);
-INSERT INTO "partido" VALUES (1,'2026-10-18',1,3);
-INSERT INTO "partido" VALUES (2,'2026-11-02',1,4);
-INSERT INTO "partido" VALUES (3,'2026-11-15',2,5);
+
 INSERT INTO "venta" VALUES (1,'2026-10-05','Entradas partido 1','ENTRADAS',120.0);
 INSERT INTO "venta" VALUES (2,'2026-10-05','Entradas partido 1','ENTRADAS',90.0);
 INSERT INTO "venta" VALUES (3,'2026-10-06','Entradas partido 1','ENTRADAS',450.0);
