@@ -6,6 +6,12 @@ Drop table if exists Entrada;
 drop table if exists Venta;
 drop table if exists Partido;
 drop table if exists Butaca;
+
+drop table if exists BaseEmpleado;
+drop table if exists EmpleadoDeportivo;
+drop table if exists EmpleadoNoDeportivo;
+drop table if exists Entrenador;
+drop table if exists CategoriaEquipo;
 drop table if exists Equipo;
 
 CREATE TABLE IF NOT EXISTS "butaca" (
@@ -29,12 +35,6 @@ CREATE TABLE IF NOT EXISTS "entrada" (
 	FOREIGN KEY("id_partido") REFERENCES "partido"("id_partido"),
 	FOREIGN KEY("id_venta") REFERENCES "venta"("id_venta")
 );
-CREATE TABLE IF NOT EXISTS "equipo" (
-	"id_equipo"	INTEGER,
-	"name"	TEXT NOT NULL,
-	"es_propio"	INTEGER NOT NULL CHECK("es_propio" IN (0, 1)),
-	PRIMARY KEY("id_equipo")
-);
 CREATE TABLE IF NOT EXISTS "partido" (
 	"id_partido"	INTEGER,
 	"fecha"	DATE NOT NULL,
@@ -52,4 +52,54 @@ CREATE TABLE IF NOT EXISTS "venta" (
 	"tipo"	TEXT NOT NULL CHECK("tipo" IN ('ENTRADAS', 'MERCHANDISING')),
 	"total"	REAL NOT NULL,
 	PRIMARY KEY("id_venta")
+);
+
+CREATE TABLE IF NOT EXISTS "BaseEmpleado" (
+    "dni" TEXT,
+    "nombre" TEXT NOT NULL,
+    "apellido" TEXT NOT NULL,
+    "salario" NUMERIC NOT NULL CHECK(salario > 0),
+    "fecha_nacimiento" DATE NOT NULL,
+    "numero_de_telefono" TEXT NOT NULL UNIQUE,
+    PRIMARY KEY("dni")
+);
+
+CREATE TABLE IF NOT EXISTS "EmpleadoDeportivo" (
+	"dni" TEXT,
+	"posicion" TEXT NOT NULL,
+	"id_equipo"	INTEGER,
+	PRIMARY KEY("dni"),
+	FOREIGN KEY("dni") REFERENCES "BaseEmpleado"("dni") ON DELETE CASCADE ON UPDATE CASCADE,
+	FOREIGN KEY("id_equipo") REFERENCES "Equipo"("id_equipo") ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS "EmpleadoNoDeportivo" (
+    "dni" TEXT,
+    "posicion" TEXT NOT NULL,
+    PRIMARY KEY("dni"),
+    FOREIGN KEY("dni") REFERENCES "BaseEmpleado"("dni") ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS "Entrenador" (
+    "dni" TEXT,
+    "tipo_entrenador" TEXT NOT NULL,
+    PRIMARY KEY("dni"),
+    FOREIGN KEY("dni") REFERENCES "EmpleadoDeportivo"("dni") ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS "CategoriaEquipo" (
+    "nombre" TEXT NOT NULL,
+    "id_categoria" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "edad_minima" INTEGER NOT NULL,
+    "edad_maxima" INTEGER NOT NULL,
+    "tipo_equipo" TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS "Equipo" (
+    "id_equipo" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "nombre" TEXT NOT NULL,
+    "es_propio" INTEGER NOT NULL CHECK("es_propio" IN (0, 1)),
+    "tipo_equipo" TEXT NOT NULL,
+    "id_categoria" INTEGER NOT NULL,
+    FOREIGN KEY("id_categoria") REFERENCES "CategoriaEquipo"("id_categoria") ON DELETE CASCADE ON UPDATE CASCADE
 );

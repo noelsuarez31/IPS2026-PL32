@@ -6,8 +6,10 @@ import javax.swing.border.EmptyBorder;
 
 import giis.demo.ui.tienda.VentanaTienda;
 import giis.demo.model.equipo.AñadirEquipoService;
+import giis.demo.model.horarios.GestionHorariosPeriodicos;
 import giis.demo.ui.entradas.VentanaVentaEntradas;
 import giis.demo.ui.equipo.VentanaAñadirEquipo;
+import giis.demo.ui.horarios.VentanaHorarioPeriodico;
 
 import java.awt.Color;
 import javax.swing.JMenuBar;
@@ -17,11 +19,13 @@ import javax.swing.JMenuItem;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
 import java.awt.event.ActionEvent;
+import javax.swing.SwingConstants;
 
 public class VentanaPrincipal extends JFrame {
 	
 	private GestionaTienda gestionaTienda = new GestionaTienda();
 	private AñadirEquipoService añadirEquipo = new AñadirEquipoService();
+	private GestionHorariosPeriodicos ghp = new GestionHorariosPeriodicos();
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
@@ -37,6 +41,7 @@ public class VentanaPrincipal extends JFrame {
 	private JMenu mnTienda;
 	private JMenuItem mntmVerTienda;
 	private JMenuItem mntmAñadirEquipo;
+	private JMenuItem mntmAñadirHorarioPeriodico;
 
 	/**
 	 * Create the frame.
@@ -68,6 +73,10 @@ public class VentanaPrincipal extends JFrame {
 	
 	public GestionaTienda getGestionaTienda() {
 		return this.gestionaTienda;
+	}
+	
+	public GestionHorariosPeriodicos getGestionHorariosPeriodicos() {
+		return this.ghp;
 	}
 	
 	private JMenuBar getMenuBar_1() {
@@ -123,6 +132,7 @@ public class VentanaPrincipal extends JFrame {
 			mnGerente = new JMenu("Gerente");
 			mnGerente.setMnemonic('G');
 			mnGerente.add(getMntmAñadirEquipo());
+			mnGerente.add(getMntmAñadirHorarioPeriodico());
 		}
 		return mnGerente;
 	}
@@ -210,4 +220,25 @@ public class VentanaPrincipal extends JFrame {
 		vAñadirEquipo.setVisible(true);
 		
 	}
+	private JMenuItem getMntmAñadirHorarioPeriodico() {
+		if (mntmAñadirHorarioPeriodico == null) {
+			mntmAñadirHorarioPeriodico = new JMenuItem("Añadir horario periódico");
+			mntmAñadirHorarioPeriodico.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					abrirVentanaAñadirHorarioPeriodico();
+				}
+			});
+			mntmAñadirHorarioPeriodico.setHorizontalAlignment(SwingConstants.CENTER);
+		}
+		return mntmAñadirHorarioPeriodico;
+	}
+	
+	private void abrirVentanaAñadirHorarioPeriodico() {
+		VentanaHorarioPeriodico vHorarioPeriodico = new VentanaHorarioPeriodico(this);
+		this.setVisible(false);
+		vHorarioPeriodico.setVisible(true);
+		
+	}
+	
+	
 }

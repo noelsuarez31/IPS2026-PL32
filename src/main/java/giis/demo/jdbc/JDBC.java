@@ -12,6 +12,7 @@ import giis.demo.jdbc.entradas.PartidoJdbc;
 import giis.demo.jdbc.entradas.RegistrarVentaJdbc;
 import giis.demo.jdbc.equipo.CategoriaEquipoJdbc;
 import giis.demo.jdbc.equipo.EquipoJdbc;
+import giis.demo.jdbc.horarios.HorarioPeriodicoJdbc;
 import giis.demo.model.empleado.EmpleadoDeportivo;
 import giis.demo.model.empleado.Entrenador;
 import giis.demo.model.entradas.Butaca;
@@ -20,6 +21,7 @@ import giis.demo.model.entradas.enumerados.TipoSeccion;
 import giis.demo.model.entradas.enumerados.TipoTribuna;
 import giis.demo.model.equipo.CategoriaEquipo;
 import giis.demo.model.equipo.Equipo;
+import giis.demo.model.horarios.HorarioPeriodico;
 
 public class JDBC {
 
@@ -159,6 +161,24 @@ public class JDBC {
 	public void almacenarEquipo(Equipo equipo, List<EmpleadoDeportivo> jugadores, 
 			List<Entrenador> entrenadores, List<EmpleadoDeportivo> tecnicosAdicionales) throws SQLException {
 		EquipoJdbc.almacenarEquipo(con, equipo, jugadores, entrenadores, tecnicosAdicionales);
+	}
+	
+	/**
+	 * Inserta el horario en la tabla
+	 * @param horario
+	 * @throws SQLException
+	 */
+	public void añadirHorario(HorarioPeriodico horario) throws SQLException{
+		HorarioPeriodicoJdbc.añadirHorario(con, horario);
+	}
+	
+	/**
+	 * Devuelve los horarios de un empleado
+	 * @param idEmpleado
+	 * @throws SQLException
+	 */
+	public List<HorarioPeriodico> getHorariosEmpleado(int idEmpleado)throws SQLException{
+		return HorarioPeriodicoJdbc.getHorariosEmpleado(con, idEmpleado);
 	}
 
 	public Connection getCon() {
