@@ -36,4 +36,5 @@ public class EmpleadoNoDeportivo extends BaseEmpleado {
 	public String toString() {
 		return String.format("%s, %s - %s", getApellido(), getNombre(), getPosicion().name());
 	}
+	
 }
