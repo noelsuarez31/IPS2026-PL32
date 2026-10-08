@@ -759,6 +759,11 @@ public class VentanaVentaEntradas extends JFrame {
 	private void obtenerInfoAsientos() {
 
 		Partido partido = (Partido) cbPartido.getSelectedItem();
+		
+		if (partido == null) {
+			return;
+		}
+		
 		TipoTribuna tribuna = (TipoTribuna) cbTribuna.getSelectedItem();
 		TipoSeccion seccion = (TipoSeccion) cbSeccion.getSelectedItem();
 

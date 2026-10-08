@@ -13,7 +13,7 @@ import giis.demo.model.entradas.Partido;
 
 public class PartidoJdbc {
 
-	private static final String QUERY_MATCH = "select id_partido, fecha, id_local, id_visitante, eq1.name, eq2.name from partido p, Equipo eq1,\r\n"
+	private static final String QUERY_MATCH = "select id_partido, fecha, id_local, id_visitante, eq1.nombre, eq2.nombre from partido p, Equipo eq1,\r\n"
 			+ "Equipo eq2 WHERE p.id_local = eq1.id_equipo AND p.id_visitante = eq2.id_equipo AND p.fecha >= ? ORDER BY p.fecha";
 
 	/**

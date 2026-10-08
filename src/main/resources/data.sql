@@ -3860,3 +3860,18 @@ INSERT INTO "EmpleadoDeportivo" ("dni", "posicion") VALUES ('60606060D', 'JUGADO
 INSERT INTO "EmpleadoDeportivo" ("dni", "posicion") VALUES ('60606060E', 'JUGADOR');
 INSERT INTO "EmpleadoDeportivo" ("dni", "posicion") VALUES ('60606060F', 'JUGADOR');
 INSERT INTO "EmpleadoDeportivo" ("dni", "posicion") VALUES ('60606060G', 'JUGADOR');
+
+insert into CategoriaEquipo (nombre, edad_minima, edad_maxima, tipo_equipo) values ('Profesional', 16, 99, 'PROFESIONAL');
+
+insert into Equipo (nombre, es_propio, tipo_equipo, id_categoria) values ('Real Oviedo', 1, 'PROFESIONAL', (select id_categoria from CategoriaEquipo where nombre = 'Profesional'));
+insert into Equipo (nombre, es_propio, tipo_equipo, id_categoria) values ('Real Oviedo B', 1, 'PROFESIONAL', (select id_categoria from CategoriaEquipo where nombre = 'Profesional'));
+insert into Equipo (nombre, es_propio, tipo_equipo, id_categoria) values ('Sporting', 0, 'PROFESIONAL', (select id_categoria from CategoriaEquipo where nombre = 'Profesional'));
+insert into Equipo (nombre, es_propio, tipo_equipo, id_categoria) values ('Racing', 0, 'PROFESIONAL', (select id_categoria from CategoriaEquipo where nombre = 'Profesional'));
+insert into Equipo (nombre, es_propio, tipo_equipo, id_categoria) values ('Levante', 0, 'PROFESIONAL', (select id_categoria from CategoriaEquipo where nombre = 'Profesional'));
+insert into Equipo (nombre, es_propio, tipo_equipo, id_categoria) values ('Alavés', 0, 'PROFESIONAL', (select id_categoria from CategoriaEquipo where nombre = 'Profesional'));
+
+insert into Partido (id_partido, fecha, id_local, id_visitante) values (1, '2027-03-14', (select id_equipo from Equipo where nombre = 'Real Oviedo'), (select id_equipo from Equipo where nombre = 'Sporting'));
+insert into Partido (id_partido, fecha, id_local, id_visitante) values (2, '2027-03-28', (select id_equipo from Equipo where nombre = 'Real Oviedo'), (select id_equipo from Equipo where nombre = 'Racing'));
+insert into Partido (id_partido, fecha, id_local, id_visitante) values (3, '2027-04-11', (select id_equipo from Equipo where nombre = 'Real Oviedo B'), (select id_equipo from Equipo where nombre = 'Levante'));
+insert into Partido (id_partido, fecha, id_local, id_visitante) values (4, '2027-04-25', (select id_equipo from Equipo where nombre = 'Real Oviedo B'), (select id_equipo from Equipo where nombre = 'Alavés'));
+
