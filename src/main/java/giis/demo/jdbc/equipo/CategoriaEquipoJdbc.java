@@ -14,6 +14,14 @@ public class CategoriaEquipoJdbc {
 	
 	public final static String 	QUERY_CATEGORIES_FOR_TIPE = "SELECT * FROM CategoriaEquipo WHERE tipo_equipo=?";
 	
+	/**
+	 * Devuelve un objeto categoriaEquipo con todos los atributos
+	 * a partir del nombre de la categoria
+	 * @param con
+	 * @param nombreCategoriaSeleccionada
+	 * @return CategoriaEquipo
+	 * @throws SQLException
+	 */
 	public static CategoriaEquipo obtenerObjetoCategoria(Connection con, String nombreCategoriaSeleccionada) throws SQLException {
 		CategoriaEquipo categoria = null;
 		
@@ -32,6 +40,13 @@ public class CategoriaEquipoJdbc {
 		return categoria;
 	}
 
+	/**
+	 * Devuelve el nombre de las categorias disponibles para un tipo de equipo determinado
+	 * @param con
+	 * @param tipo
+	 * @return List<String>
+	 * @throws SQLException
+	 */
 	public static List<String> obtenerNombreDeCategoriasPorTipo(Connection con, String tipo) throws SQLException {
 		
 		List<String> categoriasPorTipo = new ArrayList<String>();

@@ -8,7 +8,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import giis.demo.exceptions.TeamException;
 import giis.demo.model.empleado.EmpleadoDeportivo;
 import giis.demo.model.empleado.Posicion;
 import giis.demo.model.equipo.CategoriaEquipo;
@@ -22,6 +21,13 @@ public class EmpleadoDeportivoJdbc {
 	public final static String QUERY_GET_COMPLETE_PLAYERS = "SELECT * FROM BaseEmpleado be, EmpleadoDeportivo ed "
 			+ "WHERE be.dni=ed.dni AND ed.dni=?";
 	
+	/**
+	 * Devuelve una lista de los empleados deportivos que no tienen asignado 
+	 * ningun equipo cuya posicion es TECNICO_ADICIONAL
+	 * @param con
+	 * @return List<EmpleadoDeportivo>
+	 * @throws SQLException
+	 */
 	public static List<EmpleadoDeportivo> obtenerRestoTecnicos(Connection con) throws SQLException {
 		List<EmpleadoDeportivo> tecnicosAdicionales = new ArrayList<EmpleadoDeportivo>();
 		
@@ -48,6 +54,13 @@ public class EmpleadoDeportivoJdbc {
 	}
 
 
+	/**
+	 * Devuelve una lista de empleados deportivos cuya posicion es JUGADOR
+	 * @param con
+	 * @param categoria
+	 * @return List<EmpleadoDeportivo>
+	 * @throws SQLException
+	 */
 	public static List<EmpleadoDeportivo> obtenerJugadoresDisponibles(Connection con, CategoriaEquipo categoria) throws SQLException {
 		List<EmpleadoDeportivo> jugadores = new ArrayList<EmpleadoDeportivo>();
 		

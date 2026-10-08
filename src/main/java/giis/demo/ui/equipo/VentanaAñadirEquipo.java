@@ -375,53 +375,10 @@ public class VentanaAñadirEquipo extends JFrame {
 			btnCrearEquipo.setFont(new Font("Tahoma", Font.PLAIN, 18));
 			btnCrearEquipo.addActionListener(new ActionListener() {
 			    public void actionPerformed(ActionEvent e) {
-			    	List<EmpleadoDeportivo> jugadoresSeleccionados = getListJugadores().getSelectedValuesList();
-			        List<Entrenador> entrenadoresSeleccionados = new ArrayList<>();
-			        List<EmpleadoDeportivo> restoTecnicosSeleccionados = new ArrayList<>();
-			        
-			        Entrenador primerEntrenador = (Entrenador) getCbPrimerEntrenador().getSelectedItem();
-			        Entrenador segundoEntrenador = (Entrenador) getCbSegundoEntrenador().getSelectedItem();
-			        
-			        if (primerEntrenador != null) {
-			        	entrenadoresSeleccionados.add(primerEntrenador);
-			        }
-			        
-			        if (segundoEntrenador != null) {
-			            if(!segundoEntrenador.esMismoEntrenador(primerEntrenador)) {
-			            	entrenadoresSeleccionados.add(segundoEntrenador);
-			            } else {
-			            	JOptionPane.showMessageDialog(null, "El primer y el segundo entrenador no pueden ser la misma persona");
-			            	return;
-			            }
-			        	
-			        }
-
-			        List<EmpleadoDeportivo> restoTecnicosSeleccionadosLista = getListRestoTecnicos().getSelectedValuesList();
-			        for (EmpleadoDeportivo otroTecnicoMarcado : restoTecnicosSeleccionadosLista) {
-			            if (!restoTecnicosSeleccionados.contains(otroTecnicoMarcado)) {
-			                restoTecnicosSeleccionados.add(otroTecnicoMarcado);
-			            }
-			        }
-
-			        String nombre = (String) getTxNombreEquipo().getText();
-			        if(nombre == null || nombre.isEmpty()) {
-			        	JOptionPane.showMessageDialog(null, "El nombre del equipo no puede ser vacio");
-			        	return;
-			        }
-			       
-			        String tipo = (String) getCbTipoEquipo().getSelectedItem();
-			        CategoriaEquipo categoria = club.obtenerObjetoCategoria((String) getCbCategoriaEquipo().getSelectedItem());
-
-			        try {
-			            club.añadirEquipo(jugadoresSeleccionados, entrenadoresSeleccionados, restoTecnicosSeleccionados, tipo, categoria, nombre);
-			            JOptionPane.showMessageDialog(null, "¡Equipo creado con éxito!");
-			            dispose();
-			            vPrincipal.setVisible(true);
-			        } catch (Exception ex) {
-			            JOptionPane.showMessageDialog(null, ex.getMessage(), "Error de validación", JOptionPane.ERROR_MESSAGE);
-			        }
+			    	crearEquipo();
 			    }
-			});
+			}
+			);
 		}
 		return btnCrearEquipo;
 	}
@@ -448,5 +405,53 @@ public class VentanaAñadirEquipo extends JFrame {
 			txNombreEquipo.setColumns(10);
 		}
 		return txNombreEquipo;
+	}
+	
+	private void crearEquipo() {
+		List<EmpleadoDeportivo> jugadoresSeleccionados = getListJugadores().getSelectedValuesList();
+        List<Entrenador> entrenadoresSeleccionados = new ArrayList<>();
+        List<EmpleadoDeportivo> restoTecnicosSeleccionados = new ArrayList<>();
+        
+        Entrenador primerEntrenador = (Entrenador) getCbPrimerEntrenador().getSelectedItem();
+        Entrenador segundoEntrenador = (Entrenador) getCbSegundoEntrenador().getSelectedItem();
+        
+        if (primerEntrenador != null) {
+        	entrenadoresSeleccionados.add(primerEntrenador);
+        }
+        
+        if (segundoEntrenador != null) {
+            if(!segundoEntrenador.esMismoEntrenador(primerEntrenador)) {
+            	entrenadoresSeleccionados.add(segundoEntrenador);
+            } else {
+            	JOptionPane.showMessageDialog(null, "El primer y el segundo entrenador no pueden ser la misma persona");
+            	return;
+            }
+        	
+        }
+
+        List<EmpleadoDeportivo> restoTecnicosSeleccionadosLista = getListRestoTecnicos().getSelectedValuesList();
+        for (EmpleadoDeportivo otroTecnicoMarcado : restoTecnicosSeleccionadosLista) {
+            if (!restoTecnicosSeleccionados.contains(otroTecnicoMarcado)) {
+                restoTecnicosSeleccionados.add(otroTecnicoMarcado);
+            }
+        }
+
+        String nombre = (String) getTxNombreEquipo().getText();
+        if(nombre == null || nombre.isEmpty()) {
+        	JOptionPane.showMessageDialog(null, "El nombre del equipo no puede ser vacio");
+        	return;
+        }
+       
+        String tipo = (String) getCbTipoEquipo().getSelectedItem();
+        CategoriaEquipo categoria = club.obtenerObjetoCategoria((String) getCbCategoriaEquipo().getSelectedItem());
+
+        try {
+            club.añadirEquipo(jugadoresSeleccionados, entrenadoresSeleccionados, restoTecnicosSeleccionados, tipo, categoria, nombre);
+            JOptionPane.showMessageDialog(null, "¡Equipo creado con éxito!");
+            dispose();
+            vPrincipal.setVisible(true);
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(null, ex.getMessage(), "Error de validación", JOptionPane.ERROR_MESSAGE);
+        }
 	}
 }
