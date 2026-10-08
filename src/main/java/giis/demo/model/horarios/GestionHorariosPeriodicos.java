@@ -6,6 +6,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 import giis.demo.jdbc.JDBC;
+import giis.demo.model.empleado.EmpleadoNoDeportivo;
 import giis.demo.util.ApplicationException;
 
 public class GestionHorariosPeriodicos {
@@ -20,7 +21,7 @@ public class GestionHorariosPeriodicos {
 	public void validarYAnadirHorario(HorarioPeriodico nuevoHorario) throws SQLException {
 		
 		// Pedimos a la BD todos los turnos que ya tiene el empleado
-		List<HorarioPeriodico> horariosExistentes = jdbc.getHorariosEmpleado(nuevoHorario.getId_empleado());
+		List<HorarioPeriodico> horariosExistentes = jdbc.getHorariosEmpleado(nuevoHorario.getDni_empleado());
 		
 		// Calculamos los minutos exactos del turno que se intenta crear
 		long minutosNuevos = calcularMinutos(nuevoHorario.getHora_inicio(), nuevoHorario.getHora_fin());
@@ -82,5 +83,13 @@ public class GestionHorariosPeriodicos {
 		}
 		
 		return Duration.between(inicio, fin).toMinutes();
+	}
+	
+	public List<EmpleadoNoDeportivo> obtenerEmpleadosNoDeportivos() throws SQLException {
+		return jdbc.getEmpleadosNoDeportivos(); 
+	}
+
+	public List<HorarioPeriodico> obtenerHorariosDeEmpleado(String dni) throws SQLException {
+		return jdbc.getHorariosEmpleado(dni);
 	}
 }

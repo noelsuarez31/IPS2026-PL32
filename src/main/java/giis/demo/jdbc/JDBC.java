@@ -14,6 +14,7 @@ import giis.demo.jdbc.equipo.CategoriaEquipoJdbc;
 import giis.demo.jdbc.equipo.EquipoJdbc;
 import giis.demo.jdbc.horarios.HorarioPeriodicoJdbc;
 import giis.demo.model.empleado.EmpleadoDeportivo;
+import giis.demo.model.empleado.EmpleadoNoDeportivo;
 import giis.demo.model.empleado.Entrenador;
 import giis.demo.model.entradas.Butaca;
 import giis.demo.model.entradas.Partido;
@@ -177,8 +178,12 @@ public class JDBC {
 	 * @param idEmpleado
 	 * @throws SQLException
 	 */
-	public List<HorarioPeriodico> getHorariosEmpleado(int idEmpleado)throws SQLException{
-		return HorarioPeriodicoJdbc.getHorariosEmpleado(con, idEmpleado);
+	public List<HorarioPeriodico> getHorariosEmpleado(String dniEmpleado)throws SQLException{
+		return HorarioPeriodicoJdbc.getHorariosEmpleado(con, dniEmpleado);
+	}
+	
+	public List<EmpleadoNoDeportivo> getEmpleadosNoDeportivos() throws SQLException {
+	    return HorarioPeriodicoJdbc.getEmpleadosNoDeportivos(con);
 	}
 
 	public Connection getCon() {

@@ -68,4 +68,8 @@ public abstract class BaseEmpleado {
 	public String getNumeroTelefono() {
 		return this.numeroDeTelefono;
 	}
+	
+	public String getSalario() {
+		return this.numeroDeTelefono;
+	}
 }
