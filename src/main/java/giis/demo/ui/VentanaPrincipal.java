@@ -48,14 +48,14 @@ public class VentanaPrincipal extends JFrame {
 		setBounds(100, 100, 600, 420);
 		setJMenuBar(getMenuBar_1());
 		contentPane = new JPanel();
-		contentPane.setBackground(new Color(255, 255, 255));
+		contentPane.setBackground(new Color(240, 240, 240));
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
 		JLabel lbInicio = new JLabel("¡Bienvenido!");
-		lbInicio.setBackground(new Color(255, 255, 255));
-		lbInicio.setBounds(218, 125, 120, 20);
+		lbInicio.setBackground(new Color(240, 240, 240));
+		lbInicio.setBounds(256, 159, 90, 20);
 		contentPane.add(lbInicio);
 		
 		this.setLocationRelativeTo(null);
