@@ -32,6 +32,7 @@ public class EmpleadoDeportivo extends BaseEmpleado{
 	    return Period.between(getFechaNacimiento(), LocalDate.now()).getYears();
 	}
 	
+	//TODO: incluir dni tambien?
 	@Override
 	public String toString() {
 		return String.format("%s, %s", getApellido(), getNombre());

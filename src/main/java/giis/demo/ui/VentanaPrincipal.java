@@ -5,11 +5,13 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import giis.demo.ui.tienda.VentanaTienda;
+import giis.demo.model.entrevistas.CrearFranjaService;
 import giis.demo.model.equipo.AñadirEquipoService;
 import giis.demo.model.horarios.GestionHorariosPeriodicos;
 import giis.demo.ui.entradas.VentanaVentaEntradas;
 import giis.demo.ui.equipo.VentanaAñadirEquipo;
 import giis.demo.ui.horarios.VentanaHorarioPeriodico;
+import giis.demo.ui.entrevistas.VentanaCrearFranjas;
 
 import java.awt.Color;
 import javax.swing.JMenuBar;
@@ -26,6 +28,7 @@ public class VentanaPrincipal extends JFrame {
 	private GestionaTienda gestionaTienda = new GestionaTienda();
 	private AñadirEquipoService añadirEquipo = new AñadirEquipoService();
 	private GestionHorariosPeriodicos ghp = new GestionHorariosPeriodicos();
+	private CrearFranjaService cfs = new CrearFranjaService();
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
@@ -42,6 +45,7 @@ public class VentanaPrincipal extends JFrame {
 	private JMenuItem mntmVerTienda;
 	private JMenuItem mntmAñadirEquipo;
 	private JMenuItem mntmAñadirHorarioPeriodico;
+	private JMenuItem mntmCrearFranjas;
 
 	/**
 	 * Create the frame.
@@ -124,6 +128,7 @@ public class VentanaPrincipal extends JFrame {
 		if (mnEntrenador == null) {
 			mnEntrenador = new JMenu("Entrenador");
 			mnEntrenador.setMnemonic('T');
+			mnEntrenador.add(getMntmCrearFranjas());
 		}
 		return mnEntrenador;
 	}
@@ -239,6 +244,25 @@ public class VentanaPrincipal extends JFrame {
 		vHorarioPeriodico.setVisible(true);
 		
 	}
+	private JMenuItem getMntmCrearFranjas() {
+		if (mntmCrearFranjas == null) {
+			mntmCrearFranjas = new JMenuItem("Crear franjas");
+			mntmCrearFranjas.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					abrirVentanaCrearFranjas();
+				}
+			});
+		}
+		return mntmCrearFranjas;
+	}
+
+	private void abrirVentanaCrearFranjas() {
+		VentanaCrearFranjas vFranjas = new VentanaCrearFranjas(this);
+		this.setVisible(false);
+		vFranjas.setVisible(true);
+	}
 	
-	
+	public CrearFranjaService getCrearFranjaService() {
+		return this.cfs;
+	}
 }

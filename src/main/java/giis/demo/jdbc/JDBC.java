@@ -3,6 +3,7 @@ package giis.demo.jdbc;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.List;
 
 import giis.demo.jdbc.empleado.EmpleadoDeportivoJdbc;
@@ -10,6 +11,7 @@ import giis.demo.jdbc.empleado.EntrenadorJdbc;
 import giis.demo.jdbc.entradas.ButacaJdbc;
 import giis.demo.jdbc.entradas.PartidoJdbc;
 import giis.demo.jdbc.entradas.RegistrarVentaJdbc;
+import giis.demo.jdbc.entrevistas.FranjaJdbc;
 import giis.demo.jdbc.equipo.CategoriaEquipoJdbc;
 import giis.demo.jdbc.equipo.EquipoJdbc;
 import giis.demo.jdbc.horarios.HorarioPeriodicoJdbc;
@@ -20,6 +22,7 @@ import giis.demo.model.entradas.Butaca;
 import giis.demo.model.entradas.Partido;
 import giis.demo.model.entradas.enumerados.TipoSeccion;
 import giis.demo.model.entradas.enumerados.TipoTribuna;
+import giis.demo.model.entrevistas.FranjaHoraria;
 import giis.demo.model.equipo.CategoriaEquipo;
 import giis.demo.model.equipo.Equipo;
 import giis.demo.model.horarios.HorarioPeriodico;
@@ -201,6 +204,26 @@ public class JDBC {
 
 	public Connection getCon() {
 		return con;
+	}
+
+	public List<EmpleadoDeportivo> cargarJugadoresEquipoProfesional(int idEquipoProfesional) {
+		return FranjaJdbc.cargarJugadoresEquipoProfesional(con, idEquipoProfesional);
+	}
+
+	public List<String> obtenerDnisEntrenadoresDeEquiposProfesionales() {
+		return FranjaJdbc.obtenerDnisEntrenadoresDeEquiposProfesionales(con);
+	}
+
+	public void almacenarFranja(FranjaHoraria nuevaFranja) {
+		FranjaJdbc.almacenarFranja(con, nuevaFranja);
+	}
+
+	public boolean jugadorTieneAsignadaEntrevista(EmpleadoDeportivo jugador, LocalDate fechaFranja) {
+		return FranjaJdbc.jugadorTieneAsignadaEntrevista(con, jugador, fechaFranja);
+	}
+
+	public int getIdEquipo(String nifEntrenador) throws SQLException {
+		return FranjaJdbc.getIdEquipo(con, nifEntrenador);
 	}
 
 }
