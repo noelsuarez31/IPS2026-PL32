@@ -14,7 +14,11 @@ drop table if exists Entrenador;
 drop table if exists CategoriaEquipo;
 drop table if exists Equipo;
 
-drop table if exists HorarioPeriodico;
+drop table if exists Horario_Periodico;
+drop table if exists Reserva;
+drop table if exists Usuario;
+drop table if exists Instalacion;
+
 
 CREATE TABLE IF NOT EXISTS "butaca" (
 	"id_butaca"	INTEGER,
@@ -112,4 +116,33 @@ CREATE TABLE IF NOT EXISTS "horario_periodico" (
 	"dia_semana"	INTEGER NOT NULL CHECK("dia_semana" BETWEEN 1 AND 7),
 	"hora_inicio"	TEXT NOT NULL,
 	"hora_fin"		TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS "Usuario" (
+	"id_usuario" INTEGER PRIMARY KEY AUTOINCREMENT,
+	"nombre" TEXT NOT NULL,
+	"tarjeta_bancaria" TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS "Instalacion" (
+	
+	"id_instalacion" INTEGER PRIMARY KEY, 
+	"nombre" TEXT NOT NULL UNIQUE
+);
+
+CREATE TABLE IF NOT EXISTS "Reserva" (
+	
+	"id_reserva" INTEGER PRIMARY KEY AUTOINCREMENT,
+	"fecha" TEXT NOT NULL,
+	"hora_inicio" TEXT NOT NULL,
+	"hora_fin" TEXT NOT NULL,
+	"importe" REAL NOT NULL CHECK("importe" > 0),
+	"fecha_registro" TEXT NOT NULL,
+	"id_usuario" INTEGER NOT NULL,
+	"id_instalacion" INTEGER NOT NULL,
+	FOREIGN KEY("id_usuario") REFERENCES "Usuario"("id_usuario"),
+	FOREIGN KEY("id_instalacion") REFERENCES "Instalacion"("id_instalacion"),
+	CHECK("hora_inicio" >= '08:00'),
+	CHECK("hora_fin" <= '22:00'),
+	CHECK("hora_inicio" < "hora_fin")
 );
