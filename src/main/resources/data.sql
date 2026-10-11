@@ -3873,3 +3873,18 @@ insert into Partido (id_partido, fecha, id_local, id_visitante) values (2, '2027
 insert into Partido (id_partido, fecha, id_local, id_visitante) values (3, '2027-04-11', (select id_equipo from Equipo where nombre = 'Real Oviedo B'), (select id_equipo from Equipo where nombre = 'Levante'));
 insert into Partido (id_partido, fecha, id_local, id_visitante) values (4, '2027-04-25', (select id_equipo from Equipo where nombre = 'Real Oviedo B'), (select id_equipo from Equipo where nombre = 'Alavés'));
 
+INSERT INTO "FranjaHoraria" ("dni_jugador", "fecha", "hora_inicio", "hora_fin") VALUES 
+('70707070Z', '2026-10-15', '10:00:00', '11:00:00'),
+('70707070Z', '2026-10-16', '12:00:00', '13:00:00');
+
+INSERT INTO "Entrevista" ("id_franja") VALUES 
+(1),
+(2);
+
+INSERT INTO "Entrenamiento" ("fecha", "hora_inicio", "hora_fin", "id_equipo") VALUES 
+('2026-10-12', '16:00:00', '18:00:00', 1),
+('2026-10-13', '17:00:00', '19:00:00', 1);
+
+INSERT INTO "Partido2" ("fecha", "hora_inicio", "hora_fin", "id_local", "id_visitante") VALUES 
+('2026-10-20', '21:00:00', '23:00:00', 1, 2),
+('2026-10-27', '18:30:00', '20:30:00', 2, 1);

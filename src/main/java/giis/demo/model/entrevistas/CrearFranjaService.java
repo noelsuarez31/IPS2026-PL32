@@ -12,19 +12,31 @@ import giis.demo.model.empleado.EmpleadoDeportivo;
 
 public class CrearFranjaService {
 	private EmpleadoDeportivo jugadorSeleccionado;
-	private JDBC jdbc;
+	private JDBC jdbc = new JDBC();
 	
 	
 	public void setJugadorSeleccionado(EmpleadoDeportivo jugador) {
 		this.jugadorSeleccionado = jugador;
 	}
 	
+	public EmpleadoDeportivo getJugadorSeleccionado() {
+		return this.jugadorSeleccionado;
+	}
+	
 	public List<EmpleadoDeportivo> obtenerJugadoresEquipoProfesional(int idEquipo){
-		return jdbc.cargarJugadoresEquipoProfesional(idEquipo);
+		try {
+			return jdbc.cargarJugadoresEquipoProfesional(idEquipo);
+		} catch (SQLException sqle) {
+			throw new SlotException(sqle.getMessage());
+		}
 	}
 	
 	public List<String> obtenerDnisEntrenadoresDeEquiposProfesionales(){
-		return jdbc.obtenerDnisEntrenadoresDeEquiposProfesionales();
+		try {
+			return jdbc.obtenerDnisEntrenadoresDeEquiposProfesionales();
+		} catch (SQLException sqle) {
+			throw new SlotException(sqle.getMessage());
+		}
 	}
 	
 	public void crearFranjaHoraria(LocalDate fechaFranja, LocalTime horaInicio,
@@ -34,13 +46,22 @@ public class CrearFranjaService {
 		FranjaHoraria nuevaFranja = new FranjaHoraria(jugadorSeleccionado.getDni(), fechaFranja, horaInicio,
 				horaFin);
 		
-		jdbc.almacenarFranja(nuevaFranja);
+		try {
+			jdbc.almacenarFranja(nuevaFranja);
+		} catch (SQLException sqle) {
+			throw new SlotException(sqle.getMessage());
+		}
 	}
 
 	private void validarCampos(EmpleadoDeportivo jugador, LocalDate fechaFranja, 
 			LocalTime horaInicio, LocalTime horaFin) throws NoAvailableSlotException{
 		if(jugador == null || fechaFranja == null || horaInicio == null || horaFin == null) {
 			throw new NoAvailableSlotException("No se admiten valores nulos");
+		}
+		
+		if(equipoTienePartidoOEntrenamiento(jugador, fechaFranja, horaInicio, horaFin)) {
+			throw new NoAvailableSlotException("El equipo al que pertenece el jugador tiene "
+					+ "un partido o un entrenamiento que coincide con la franja a insertar");
 		}
 		
 		if(jugadorTieneAsignadaEntrevista(jugador, fechaFranja)) {
@@ -61,15 +82,28 @@ public class CrearFranjaService {
 		
 	}
 
+	private boolean equipoTienePartidoOEntrenamiento(EmpleadoDeportivo jugador, LocalDate fechaFranja,
+			LocalTime horaInicio, LocalTime horaFin) {
+		try {
+			return jdbc.equipoTienePartidoOEntrenamiento(jugador, fechaFranja, horaInicio, horaFin);
+		} catch (SQLException sqle) {
+			throw new SlotException(sqle.getMessage());
+		}
+	}
+
 	private boolean jugadorTieneAsignadaEntrevista(EmpleadoDeportivo jugador, LocalDate fechaFranja) {
-		return jdbc.jugadorTieneAsignadaEntrevista(jugador, fechaFranja);
+		try {
+			return jdbc.jugadorTieneAsignadaEntrevista(jugador, fechaFranja);
+		} catch (SQLException sqle) {
+			throw new SlotException(sqle.getMessage());
+		}
 	}
 
 	public int getIdEquipo(String nifEntrenador) {
 		try {
 			return jdbc.getIdEquipo(nifEntrenador);
-		} catch (SQLException e) {
-			throw new SlotException(e.getMessage());
+		} catch (SQLException sqle) {
+			throw new SlotException(sqle.getMessage());
 		}
 	}
 }

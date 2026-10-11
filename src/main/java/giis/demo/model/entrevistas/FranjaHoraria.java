@@ -16,4 +16,28 @@ public class FranjaHoraria {
 		this.horaInicio = horaInicio;
 		this.horaFin = horaFin;
 	}
+	
+	public String getDniJugador() {
+		return this.dniJugador;
+	}
+	
+	public LocalDate getFecha() {
+		return this.fecha;
+	}
+	
+	public LocalTime getHoraInicio() {
+		return this.horaInicio;
+	}
+	
+	public LocalTime getHoraFin() {
+		return this.horaFin;
+	}
+	
+	public void setIdFranja(int idFranja) {
+		this.idFranja = idFranja;
+	}
+	
+	public int getIdFranja() {
+		return this.idFranja;
+	}
 }

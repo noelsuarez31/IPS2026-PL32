@@ -16,6 +16,11 @@ drop table if exists Equipo;
 
 drop table if exists HorarioPeriodico;
 
+drop table if exists Partido2;
+drop table if exists Entrenamiento;
+drop table if exists FranjaHoraria;
+drop table if exists Entrevista;
+
 CREATE TABLE IF NOT EXISTS "butaca" (
 	"id_butaca"	INTEGER,
 	"tribuna"	TEXT NOT NULL CHECK("tribuna" IN ('A', 'B', 'C', 'D')),
@@ -113,3 +118,39 @@ CREATE TABLE IF NOT EXISTS "horario_periodico" (
 	"hora_inicio"	TEXT NOT NULL,
 	"hora_fin"		TEXT NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS "Partido2" (
+	"id_partido" INTEGER PRIMARY KEY AUTOINCREMENT,
+	"fecha"	DATE NOT NULL,
+	"hora_inicio" TIME NOT NULL,
+	"hora_fin" TIME NOT NULL,
+	"id_local"	INTEGER NOT NULL,
+	"id_visitante"	INTEGER NOT NULL,
+	FOREIGN KEY("id_local") REFERENCES "Equipo"("id_equipo"),
+	FOREIGN KEY("id_visitante") REFERENCES "Equipo"("id_equipo"),
+	CHECK("id_local" <> "id_visitante")
+);
+
+CREATE TABLE IF NOT EXISTS "Entrenamiento" (
+	"id_entrenamiento" INTEGER PRIMARY KEY AUTOINCREMENT,
+	"fecha" DATE NOT NULL,
+	"hora_inicio" TIME NOT NULL,
+	"hora_fin" TIME NOT NULL,
+	"id_equipo" INTEGER NOT NULL,
+	FOREIGN KEY ("id_equipo") REFERENCES "Equipo"("id_equipo")
+)
+
+CREATE TABLE IF NOT EXISTS "FranjaHoraria" (
+	"id_franja" INTEGER PRIMARY KEY AUTOINCREMENT,
+	"dni_jugador" TEXT NOT NULL,
+	"fecha" DATE NOT NULL,
+	"hora_inicio" TIME NOT NULL,
+	"hora_fin" TIME NOT NULL,
+	FOREIGN KEY ("dni_jugador") REFERENCES "EmpleadoDeportivo"("dni")
+)
+
+CREATE TABLE IF NOT EXISTS "Entrevista" (
+	"id_entrevista" INTEGER PRIMARY KEY AUTOINCREMENT,
+	"id_franja" NOT NULL,
+	FOREIGN KEY ("id_franja") REFERENCES "FranjaHoraria"("id_franja")
+)  

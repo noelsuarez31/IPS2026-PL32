@@ -8,8 +8,10 @@ import java.awt.event.ActionListener;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import javax.swing.BoxLayout;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -298,17 +300,16 @@ public class VentanaCrearFranjas extends JFrame{
 	}
 	
 	// METODOS AUXILIARES
-	
 	private void cargarEntrenadoresEnCombo() {
-		// LLAMADA A CAPA DE SERVICIO QUE HACE UNA CONSULTA Y 
-		// DEVUELVE LOS DNIS DE LOS ENTRENADORES QUE PERTENCEN
-		// A EQUIPOS PROFESIONALES
+		List<String> dnis = crearFranjaService.obtenerDnisEntrenadoresDeEquiposProfesionales();
+		DefaultComboBoxModel<String> modeloCombo = new DefaultComboBoxModel<>(dnis.toArray(new String[0]));
+		cbDniEntrenadores.setModel(modeloCombo);
 	}
 	
 	private void mostrarJugadoresEnLista() {
 		// SI EL COMBO NO TIENE DNI SELECCIONADO, DEJA LISTA VACIA
 		int idEquipo = 0;
-		String nifEntrenador = "";
+		String nifEntrenador;
 		if((nifEntrenador = (String) getCbDniEntrenadores().getSelectedItem()) != null) {
 			idEquipo = crearFranjaService.getIdEquipo(nifEntrenador);
 		}

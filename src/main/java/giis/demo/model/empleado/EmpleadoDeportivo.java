@@ -41,4 +41,8 @@ public class EmpleadoDeportivo extends BaseEmpleado{
 	public void setIdEquipo(int idEquipo) {
 		this.idEquipo = idEquipo;
 	}
+	
+	public int getIdEquipo() {
+		return this.idEquipo;
+	}
 }

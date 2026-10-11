@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 import giis.demo.jdbc.empleado.EmpleadoDeportivoJdbc;
@@ -206,24 +207,30 @@ public class JDBC {
 		return con;
 	}
 
-	public List<EmpleadoDeportivo> cargarJugadoresEquipoProfesional(int idEquipoProfesional) {
+	public List<EmpleadoDeportivo> cargarJugadoresEquipoProfesional(int idEquipoProfesional) throws SQLException {
 		return FranjaJdbc.cargarJugadoresEquipoProfesional(con, idEquipoProfesional);
 	}
 
-	public List<String> obtenerDnisEntrenadoresDeEquiposProfesionales() {
+	public List<String> obtenerDnisEntrenadoresDeEquiposProfesionales() throws SQLException {
 		return FranjaJdbc.obtenerDnisEntrenadoresDeEquiposProfesionales(con);
 	}
 
-	public void almacenarFranja(FranjaHoraria nuevaFranja) {
+	public void almacenarFranja(FranjaHoraria nuevaFranja) throws SQLException {
 		FranjaJdbc.almacenarFranja(con, nuevaFranja);
 	}
 
-	public boolean jugadorTieneAsignadaEntrevista(EmpleadoDeportivo jugador, LocalDate fechaFranja) {
+	public boolean jugadorTieneAsignadaEntrevista(EmpleadoDeportivo jugador, LocalDate fechaFranja) 
+			throws SQLException {
 		return FranjaJdbc.jugadorTieneAsignadaEntrevista(con, jugador, fechaFranja);
 	}
 
 	public int getIdEquipo(String nifEntrenador) throws SQLException {
 		return FranjaJdbc.getIdEquipo(con, nifEntrenador);
+	}
+
+	public boolean equipoTienePartidoOEntrenamiento(EmpleadoDeportivo jugador, LocalDate fechaFranja,
+			LocalTime horaInicio, LocalTime horaFin) throws SQLException {
+		return FranjaJdbc.equipoTienePartidoOEntrenamiento(con, jugador, fechaFranja, horaInicio, horaFin);
 	}
 
 }
