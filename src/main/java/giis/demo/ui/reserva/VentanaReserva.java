@@ -16,17 +16,19 @@ import javax.swing.JButton;
 import java.awt.Color;
 import javax.swing.border.TitledBorder;
 
+import giis.demo.model.reserva.Instalacion;
+import giis.demo.model.reserva.RealizarReserva;
 import giis.demo.ui.VentanaPrincipal;
 
 import javax.swing.border.LineBorder;
 import javax.swing.border.EtchedBorder;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.awt.event.ActionEvent;
 import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
-import java.awt.GridLayout;
 import java.awt.FlowLayout;
 
 public class VentanaReserva extends JFrame {
@@ -53,16 +55,19 @@ public class VentanaReserva extends JFrame {
 	private JButton btVolver;
 	
 	private VentanaPrincipal vp;
+	private RealizarReserva rr;
 	private JLabel lbInstalacion;
-	private JComboBox cbInstalacion;
+	private JComboBox<Instalacion> cbInstalacion;
 	private JButton btCancelar;
 
 	/**
 	 * Create the frame.
+	 * @throws SQLException 
 	 */
-	public VentanaReserva(VentanaPrincipal vp) {
+	public VentanaReserva(VentanaPrincipal vp) throws SQLException {
 
 		this.vp = vp;
+		this.rr = new RealizarReserva();
 		
 		setTitle("Reserva de Instalaciones");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -77,8 +82,18 @@ public class VentanaReserva extends JFrame {
 		setLocationRelativeTo(null);
 
 	}
-
-	private JPanel getPanelFecha() {
+	
+	/**
+	 * Devuelve la instancia de RealizarReserva que se utiliza
+	 * @return instancia de RealizarReserva que se utiliza
+	 */
+	public RealizarReserva gerRealizarReserva() {
+		
+		return rr;
+		
+	}
+	
+	private JPanel getPanelFecha() throws SQLException {
 		if (panelFecha == null) {
 			panelFecha = new JPanel();
 			panelFecha.setBorder(new TitledBorder(null, "", TitledBorder.LEADING, TitledBorder.TOP, null, null));
@@ -125,7 +140,7 @@ public class VentanaReserva extends JFrame {
 		return spFecha;
 	}
 
-	private JPanel getPanelSeleccionFecha() {
+	private JPanel getPanelSeleccionFecha() throws SQLException {
 		if (panelSeleccionFecha == null) {
 			panelSeleccionFecha = new JPanel();
 			panelSeleccionFecha.setLayout(null);
@@ -277,7 +292,7 @@ public class VentanaReserva extends JFrame {
 		return spHorario;
 	}
 
-	public void reiniciar() {
+	public void reiniciar() throws SQLException {
 
 		this.getCbInstalacion().setSelectedIndex(0);
 		this.getSpFecha().setValue(new Date());
@@ -387,16 +402,16 @@ public class VentanaReserva extends JFrame {
 		}
 		return lbInstalacion;
 	}
-	private JComboBox getCbInstalacion() {
+	private JComboBox<Instalacion> getCbInstalacion() throws SQLException {
 		if (cbInstalacion == null) {
-			cbInstalacion = new JComboBox();
-			cbInstalacion.setModel(new DefaultComboBoxModel(new String[] {"1", "2", "3"}));
+			cbInstalacion = new JComboBox<Instalacion>();
+			cbInstalacion.setModel(new DefaultComboBoxModel<Instalacion>(rr.obtenerInstalacionesDisponibles()));
 			cbInstalacion.setBounds(196, 4, 272, 28);
 		}
 		return cbInstalacion;
 	}
 	
-	private void cancelar() {
+	private void cancelar() throws SQLException {
 		
 		this.cbInstalacion.setEnabled(true);
 		this.spFecha.setEnabled(true);
@@ -418,7 +433,19 @@ public class VentanaReserva extends JFrame {
 			btCancelar.setEnabled(false);
 			btCancelar.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					cancelar();
+					try {
+						cancelar();
+					} catch (SQLException e1) {
+						
+						JOptionPane.showMessageDialog(
+					            contentPane,
+					            "Se ha producido el error al cargar las instalaciones disponibles.",
+					            null,
+					            JOptionPane.WARNING_MESSAGE
+					        );
+						e1.printStackTrace();
+						
+					}
 				}
 			});
 			btCancelar.setToolTipText("Pulsa para cancelar la reserva");

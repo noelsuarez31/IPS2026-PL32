@@ -5,6 +5,7 @@ import javax.swing.border.EmptyBorder;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import java.awt.GridLayout;
 import java.awt.Color;
@@ -12,6 +13,7 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
 import java.awt.event.ActionEvent;
 
 public class VentaRegistroUsuario extends JDialog {
@@ -132,7 +134,7 @@ public class VentaRegistroUsuario extends JDialog {
 			FlowLayout flowLayout = (FlowLayout) panelDuracion.getLayout();
 			flowLayout.setAlignment(FlowLayout.LEFT);
 			panelDuracion.add(getLbDuracion());
-			panelDuracion.add(getTextField_1());
+			panelDuracion.add(getTfDuracion());
 		}
 		return panelDuracion;
 	}
@@ -142,7 +144,7 @@ public class VentaRegistroUsuario extends JDialog {
 		}
 		return lbDuracion;
 	}
-	private JTextField getTextField_1() {
+	private JTextField getTfDuracion() {
 		if (tfDuracion == null) {
 			tfDuracion = new JTextField();
 			tfDuracion.setEditable(false);
@@ -157,7 +159,7 @@ public class VentaRegistroUsuario extends JDialog {
 			FlowLayout flowLayout = (FlowLayout) panelPrecio.getLayout();
 			flowLayout.setAlignment(FlowLayout.LEFT);
 			panelPrecio.add(getLbPrecio());
-			panelPrecio.add(getTextField_2());
+			panelPrecio.add(getTtPrecio());
 		}
 		return panelPrecio;
 	}
@@ -167,7 +169,7 @@ public class VentaRegistroUsuario extends JDialog {
 		}
 		return lbPrecio;
 	}
-	private JTextField getTextField_2() {
+	private JTextField getTtPrecio() {
 		if (tfPrecio == null) {
 			tfPrecio = new JTextField();
 			tfPrecio.setEditable(false);
@@ -187,13 +189,30 @@ public class VentaRegistroUsuario extends JDialog {
 		return panelBotones;
 	}
 	private JButton getBtConfirmar() {
+		
 		if (btConfirmar == null) {
 			btConfirmar = new JButton("Confirmar");
 			btConfirmar.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					
-					//aniadir acceso a BBDD
-					reiniciar();
+					try {
+						
+						if(guardarUsuario()) {
+							
+							reiniciar();
+							
+						}
+						
+					} catch (SQLException e1) {
+						
+						JOptionPane.showMessageDialog(
+					            contentPane,
+					            "Se ha producido un error al guardar el usuario. ",
+					            null,
+					            JOptionPane.ERROR_MESSAGE);
+						
+						e1.printStackTrace();
+					}
 				}
 			});
 			btConfirmar.setBackground(new Color(128, 255, 128));
@@ -207,7 +226,18 @@ public class VentaRegistroUsuario extends JDialog {
 			btCancelar = new JButton("Cancelar");
 			btCancelar.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					reiniciar();
+					try {
+						reiniciar();
+					} catch (SQLException e1) {
+						
+						JOptionPane.showMessageDialog(
+					            contentPane,
+					            "Se ha producido el error al cargar las instalaciones disponibles.",
+					            null,
+					            JOptionPane.WARNING_MESSAGE
+					        );
+						e1.printStackTrace();
+					}
 				}
 			});
 			btCancelar.setToolTipText("Cancelar");
@@ -217,7 +247,56 @@ public class VentaRegistroUsuario extends JDialog {
 		return btCancelar;
 	}
 	
-	private void reiniciar() {
+	private boolean guardarUsuario() throws SQLException {
+		
+		String name = this.getTfName().getText();
+		
+		String cardNumber = this.getTfTarjeta().getText();
+		
+		if(!checkCampos(name, cardNumber)){
+			JOptionPane.showMessageDialog(
+		            contentPane,
+		            "Alguno de los campos está vacío.",
+		            null,
+		            JOptionPane.WARNING_MESSAGE);
+			
+			return false;
+		}
+		
+		boolean isStored = this.vr.gerRealizarReserva().guardarUsuario(name, cardNumber);
+		
+		if(!isStored) {
+			
+			JOptionPane.showMessageDialog(
+		            contentPane,
+		            "Se ha producido un error al guardar al usuario",
+		            null,
+		            JOptionPane.WARNING_MESSAGE);
+			
+			return false;
+		}
+		
+		JOptionPane.showMessageDialog(
+	            contentPane,
+	            "Usuario registrado correctamente",
+	            "Registro completado",
+	            JOptionPane.INFORMATION_MESSAGE);
+		
+		return true;
+	}
+	
+	/**
+	 * Comprueba que el nombre del cliente y la tarjeta no esten en blanco
+	 * @param name
+	 * @param cardNumber
+	 * @return true si son válidos, false en caso contrario
+	 */
+	private boolean checkCampos(String name, String cardNumber) {
+		
+		return !name.isBlank() && !cardNumber.isBlank();
+	}
+
+	private void reiniciar() throws SQLException {
 		
 		this.vr.reiniciar();
 		this.dispose();

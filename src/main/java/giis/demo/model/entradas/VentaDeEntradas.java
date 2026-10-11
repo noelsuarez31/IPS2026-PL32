@@ -20,7 +20,7 @@ public class VentaDeEntradas {
 	private int idPartido;
 	private List<Butaca> butacasSeleccionadas;
 	private List<Butaca> butacasDisponibles;
-	private JDBC jdbc = new JDBC();
+	private JDBC jdbc;
 
 	/**
 	 * Constructor por defecto de la clase
@@ -28,6 +28,7 @@ public class VentaDeEntradas {
 	public VentaDeEntradas() {
 
 		random = new Random();
+		jdbc = new JDBC();
 		butacasSeleccionadas = new ArrayList<Butaca>();
 
 	}

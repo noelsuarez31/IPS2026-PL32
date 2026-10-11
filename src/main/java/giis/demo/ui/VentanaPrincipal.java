@@ -252,7 +252,13 @@ public class VentanaPrincipal extends JFrame {
 			JMenuItem mntmReservaDeInstalaciones = new JMenuItem("Reserva de Instalaciones");
 			mntmReservaDeInstalaciones.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					abrirVentanaReserva();
+					try {
+						abrirVentanaReserva();
+					} catch (SQLException e1) {
+						
+						System.err.print("Se ha producido un error al intentar abrir la ventana de reserva");
+						e1.printStackTrace();
+					}
 				}
 			});
 			mnGestorDeInstalaciones.add(mntmReservaDeInstalaciones);
@@ -260,7 +266,7 @@ public class VentanaPrincipal extends JFrame {
 		return mnGestorDeInstalaciones;
 	}
 	
-	private void abrirVentanaReserva() {
+	private void abrirVentanaReserva() throws SQLException {
 		
 		VentanaReserva vr = new VentanaReserva(this);
 		this.setVisible(false);

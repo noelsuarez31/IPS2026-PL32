@@ -119,9 +119,12 @@ CREATE TABLE IF NOT EXISTS "horario_periodico" (
 );
 
 CREATE TABLE IF NOT EXISTS "Usuario" (
+	
 	"id_usuario" INTEGER PRIMARY KEY AUTOINCREMENT,
 	"nombre" TEXT NOT NULL,
-	"tarjeta_bancaria" TEXT NOT NULL
+	"tarjeta_bancaria" TEXT NOT NULL,
+	
+	UNIQUE("nombre", "tarjeta_bancaria")
 );
 
 CREATE TABLE IF NOT EXISTS "Instalacion" (

@@ -13,6 +13,8 @@ import giis.demo.jdbc.entradas.RegistrarVentaJdbc;
 import giis.demo.jdbc.equipo.CategoriaEquipoJdbc;
 import giis.demo.jdbc.equipo.EquipoJdbc;
 import giis.demo.jdbc.horarios.HorarioPeriodicoJdbc;
+import giis.demo.jdbc.reservas.InstalacionJdbc;
+import giis.demo.jdbc.reservas.UsuarioJdbc;
 import giis.demo.model.empleado.EmpleadoDeportivo;
 import giis.demo.model.empleado.EmpleadoNoDeportivo;
 import giis.demo.model.empleado.Entrenador;
@@ -23,6 +25,7 @@ import giis.demo.model.entradas.enumerados.TipoTribuna;
 import giis.demo.model.equipo.CategoriaEquipo;
 import giis.demo.model.equipo.Equipo;
 import giis.demo.model.horarios.HorarioPeriodico;
+import giis.demo.model.reserva.Instalacion;
 
 public class JDBC {
 
@@ -197,6 +200,39 @@ public class JDBC {
 	
 	public List<EmpleadoNoDeportivo> getEmpleadosNoDeportivos() throws SQLException {
 	    return HorarioPeriodicoJdbc.getEmpleadosNoDeportivos(con);
+	}
+	
+	/**
+	 * Devuelve las instalaciones disponibles a reservar
+	 * @return instalaciones disponibles para que un usuario externo realice la reserva
+	 * @throws SQLException
+	 */
+	public List<Instalacion> getAvailableInstalations() throws SQLException{
+		
+		return InstalacionJdbc.getAvailableInstalations(con);
+		
+	}
+	
+	/**
+	 * Comprueba si un usuario ya existe para evitar guardar clientes duplicados
+	 * @param name
+	 * @param card
+	 * @return true si el cliente ya está en la BBDD, false en caso contrario
+	 * @throws SQLException 
+	 */
+	private boolean checkUserExists(String name, String card) throws SQLException {
+		
+		return UsuarioJdbc.checkUserExists(con, name, card);
+		
+	}
+	
+	public boolean guardarUsuario(String name, String card) throws SQLException {
+				
+		if(checkUserExists(name, card)) {
+			return false;
+		}
+		
+		return UsuarioJdbc.guardarUsuario(con, name, card)==1;
 	}
 
 	public Connection getCon() {
