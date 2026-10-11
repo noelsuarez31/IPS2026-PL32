@@ -66,13 +66,15 @@ public class VentanaCrearFranjas extends JFrame{
 		this.crearFranjaService = vPrincipal.getCrearFranjaService();
 		
 		setTitle("Añadir franjas horarias a jugadores");
-		
+		pack();
+		setSize(800,600);
 		setLocationRelativeTo(null);
 		getContentPane().add(getPnSuperior(), BorderLayout.NORTH);
 		getContentPane().add(getPnCentral(), BorderLayout.CENTER);
 		getContentPane().add(getPnInferior(), BorderLayout.SOUTH);
 		
 		habilitarFormularioFranja(false);
+		cargarEntrenadoresEnCombo();
 	}
 
 	private JPanel getPnSuperior() {
@@ -104,7 +106,6 @@ public class VentanaCrearFranjas extends JFrame{
 				}
 			});
 			cbDniEntrenadores.setFont(new Font("Tahoma", Font.PLAIN, 16));
-			cargarEntrenadoresEnCombo();
 		}
 		
 		return cbDniEntrenadores;
@@ -162,7 +163,8 @@ public class VentanaCrearFranjas extends JFrame{
 			listJugadores.addListSelectionListener(new ListSelectionListener() {
 				public void valueChanged(ListSelectionEvent e) {
 					if(!e.getValueIsAdjusting()) {
-						// TODO EmpleadoDeportivo jugadorSeleccionado = ; (ALMACENAR EN SERVICIO)
+						EmpleadoDeportivo jugadorSeleccionado = listJugadores.getSelectedValue();
+						crearFranjaService.setJugadorSeleccionado(jugadorSeleccionado);
 						habilitarFormularioFranja(true);
 					}
 				}
