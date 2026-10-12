@@ -60,6 +60,10 @@ public class CrearFranjaService {
 			throw new NoAvailableSlotException("No se admiten valores nulos");
 		}
 		
+		if(yaHayEsaFranjaParaEseJugador(jugador, fechaFranja, horaInicio, horaFin)) {
+			throw new NoAvailableSlotException("Ya has añadido esa franja a este jugador");
+		}
+		
 		String motivoConflicto = equipoTienePartidoOEntrenamiento(jugador, fechaFranja, horaInicio, horaFin);
 		if(!motivoConflicto.isEmpty()) {
 			throw new NoAvailableSlotException(motivoConflicto);
@@ -84,6 +88,15 @@ public class CrearFranjaService {
 			throw new NoAvailableSlotException("La hora de inicio es anterior a ahora");
 		}
 		
+	}
+
+	private boolean yaHayEsaFranjaParaEseJugador(EmpleadoDeportivo jugador, LocalDate fechaFranja, LocalTime horaInicio,
+			LocalTime horaFin) {
+		try {
+			return jdbc.yaHayEsaFranjaParaEseJugador(jugador, fechaFranja, horaInicio, horaFin);
+		} catch(SQLException sqle) {
+			throw new SlotException(sqle.getMessage());
+		}
 	}
 
 	private String equipoTienePartidoOEntrenamiento(EmpleadoDeportivo jugador, LocalDate fechaFranja,

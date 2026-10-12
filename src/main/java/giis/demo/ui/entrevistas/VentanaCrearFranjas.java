@@ -203,13 +203,14 @@ public class VentanaCrearFranjas extends JFrame{
 	private JLabel getLbFecha() {
 		if (lbFecha == null) {
 			lbFecha = new JLabel("Fecha (ej: dd/MM/yyyy):");
+			lbFecha.setFont(new Font("Tahoma", Font.PLAIN, 17));
 		}
 		return lbFecha;
 	}
 	private JTextField getTxFecha() {
 		if (txFecha == null) {
 			txFecha = new JTextField();
-			txFecha.setFont(new Font("Tahoma", Font.PLAIN, 15));
+			txFecha.setFont(new Font("Tahoma", Font.PLAIN, 17));
 			txFecha.setColumns(10);
 		}
 		return txFecha;
@@ -225,14 +226,14 @@ public class VentanaCrearFranjas extends JFrame{
 	private JLabel getLbHoraInicio() {
 		if (lbHoraInicio == null) {
 			lbHoraInicio = new JLabel("Hora inicio (ej:HH:mm)");
-			lbHoraInicio.setFont(new Font("Tahoma", Font.PLAIN, 15));
+			lbHoraInicio.setFont(new Font("Tahoma", Font.PLAIN, 17));
 		}
 		return lbHoraInicio;
 	}
 	private JTextField getTxHoraInicio() {
 		if (txHoraInicio == null) {
 			txHoraInicio = new JTextField();
-			txHoraInicio.setFont(new Font("Tahoma", Font.PLAIN, 15));
+			txHoraInicio.setFont(new Font("Tahoma", Font.PLAIN, 17));
 			txHoraInicio.setColumns(10);
 		}
 		return txHoraInicio;
@@ -248,14 +249,14 @@ public class VentanaCrearFranjas extends JFrame{
 	private JLabel getLbHoraFin() {
 		if (lbHoraFin == null) {
 			lbHoraFin = new JLabel("Hora fin (ej:HH:mm)");
-			lbHoraFin.setFont(new Font("Tahoma", Font.PLAIN, 15));
+			lbHoraFin.setFont(new Font("Tahoma", Font.PLAIN, 17));
 		}
 		return lbHoraFin;
 	}
 	private JTextField getTxHoraFin() {
 		if (txHoraFin == null) {
 			txHoraFin = new JTextField();
-			txHoraFin.setFont(new Font("Tahoma", Font.PLAIN, 15));
+			txHoraFin.setFont(new Font("Tahoma", Font.PLAIN, 17));
 			txHoraFin.setColumns(10);
 		}
 		return txHoraFin;
@@ -281,7 +282,7 @@ public class VentanaCrearFranjas extends JFrame{
 					}
 				}
 			});
-			btnCrearFranja.setFont(new Font("Tahoma", Font.PLAIN, 15));
+			btnCrearFranja.setFont(new Font("Tahoma", Font.PLAIN, 17));
 		}
 		return btnCrearFranja;
 	}
@@ -293,7 +294,7 @@ public class VentanaCrearFranjas extends JFrame{
 					habilitarFormularioFranja(false);
 				}
 			});
-			btnCambiarJugador.setFont(new Font("Tahoma", Font.PLAIN, 15));
+			btnCambiarJugador.setFont(new Font("Tahoma", Font.PLAIN, 17));
 		}
 		return btnCambiarJugador;
 	}

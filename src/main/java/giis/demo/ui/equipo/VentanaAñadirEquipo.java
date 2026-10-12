@@ -265,10 +265,11 @@ public class VentanaAñadirEquipo extends JFrame {
 			cbSegundoEntrenador.setFont(new Font("Tahoma", Font.PLAIN, 15));
 			List<Entrenador> tecnicos = club.obtenerEntrenadoresDisponibles();
 			cbSegundoEntrenador.setModel(new DefaultComboBoxModel<Entrenador>(tecnicos.toArray(new Entrenador[0])));
+			gestionNoSonIguales(tecnicos);
 		}
 		return cbSegundoEntrenador;
 	}
-	
+
 	private JPanel getPnRestoDeTecnicos() {
 		if (pnRestoDeTecnicos == null) {
 			pnRestoDeTecnicos = new JPanel(new BorderLayout(0, 3));
@@ -453,5 +454,15 @@ public class VentanaAñadirEquipo extends JFrame {
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(null, ex.getMessage(), "Error de validación", JOptionPane.ERROR_MESSAGE);
         }
+	}
+	
+	private void gestionNoSonIguales(List<Entrenador> tecnicos) {
+	    if (tecnicos != null && tecnicos.size() > 1) {
+	        String dniPrimerEntrenador = ((Entrenador) getCbPrimerEntrenador().getSelectedItem()).getDni();
+	        String dniSegundoEntrenador = ((Entrenador) getCbSegundoEntrenador().getSelectedItem()).getDni();
+	        if(dniPrimerEntrenador.equals(dniSegundoEntrenador)) {
+	        	getCbSegundoEntrenador().setSelectedItem(tecnicos.get(1));
+	        }
+	    }
 	}
 }

@@ -233,4 +233,9 @@ public class JDBC {
 		return FranjaJdbc.equipoTienePartidoOEntrenamiento(con, jugador, fechaFranja, horaInicio, horaFin);
 	}
 
+	public boolean yaHayEsaFranjaParaEseJugador(EmpleadoDeportivo jugador, LocalDate fechaFranja, LocalTime horaInicio,
+			LocalTime horaFin) throws SQLException {
+		return FranjaJdbc.yaHayEsaFranjaParaEseJugador(con, jugador, fechaFranja, horaInicio, horaFin);
+	}
+
 }

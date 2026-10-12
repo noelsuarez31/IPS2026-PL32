@@ -35,6 +35,8 @@ public class FranjaJdbc {
 	private final static String QUERY_GET_TEAM_ID = 
 			"SELECT ed.id_equipo FROM Entrenador e, EmpleadoDeportivo ed WHERE e.dni=? "
 			+ "AND ed.dni=e.dni";
+	private final static String QUERY_SLOT_ALREADY_EXISTS = 
+			"SELECT * FROM FranjaHoraria WHERE dni_jugador=? AND fecha=?";
 	
 	
 	public static List<EmpleadoDeportivo> cargarJugadoresEquipoProfesional(Connection con, int idEquipoProfesional) 
@@ -175,6 +177,30 @@ public class FranjaJdbc {
 		}
 		
 		return motivoConflicto;
+	}
+
+	public static boolean yaHayEsaFranjaParaEseJugador(Connection con, EmpleadoDeportivo jugador, LocalDate fechaFranja,
+			LocalTime horaInicio, LocalTime horaFin) throws SQLException {
+		try(PreparedStatement pst = con.prepareStatement(QUERY_SLOT_ALREADY_EXISTS);){
+			pst.setString(1, jugador.getDni());
+			pst.setObject(2, fechaFranja);
+			ResultSet rs = pst.executeQuery();
+			while(rs.next()) {
+				String horaInicioStr = rs.getString("hora_inicio");
+				String horaFinStr = rs.getString("hora_fin");
+				
+				if (horaInicioStr != null && horaFinStr != null) {
+					LocalTime horaInicioExistente = LocalTime.parse(horaInicioStr, DateTimeFormatter.ofPattern(horaInicioStr.length() == 5 ? "HH:mm" : "HH:mm:ss"));
+					LocalTime horaFinExistente = LocalTime.parse(horaFinStr, DateTimeFormatter.ofPattern(horaFinStr.length() == 5 ? "HH:mm" : "HH:mm:ss"));
+					
+					if (horaInicio.isBefore(horaFinExistente) && horaFin.isAfter(horaInicioExistente)) {
+						return true;
+					}
+				}
+			}
+		}
+		
+		return false;
 	}
 	
 }
