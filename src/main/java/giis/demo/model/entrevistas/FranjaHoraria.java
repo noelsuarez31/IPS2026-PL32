@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 public class FranjaHoraria {
-	private int idFranja;
+	private int idFranja; 
 	private String dniJugador;
 	private LocalDate fecha;
 	private LocalTime horaInicio;

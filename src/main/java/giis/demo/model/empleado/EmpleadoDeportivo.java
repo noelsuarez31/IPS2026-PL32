@@ -7,7 +7,7 @@ import java.time.Period;
 import giis.demo.exceptions.EmployeeException;
 
 public class EmpleadoDeportivo extends BaseEmpleado{
-	private Posicion posicion;
+	private Posicion posicion; // en bbdd en mayusculas (ENTRENADOR, JUGADOR, ...)
 	
 	private int idEquipo;
 	

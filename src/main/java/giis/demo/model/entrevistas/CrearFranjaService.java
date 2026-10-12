@@ -15,15 +15,28 @@ public class CrearFranjaService {
 	private EmpleadoDeportivo jugadorSeleccionado;
 	private JDBC jdbc = new JDBC();
 	
-	
+	/**
+	 * Asigna el jugador seleccionado en la lista
+	 * @param jugador
+	 */
 	public void setJugadorSeleccionado(EmpleadoDeportivo jugador) {
 		this.jugadorSeleccionado = jugador;
 	}
 	
+	/**
+	 * Devuelve el jugador seleccionado en la lista 
+	 * @return
+	 */
 	public EmpleadoDeportivo getJugadorSeleccionado() {
 		return this.jugadorSeleccionado;
 	}
 	
+	/**
+	 * Devuelve una lista de jugadores que pertenecen al equipo profesional
+	 * con id el que se pasa por parametro
+	 * @param idEquipo
+	 * @return
+	 */
 	public List<EmpleadoDeportivo> obtenerJugadoresEquipoProfesional(int idEquipo){
 		try {
 			return jdbc.cargarJugadoresEquipoProfesional(idEquipo);
@@ -32,6 +45,11 @@ public class CrearFranjaService {
 		}
 	}
 	
+	/**
+	 * Devuelve una lista de dnis pertenecientes a los entrenadores de 
+	 * equipos profesionales
+	 * @return
+	 */
 	public List<String> obtenerDnisEntrenadoresDeEquiposProfesionales(){
 		try {
 			return jdbc.obtenerDnisEntrenadoresDeEquiposProfesionales();
@@ -40,6 +58,13 @@ public class CrearFranjaService {
 		}
 	}
 	
+	/**
+	 * Almacena la franja para los datos pasados por parametro
+	 * @param fechaFranja
+	 * @param horaInicio
+	 * @param horaFin
+	 * @throws NoAvailableSlotException
+	 */
 	public void crearFranjaHoraria(LocalDate fechaFranja, LocalTime horaInicio,
 			LocalTime horaFin) throws NoAvailableSlotException {
 		validarCampos(jugadorSeleccionado, fechaFranja, horaInicio, horaFin);
@@ -116,9 +141,15 @@ public class CrearFranjaService {
 		}
 	}
 
-	public int getIdEquipo(String nifEntrenador) {
+	/**
+	 * Devuelve el id del equipo que entrena el entrenador con dni el que 
+	 * se pasa por parametro
+	 * @param dniEntrenador
+	 * @return
+	 */
+	public int getIdEquipo(String dniEntrenador) {
 		try {
-			return jdbc.getIdEquipo(nifEntrenador);
+			return jdbc.getIdEquipo(dniEntrenador);
 		} catch (SQLException sqle) {
 			throw new SlotException(sqle.getMessage());
 		}

@@ -5,7 +5,7 @@ import java.time.LocalDate;
 import java.util.Objects;
 
 public class Entrenador extends EmpleadoDeportivo {
-	private TipoEntrenador tipoEntrenador;
+	private TipoEntrenador tipoEntrenador; // en bbdd en mayusculas
 	
 	public Entrenador(String dni, String nombre, String apellido, BigDecimal salario, 
 			LocalDate fechaDeNacimiento, String numeroTelefono) {

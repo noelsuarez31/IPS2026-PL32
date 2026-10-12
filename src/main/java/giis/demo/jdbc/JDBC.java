@@ -207,32 +207,85 @@ public class JDBC {
 		return con;
 	}
 
+	/**
+	 * Devuelve una lista de los jugadores que pertenecen al equipo
+	 * que tiene como id el pasado por parametro
+	 * @param idEquipoProfesional
+	 * @return
+	 * @throws SQLException
+	 */
 	public List<EmpleadoDeportivo> cargarJugadoresEquipoProfesional(int idEquipoProfesional) throws SQLException {
 		return FranjaJdbc.cargarJugadoresEquipoProfesional(con, idEquipoProfesional);
 	}
 
+	/**
+	 * Devuelve una lista de dnis que pertenecen a entrenadores de equipos
+	 * profesionales
+	 * @return
+	 * @throws SQLException
+	 */
 	public List<String> obtenerDnisEntrenadoresDeEquiposProfesionales() throws SQLException {
 		return FranjaJdbc.obtenerDnisEntrenadoresDeEquiposProfesionales(con);
 	}
 
+	/**
+	 * Almacena la franja segun los datos pasados por parametro
+	 * @param nuevaFranja
+	 * @throws SQLException
+	 */
 	public void almacenarFranja(FranjaHoraria nuevaFranja) throws SQLException {
 		FranjaJdbc.almacenarFranja(con, nuevaFranja);
 	}
 
+	/**
+	 * Devuelve true si el jugador tiene asignada una entrevista para esa fecha
+	 * @param jugador
+	 * @param fechaFranja
+	 * @return
+	 * @throws SQLException
+	 */
 	public boolean jugadorTieneAsignadaEntrevista(EmpleadoDeportivo jugador, LocalDate fechaFranja) 
 			throws SQLException {
 		return FranjaJdbc.jugadorTieneAsignadaEntrevista(con, jugador, fechaFranja);
 	}
 
-	public int getIdEquipo(String nifEntrenador) throws SQLException {
-		return FranjaJdbc.getIdEquipo(con, nifEntrenador);
+	/**
+	 * Devuelve el id del equipo al que entrena el entrenador con dni
+	 * el que se pasa por parametro
+	 * @param dniEntrenador
+	 * @return
+	 * @throws SQLException
+	 */
+	public int getIdEquipo(String dniEntrenador) throws SQLException {
+		return FranjaJdbc.getIdEquipo(con, dniEntrenador);
 	}
 
+	/**
+	 * Devuelve true si el equipo al que pertenece el jugador tiene 
+	 * asignado un entrenamiento/partido que tenga conflicto con la
+	 * fecha y horas pasadas por parametro
+	 * @param jugador
+	 * @param fechaFranja
+	 * @param horaInicio
+	 * @param horaFin
+	 * @return
+	 * @throws SQLException
+	 */
 	public String equipoTienePartidoOEntrenamiento(EmpleadoDeportivo jugador, LocalDate fechaFranja,
 			LocalTime horaInicio, LocalTime horaFin) throws SQLException {
 		return FranjaJdbc.equipoTienePartidoOEntrenamiento(con, jugador, fechaFranja, horaInicio, horaFin);
 	}
 
+	/**
+	 * Devuelve true si el jugador pasado por parametro ya tiene una franja
+	 * para esa fecha y hora o tiene otra que tenga conflicto
+	 * @param jugador
+	 * @param fechaFranja
+	 * @param horaInicio
+	 * @param horaFin
+	 * @return
+	 * @throws SQLException
+	 */
 	public boolean yaHayEsaFranjaParaEseJugador(EmpleadoDeportivo jugador, LocalDate fechaFranja, LocalTime horaInicio,
 			LocalTime horaFin) throws SQLException {
 		return FranjaJdbc.yaHayEsaFranjaParaEseJugador(con, jugador, fechaFranja, horaInicio, horaFin);

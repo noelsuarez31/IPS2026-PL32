@@ -38,7 +38,14 @@ public class FranjaJdbc {
 	private final static String QUERY_SLOT_ALREADY_EXISTS = 
 			"SELECT * FROM FranjaHoraria WHERE dni_jugador=? AND fecha=?";
 	
-	
+	/**
+	 * Devuelve una lista de EmpleadoDeportivo con los jugadores que pertenecen al equipo 
+	 * profesional cuyo id se pasa por parametro
+	 * @param con
+	 * @param idEquipoProfesional
+	 * @return
+	 * @throws SQLException
+	 */
 	public static List<EmpleadoDeportivo> cargarJugadoresEquipoProfesional(Connection con, int idEquipoProfesional) 
 			throws SQLException {
 		List<EmpleadoDeportivo> jugadores = new ArrayList<EmpleadoDeportivo>();
@@ -63,6 +70,13 @@ public class FranjaJdbc {
 		return jugadores;
 	}
 
+	/**
+	 * Devuelve una lista de dnis que pertenecen a los entrenadores que tienen asignado
+	 * un equipo profesional
+	 * @param con
+	 * @return
+	 * @throws SQLException
+	 */
 	public static List<String> obtenerDnisEntrenadoresDeEquiposProfesionales(Connection con) 
 			throws SQLException {
 		List<String> dnis = new ArrayList<String>();
@@ -78,6 +92,12 @@ public class FranjaJdbc {
 		return dnis;
 	}
 
+	/**
+	 * Almacena la franja cuyos datos se pasan por parametro
+	 * @param con
+	 * @param nuevaFranja
+	 * @throws SQLException
+	 */
 	public static void almacenarFranja(Connection con, FranjaHoraria nuevaFranja) throws SQLException {
 		try(PreparedStatement pst = con.prepareStatement(QUERY_SAVE_SLOT);){
 			String dniJugador = nuevaFranja.getDniJugador();
@@ -97,6 +117,15 @@ public class FranjaJdbc {
 		}
 	}
 
+	/**
+	 * Devuelve true si el jugador pasado por parametro tiene asignada alguna 
+	 * entrevista en la fecha pasada por parametro
+	 * @param con
+	 * @param jugador
+	 * @param fechaFranja
+	 * @return
+	 * @throws SQLException
+	 */
 	public static boolean jugadorTieneAsignadaEntrevista(Connection con, EmpleadoDeportivo jugador,
 			LocalDate fechaFranja) throws SQLException {
 		boolean tieneEntrevista = false;
@@ -113,6 +142,14 @@ public class FranjaJdbc {
 		return tieneEntrevista;
 	}
 
+	/**
+	 * Devuelve el id del equipo que tiene como entrenador el cual tiene 
+	 * de dni el pasado por parametro
+	 * @param con
+	 * @param dniEntrenador
+	 * @return
+	 * @throws SQLException
+	 */
 	public static int getIdEquipo(Connection con, String dniEntrenador) throws SQLException {
 		int id_equipo = 0;
 		try(PreparedStatement pst = con.prepareStatement(QUERY_GET_TEAM_ID)){
@@ -126,6 +163,17 @@ public class FranjaJdbc {
 		return id_equipo;
 	}
 
+	/**
+	 * Devuelve true si el equipo al que pertenece el jugador pasado por parametro
+	 * tiene algun partido/entrenamiento que coincida con esa fecha y horas
+	 * @param con
+	 * @param jugador
+	 * @param fechaFranja
+	 * @param horaInicio
+	 * @param horaFin
+	 * @return
+	 * @throws SQLException
+	 */
 	public static String equipoTienePartidoOEntrenamiento(Connection con, EmpleadoDeportivo jugador,
 			LocalDate fechaFranja, LocalTime horaInicio, LocalTime horaFin) throws SQLException {
 		String motivoConflicto = "";
@@ -179,6 +227,17 @@ public class FranjaJdbc {
 		return motivoConflicto;
 	}
 
+	/**
+	 * Devuelve true si el jugador que se pasa por parametro ya tiene esa franja 
+	 * asignada o tiene una con la que hay conflicto
+	 * @param con
+	 * @param jugador
+	 * @param fechaFranja
+	 * @param horaInicio
+	 * @param horaFin
+	 * @return
+	 * @throws SQLException
+	 */
 	public static boolean yaHayEsaFranjaParaEseJugador(Connection con, EmpleadoDeportivo jugador, LocalDate fechaFranja,
 			LocalTime horaInicio, LocalTime horaFin) throws SQLException {
 		try(PreparedStatement pst = con.prepareStatement(QUERY_SLOT_ALREADY_EXISTS);){
