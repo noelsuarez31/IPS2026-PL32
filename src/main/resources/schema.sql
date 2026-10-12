@@ -4,7 +4,7 @@
 --Para giis.demo.tkrun:
 Drop table if exists Entrada;
 drop table if exists Venta;
-drop table if exists Partido;
+--drop table if exists Partido;
 drop table if exists Butaca;
 
 drop table if exists BaseEmpleado;
@@ -20,7 +20,7 @@ drop table if exists Usuario;
 drop table if exists Instalacion;
 
 
-drop table if exists Partido2;
+drop table if exists Partido;
 drop table if exists Entrenamiento;
 drop table if exists FranjaHoraria;
 drop table if exists Entrevista;
@@ -46,16 +46,7 @@ CREATE TABLE IF NOT EXISTS "entrada" (
 	FOREIGN KEY("id_partido") REFERENCES "partido"("id_partido"),
 	FOREIGN KEY("id_venta") REFERENCES "venta"("id_venta")
 );
-CREATE TABLE IF NOT EXISTS "partido" (
-	"id_partido"	INTEGER,
-	"fecha"	DATE NOT NULL,
-	"id_local"	INTEGER NOT NULL,
-	"id_visitante"	INTEGER NOT NULL,
-	PRIMARY KEY("id_partido"),
-	FOREIGN KEY("id_local") REFERENCES "equipo"("id_equipo"),
-	FOREIGN KEY("id_visitante") REFERENCES "equipo"("id_equipo"),
-	CHECK("id_local" <> "id_visitante")
-);
+
 CREATE TABLE IF NOT EXISTS "venta" (
 	"id_venta"	INTEGER,
 	"fecha"	TEXT NOT NULL,
@@ -155,10 +146,7 @@ CREATE TABLE IF NOT EXISTS "Reserva" (
 	CHECK("hora_inicio" < "hora_fin")
 );
 
-
-);
-
-CREATE TABLE IF NOT EXISTS "Partido2" (
+CREATE TABLE IF NOT EXISTS "Partido" (
 	"id_partido" INTEGER PRIMARY KEY AUTOINCREMENT,
 	"fecha"	DATE NOT NULL,
 	"hora_inicio" TIME NOT NULL,
