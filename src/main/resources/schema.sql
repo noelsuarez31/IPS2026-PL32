@@ -21,6 +21,9 @@ drop table if exists Entrenamiento;
 drop table if exists FranjaHoraria;
 drop table if exists Entrevista;
 
+drop table if exists LineaVenta;
+drop table if exists Producto;
+
 CREATE TABLE IF NOT EXISTS "butaca" (
 	"id_butaca"	INTEGER,
 	"tribuna"	TEXT NOT NULL CHECK("tribuna" IN ('A', 'B', 'C', 'D')),
@@ -153,4 +156,21 @@ CREATE TABLE IF NOT EXISTS "Entrevista" (
 	"id_entrevista" INTEGER PRIMARY KEY AUTOINCREMENT,
 	"id_franja" NOT NULL,
 	FOREIGN KEY ("id_franja") REFERENCES "FranjaHoraria"("id_franja")
+);
+
+CREATE TABLE IF NOT EXISTS "Producto" (
+	"id_producto" INTEGER PRIMARY KEY AUTOINCREMENT,
+	"nombre" TEXT NOT NULL,
+	"tipo" TEXT NOT NULL,
+	"precio" REAL NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS "LineaVenta" (
+	"id_venta" INTEGER NOT NULL,
+	"id_producto" INTEGER NOT NULL,
+	"unidades" INTEGER NOT NULL,
+	"precio_unitario" REAL NOT NULL,
+	PRIMARY KEY("id_venta", "id_producto"),
+	FOREIGN KEY("id_venta") REFERENCES "venta"("id_venta") ON DELETE CASCADE,
+	FOREIGN KEY("id_producto") REFERENCES "Producto"("id_producto") ON DELETE CASCADE
 );

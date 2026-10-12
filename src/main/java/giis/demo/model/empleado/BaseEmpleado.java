@@ -20,7 +20,7 @@ public abstract class BaseEmpleado {
 		}
 		
 		if(nombre == null || nombre.isBlank()) {
-			throw new EmployeeException("dni no puede ser null ni blanco");
+			throw new EmployeeException("nombre no puede ser null ni blanco");
 		}
 		
 		if(apellido == null || apellido.isBlank()) {
@@ -69,7 +69,7 @@ public abstract class BaseEmpleado {
 		return this.numeroDeTelefono;
 	}
 	
-	public String getSalario() {
-		return this.numeroDeTelefono;
+	public BigDecimal getSalario() {
+		return this.salario;
 	}
 }

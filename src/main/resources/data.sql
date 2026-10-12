@@ -15,6 +15,16 @@ delete from Partido2;
 delete from Entrenamiento;
 delete from FranjaHoraria;
 delete from Entrevista;
+delete from Producto;
+delete from LineaVenta;
+
+INSERT INTO "Producto" ("nombre", "tipo", "precio") VALUES 
+('Sudadera', 'ParteArriba', 65.00),
+('Camiseta', 'ParteArriba', 35.00),
+('Pantalon', 'ParteAbajo', 35.00),
+('Taza', 'Accesorios', 12.00),
+('Gorra', 'Accesorios', 16.00),
+('Mochila', 'Accesorios', 19.00);
 
 INSERT INTO "butaca" VALUES (1,'A','A',1,1);
 INSERT INTO "butaca" VALUES (2,'A','A',1,2);

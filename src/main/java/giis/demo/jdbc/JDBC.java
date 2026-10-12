@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Map;
 
 import giis.demo.jdbc.empleado.EmpleadoDeportivoJdbc;
 import giis.demo.jdbc.empleado.EntrenadorJdbc;
@@ -16,6 +17,7 @@ import giis.demo.jdbc.entrevistas.FranjaJdbc;
 import giis.demo.jdbc.equipo.CategoriaEquipoJdbc;
 import giis.demo.jdbc.equipo.EquipoJdbc;
 import giis.demo.jdbc.horarios.HorarioPeriodicoJdbc;
+import giis.demo.jdbc.tienda.RegistrarVentaMerchandising;
 import giis.demo.model.empleado.EmpleadoDeportivo;
 import giis.demo.model.empleado.EmpleadoNoDeportivo;
 import giis.demo.model.empleado.Entrenador;
@@ -27,6 +29,7 @@ import giis.demo.model.entrevistas.FranjaHoraria;
 import giis.demo.model.equipo.CategoriaEquipo;
 import giis.demo.model.equipo.Equipo;
 import giis.demo.model.horarios.HorarioPeriodico;
+import giis.demo.model.tienda.Producto;
 
 public class JDBC {
 
@@ -289,6 +292,25 @@ public class JDBC {
 	public boolean yaHayEsaFranjaParaEseJugador(EmpleadoDeportivo jugador, LocalDate fechaFranja, LocalTime horaInicio,
 			LocalTime horaFin) throws SQLException {
 		return FranjaJdbc.yaHayEsaFranjaParaEseJugador(con, jugador, fechaFranja, horaInicio, horaFin);
+	}
+	
+	/**
+	 * Obtiene el catálogo de productos disponibles en la base de datos
+	 * @return lista de productos
+	 * @throws SQLException
+	 */
+	public List<Producto> getProductosTienda() throws SQLException {
+		return giis.demo.jdbc.tienda.ProductoJdbc.getProductos(con);
+	}
+
+	/**
+	 * Almacena la venta de merchandising de forma transaccional
+	 * @param total Importe total de la cesta
+	 * @param lineasCesta Mapa con los productos y sus cantidades
+	 * @throws SQLException
+	 */
+	public void almacenarVentaMerchandising(double total, Map<giis.demo.model.tienda.Producto, Integer> lineasCesta) throws SQLException {
+		RegistrarVentaMerchandising.registrar(con, total, lineasCesta);
 	}
 
 }
