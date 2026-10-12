@@ -3812,8 +3812,8 @@ INSERT INTO "EmpleadoDeportivo" ("dni", "posicion") VALUES ('55667788M', 'JUGADO
 INSERT INTO "EmpleadoDeportivo" ("dni", "posicion") VALUES ('99887766N', 'JUGADOR');
 INSERT INTO "EmpleadoDeportivo" ("dni", "posicion") VALUES ('33445566O', 'JUGADOR');
 INSERT INTO "EmpleadoDeportivo" ("dni", "posicion") VALUES ('77889900P', 'JUGADOR');
-INSERT INTO "Entrenador" ("dni", "tipo_entrenador") VALUES ('33333333C', 'Primer Entrenador');
-INSERT INTO "Entrenador" ("dni", "tipo_entrenador") VALUES ('66666666F', 'Segundo Entrenador');
+INSERT INTO "Entrenador" ("dni", "tipo_entrenador") VALUES ('33333333C', 'PRIMER_ENTRENADOR');
+INSERT INTO "Entrenador" ("dni", "tipo_entrenador") VALUES ('66666666F', 'SEGUNDO_ENTRENADOR');
 INSERT INTO "BaseEmpleado" ("dni", "nombre", "apellido", "salario", "fecha_nacimiento", "numero_de_telefono") 
 VALUES ('10101010X', 'Luis', 'García', 5000.00, '1980-04-10', '600111222');
 INSERT INTO "BaseEmpleado" ("dni", "nombre", "apellido", "salario", "fecha_nacimiento", "numero_de_telefono") 
@@ -3826,10 +3826,10 @@ INSERT INTO "EmpleadoDeportivo" ("dni", "posicion") VALUES ('10101010X', 'ENTREN
 INSERT INTO "EmpleadoDeportivo" ("dni", "posicion") VALUES ('20202020Y', 'ENTRENADOR');
 INSERT INTO "EmpleadoDeportivo" ("dni", "posicion") VALUES ('30303030Z', 'ENTRENADOR');
 INSERT INTO "EmpleadoDeportivo" ("dni", "posicion") VALUES ('40404040W', 'ENTRENADOR');
-INSERT INTO "Entrenador" ("dni", "tipo_entrenador") VALUES ('10101010X', 'Primer Entrenador');
-INSERT INTO "Entrenador" ("dni", "tipo_entrenador") VALUES ('20202020Y', 'Segundo Entrenador');
-INSERT INTO "Entrenador" ("dni", "tipo_entrenador") VALUES ('30303030Z', 'Primer Entrenador');
-INSERT INTO "Entrenador" ("dni", "tipo_entrenador") VALUES ('40404040W', 'Segundo Entrenador');
+INSERT INTO "Entrenador" ("dni", "tipo_entrenador") VALUES ('10101010X', 'PRIMER_ENTRENADOR');
+INSERT INTO "Entrenador" ("dni", "tipo_entrenador") VALUES ('20202020Y', 'SEGUNDO_ENTRENADOR');
+INSERT INTO "Entrenador" ("dni", "tipo_entrenador") VALUES ('30303030Z', 'PRIMER_ENTRENADOR');
+INSERT INTO "Entrenador" ("dni", "tipo_entrenador") VALUES ('40404040W', 'SEGUNDO_ENTRENADOR');
 INSERT INTO "BaseEmpleado" ("dni", "nombre", "apellido", "salario", "fecha_nacimiento", "numero_de_telefono") 
 VALUES ('50505050A', 'Mario', 'Suárez', 2000.00, '1995-02-10', '610111111');
 INSERT INTO "BaseEmpleado" ("dni", "nombre", "apellido", "salario", "fecha_nacimiento", "numero_de_telefono") 

@@ -5,10 +5,12 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import giis.demo.ui.tienda.VentanaTienda;
+import giis.demo.model.contrataciones.GestorEmpleados;
 import giis.demo.model.entrevistas.CrearFranjaService;
 import giis.demo.model.equipo.AñadirEquipoService;
 import giis.demo.model.horarios.GestionHorariosPeriodicos;
 import giis.demo.model.tienda.VentaMerchandising;
+import giis.demo.ui.contrataciones.VentanaAltaEmpleado;
 import giis.demo.ui.entradas.VentanaVentaEntradas;
 import giis.demo.ui.equipo.VentanaAñadirEquipo;
 import giis.demo.ui.horarios.VentanaHorarioPeriodico;
@@ -30,6 +32,7 @@ public class VentanaPrincipal extends JFrame {
 	private AñadirEquipoService añadirEquipo = new AñadirEquipoService();
 	private GestionHorariosPeriodicos ghp = new GestionHorariosPeriodicos();
 	private CrearFranjaService cfs = new CrearFranjaService();
+	private GestorEmpleados gestorEmpleados = new GestorEmpleados();
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
@@ -47,6 +50,7 @@ public class VentanaPrincipal extends JFrame {
 	private JMenuItem mntmAñadirEquipo;
 	private JMenuItem mntmAñadirHorarioPeriodico;
 	private JMenuItem mntmCrearFranjas;
+	private JMenuItem mntmAltaEmpleado;
 
 	/**
 	 * Create the frame.
@@ -134,13 +138,40 @@ public class VentanaPrincipal extends JFrame {
 		return mnEntrenador;
 	}
 	private JMenu getMnGerente() {
-		if (mnGerente == null) {
-			mnGerente = new JMenu("Gerente");
-			mnGerente.setMnemonic('G');
-			mnGerente.add(getMntmAñadirEquipo());
-			mnGerente.add(getMntmAñadirHorarioPeriodico());
-		}
-		return mnGerente;
+	    if (mnGerente == null) {
+	        mnGerente = new JMenu("Gerente");
+	        mnGerente.setMnemonic('G');
+	        mnGerente.add(getMntmAñadirEquipo());
+	        mnGerente.add(getMntmAñadirHorarioPeriodico());
+	        mnGerente.add(getMntmAltaEmpleado());
+	    }
+	    return mnGerente;
+	}
+	private JMenuItem getMntmAltaEmpleado() {
+	    if (mntmAltaEmpleado == null) {
+	        mntmAltaEmpleado = new JMenuItem("Alta de empleado");
+	        mntmAltaEmpleado.addActionListener(new ActionListener() {
+	            public void actionPerformed(ActionEvent e) {
+	                abrirVentanaAltaEmpleado();
+	            }
+	        });
+	    }
+	    return mntmAltaEmpleado;
+	}
+
+	private void abrirVentanaAltaEmpleado() {
+	    VentanaAltaEmpleado vAltaEmpleado = new VentanaAltaEmpleado(this.gestorEmpleados);
+	    
+	    // Mostrar ventana principal al cerrar
+	    vAltaEmpleado.addWindowListener(new java.awt.event.WindowAdapter() {
+	        @Override
+	        public void windowClosed(java.awt.event.WindowEvent windowEvent) {
+	            VentanaPrincipal.this.setVisible(true);
+	        }
+	    });
+	    
+	    this.setVisible(false); 
+	    vAltaEmpleado.setVisible(true);
 	}
 	private JMenu getMnVendedorDeEntradas() {
 		if (mnVendedorDeEntradas == null) {
