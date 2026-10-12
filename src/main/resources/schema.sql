@@ -138,7 +138,7 @@ CREATE TABLE IF NOT EXISTS "Entrenamiento" (
 	"hora_fin" TIME NOT NULL,
 	"id_equipo" INTEGER NOT NULL,
 	FOREIGN KEY ("id_equipo") REFERENCES "Equipo"("id_equipo")
-)
+);
 
 CREATE TABLE IF NOT EXISTS "FranjaHoraria" (
 	"id_franja" INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -147,10 +147,10 @@ CREATE TABLE IF NOT EXISTS "FranjaHoraria" (
 	"hora_inicio" TIME NOT NULL,
 	"hora_fin" TIME NOT NULL,
 	FOREIGN KEY ("dni_jugador") REFERENCES "EmpleadoDeportivo"("dni")
-)
+);
 
 CREATE TABLE IF NOT EXISTS "Entrevista" (
 	"id_entrevista" INTEGER PRIMARY KEY AUTOINCREMENT,
 	"id_franja" NOT NULL,
 	FOREIGN KEY ("id_franja") REFERENCES "FranjaHoraria"("id_franja")
-)  
+);

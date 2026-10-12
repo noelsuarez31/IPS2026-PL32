@@ -228,7 +228,7 @@ public class JDBC {
 		return FranjaJdbc.getIdEquipo(con, nifEntrenador);
 	}
 
-	public boolean equipoTienePartidoOEntrenamiento(EmpleadoDeportivo jugador, LocalDate fechaFranja,
+	public String equipoTienePartidoOEntrenamiento(EmpleadoDeportivo jugador, LocalDate fechaFranja,
 			LocalTime horaInicio, LocalTime horaFin) throws SQLException {
 		return FranjaJdbc.equipoTienePartidoOEntrenamiento(con, jugador, fechaFranja, horaInicio, horaFin);
 	}

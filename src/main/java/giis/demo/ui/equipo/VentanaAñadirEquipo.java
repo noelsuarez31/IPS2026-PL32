@@ -117,7 +117,7 @@ public class VentanaAñadirEquipo extends JFrame {
 	private JLabel getLbTipoEquipo() {
 		if (lbTipoEquipo == null) {
 			lbTipoEquipo = new JLabel("Tipo de Equipo:");
-			lbTipoEquipo.setFont(new Font("Tahoma", Font.PLAIN, 16));
+			lbTipoEquipo.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		}
 		return lbTipoEquipo;
 	}
@@ -126,7 +126,7 @@ public class VentanaAñadirEquipo extends JFrame {
 		if (cbTipoEquipo == null) {
 			cbTipoEquipo = new JComboBox<String>();
 			cbTipoEquipo.setModel(new DefaultComboBoxModel<String>(new String[] {"Profesional", "En formacion"}));
-			cbTipoEquipo.setFont(new Font("Tahoma", Font.PLAIN, 16));
+			cbTipoEquipo.setFont(new Font("Tahoma", Font.PLAIN, 14));
 			cbTipoEquipo.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					String seleccionado = (String) cbTipoEquipo.getSelectedItem();
@@ -158,7 +158,7 @@ public class VentanaAñadirEquipo extends JFrame {
 	private JLabel getLbCategoriaEquipo() {
 		if (lbCategoriaEquipo == null) {
 			lbCategoriaEquipo = new JLabel("Categoria del Equipo:");
-			lbCategoriaEquipo.setFont(new Font("Tahoma", Font.PLAIN, 16));
+			lbCategoriaEquipo.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		}
 		return lbCategoriaEquipo;
 	}
@@ -187,7 +187,7 @@ public class VentanaAñadirEquipo extends JFrame {
 			        }
 			    }
 			});
-			cbCategoriaEquipo.setFont(new Font("Tahoma", Font.PLAIN, 16));
+			cbCategoriaEquipo.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		}
 		return cbCategoriaEquipo;
 	}
@@ -394,14 +394,14 @@ public class VentanaAñadirEquipo extends JFrame {
 	private JLabel getLbNombreEquipo() {
 		if (lbNombreEquipo == null) {
 			lbNombreEquipo = new JLabel("Nombre del equipo:");
-			lbNombreEquipo.setFont(new Font("Tahoma", Font.PLAIN, 16));
+			lbNombreEquipo.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		}
 		return lbNombreEquipo;
 	}
 	private JTextField getTxNombreEquipo() {
 		if (txNombreEquipo == null) {
 			txNombreEquipo = new JTextField();
-			txNombreEquipo.setFont(new Font("Tahoma", Font.PLAIN, 16));
+			txNombreEquipo.setFont(new Font("Tahoma", Font.PLAIN, 14));
 			txNombreEquipo.setColumns(10);
 		}
 		return txNombreEquipo;

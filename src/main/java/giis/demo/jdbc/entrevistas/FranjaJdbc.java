@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,22 +18,23 @@ import giis.demo.model.entrevistas.FranjaHoraria;
 public class FranjaJdbc {
 	private final static String QUERY_GET_PLAYERS_PROFESIONAL_TEAM = 
 			"SELECT * FROM EmpleadoDeportivo ed, BaseEmpleado bd WHERE id_equipo=? AND "
-			+ "bd.dni=ed.dni";
+			+ "bd.dni=ed.dni AND posicion='JUGADOR'";
 	private final static String QUERY_GET_DNIS_FOR_TRAINERS_PROFESIONAL_TEAMS = 
-			"SELECT dni FROM Entrenador en, EmpleadoDeportivo ed, Equipo e WHERE "
+			"SELECT en.dni FROM Entrenador en, EmpleadoDeportivo ed, Equipo e WHERE "
 			+ "ed.id_equipo=e.id_equipo AND ed.dni=en.dni AND e.tipo_equipo='Profesional'";
 	private final static String QUERY_SAVE_SLOT = 
 			"INSERT INTO FranjaHoraria (dni_jugador, fecha, hora_inicio, hora_fin) VALUES "
 			+ "(?,?,?,?)";
 	private final static String QUERY_GET_INTERVIEW_ASSOCIATED_TO_PLAYER = 
-			"SELECT id_entrevista FROM Entrevista e, FranjaHoraria f WHERE "
+			"SELECT e.id_entrevista FROM Entrevista e, FranjaHoraria f WHERE "
 			+ "e.id_franja=f.id_franja AND f.fecha=? AND f.dni_jugador=?";
 	private final static String QUERY_GET_MATCHES_OF_TEAM_FOR_DATE = "SELECT * FROM Partido2 "
 			+ "WHERE (id_local=? OR id_visitante=?) AND fecha=?";
 	private final static String QUERY_GET_TRAINING_SESSIONS_OF_TEAM_FOR_DATE = "SELECT * FROM Entrenamiento "
 			+ "WHERE id_equipo=? AND fecha=?";
 	private final static String QUERY_GET_TEAM_ID = 
-			"SELECT id_equipo FROM Entrenador WHERE dni=?";
+			"SELECT ed.id_equipo FROM Entrenador e, EmpleadoDeportivo ed WHERE e.dni=? "
+			+ "AND ed.dni=e.dni";
 	
 	
 	public static List<EmpleadoDeportivo> cargarJugadoresEquipoProfesional(Connection con, int idEquipoProfesional) 
@@ -122,23 +124,31 @@ public class FranjaJdbc {
 		return id_equipo;
 	}
 
-	public static boolean equipoTienePartidoOEntrenamiento(Connection con, EmpleadoDeportivo jugador,
+	public static String equipoTienePartidoOEntrenamiento(Connection con, EmpleadoDeportivo jugador,
 			LocalDate fechaFranja, LocalTime horaInicio, LocalTime horaFin) throws SQLException {
-		boolean tienePartido = false;
-		boolean tieneEntrenamiento = false;
+		String motivoConflicto = "";
+		DateTimeFormatter formatoHora = DateTimeFormatter.ofPattern("HH:mm");
+		DateTimeFormatter formatoBBDD = DateTimeFormatter.ofPattern("H[:m][s]");
 		
 		try(PreparedStatement pst = con.prepareStatement(QUERY_GET_MATCHES_OF_TEAM_FOR_DATE);){
 			pst.setInt(1, jugador.getIdEquipo());
 			pst.setInt(2, jugador.getIdEquipo());
-			pst.setObject(2, fechaFranja);
+			pst.setObject(3, fechaFranja);
 			
 			ResultSet rs = pst.executeQuery();
 			while(rs.next()) {
-				LocalTime horaInicioPartido = rs.getObject("hora_inicio", LocalTime.class);
-				LocalTime horaFinPartido = rs.getObject("hora_fin", LocalTime.class);
+				String horaInicioStr = rs.getString("hora_inicio");
+				String horaFinStr = rs.getString("hora_fin");
 				
-				if (horaInicio.isBefore(horaFinPartido) && horaFin.isAfter(horaInicioPartido)) {
-				    tienePartido = true;
+				if (horaInicioStr != null && horaFinStr != null) {
+					// Parseamos la cadena de texto de la base de datos a LocalTime de forma segura
+					LocalTime horaInicioPartido = LocalTime.parse(horaInicioStr, DateTimeFormatter.ofPattern(horaInicioStr.length() == 5 ? "HH:mm" : "HH:mm:ss"));
+					LocalTime horaFinPartido = LocalTime.parse(horaFinStr, DateTimeFormatter.ofPattern(horaFinStr.length() == 5 ? "HH:mm" : "HH:mm:ss"));
+					
+					if (horaInicio.isBefore(horaFinPartido) && horaFin.isAfter(horaInicioPartido)) {
+					    motivoConflicto = String.format("El jugador tiene un partido con su equipo de %s a %s",
+					    		horaInicioPartido.format(formatoHora), horaFinPartido.format(formatoHora));
+					}
 				}
 			}
 		}
@@ -149,16 +159,22 @@ public class FranjaJdbc {
 			
 			ResultSet rs = pst.executeQuery();
 			while(rs.next()) {
-				LocalTime horaInicioEntrenamiento = rs.getObject("hora_inicio", LocalTime.class);
-				LocalTime horaFinEntrenamiento = rs.getObject("hora_fin", LocalTime.class);
+				String horaInicioStr = rs.getString("hora_inicio");
+				String horaFinStr = rs.getString("hora_fin");
 				
-				if (horaInicio.isBefore(horaFinEntrenamiento) && horaFin.isAfter(horaInicioEntrenamiento)) {
-				    tieneEntrenamiento = true;
+				if (horaInicioStr != null && horaFinStr != null) {
+					LocalTime horaInicioEntrenamiento = LocalTime.parse(horaInicioStr, DateTimeFormatter.ofPattern(horaInicioStr.length() == 5 ? "HH:mm" : "HH:mm:ss"));
+					LocalTime horaFinEntrenamiento = LocalTime.parse(horaFinStr, DateTimeFormatter.ofPattern(horaFinStr.length() == 5 ? "HH:mm" : "HH:mm:ss"));
+					
+					if (horaInicio.isBefore(horaFinEntrenamiento) && horaFin.isAfter(horaInicioEntrenamiento)) {
+					    motivoConflicto = String.format("El jugador tiene un entrenamiento con su equipo de %s a %s",
+					    		horaInicioEntrenamiento.format(formatoHora), horaFinEntrenamiento.format(formatoHora));
+					}
 				}
 			}
 		}
 		
-		return (tienePartido | tieneEntrenamiento);
+		return motivoConflicto;
 	}
 	
 }

@@ -3,6 +3,7 @@ package giis.demo.model.entrevistas;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import giis.demo.exceptions.NoAvailableSlotException;
@@ -59,13 +60,16 @@ public class CrearFranjaService {
 			throw new NoAvailableSlotException("No se admiten valores nulos");
 		}
 		
-		if(equipoTienePartidoOEntrenamiento(jugador, fechaFranja, horaInicio, horaFin)) {
-			throw new NoAvailableSlotException("El equipo al que pertenece el jugador tiene "
-					+ "un partido o un entrenamiento que coincide con la franja a insertar");
+		String motivoConflicto = equipoTienePartidoOEntrenamiento(jugador, fechaFranja, horaInicio, horaFin);
+		if(!motivoConflicto.isEmpty()) {
+			throw new NoAvailableSlotException(motivoConflicto);
 		}
 		
 		if(jugadorTieneAsignadaEntrevista(jugador, fechaFranja)) {
-			throw new NoAvailableSlotException("El jugador ya tiene asignada una franja");
+			DateTimeFormatter formatoDeseado = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+			throw new NoAvailableSlotException(String.format("El jugador ya tiene asignada una entrevista el "
+					+ "dia (%s). Por tanto, no se pueden crear franjas ese dia. Escoja otro."
+					, fechaFranja.format(formatoDeseado)));
 		}
 		
 		if(fechaFranja.isBefore(LocalDate.now())) {
@@ -82,7 +86,7 @@ public class CrearFranjaService {
 		
 	}
 
-	private boolean equipoTienePartidoOEntrenamiento(EmpleadoDeportivo jugador, LocalDate fechaFranja,
+	private String equipoTienePartidoOEntrenamiento(EmpleadoDeportivo jugador, LocalDate fechaFranja,
 			LocalTime horaInicio, LocalTime horaFin) {
 		try {
 			return jdbc.equipoTienePartidoOEntrenamiento(jugador, fechaFranja, horaInicio, horaFin);

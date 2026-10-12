@@ -30,6 +30,7 @@ import giis.demo.exceptions.NoAvailableSlotException;
 import giis.demo.model.empleado.EmpleadoDeportivo;
 import giis.demo.model.entrevistas.CrearFranjaService;
 import giis.demo.ui.VentanaPrincipal;
+import javax.swing.JScrollPane;
 
 public class VentanaCrearFranjas extends JFrame{
 	private VentanaPrincipal vPrincipal;
@@ -60,6 +61,7 @@ public class VentanaCrearFranjas extends JFrame{
 	private JButton btnCrearFranja;
 	private JButton btnCambiarJugador;
 	private JButton btnFinalizar;
+	private JScrollPane scrLista;
 	
 	public VentanaCrearFranjas(VentanaPrincipal vPrincipal) {
 		this.vPrincipal = vPrincipal;
@@ -123,8 +125,9 @@ public class VentanaCrearFranjas extends JFrame{
 	private JPanel getPnListaJugadores() {
 		if (pnListaJugadores == null) {
 			pnListaJugadores = new JPanel();
-			pnListaJugadores.add(getLbListaJugadores());
-			pnListaJugadores.add(getListJugadores());
+			pnListaJugadores.setLayout(new BorderLayout(0, 0));
+			pnListaJugadores.add(getLbListaJugadores(), BorderLayout.NORTH);
+			pnListaJugadores.add(getScrLista(), BorderLayout.CENTER);
 		}
 		return pnListaJugadores;
 	}
@@ -155,6 +158,13 @@ public class VentanaCrearFranjas extends JFrame{
 			lbListaJugadores.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		}
 		return lbListaJugadores;
+	}
+	
+	private JScrollPane getScrLista() {
+		if (scrLista == null) {
+			scrLista = new JScrollPane(getListJugadores());
+		}
+		return scrLista;
 	}
 	
 	private JList<EmpleadoDeportivo> getListJugadores() {
@@ -265,6 +275,7 @@ public class VentanaCrearFranjas extends JFrame{
 				public void actionPerformed(ActionEvent e) {
 					try{
 						crearFranja();
+						JOptionPane.showMessageDialog(null, "Franja creada correctamente");
 					} catch(NoAvailableSlotException nsae) {
 						JOptionPane.showMessageDialog(null, nsae.getMessage());
 					}
@@ -306,6 +317,8 @@ public class VentanaCrearFranjas extends JFrame{
 		List<String> dnis = crearFranjaService.obtenerDnisEntrenadoresDeEquiposProfesionales();
 		DefaultComboBoxModel<String> modeloCombo = new DefaultComboBoxModel<>(dnis.toArray(new String[0]));
 		cbDniEntrenadores.setModel(modeloCombo);
+		
+		mostrarJugadoresEnLista();
 	}
 	
 	private void mostrarJugadoresEnLista() {
@@ -314,14 +327,14 @@ public class VentanaCrearFranjas extends JFrame{
 		String nifEntrenador;
 		if((nifEntrenador = (String) getCbDniEntrenadores().getSelectedItem()) != null) {
 			idEquipo = crearFranjaService.getIdEquipo(nifEntrenador);
+			
+			modelo = new DefaultListModel<EmpleadoDeportivo>();
+			for(EmpleadoDeportivo jugador : crearFranjaService.obtenerJugadoresEquipoProfesional(idEquipo)) {
+				modelo.addElement(jugador);
+			}
+			
+			listJugadores.setModel(modelo);
 		}
-		
-		modelo = new DefaultListModel<EmpleadoDeportivo>();
-		for(EmpleadoDeportivo jugador : crearFranjaService.obtenerJugadoresEquipoProfesional(idEquipo)) {
-			modelo.addElement(jugador);
-		}
-		
-		listJugadores.setModel(modelo);
 	}
 	
 	private void habilitarFormularioFranja(boolean flag) {
@@ -330,16 +343,30 @@ public class VentanaCrearFranjas extends JFrame{
 		getTxHoraFin().setEnabled(flag);
 		getBtnCambiarJugador().setEnabled(flag);
 		getBtnCrearFranja().setEnabled(flag);
+		
+		getTxFecha().setText("");
+		getTxHoraInicio().setText("");
+		getTxHoraFin().setText("");
 	}
 	
 	private void crearFranja() throws NoAvailableSlotException {
 		DateTimeFormatter formatoFecha = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-		LocalDate fechaFranja = LocalDate.parse(txFecha.getText().trim(), formatoFecha);
+		if(getTxFecha().getText() == null || getTxFecha().getText().isBlank()) {
+			throw new NoAvailableSlotException("El campo de la fecha no puede estar vacio");
+		}
+		LocalDate fechaFranja = LocalDate.parse(getTxFecha().getText().trim(), formatoFecha);
 		
 		DateTimeFormatter formatoHora = DateTimeFormatter.ofPattern("HH:mm");
-	    LocalTime horaInicio = LocalTime.parse(txHoraInicio.getText().trim(), formatoHora);
-	    LocalTime horaFin = LocalTime.parse(txHoraFin.getText().trim(), formatoHora);
+		if(getTxHoraInicio().getText() == null || getTxHoraInicio().getText().isBlank() 
+				|| getTxHoraFin().getText() == null || getTxHoraFin().getText().isBlank()) {
+			throw new NoAvailableSlotException("Los campos de las horas no pueden estar vacio");
+		}
+	    LocalTime horaInicio = LocalTime.parse(getTxHoraInicio().getText().trim(), formatoHora);
+	    LocalTime horaFin = LocalTime.parse(getTxHoraFin().getText().trim(), formatoHora);
 	    
 	    crearFranjaService.crearFranjaHoraria(fechaFranja, horaInicio, horaFin);
+	    
+	    habilitarFormularioFranja(false);
 	}
+
 }
