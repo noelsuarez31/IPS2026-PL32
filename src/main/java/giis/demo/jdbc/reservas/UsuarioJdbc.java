@@ -7,7 +7,7 @@ import java.sql.SQLException;
 
 public class UsuarioJdbc {
 
-	private static final String QUERY_CHECK_USER_EXISTS = "SELECT id_usuario FROM Usuario WHERE nombre = ? AND tarjeta_bancaria=?";
+	private static final String QUERY_FIND_USER = "SELECT id_usuario FROM Usuario WHERE nombre = ? AND tarjeta_bancaria=?";
 	private static final String QUERY_INSERT_USER = "INSERT INTO Usuario (nombre, tarjeta_bancaria) VALUES (?, ?)";
 
 	/**
@@ -17,18 +17,21 @@ public class UsuarioJdbc {
 	 * @param con
 	 * @param name
 	 * @param card
-	 * @return true si ya existe ese usuario, false en caso contrario
+	 * @return el id del usuario si existe, -1 si no existe
 	 * @throws SQLException
 	 */
-	public static boolean checkUserExists(Connection con, String name, String card) throws SQLException {
+	public static int checkUserExists(Connection con, String name, String card) throws SQLException {
 
-		try (PreparedStatement ps = con.prepareStatement(QUERY_CHECK_USER_EXISTS)) {
+		try (PreparedStatement ps = con.prepareStatement(QUERY_FIND_USER)) {
 
 			ps.setString(1, name);
 			ps.setString(2, card);
 
 			try (ResultSet rs = ps.executeQuery()) {
-				return rs.next();
+				if(rs.next()) {
+					return rs.getInt(1);
+				}
+				return -1;
 			}
 		}
 	}
@@ -39,7 +42,7 @@ public class UsuarioJdbc {
 	 * @param name
 	 * @param card
 	 * @throws SQLException
-	 * @return devuelve el número de filas modificadas
+	 * @return devuelve el id del nuevo usuario
 	 */
 	public static int guardarUsuario(Connection con, String name, String card) throws SQLException {
 
@@ -48,8 +51,33 @@ public class UsuarioJdbc {
 			ps.setString(1, name);
 			ps.setString(2, card);
 
-			return ps.executeUpdate();
+			ps.executeUpdate();
+			
+			try(ResultSet rs = ps.getGeneratedKeys()){
+				
+				rs.next();
+				return rs.getInt(1);
+			}
 		}
+	}
+	
+	/**
+	 * Obtiene el id del usuario si ya existe y si no lo crea
+	 * @param con
+	 * @param name
+	 * @param card
+	 * @return el id del usuario
+	 * @throws SQLException
+	 */
+	public static int obtenerOCrear(Connection con, String name, String card) throws SQLException {
+		
+		int id = checkUserExists(con, name, card);
+		
+		if(id != -1) {
+			return id;
+		}
+		
+		return guardarUsuario(con, name, card);
 	}
 	
 

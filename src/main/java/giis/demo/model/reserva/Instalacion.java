@@ -20,7 +20,7 @@ public class Instalacion {
 
 	@Override
 	public String toString() {
-		return "" + instalacionId + " - " + name;
+		return name;
 	}
 	
 	

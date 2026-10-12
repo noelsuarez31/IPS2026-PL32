@@ -19,11 +19,25 @@ public class RealizarReserva {
 		Instalacion[] instalaciones = jdbc.getAvailableInstalations().toArray(new Instalacion[0]);
 		return instalaciones;
 	}
-
-	public boolean guardarUsuario(String name, String cardNumber) throws SQLException {
+	
+	/**
+	 * Devuelve el id del usuario que bien ya esta en la BBDD o que ha sido creado
+	 * @param name
+	 * @param cardNumber
+	 * @return el id del usuario
+	 * @throws SQLException
+	 */
+	public int guardarUsuario(String name, String cardNumber) throws SQLException {
 		
-		return jdbc.guardarUsuario(name, cardNumber);
+		return jdbc.obtenerOCrearUsuario(name, cardNumber);
 		
 	}
+	
+	public void close() throws SQLException {
+		
+		jdbc.close();
+		
+	}
+	
 
 }

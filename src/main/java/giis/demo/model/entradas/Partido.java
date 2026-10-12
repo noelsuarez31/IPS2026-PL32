@@ -1,15 +1,20 @@
 package giis.demo.model.entradas;
 
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 public class Partido {
 	
 	//Atributos de la BBDD
 	
 	private int id_partido;
-	private Date fecha;
+	private LocalDate fecha;
+	private LocalTime horaInicio;
+	private LocalTime horaFin;
 	private int id_local;
 	private int id_visitante;
+	
+	
 	
 	//Atributos extras para facilitar la comprensión
 	
@@ -25,10 +30,12 @@ public class Partido {
 	 * @param nameLocal
 	 * @param nameVisitante
 	 */
-	public Partido(int id_partido, Date fecha, int id_local, int id_visitante, String nameLocal, String nameVisitante) {
+	public Partido(int id_partido, LocalDate fecha, LocalTime horaInicio, LocalTime horaFin, int id_local, int id_visitante, String nameLocal, String nameVisitante) {
 		
 		this.id_partido = id_partido;
 		this.fecha = fecha;
+		this.horaInicio = horaInicio;
+		this.horaFin = horaFin;
 		this.id_local = id_local;
 		this.id_visitante = id_visitante;
 		this.nameLocal = nameLocal;
@@ -47,10 +54,26 @@ public class Partido {
 	 * Devuelve la fecha
 	 * @return fecha partido
 	 */
-	public Date getFecha() {
+	public LocalDate getFecha() {
 		return fecha;
 	}
 	
+	/**
+	 * Devuelve la hora de inicio del partido
+	 * @return hora de inicio
+	 */
+	public LocalTime getHoraInicio() {
+		return horaInicio;
+	}
+
+	/**
+	 * Devuelve la hora a la que acaba el partido
+	 * @return hora final del partido
+	 */
+	public LocalTime getHoraFin() {
+		return horaFin;
+	}
+
 	/**
 	 * Devuelve el id del equipo local
 	 * @return id del equipo local
@@ -89,7 +112,8 @@ public class Partido {
 	@Override
 	public String toString() {
 		
-		return "" + fecha + " - [" + nameLocal + " - " + nameVisitante + "]";
+		return "" + fecha + " - [" + nameLocal + " - " + nameVisitante + "] - [" + horaInicio + "-"
+				+horaFin + "]";
 	}
 
 	

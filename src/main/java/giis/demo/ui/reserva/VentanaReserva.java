@@ -23,6 +23,8 @@ import giis.demo.ui.VentanaPrincipal;
 import javax.swing.border.LineBorder;
 import javax.swing.border.EtchedBorder;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.sql.SQLException;
 import java.time.LocalTime;
 import java.time.ZoneId;
@@ -53,24 +55,28 @@ public class VentanaReserva extends JFrame {
 	private JPanel panelHorario;
 	private JScrollPane spHorario;
 	private JButton btVolver;
-	
+
 	private VentanaPrincipal vp;
 	private RealizarReserva rr;
 	private JLabel lbInstalacion;
 	private JComboBox<Instalacion> cbInstalacion;
 	private JButton btCancelar;
+	
+	private CerrarVentana cv;
 
 	/**
 	 * Create the frame.
-	 * @throws SQLException 
+	 * 
+	 * @throws SQLException
 	 */
 	public VentanaReserva(VentanaPrincipal vp) throws SQLException {
 
 		this.vp = vp;
 		this.rr = new RealizarReserva();
+		this.cv = new CerrarVentana();
 		
 		setTitle("Reserva de Instalaciones");
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		setBounds(100, 100, 1044, 432);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -80,19 +86,20 @@ public class VentanaReserva extends JFrame {
 		contentPane.add(getPanelSeleccion(), BorderLayout.SOUTH);
 		contentPane.add(getPanelHorario(), BorderLayout.CENTER);
 		setLocationRelativeTo(null);
-
+		addWindowListener(cv);
 	}
-	
+
 	/**
 	 * Devuelve la instancia de RealizarReserva que se utiliza
+	 * 
 	 * @return instancia de RealizarReserva que se utiliza
 	 */
-	public RealizarReserva gerRealizarReserva() {
-		
+	public RealizarReserva getRealizarReserva() {
+
 		return rr;
-		
+
 	}
-	
+
 	private JPanel getPanelFecha() throws SQLException {
 		if (panelFecha == null) {
 			panelFecha = new JPanel();
@@ -180,7 +187,7 @@ public class VentanaReserva extends JFrame {
 		if (lbFecha == null) {
 			lbFecha = new JLabel("Seleccione la fecha: ");
 			lbFecha.setBounds(483, 8, 143, 20);
-			lbFecha.setDisplayedMnemonic('S');
+			lbFecha.setDisplayedMnemonic('C');
 			lbFecha.setLabelFor(getSpFecha());
 		}
 		return lbFecha;
@@ -294,38 +301,50 @@ public class VentanaReserva extends JFrame {
 
 	public void reiniciar() throws SQLException {
 
-		this.getCbInstalacion().setSelectedIndex(0);
-		this.getSpFecha().setValue(new Date());
-		this.getSpInicio().setValue(hora(8,0));
-		this.getSpFin().setValue(hora(9,0));
+		if (getCbInstalacion().getItemCount() > 0) {
 
+			this.getCbInstalacion().setSelectedIndex(0);
+
+		}
+
+		this.getSpFecha().setValue(new Date());
+		this.getSpInicio().setValue(hora(8, 0));
+		this.getSpFin().setValue(hora(9, 0));
+		
+		getCbInstalacion().setEnabled(true);
+		getSpFecha().setEnabled(true);
+		getSpInicio().setEnabled(true);
+		
+		btConsulta.setEnabled(getCbInstalacion().getItemCount()>0);
+		btCancelar.setEnabled(false);
+		btSiguiente.setEnabled(false);
 
 	}
-	
+
 	private Date hora(int h, int m) {
-		
+
 		Calendar c = Calendar.getInstance();
-		
+
 		c.clear();
 		c.set(Calendar.HOUR_OF_DAY, h);
 		c.set(Calendar.MINUTE, m);
-		
+
 		return c.getTime();
 	}
-	
+
 	private SpinnerDateModel crearModeloHora(int h, int m) {
 		return new SpinnerDateModel(hora(h, m), hora(8, 0), hora(22, 0), Calendar.MINUTE);
 	}
-	
+
 	private void consultarHorarios() {
 
 		this.cbInstalacion.setEnabled(false);
 		this.spFecha.setEnabled(false);
-		
+
 		this.btConsulta.setEnabled(false);
 		this.btCancelar.setEnabled(true);
 		this.btSiguiente.setEnabled(true);
-		
+
 		this.spInicio.setEnabled(true);
 		this.spFin.setEnabled(true);
 		// TODO
@@ -346,46 +365,45 @@ public class VentanaReserva extends JFrame {
 
 	private void registrarDatosDeUsuario() {
 
-		
 		if (!checkHoras()) {
-			JOptionPane.showMessageDialog(
-		            this,
-		            "La hora de inicio no puede ser mayor o igual a la hora final.",
-		            "Duración no válida",
-		            JOptionPane.WARNING_MESSAGE
-		        );
-		        return;
+			JOptionPane.showMessageDialog(this, "La hora de inicio no puede ser mayor o igual a la hora final.",
+					"Duración no válida", JOptionPane.WARNING_MESSAGE);
+			return;
 		}
 
 		if (!checkDuration()) {
-			JOptionPane.showMessageDialog(
-		            this,
-		            "La reserva debe durar al menos una hora.",
-		            "Duración no válida",
-		            JOptionPane.WARNING_MESSAGE
-		        );
-		        return;
+			JOptionPane.showMessageDialog(this, "La reserva debe durar al menos una hora.", "Duración no válida",
+					JOptionPane.WARNING_MESSAGE);
+			return;
 		}
-		
-		
+
 		VentaRegistroUsuario vru = new VentaRegistroUsuario(this);
 		vru.setVisible(true);
 
 	}
-	
-	private void volverAlMenu() {
-		
+
+	private void volverAlMenu() throws SQLException {
+
 		this.vp.setVisible(true);
-		//TODO cerrar
+		cerrar();
 		this.dispose();
 	}
-	
+
 	private JButton getBtVolver() {
 		if (btVolver == null) {
 			btVolver = new JButton("Volver");
 			btVolver.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					volverAlMenu();
+					try {
+						volverAlMenu();
+					} catch (SQLException e1) {
+
+						JOptionPane.showMessageDialog(null, "No se ha podido cerrar la conexion con la base de datos", "Error",
+								JOptionPane.ERROR_MESSAGE);
+						System.err.println("Error al cerrar la BBDD");
+						e1.printStackTrace();
+						
+					}
 				}
 			});
 			btVolver.setToolTipText("Volver al menú");
@@ -394,14 +412,16 @@ public class VentanaReserva extends JFrame {
 		}
 		return btVolver;
 	}
+
 	private JLabel getLbInstalacion() {
 		if (lbInstalacion == null) {
 			lbInstalacion = new JLabel("Seleccione la instalación:");
 			lbInstalacion.setBounds(0, 8, 175, 20);
-			lbInstalacion.setDisplayedMnemonic('S');
+			lbInstalacion.setDisplayedMnemonic('T');
 		}
 		return lbInstalacion;
 	}
+
 	private JComboBox<Instalacion> getCbInstalacion() throws SQLException {
 		if (cbInstalacion == null) {
 			cbInstalacion = new JComboBox<Instalacion>();
@@ -410,23 +430,8 @@ public class VentanaReserva extends JFrame {
 		}
 		return cbInstalacion;
 	}
-	
-	private void cancelar() throws SQLException {
-		
-		this.cbInstalacion.setEnabled(true);
-		this.spFecha.setEnabled(true);
-		
-		this.btCancelar.setEnabled(false);
-		this.btConsulta.setEnabled(true);
-		this.btSiguiente.setEnabled(false);
 
-		this.spFin.setEnabled(false);
-		this.spInicio.setEnabled(false);
-		
-		reiniciar();
-		
-	}
-	
+
 	private JButton getBtCancelar() {
 		if (btCancelar == null) {
 			btCancelar = new JButton("Cancelar");
@@ -434,17 +439,14 @@ public class VentanaReserva extends JFrame {
 			btCancelar.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					try {
-						cancelar();
+						reiniciar();
 					} catch (SQLException e1) {
-						
-						JOptionPane.showMessageDialog(
-					            contentPane,
-					            "Se ha producido el error al cargar las instalaciones disponibles.",
-					            null,
-					            JOptionPane.WARNING_MESSAGE
-					        );
+
+						JOptionPane.showMessageDialog(contentPane,
+								"Se ha producido el error al cargar las instalaciones disponibles.", null,
+								JOptionPane.WARNING_MESSAGE);
 						e1.printStackTrace();
-						
+
 					}
 				}
 			});
@@ -453,5 +455,31 @@ public class VentanaReserva extends JFrame {
 			btCancelar.setBackground(new Color(255, 128, 128));
 		}
 		return btCancelar;
+	}
+	
+	private void cerrar() throws SQLException {
+		
+		this.rr.close();
+	}
+	
+	private class CerrarVentana extends WindowAdapter {
+
+		@Override
+		public void windowClosing(WindowEvent ew) {
+
+			try {
+				rr.close();
+			} catch (SQLException e) {
+
+				JOptionPane.showMessageDialog(null, "No se ha podido cerrar la conexion con la base de datos", "Error",
+						JOptionPane.ERROR_MESSAGE);
+				System.err.println("Error al cerrar la BBDD");
+				e.printStackTrace();
+			}
+
+			dispose();
+
+		}
+
 	}
 }

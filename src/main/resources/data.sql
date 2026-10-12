@@ -4,6 +4,7 @@
 delete from Entrada;
 delete from Venta;
 delete from Partido;
+delete from Partido2;
 delete from Butaca;
 delete from Entrenador;
 delete from EmpleadoDeportivo;
@@ -3875,6 +3876,13 @@ insert into Partido (id_partido, fecha, id_local, id_visitante) values (1, '2027
 insert into Partido (id_partido, fecha, id_local, id_visitante) values (2, '2027-03-28', (select id_equipo from Equipo where nombre = 'Real Oviedo'), (select id_equipo from Equipo where nombre = 'Racing'));
 insert into Partido (id_partido, fecha, id_local, id_visitante) values (3, '2027-04-11', (select id_equipo from Equipo where nombre = 'Real Oviedo B'), (select id_equipo from Equipo where nombre = 'Levante'));
 insert into Partido (id_partido, fecha, id_local, id_visitante) values (4, '2027-04-25', (select id_equipo from Equipo where nombre = 'Real Oviedo B'), (select id_equipo from Equipo where nombre = 'Alavés'));
+
+INSERT INTO Partido2 (id_partido, fecha, hora_inicio, hora_fin, id_local, id_visitante) VALUES (1, '2027-03-14', '16:00:00', '18:00:00', (SELECT id_equipo FROM Equipo WHERE nombre = 'Real Oviedo'), (SELECT id_equipo FROM Equipo WHERE nombre = 'Sporting'));
+INSERT INTO Partido2 (id_partido, fecha, hora_inicio, hora_fin, id_local, id_visitante) VALUES (2, '2027-03-28', '18:30:00', '20:30:00', (SELECT id_equipo FROM Equipo WHERE nombre = 'Real Oviedo'), (SELECT id_equipo FROM Equipo WHERE nombre = 'Racing')); 
+INSERT INTO Partido2 (id_partido, fecha, hora_inicio, hora_fin, id_local, id_visitante) VALUES (3, '2027-04-11', '12:00:00', '14:00:00', (SELECT id_equipo FROM Equipo WHERE nombre = 'Real Oviedo B'), (SELECT id_equipo FROM Equipo WHERE nombre = 'Levante')); 
+INSERT INTO Partido2 (id_partido, fecha, hora_inicio, hora_fin, id_local, id_visitante) VALUES (4, '2027-04-25', '17:00:00', '19:00:00', (SELECT id_equipo FROM Equipo WHERE nombre = 'Real Oviedo B'), (SELECT id_equipo FROM Equipo WHERE nombre = 'Alavés'));
+
+
 
 insert into Instalacion (nombre) values ('Campo de fútbol');
 insert into Instalacion (nombre) values ('Pabellón');

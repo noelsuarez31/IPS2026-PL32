@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS "entrada" (
 	PRIMARY KEY("id_entrada"),
 	UNIQUE("id_partido","id_butaca"),
 	FOREIGN KEY("id_butaca") REFERENCES "butaca"("id_butaca"),
-	FOREIGN KEY("id_partido") REFERENCES "partido"("id_partido"),
+	FOREIGN KEY("id_partido") REFERENCES "partido2"("id_partido"),
 	FOREIGN KEY("id_venta") REFERENCES "venta"("id_venta")
 );
 CREATE TABLE IF NOT EXISTS "partido" (
@@ -148,4 +148,19 @@ CREATE TABLE IF NOT EXISTS "Reserva" (
 	CHECK("hora_inicio" >= '08:00'),
 	CHECK("hora_fin" <= '22:00'),
 	CHECK("hora_inicio" < "hora_fin")
+);
+
+CREATE TABLE IF NOT EXISTS "Partido2" (
+	
+    "id_partido" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "fecha" DATE NOT NULL,
+    "hora_inicio" TIME NOT NULL,
+    "hora_fin" TIME NOT NULL,
+    "id_local" INTEGER NOT NULL,
+    "id_visitante" INTEGER NOT NULL,
+    
+    FOREIGN KEY ("id_local") REFERENCES "Equipo"("id_equipo"),
+    FOREIGN KEY ("id_visitante") REFERENCES "Equipo"("id_equipo"),
+    
+    CHECK ("id_local" <> "id_visitante")
 );

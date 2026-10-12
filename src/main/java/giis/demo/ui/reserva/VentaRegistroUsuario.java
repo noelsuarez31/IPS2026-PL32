@@ -199,8 +199,8 @@ public class VentaRegistroUsuario extends JDialog {
 						
 						if(guardarUsuario()) {
 							
-							reiniciar();
-							
+							vr.reiniciar();
+							dispose();
 						}
 						
 					} catch (SQLException e1) {
@@ -216,28 +216,21 @@ public class VentaRegistroUsuario extends JDialog {
 				}
 			});
 			btConfirmar.setBackground(new Color(128, 255, 128));
-			btConfirmar.setMnemonic('C');
+			btConfirmar.setMnemonic('N');
 			btConfirmar.setToolTipText("Confirmar compra");
 		}
 		return btConfirmar;
 	}
 	private JButton getBtCancelar() {
+		
 		if (btCancelar == null) {
+			
 			btCancelar = new JButton("Cancelar");
 			btCancelar.addActionListener(new ActionListener() {
+				
 				public void actionPerformed(ActionEvent e) {
-					try {
-						reiniciar();
-					} catch (SQLException e1) {
-						
-						JOptionPane.showMessageDialog(
-					            contentPane,
-					            "Se ha producido el error al cargar las instalaciones disponibles.",
-					            null,
-					            JOptionPane.WARNING_MESSAGE
-					        );
-						e1.printStackTrace();
-					}
+					
+					reiniciar();
 				}
 			});
 			btCancelar.setToolTipText("Cancelar");
@@ -250,38 +243,28 @@ public class VentaRegistroUsuario extends JDialog {
 	private boolean guardarUsuario() throws SQLException {
 		
 		String name = this.getTfName().getText();
-		
 		String cardNumber = this.getTfTarjeta().getText();
 		
 		if(!checkCampos(name, cardNumber)){
 			JOptionPane.showMessageDialog(
 		            contentPane,
-		            "Alguno de los campos está vacío.",
+		            "Alguno de los campos está vacío o no es válido,"
+		            + " revise el nombre y la tarjet que debe tener 16 dígitos.",
 		            null,
 		            JOptionPane.WARNING_MESSAGE);
 			
 			return false;
 		}
 		
-		boolean isStored = this.vr.gerRealizarReserva().guardarUsuario(name, cardNumber);
 		
-		if(!isStored) {
-			
-			JOptionPane.showMessageDialog(
-		            contentPane,
-		            "Se ha producido un error al guardar al usuario",
-		            null,
-		            JOptionPane.WARNING_MESSAGE);
-			
-			return false;
-		}
-		
+		int idUsuario = this.vr.getRealizarReserva().guardarUsuario(name, cardNumber);
 		JOptionPane.showMessageDialog(
 	            contentPane,
 	            "Usuario registrado correctamente",
 	            "Registro completado",
 	            JOptionPane.INFORMATION_MESSAGE);
-		
+
+		//TODO RESERVA
 		return true;
 	}
 	
@@ -293,12 +276,12 @@ public class VentaRegistroUsuario extends JDialog {
 	 */
 	private boolean checkCampos(String name, String cardNumber) {
 		
-		return !name.isBlank() && !cardNumber.isBlank();
+		String tarjeta = cardNumber.replaceAll("\\s", "");
+		return !name.isBlank() && tarjeta.matches("\\d{16}");
 	}
 
-	private void reiniciar() throws SQLException {
+	private void reiniciar() {
 		
-		this.vr.reiniciar();
 		this.dispose();
 	}
 }

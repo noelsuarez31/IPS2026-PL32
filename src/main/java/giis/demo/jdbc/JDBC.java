@@ -214,25 +214,16 @@ public class JDBC {
 	}
 	
 	/**
-	 * Comprueba si un usuario ya existe para evitar guardar clientes duplicados
+	 * Devuelve el id del usuario con el nombre y la tarjeta dados.
+	 * Si no existe, se crea
 	 * @param name
 	 * @param card
-	 * @return true si el cliente ya está en la BBDD, false en caso contrario
-	 * @throws SQLException 
+	 * @return el id del usuario en la BBDD
+	 * @throws SQLException
 	 */
-	private boolean checkUserExists(String name, String card) throws SQLException {
-		
-		return UsuarioJdbc.checkUserExists(con, name, card);
-		
-	}
-	
-	public boolean guardarUsuario(String name, String card) throws SQLException {
-				
-		if(checkUserExists(name, card)) {
-			return false;
-		}
-		
-		return UsuarioJdbc.guardarUsuario(con, name, card)==1;
+	public int obtenerOCrearUsuario(String name, String card) throws SQLException {
+
+		return UsuarioJdbc.obtenerOCrear(con, name, card);
 	}
 
 	public Connection getCon() {
