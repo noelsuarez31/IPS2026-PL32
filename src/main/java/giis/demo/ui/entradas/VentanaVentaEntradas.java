@@ -94,6 +94,7 @@ public class VentanaVentaEntradas extends JFrame {
 	 * @throws SQLException
 	 */
 	public VentanaVentaEntradas(VentanaPrincipal vp) throws SQLException {
+		setResizable(false);
 
 		this.ma = new MostrarAsientos();
 		this.cv = new CerrarVentana();
@@ -101,13 +102,12 @@ public class VentanaVentaEntradas extends JFrame {
 		this.addWindowListener(cv);
 
 		this.setTitle("Compra de entradas");
-		this.setResizable(false);
 
 		this.vp = vp;
 		this.venta = new VentaDeEntradas();
 
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-		setBounds(100, 100, 1000, 587);
+		setBounds(100, 100, 1172, 642);
 
 		contentPane = new JPanel();
 		contentPane.setBackground(new Color(240, 240, 240));
