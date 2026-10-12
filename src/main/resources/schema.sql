@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS "entrada" (
 	PRIMARY KEY("id_entrada"),
 	UNIQUE("id_partido","id_butaca"),
 	FOREIGN KEY("id_butaca") REFERENCES "butaca"("id_butaca"),
-	FOREIGN KEY("id_partido") REFERENCES "partido2"("id_partido"),
+	FOREIGN KEY("id_partido") REFERENCES "partido"("id_partido"),
 	FOREIGN KEY("id_venta") REFERENCES "venta"("id_venta")
 );
 CREATE TABLE IF NOT EXISTS "partido" (

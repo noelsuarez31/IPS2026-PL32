@@ -360,7 +360,10 @@ public class VentanaReserva extends JFrame {
 	}
 
 	private boolean checkDuration() {
-		return aMinutos((Date) spFin.getValue()) - aMinutos((Date) spInicio.getValue()) >= 60;
+		
+		int duracion = aMinutos((Date) spFin.getValue()) - aMinutos((Date) spInicio.getValue());
+		
+		return duracion >= 60 && duracion % 60==0;
 	}
 
 	private void registrarDatosDeUsuario() {
@@ -372,10 +375,13 @@ public class VentanaReserva extends JFrame {
 		}
 
 		if (!checkDuration()) {
-			JOptionPane.showMessageDialog(this, "La reserva debe durar al menos una hora.", "Duración no válida",
+			JOptionPane.showMessageDialog(this, "La reserva debe durar al menos una hora.\n"
+					+ "Solo se puede reservar horas enteras, no se admiten reservas de horas y x minutos", "Duración no válida",
 					JOptionPane.WARNING_MESSAGE);
 			return;
 		}
+		
+		//TODO check is available to book
 
 		VentaRegistroUsuario vru = new VentaRegistroUsuario(this);
 		vru.setVisible(true);
