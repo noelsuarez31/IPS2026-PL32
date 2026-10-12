@@ -4,7 +4,6 @@
 delete from Entrada;
 delete from Venta;
 delete from Partido;
-delete from Partido2;
 delete from Butaca;
 delete from Entrenador;
 delete from EmpleadoDeportivo;
@@ -15,6 +14,10 @@ delete from CategoriaEquipo;
 delete from Reserva;
 delete from Usuario;
 delete from Instalacion;
+delete from Partido2;
+delete from Entrenamiento;
+delete from FranjaHoraria;
+delete from Entrevista;
 
 INSERT INTO "butaca" VALUES (1,'A','A',1,1);
 INSERT INTO "butaca" VALUES (2,'A','A',1,2);
@@ -3863,39 +3866,30 @@ INSERT INTO "EmpleadoDeportivo" ("dni", "posicion") VALUES ('60606060E', 'JUGADO
 INSERT INTO "EmpleadoDeportivo" ("dni", "posicion") VALUES ('60606060F', 'JUGADOR');
 INSERT INTO "EmpleadoDeportivo" ("dni", "posicion") VALUES ('60606060G', 'JUGADOR');
 
-insert into CategoriaEquipo (nombre, edad_minima, edad_maxima, tipo_equipo) values ('Profesional', 16, 99, 'PROFESIONAL');
-
-insert into Equipo (nombre, es_propio, tipo_equipo, id_categoria) values ('Real Oviedo', 1, 'PROFESIONAL', (select id_categoria from CategoriaEquipo where nombre = 'Profesional'));
-insert into Equipo (nombre, es_propio, tipo_equipo, id_categoria) values ('Real Oviedo B', 1, 'PROFESIONAL', (select id_categoria from CategoriaEquipo where nombre = 'Profesional'));
-insert into Equipo (nombre, es_propio, tipo_equipo, id_categoria) values ('Sporting', 0, 'PROFESIONAL', (select id_categoria from CategoriaEquipo where nombre = 'Profesional'));
-insert into Equipo (nombre, es_propio, tipo_equipo, id_categoria) values ('Racing', 0, 'PROFESIONAL', (select id_categoria from CategoriaEquipo where nombre = 'Profesional'));
-insert into Equipo (nombre, es_propio, tipo_equipo, id_categoria) values ('Levante', 0, 'PROFESIONAL', (select id_categoria from CategoriaEquipo where nombre = 'Profesional'));
-insert into Equipo (nombre, es_propio, tipo_equipo, id_categoria) values ('Alavés', 0, 'PROFESIONAL', (select id_categoria from CategoriaEquipo where nombre = 'Profesional'));
+insert into Equipo (nombre, es_propio, tipo_equipo, id_categoria) values ('Real Oviedo', 1, 'Profesional', (select id_categoria from CategoriaEquipo where nombre = 'Primer equipo'));
+insert into Equipo (nombre, es_propio, tipo_equipo, id_categoria) values ('Real Oviedo B', 1, 'Profesional', (select id_categoria from CategoriaEquipo where nombre = 'Primer equipo'));
+insert into Equipo (nombre, es_propio, tipo_equipo, id_categoria) values ('Sporting', 0, 'Profesional', (select id_categoria from CategoriaEquipo where nombre = 'Primer equipo'));
+insert into Equipo (nombre, es_propio, tipo_equipo, id_categoria) values ('Racing', 0, 'Profesional', (select id_categoria from CategoriaEquipo where nombre = 'Primer equipo'));
+insert into Equipo (nombre, es_propio, tipo_equipo, id_categoria) values ('Levante', 0, 'Profesional', (select id_categoria from CategoriaEquipo where nombre = 'Primer equipo'));
+insert into Equipo (nombre, es_propio, tipo_equipo, id_categoria) values ('Alavés', 0, 'Profesional', (select id_categoria from CategoriaEquipo where nombre = 'Primer equipo'));
 
 insert into Partido (id_partido, fecha, id_local, id_visitante) values (1, '2027-03-14', (select id_equipo from Equipo where nombre = 'Real Oviedo'), (select id_equipo from Equipo where nombre = 'Sporting'));
 insert into Partido (id_partido, fecha, id_local, id_visitante) values (2, '2027-03-28', (select id_equipo from Equipo where nombre = 'Real Oviedo'), (select id_equipo from Equipo where nombre = 'Racing'));
 insert into Partido (id_partido, fecha, id_local, id_visitante) values (3, '2027-04-11', (select id_equipo from Equipo where nombre = 'Real Oviedo B'), (select id_equipo from Equipo where nombre = 'Levante'));
 insert into Partido (id_partido, fecha, id_local, id_visitante) values (4, '2027-04-25', (select id_equipo from Equipo where nombre = 'Real Oviedo B'), (select id_equipo from Equipo where nombre = 'Alavés'));
 
-INSERT INTO Partido2 (id_partido, fecha, hora_inicio, hora_fin, id_local, id_visitante) VALUES (1, '2027-03-14', '16:00:00', '18:00:00', (SELECT id_equipo FROM Equipo WHERE nombre = 'Real Oviedo'), (SELECT id_equipo FROM Equipo WHERE nombre = 'Sporting'));
-INSERT INTO Partido2 (id_partido, fecha, hora_inicio, hora_fin, id_local, id_visitante) VALUES (2, '2027-03-28', '18:30:00', '20:30:00', (SELECT id_equipo FROM Equipo WHERE nombre = 'Real Oviedo'), (SELECT id_equipo FROM Equipo WHERE nombre = 'Racing')); 
-INSERT INTO Partido2 (id_partido, fecha, hora_inicio, hora_fin, id_local, id_visitante) VALUES (3, '2027-04-11', '12:00:00', '14:00:00', (SELECT id_equipo FROM Equipo WHERE nombre = 'Real Oviedo B'), (SELECT id_equipo FROM Equipo WHERE nombre = 'Levante')); 
-INSERT INTO Partido2 (id_partido, fecha, hora_inicio, hora_fin, id_local, id_visitante) VALUES (4, '2027-04-25', '17:00:00', '19:00:00', (SELECT id_equipo FROM Equipo WHERE nombre = 'Real Oviedo B'), (SELECT id_equipo FROM Equipo WHERE nombre = 'Alavés'));
+INSERT INTO "FranjaHoraria" ("dni_jugador", "fecha", "hora_inicio", "hora_fin") VALUES 
+('11111111A', '2026-10-15', '10:00:00', '11:00:00'),
+('11111111A', '2026-10-16', '12:00:00', '13:00:00');
 
+INSERT INTO "Entrevista" ("id_franja") VALUES 
+(1),
+(2);
 
+INSERT INTO "Entrenamiento" ("fecha", "hora_inicio", "hora_fin", "id_equipo") VALUES 
+('2026-10-12', '16:00:00', '18:00:00', 9),
+('2026-10-13', '17:00:00', '19:00:00', 10);
 
-insert into Instalacion (nombre) values ('Campo de fútbol');
-insert into Instalacion (nombre) values ('Pabellón');
-insert into Instalacion (nombre) values ('Gimnasio');
-
-insert into Usuario (nombre, tarjeta_bancaria) values ('Marta Fernández', '1111222233334444');
-insert into Usuario (nombre, tarjeta_bancaria) values ('Pablo Ríos', '2222333344445555');
-insert into Usuario (nombre, tarjeta_bancaria) values ('Lucía Torres', '3333444455556666');
-insert into Usuario (nombre, tarjeta_bancaria) values ('Club Deportivo Naranco', '4444555566667777');
-
-insert into Reserva (fecha, hora_inicio, hora_fin, importe, fecha_registro, id_usuario, id_instalacion) values ('2027-03-10', '14:00', '16:00', 100.0, '2026-10-05 12:41', (select id_usuario from Usuario where nombre = 'Marta Fernández'), (select id_instalacion from Instalacion where nombre = 'Campo de fútbol'));
-insert into Reserva (fecha, hora_inicio, hora_fin, importe, fecha_registro, id_usuario, id_instalacion) values ('2027-03-10', '18:00', '19:30', 75.0, '2026-10-06 09:15', (select id_usuario from Usuario where nombre = 'Pablo Ríos'), (select id_instalacion from Instalacion where nombre = 'Campo de fútbol'));
-insert into Reserva (fecha, hora_inicio, hora_fin, importe, fecha_registro, id_usuario, id_instalacion) values ('2027-03-10', '09:00', '11:00', 100.0, '2026-10-06 17:30', (select id_usuario from Usuario where nombre = 'Lucía Torres'), (select id_instalacion from Instalacion where nombre = 'Pabellón'));
-insert into Reserva (fecha, hora_inicio, hora_fin, importe, fecha_registro, id_usuario, id_instalacion) values ('2027-03-11', '17:15', '18:45', 75.0, '2026-10-07 11:05', (select id_usuario from Usuario where nombre = 'Marta Fernández'), (select id_instalacion from Instalacion where nombre = 'Pabellón'));
-insert into Reserva (fecha, hora_inicio, hora_fin, importe, fecha_registro, id_usuario, id_instalacion) values ('2027-03-12', '08:00', '10:00', 100.0, '2026-10-07 13:20', (select id_usuario from Usuario where nombre = 'Pablo Ríos'), (select id_instalacion from Instalacion where nombre = 'Gimnasio'));
-insert into Reserva (fecha, hora_inicio, hora_fin, importe, fecha_registro, id_usuario, id_instalacion) values ('2027-03-12', '20:00', '22:00', 100.0, '2026-10-08 10:00', (select id_usuario from Usuario where nombre = 'Club Deportivo Naranco'), (select id_instalacion from Instalacion where nombre = 'Gimnasio'));
+INSERT INTO "Partido2" ("fecha", "hora_inicio", "hora_fin", "id_local", "id_visitante") VALUES 
+('2026-10-20', '21:00:00', '23:00:00', 9, 10),
+('2026-10-27', '18:30:00', '20:30:00', 10, 9);

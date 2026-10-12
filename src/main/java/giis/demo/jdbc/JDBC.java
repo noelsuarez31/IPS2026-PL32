@@ -3,6 +3,8 @@ package giis.demo.jdbc;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 import giis.demo.jdbc.empleado.EmpleadoDeportivoJdbc;
@@ -10,6 +12,7 @@ import giis.demo.jdbc.empleado.EntrenadorJdbc;
 import giis.demo.jdbc.entradas.ButacaJdbc;
 import giis.demo.jdbc.entradas.PartidoJdbc;
 import giis.demo.jdbc.entradas.RegistrarVentaJdbc;
+import giis.demo.jdbc.entrevistas.FranjaJdbc;
 import giis.demo.jdbc.equipo.CategoriaEquipoJdbc;
 import giis.demo.jdbc.equipo.EquipoJdbc;
 import giis.demo.jdbc.horarios.HorarioPeriodicoJdbc;
@@ -22,6 +25,7 @@ import giis.demo.model.entradas.Butaca;
 import giis.demo.model.entradas.Partido;
 import giis.demo.model.entradas.enumerados.TipoSeccion;
 import giis.demo.model.entradas.enumerados.TipoTribuna;
+import giis.demo.model.entrevistas.FranjaHoraria;
 import giis.demo.model.equipo.CategoriaEquipo;
 import giis.demo.model.equipo.Equipo;
 import giis.demo.model.horarios.HorarioPeriodico;
@@ -228,6 +232,90 @@ public class JDBC {
 
 	public Connection getCon() {
 		return con;
+	}
+
+	/**
+	 * Devuelve una lista de los jugadores que pertenecen al equipo
+	 * que tiene como id el pasado por parametro
+	 * @param idEquipoProfesional
+	 * @return
+	 * @throws SQLException
+	 */
+	public List<EmpleadoDeportivo> cargarJugadoresEquipoProfesional(int idEquipoProfesional) throws SQLException {
+		return FranjaJdbc.cargarJugadoresEquipoProfesional(con, idEquipoProfesional);
+	}
+
+	/**
+	 * Devuelve una lista de dnis que pertenecen a entrenadores de equipos
+	 * profesionales
+	 * @return
+	 * @throws SQLException
+	 */
+	public List<String> obtenerDnisEntrenadoresDeEquiposProfesionales() throws SQLException {
+		return FranjaJdbc.obtenerDnisEntrenadoresDeEquiposProfesionales(con);
+	}
+
+	/**
+	 * Almacena la franja segun los datos pasados por parametro
+	 * @param nuevaFranja
+	 * @throws SQLException
+	 */
+	public void almacenarFranja(FranjaHoraria nuevaFranja) throws SQLException {
+		FranjaJdbc.almacenarFranja(con, nuevaFranja);
+	}
+
+	/**
+	 * Devuelve true si el jugador tiene asignada una entrevista para esa fecha
+	 * @param jugador
+	 * @param fechaFranja
+	 * @return
+	 * @throws SQLException
+	 */
+	public boolean jugadorTieneAsignadaEntrevista(EmpleadoDeportivo jugador, LocalDate fechaFranja) 
+			throws SQLException {
+		return FranjaJdbc.jugadorTieneAsignadaEntrevista(con, jugador, fechaFranja);
+	}
+
+	/**
+	 * Devuelve el id del equipo al que entrena el entrenador con dni
+	 * el que se pasa por parametro
+	 * @param dniEntrenador
+	 * @return
+	 * @throws SQLException
+	 */
+	public int getIdEquipo(String dniEntrenador) throws SQLException {
+		return FranjaJdbc.getIdEquipo(con, dniEntrenador);
+	}
+
+	/**
+	 * Devuelve true si el equipo al que pertenece el jugador tiene 
+	 * asignado un entrenamiento/partido que tenga conflicto con la
+	 * fecha y horas pasadas por parametro
+	 * @param jugador
+	 * @param fechaFranja
+	 * @param horaInicio
+	 * @param horaFin
+	 * @return
+	 * @throws SQLException
+	 */
+	public String equipoTienePartidoOEntrenamiento(EmpleadoDeportivo jugador, LocalDate fechaFranja,
+			LocalTime horaInicio, LocalTime horaFin) throws SQLException {
+		return FranjaJdbc.equipoTienePartidoOEntrenamiento(con, jugador, fechaFranja, horaInicio, horaFin);
+	}
+
+	/**
+	 * Devuelve true si el jugador pasado por parametro ya tiene una franja
+	 * para esa fecha y hora o tiene otra que tenga conflicto
+	 * @param jugador
+	 * @param fechaFranja
+	 * @param horaInicio
+	 * @param horaFin
+	 * @return
+	 * @throws SQLException
+	 */
+	public boolean yaHayEsaFranjaParaEseJugador(EmpleadoDeportivo jugador, LocalDate fechaFranja, LocalTime horaInicio,
+			LocalTime horaFin) throws SQLException {
+		return FranjaJdbc.yaHayEsaFranjaParaEseJugador(con, jugador, fechaFranja, horaInicio, horaFin);
 	}
 
 }
