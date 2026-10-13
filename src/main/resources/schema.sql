@@ -10,7 +10,6 @@ drop table if exists Butaca;
 drop table if exists BaseEmpleado;
 drop table if exists EmpleadoDeportivo;
 drop table if exists EmpleadoNoDeportivo;
-drop table if exists Entrenador;
 drop table if exists CategoriaEquipo;
 drop table if exists Equipo;
 
@@ -90,13 +89,6 @@ CREATE TABLE IF NOT EXISTS "EmpleadoNoDeportivo" (
     FOREIGN KEY("dni") REFERENCES "BaseEmpleado"("dni") ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS "Entrenador" (
-    "dni" TEXT,
-    "tipo_entrenador" TEXT NOT NULL,
-    PRIMARY KEY("dni"),
-    FOREIGN KEY("dni") REFERENCES "EmpleadoDeportivo"("dni") ON DELETE CASCADE ON UPDATE CASCADE
-);
-
 CREATE TABLE IF NOT EXISTS "CategoriaEquipo" (
     "nombre" TEXT NOT NULL,
     "id_categoria" INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -166,11 +158,11 @@ CREATE TABLE IF NOT EXISTS "Producto" (
 );
 
 CREATE TABLE IF NOT EXISTS "LineaVenta" (
-	"id_venta" INTEGER NOT NULL,
-	"id_producto" INTEGER NOT NULL,
-	"unidades" INTEGER NOT NULL,
-	"precio_unitario" REAL NOT NULL,
-	PRIMARY KEY("id_venta", "id_producto"),
-	FOREIGN KEY("id_venta") REFERENCES "venta"("id_venta") ON DELETE CASCADE,
-	FOREIGN KEY("id_producto") REFERENCES "Producto"("id_producto") ON DELETE CASCADE
+	"id_venta" INTEGER,
+    "id_producto" INTEGER,
+    "cantidad" INTEGER NOT NULL DEFAULT 1,
+    "precio_unitario" REAL NOT NULL,
+    PRIMARY KEY("id_venta", "id_producto"),
+    FOREIGN KEY("id_venta") REFERENCES "venta"("id_venta") ON DELETE CASCADE,
+    FOREIGN KEY("id_producto") REFERENCES "Producto"("id_producto")
 );
