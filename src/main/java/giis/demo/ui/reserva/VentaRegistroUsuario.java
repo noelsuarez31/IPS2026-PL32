@@ -3,6 +3,8 @@ package giis.demo.ui.reserva;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
+import giis.demo.model.reserva.Instalacion;
+import giis.demo.model.reserva.Reserva;
 import giis.demo.model.reserva.Usuario;
 
 import java.awt.BorderLayout;
@@ -17,13 +19,18 @@ import javax.swing.JDialog;
 
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.util.Date;
 import java.awt.event.ActionEvent;
 
 public class VentaRegistroUsuario extends JDialog {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
-	
+
 	private VentanaReserva vr;
 	private JPanel panelUsuario;
 	private JLabel lbName;
@@ -41,16 +48,15 @@ public class VentaRegistroUsuario extends JDialog {
 	private JPanel panelBotones;
 	private JButton btConfirmar;
 	private JButton btCancelar;
-	
 
 	/**
 	 * Create the frame.
 	 */
 	public VentaRegistroUsuario(VentanaReserva vr) {
 		setTitle("Confirmación de la reserva");
-		
+
 		this.vr = vr;
-		
+
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 687, 414);
 		contentPane = new JPanel();
@@ -61,6 +67,8 @@ public class VentaRegistroUsuario extends JDialog {
 		contentPane.add(getPanelResumen(), BorderLayout.SOUTH);
 		setLocationRelativeTo(null);
 		setModal(true);
+
+		actualizarPrecioYDuracion();
 
 	}
 
@@ -75,6 +83,7 @@ public class VentaRegistroUsuario extends JDialog {
 		}
 		return panelUsuario;
 	}
+
 	private JLabel getLbName() {
 		if (lbName == null) {
 			lbName = new JLabel("Nombre:");
@@ -85,6 +94,7 @@ public class VentaRegistroUsuario extends JDialog {
 		}
 		return lbName;
 	}
+
 	private JTextField getTfName() {
 		if (tfName == null) {
 			tfName = new JTextField();
@@ -94,6 +104,7 @@ public class VentaRegistroUsuario extends JDialog {
 		}
 		return tfName;
 	}
+
 	private JLabel getLbTarjeta() {
 		if (lbTarjeta == null) {
 			lbTarjeta = new JLabel("Tarjeta:");
@@ -104,6 +115,7 @@ public class VentaRegistroUsuario extends JDialog {
 		}
 		return lbTarjeta;
 	}
+
 	private JTextField getTfTarjeta() {
 		if (tfTarjeta == null) {
 			tfTarjeta = new JTextField();
@@ -113,6 +125,7 @@ public class VentaRegistroUsuario extends JDialog {
 		}
 		return tfTarjeta;
 	}
+
 	private JPanel getPanelResumen() {
 		if (panelResumen == null) {
 			panelResumen = new JPanel();
@@ -122,6 +135,7 @@ public class VentaRegistroUsuario extends JDialog {
 		}
 		return panelResumen;
 	}
+
 	private JPanel getPanelInfo() {
 		if (panelInfo == null) {
 			panelInfo = new JPanel();
@@ -131,6 +145,7 @@ public class VentaRegistroUsuario extends JDialog {
 		}
 		return panelInfo;
 	}
+
 	private JPanel getPanelDuracion() {
 		if (panelDuracion == null) {
 			panelDuracion = new JPanel();
@@ -141,12 +156,14 @@ public class VentaRegistroUsuario extends JDialog {
 		}
 		return panelDuracion;
 	}
+
 	private JLabel getLbDuracion() {
 		if (lbDuracion == null) {
 			lbDuracion = new JLabel("Duración:");
 		}
 		return lbDuracion;
 	}
+
 	private JTextField getTfDuracion() {
 		if (tfDuracion == null) {
 			tfDuracion = new JTextField();
@@ -156,6 +173,7 @@ public class VentaRegistroUsuario extends JDialog {
 		}
 		return tfDuracion;
 	}
+
 	private JPanel getPanelPrecio() {
 		if (panelPrecio == null) {
 			panelPrecio = new JPanel();
@@ -166,14 +184,18 @@ public class VentaRegistroUsuario extends JDialog {
 		}
 		return panelPrecio;
 	}
+
 	private JLabel getLbPrecio() {
 		if (lbPrecio == null) {
 			lbPrecio = new JLabel("Precio:");
 		}
 		return lbPrecio;
 	}
+
 	private JTextField getTtPrecio() {
+		
 		if (tfPrecio == null) {
+			
 			tfPrecio = new JTextField();
 			tfPrecio.setEditable(false);
 			tfPrecio.setForeground(Color.RED);
@@ -181,6 +203,7 @@ public class VentaRegistroUsuario extends JDialog {
 		}
 		return tfPrecio;
 	}
+
 	private JPanel getPanelBotones() {
 		if (panelBotones == null) {
 			panelBotones = new JPanel();
@@ -191,29 +214,28 @@ public class VentaRegistroUsuario extends JDialog {
 		}
 		return panelBotones;
 	}
+
 	private JButton getBtConfirmar() {
-		
+
 		if (btConfirmar == null) {
 			btConfirmar = new JButton("Confirmar");
 			btConfirmar.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					
+
 					try {
-						
-						if(guardarUsuario()) {
-							
+
+						if (guardarUsuario()) {
+
 							vr.reiniciar();
 							dispose();
 						}
-						
+
 					} catch (SQLException e1) {
-						
-						JOptionPane.showMessageDialog(
-					            contentPane,
-					            "Se ha producido un error al guardar el usuario. ",
-					            null,
-					            JOptionPane.ERROR_MESSAGE);
-						
+
+						JOptionPane.showMessageDialog(contentPane,
+								"Se ha producido un error al registrarse la reserva. ", "Error",
+								JOptionPane.ERROR_MESSAGE);
+
 						e1.printStackTrace();
 					}
 				}
@@ -224,15 +246,16 @@ public class VentaRegistroUsuario extends JDialog {
 		}
 		return btConfirmar;
 	}
+
 	private JButton getBtCancelar() {
-		
+
 		if (btCancelar == null) {
-			
+
 			btCancelar = new JButton("Cancelar");
 			btCancelar.addActionListener(new ActionListener() {
-				
+
 				public void actionPerformed(ActionEvent e) {
-					
+
 					reiniciar();
 				}
 			});
@@ -242,51 +265,113 @@ public class VentaRegistroUsuario extends JDialog {
 		}
 		return btCancelar;
 	}
-	
+
 	private boolean guardarUsuario() throws SQLException {
-		
+
 		String name = this.getTfName().getText();
 		String cardNumber = this.getTfTarjeta().getText();
-		
-		if(!checkCampos(name, cardNumber)){
-			JOptionPane.showMessageDialog(
-		            contentPane,
-		            "Alguno de los campos está vacío o no es válido,"
-		            + " revise el nombre y la tarjet que debe tener 16 dígitos.",
-		            null,
-		            JOptionPane.WARNING_MESSAGE);
-			
+
+		if (!checkCampos(name, cardNumber)) {
+			JOptionPane.showMessageDialog(contentPane,
+					"Alguno de los campos está vacío o no es válido,"
+							+ " revise el nombre y la tarjet que debe tener 16 dígitos.",
+					null, JOptionPane.WARNING_MESSAGE);
+
 			return false;
 		}
-		
+
 		Usuario user = new Usuario(name, cardNumber);
 		this.vr.getRealizarReserva().guardarUsuario(user);
 
-		
-		JOptionPane.showMessageDialog(
-	            contentPane,
-	            "Usuario registrado correctamente",
-	            "Registro completado",
-	            JOptionPane.INFORMATION_MESSAGE);
+		JOptionPane.showMessageDialog(contentPane, "Usuario registrado correctamente", "Registro completado",
+				JOptionPane.INFORMATION_MESSAGE);
 
-		//TODO RESERVA
+		Instalacion instalacion = (Instalacion) vr.getCbInstalacion().getSelectedItem();
+
+		if (instalacion == null) {
+
+			JOptionPane.showMessageDialog(contentPane, "Debes seleccionar una instalación.", "Error",
+					JOptionPane.WARNING_MESSAGE);
+			return false;
+
+		}
+
+		LocalDate fecha = ((Date) vr.getSpFecha().getValue()).toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+		LocalTime horaInicio = ((Date) vr.getSpInicio().getValue()).toInstant().atZone(ZoneId.systemDefault())
+				.toLocalTime();
+
+		LocalTime horaFin = ((Date) vr.getSpFin().getValue()).toInstant().atZone(ZoneId.systemDefault()).toLocalTime();
+
+		int idInstalacion = instalacion.getInstalacionId();
+
+		boolean disponible = vr.getRealizarReserva().comprobarDisponibilidad(idInstalacion, fecha, horaInicio, horaFin);
+
+		if (!disponible) {
+
+			JOptionPane.showMessageDialog(contentPane,
+					"La instalación ya no está disponible en ese horario. " + "Consulta de nuevo las franjas.",
+					"Horario no disponible", JOptionPane.WARNING_MESSAGE);
+
+			dispose();
+
+			return false;
+		}
+
+		Reserva reserva = new Reserva(fecha, horaInicio, horaFin, 0, LocalDate.now(), user.getUsuarioId(),
+				idInstalacion);
+
+		boolean registrada = vr.getRealizarReserva().registrarNuevaReserva(reserva);
+
+		if (!registrada) {
+			JOptionPane.showMessageDialog(contentPane, "No se ha podido registrar la reserva.", "Error",
+					JOptionPane.ERROR_MESSAGE);
+			return false;
+		}
+
+		JOptionPane.showMessageDialog(contentPane,
+				"Reserva realizada correctamente.\n\n" + "Instalación: " + instalacion.getName() + "\n" + "Fecha: "
+						+ fecha + "\n" + "Horario: " + horaInicio + " - " + horaFin + "\n" + "Importe: "
+						+ reserva.getImporte() + " €",
+				"Reserva confirmada", JOptionPane.INFORMATION_MESSAGE);
+
 		return true;
 	}
-	
+
 	/**
 	 * Comprueba que el nombre del cliente y la tarjeta no esten en blanco
+	 * 
 	 * @param name
 	 * @param cardNumber
 	 * @return true si son válidos, false en caso contrario
 	 */
 	private boolean checkCampos(String name, String cardNumber) {
-		
+
 		String tarjeta = cardNumber.replaceAll("\\s", "");
 		return !name.isBlank() && tarjeta.matches("\\d{16}");
 	}
 
+	/**
+	 * Vuelve a la pestaña anterior
+	 */
 	private void reiniciar() {
-		
+
 		this.dispose();
+	}
+	
+	/**
+	 * Actualiza las etiquetas de precio y duracion
+	 */
+	private void actualizarPrecioYDuracion() {
+
+		LocalTime horaInicio = ((Date) vr.getSpInicio().getValue()).toInstant().atZone(ZoneId.systemDefault()).toLocalTime();
+		LocalTime horaFin = ((Date) vr.getSpFin().getValue()).toInstant().atZone(ZoneId.systemDefault()).toLocalTime();
+		
+		long minutos = Duration.between(horaInicio, horaFin).toMinutes();
+		long horas = minutos / 60;
+		double precio = horas * 50.0;
+		
+		getTfDuracion().setText(horas + (horas >1? "horas" : "hora"));
+		getTtPrecio().setText(String.format("%.2f €", precio));
 	}
 }

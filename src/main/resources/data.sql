@@ -12,7 +12,7 @@ delete from BaseEmpleado;
 delete from Equipo;
 delete from CategoriaEquipo;
 
-delete ftom Entrenamiento2;
+delete from Entrenamiento2;
 delete from Partido2;
 
 delete from Entrenamiento;
@@ -311,7 +311,7 @@ INSERT INTO "Entrenamiento2" ("fecha", "hora_inicio", "hora_fin", "id_equipo", "
 ('2026-10-20', '16:00:00', '18:00:00', 1, 1),
 ('2026-10-27', '17:00:00', '19:00:00', 3, 1);
 
-INSERT INTO "Partido" ("fecha", "hora_inicio", "hora_fin", "id_local", "id_visitante", "id_instalacion") VALUES 
+INSERT INTO "Partido2" ("fecha", "hora_inicio", "hora_fin", "id_local", "id_visitante", "id_instalacion") VALUES 
 ('2026-10-20', '21:00:00', '23:00:00', 1, 2, 1),
 ('2026-10-27', '18:30:00', '20:30:00', 3, 4, 2),
 ('2026-10-29', '19:30:00', '22:30:00', 5, 6, 2),

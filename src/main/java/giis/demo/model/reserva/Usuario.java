@@ -19,18 +19,34 @@ public class Usuario {
 		this.tarjetaBancaria = tarjetaBancaria;
 	}
 	
+	/**
+	 * Obtiene el id del usuario
+	 * @return id
+	 */
 	public int getUsuarioId() {
 		return usuarioId;
 	}
 	
+	/**
+	 * Devuelve el nombre del usuario
+	 * @return nombre
+	 */
 	public String getName() {
 		return name;
 	}
 	
+	/**
+	 * Devuelve la tarjeta del usuario
+	 * @return tarjeta
+	 */
 	public String getTarjetaBancaria() {
 		return tarjetaBancaria;
 	}
 	
+	/**
+	 * Permite cambir el id del usuario
+	 * @param id
+	 */
 	public void setUsuarioId(int id) {
 		this.usuarioId = id;
 	}

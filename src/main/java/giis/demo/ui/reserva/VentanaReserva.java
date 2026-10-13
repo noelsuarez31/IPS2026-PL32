@@ -9,16 +9,25 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JSpinner;
 import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
 import javax.swing.SpinnerDateModel;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.List;
+
 import javax.swing.JButton;
 import java.awt.Color;
+import java.awt.Component;
+
 import javax.swing.border.TitledBorder;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
 import giis.demo.model.reserva.Instalacion;
+import giis.demo.model.reserva.Intervalo;
 import giis.demo.model.reserva.RealizarReserva;
 import giis.demo.ui.VentanaPrincipal;
 
@@ -28,8 +37,10 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.awt.event.ActionEvent;
 import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
@@ -63,9 +74,9 @@ public class VentanaReserva extends JFrame {
 	private JLabel lbInstalacion;
 	private JComboBox<Instalacion> cbInstalacion;
 	private JButton btCancelar;
-	
+
 	private CerrarVentana cv;
-	
+
 	private JTable tablaHorarios;
 	private DefaultTableModel modeloTablaHorarios;
 
@@ -79,7 +90,7 @@ public class VentanaReserva extends JFrame {
 		this.vp = vp;
 		this.rr = new RealizarReserva();
 		this.cv = new CerrarVentana();
-		
+
 		setTitle("Reserva de Instalaciones");
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		setBounds(100, 100, 1044, 432);
@@ -128,7 +139,7 @@ public class VentanaReserva extends JFrame {
 		return panelSeleccion;
 	}
 
-	private JSpinner getSpFecha() {
+	JSpinner getSpFecha() {
 
 		if (spFecha == null) {
 
@@ -217,7 +228,7 @@ public class VentanaReserva extends JFrame {
 		return lbHoraInicio;
 	}
 
-	private JSpinner getSpInicio() {
+	JSpinner getSpInicio() {
 
 		if (spInicio == null) {
 
@@ -248,7 +259,7 @@ public class VentanaReserva extends JFrame {
 		return lbHoraFin;
 	}
 
-	private JSpinner getSpFin() {
+	JSpinner getSpFin() {
 		if (spFin == null) {
 
 			spFin = new JSpinner(crearModeloHora(9, 0));
@@ -298,10 +309,76 @@ public class VentanaReserva extends JFrame {
 	}
 
 	private JScrollPane getSpHorario() {
+
 		if (spHorario == null) {
-			spHorario = new JScrollPane();
+
+			spHorario = new JScrollPane(getTablaHorarios());
 		}
 		return spHorario;
+	}
+
+	public JTable getTablaHorarios() {
+
+		if (tablaHorarios == null) {
+
+			String[] columnas = { "Hora de inicio", "Hora de fin", "Estado", "Motivo" };
+			modeloTablaHorarios = new DefaultTableModel(columnas, 0) {
+
+				@Override
+				public boolean isCellEditable(int fila, int columna) {
+					return false;
+				}
+
+			};
+
+			tablaHorarios = new JTable(modeloTablaHorarios);
+			tablaHorarios.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
+			tablaHorarios.setRowHeight(25);
+			tablaHorarios.getTableHeader().setReorderingAllowed(false);
+
+			tablaHorarios.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				public Component getTableCellRendererComponent(JTable tabla, Object valor, boolean seleccionado,
+						boolean tieneFoco, int fila, int columna) {
+
+					Component componente = super.getTableCellRendererComponent(tabla, valor, seleccionado, tieneFoco,
+							fila, columna);
+
+					String estado = String.valueOf(tabla.getValueAt(fila, 2));
+
+					String motivo = String.valueOf(tabla.getValueAt(fila, 3));
+
+					if (!seleccionado) {
+
+						if ("Disponible".equals(estado)) {
+							componente.setBackground(new Color(200, 255, 200));
+
+						} else if (motivo.toLowerCase().contains("margen")) {
+							componente.setBackground(new Color(255, 220, 160));
+
+						} else {
+							componente.setBackground(new Color(255, 200, 200));
+						}
+
+					} else {
+						componente.setBackground(tabla.getSelectionBackground());
+					}
+
+					return componente;
+				}
+			});
+
+			modeloTablaHorarios
+					.addRow(new Object[] { "--:--", "--:--", "Pendiente", "Pulse Consultar para ver los horarios" });
+
+		}
+
+		return tablaHorarios;
+
 	}
 
 	public void reiniciar() throws SQLException {
@@ -315,14 +392,24 @@ public class VentanaReserva extends JFrame {
 		this.getSpFecha().setValue(new Date());
 		this.getSpInicio().setValue(hora(8, 0));
 		this.getSpFin().setValue(hora(9, 0));
-		
+
 		getCbInstalacion().setEnabled(true);
 		getSpFecha().setEnabled(true);
-		getSpInicio().setEnabled(true);
-		
-		btConsulta.setEnabled(getCbInstalacion().getItemCount()>0);
+
+		btConsulta.setEnabled(getCbInstalacion().getItemCount() > 0);
 		btCancelar.setEnabled(false);
 		btSiguiente.setEnabled(false);
+
+		modeloTablaHorarios.setRowCount(0);
+		modeloTablaHorarios.addRow(new Object[] {
+			    "--:--",
+			    "--:--",
+			    "Pendiente",
+			    "Pulse Consultar para ver los horarios"
+			});
+
+		getSpInicio().setEnabled(false);
+		getSpFin().setEnabled(false);
 
 	}
 
@@ -343,16 +430,67 @@ public class VentanaReserva extends JFrame {
 
 	private void consultarHorarios() {
 
-		this.cbInstalacion.setEnabled(false);
-		this.spFecha.setEnabled(false);
+		Instalacion instalacion = (Instalacion) cbInstalacion.getSelectedItem();
 
-		this.btConsulta.setEnabled(false);
-		this.btCancelar.setEnabled(true);
-		this.btSiguiente.setEnabled(true);
+		if (instalacion == null) {
 
-		this.spInicio.setEnabled(true);
-		this.spFin.setEnabled(true);
-		// TODO
+			JOptionPane.showMessageDialog(this, "Seleccione una instalación.", "Aviso", JOptionPane.WARNING_MESSAGE);
+			return;
+
+		}
+
+		try {
+
+			int idInstalacion = instalacion.getInstalacionId();
+			LocalDate fecha = ((Date) spFecha.getValue()).toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+			List<Intervalo> ocupados = rr.obtenerOcupaciones(idInstalacion, fecha);
+			List<Intervalo> disponibles = rr.obtenerIntervalosDisponibles(idInstalacion, fecha);
+
+			List<Intervalo> todos = new ArrayList<Intervalo>();
+
+			todos.addAll(ocupados);
+			todos.addAll(disponibles);
+
+			todos.sort(Comparator.comparing(Intervalo::getHoraInicio));
+
+			modeloTablaHorarios.setRowCount(0);
+
+			DateTimeFormatter formato = DateTimeFormatter.ofPattern("HH:mm");
+
+			for (Intervalo intervalo : todos) {
+
+				String motivo = intervalo.getMotivo();
+				boolean isDisponible = "Disponible".equalsIgnoreCase(motivo);
+
+				modeloTablaHorarios.addRow(new Object[] { intervalo.getHoraInicio().format(formato),
+						intervalo.getHoraFin().format(formato), isDisponible ? "Disponible" : "Ocupado",
+						isDisponible ? "-" : motivo });
+			}
+
+			if (todos.isEmpty()) {
+
+				modeloTablaHorarios
+						.addRow(new Object[] { "-", "-", "Sin franjas", "No hay intervalos disponibles para mostrar" });
+			}
+
+			this.cbInstalacion.setEnabled(false);
+			this.spFecha.setEnabled(false);
+
+			this.btConsulta.setEnabled(false);
+			this.btCancelar.setEnabled(true);
+			this.btSiguiente.setEnabled(true);
+
+			this.spInicio.setEnabled(true);
+			this.spFin.setEnabled(true);
+
+		} catch (SQLException e) {
+
+			JOptionPane.showMessageDialog(this, "No se han podido consultar los horarios de la instalación.",
+					"Error de base de datos", JOptionPane.ERROR_MESSAGE);
+			e.printStackTrace();
+
+		}
 	}
 
 	private int aMinutos(Date d) {
@@ -365,10 +503,10 @@ public class VentanaReserva extends JFrame {
 	}
 
 	private boolean checkDuration() {
-		
+
 		int duracion = aMinutos((Date) spFin.getValue()) - aMinutos((Date) spInicio.getValue());
-		
-		return duracion >= 60 && duracion % 60==0;
+
+		return duracion >= 60 && duracion % 60 == 0;
 	}
 
 	private void registrarDatosDeUsuario() {
@@ -380,13 +518,43 @@ public class VentanaReserva extends JFrame {
 		}
 
 		if (!checkDuration()) {
-			JOptionPane.showMessageDialog(this, "La reserva debe durar al menos una hora.\n"
-					+ "Solo se puede reservar horas enteras, no se admiten reservas de horas y x minutos", "Duración no válida",
-					JOptionPane.WARNING_MESSAGE);
+			JOptionPane.showMessageDialog(this,
+					"La reserva debe durar al menos una hora.\n"
+							+ "Solo se puede reservar horas enteras, no se admiten reservas de horas y x minutos",
+					"Duración no válida", JOptionPane.WARNING_MESSAGE);
 			return;
 		}
-		
-		//TODO check is available to book
+
+		// check is available to book
+
+		Instalacion instalacion = (Instalacion) cbInstalacion.getSelectedItem();
+
+		if (instalacion == null) {
+			JOptionPane.showMessageDialog(this, "Seleccione una instalación.", "Aviso", JOptionPane.WARNING_MESSAGE);
+			return;
+		}
+
+		LocalDate fecha = ((Date) spFecha.getValue()).toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+		LocalTime inicio = ((Date) spInicio.getValue()).toInstant().atZone(ZoneId.systemDefault()).toLocalTime();
+		LocalTime fin = ((Date) spFin.getValue()).toInstant().atZone(ZoneId.systemDefault()).toLocalTime();
+
+		try {
+			
+			boolean disponible = rr.comprobarDisponibilidad(instalacion.getInstalacionId(), fecha, inicio, fin);
+
+			if (!disponible) {
+				JOptionPane.showMessageDialog(this,
+						"El intervalo seleccionado no está disponible. Seleccione otro horario.",
+						"Horario no disponible", JOptionPane.WARNING_MESSAGE);
+				return;
+			}
+
+		} catch (SQLException e) {
+			JOptionPane.showMessageDialog(this, "No se ha podido comprobar la disponibilidad.",
+												"Error de base de datos", JOptionPane.ERROR_MESSAGE);
+			e.printStackTrace();
+			return;
+		}
 
 		VentaRegistroUsuario vru = new VentaRegistroUsuario(this);
 		vru.setVisible(true);
@@ -409,11 +577,11 @@ public class VentanaReserva extends JFrame {
 						volverAlMenu();
 					} catch (SQLException e1) {
 
-						JOptionPane.showMessageDialog(null, "No se ha podido cerrar la conexion con la base de datos", "Error",
-								JOptionPane.ERROR_MESSAGE);
+						JOptionPane.showMessageDialog(null, "No se ha podido cerrar la conexion con la base de datos",
+								"Error", JOptionPane.ERROR_MESSAGE);
 						System.err.println("Error al cerrar la BBDD");
 						e1.printStackTrace();
-						
+
 					}
 				}
 			});
@@ -433,15 +601,16 @@ public class VentanaReserva extends JFrame {
 		return lbInstalacion;
 	}
 
-	private JComboBox<Instalacion> getCbInstalacion() throws SQLException {
+	JComboBox<Instalacion> getCbInstalacion() throws SQLException {
+		
 		if (cbInstalacion == null) {
+			
 			cbInstalacion = new JComboBox<Instalacion>();
 			cbInstalacion.setModel(new DefaultComboBoxModel<Instalacion>(rr.obtenerInstalacionesDisponibles()));
 			cbInstalacion.setBounds(196, 4, 272, 28);
 		}
 		return cbInstalacion;
 	}
-
 
 	private JButton getBtCancelar() {
 		if (btCancelar == null) {
@@ -467,12 +636,12 @@ public class VentanaReserva extends JFrame {
 		}
 		return btCancelar;
 	}
-	
+
 	private void cerrar() throws SQLException {
-		
+
 		this.rr.close();
 	}
-	
+
 	private class CerrarVentana extends WindowAdapter {
 
 		@Override

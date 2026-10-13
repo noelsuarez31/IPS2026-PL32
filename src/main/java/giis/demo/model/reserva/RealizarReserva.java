@@ -62,6 +62,19 @@ public class RealizarReserva {
 	}
 	
 	/**
+	 * Obtiene las franjas disponibles de una instalacion en una fecha
+	 * @param id_Instalacion
+	 * @param fecha
+	 * @return las franajs disponibles
+	 * @throws SQLException
+	 */
+	public List<Intervalo> obtenerIntervalosDisponibles(int id_Instalacion, LocalDate fecha) throws SQLException{
+		
+		return jdbc.obtenerIntervalosDisponibels(id_Instalacion, fecha);
+		
+	}
+	
+	/**
 	 * Comprueba si el horario elegido por el usuario está disponible
 	 * @param idInstalacion
 	 * @param fecha

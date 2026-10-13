@@ -24,7 +24,6 @@ public class ReservaJdbc {
 
 		try (PreparedStatement ps = con.prepareStatement(QUERY_INSERT_BOOK)) {
 
-
 			ps.setString(1, reserva.getFechaReserva().toString());
 			ps.setString(2, reserva.getHoraInicio().toString());
 			ps.setString(3, reserva.getHoraFin().toString());
@@ -48,12 +47,14 @@ public class ReservaJdbc {
 
 			int numFilasCreadas = crearReserva(con, reserva);
 			con.commit();
-			
+
 			return numFilasCreadas;
-			
+
 		} catch (SQLException e) {
 			con.rollback();
 			throw e;
+		} finally {
+			con.setAutoCommit(true);
 		}
 
 	}
