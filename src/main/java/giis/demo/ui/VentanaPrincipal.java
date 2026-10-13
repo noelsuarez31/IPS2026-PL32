@@ -8,6 +8,7 @@ import giis.demo.ui.tienda.VentanaTienda;
 import giis.demo.model.entrevistas.CrearFranjaService;
 import giis.demo.model.equipo.AñadirEquipoService;
 import giis.demo.model.horarios.GestionHorariosPeriodicos;
+import giis.demo.model.tienda.VentaMerchandising;
 import giis.demo.ui.entradas.VentanaVentaEntradas;
 import giis.demo.ui.equipo.VentanaAñadirEquipo;
 import giis.demo.ui.horarios.VentanaHorarioPeriodico;
@@ -199,9 +200,24 @@ public class VentanaPrincipal extends JFrame {
 	}
 
 	public void abrirVentanaTienda() {
-		VentanaTienda vT = new VentanaTienda(this);
-		this.setVisible(false);
-		vT.setVisible(true);
+	    try {
+	        // Instanciar lógica 
+	        VentaMerchandising ventaActiva = new VentaMerchandising();
+	        
+	        // Cargar BBDD a memoria
+	        ventaActiva.cargarCatalogo(); 
+	        
+	        // Pasarle el controlador
+	        VentanaTienda vT = new VentanaTienda(this, ventaActiva);
+	        this.setVisible(false);
+	        vT.setVisible(true);
+	        
+	    } catch (SQLException ex) {
+	        javax.swing.JOptionPane.showMessageDialog(this, 
+	            "Error al conectar con la base de datos para cargar el catálogo:\n" + ex.getMessage(), 
+	            "Error Crítico", javax.swing.JOptionPane.ERROR_MESSAGE);
+	        ex.printStackTrace();
+	    }
 	}
 	private JMenuItem getMntmVerTienda() {
 		if (mntmVerTienda == null) {

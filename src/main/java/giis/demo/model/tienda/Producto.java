@@ -1,31 +1,35 @@
 package giis.demo.model.tienda;
 
+import java.util.Objects;
+
 public class Producto {
-	
-	private String id;
-    private String nombre;
-    private double precio;
-    private Categoria categoria;
-    
-    public enum Categoria{
-    	ParteArriba, ParteAbajo, Merchandising;
-    }
+	private int id_producto;
+	private String nombre;
+	private double precio;
+	private String tipo;
 
-    public Producto(String id, String nombre, double precio, Categoria categoria) {
-        this.id = id;
-        this.nombre = nombre;
-        this.precio = precio;
-        this.categoria = categoria;
-    }
+	public Producto(int id_producto, String nombre, double precio, String tipo) {
+		this.id_producto = id_producto;
+		this.nombre = nombre;
+		this.precio = precio;
+		this.tipo = tipo;
+	}
 
-    public String getId() { return id; }
-    public String getNombre() { return nombre; }
-    public double getPrecio() { return precio; }
-    public Categoria getCategoria() { return categoria; }
+	public int getId_producto() { return id_producto; }
+	public String getNombre() { return nombre; }
+	public double getPrecio() { return precio; }
+	public String getTipo() { return tipo; }
 
-    @Override
-    public String toString() {
-        return String.format("%s - %.2f€", nombre, precio);
-    }
+	@Override
+	public int hashCode() {
+		return Objects.hash(id_producto);
+	}
 
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) return true;
+		if (obj == null || getClass() != obj.getClass()) return false;
+		Producto other = (Producto) obj;
+		return id_producto == other.id_producto;
+	}
 }
