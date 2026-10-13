@@ -32,25 +32,27 @@ public class EntrenadorJdbc {
 	        
 	        while (rsEntrenador.next()) {
 	            
-	            java.sql.Date fechaSql = rsEntrenador.getDate("fecha_nacimiento");
+	        	java.sql.Date fechaSql = rsEntrenador.getDate("fecha_nacimiento");
 	            LocalDate fechaNac = (fechaSql != null) ? fechaSql.toLocalDate() : null;
-
 	            BigDecimal salario = rsEntrenador.getBigDecimal("salario");
 
+	            // Leer tipo 
+	            String tipoBD = rsEntrenador.getString("tipo_entrenador");
+	            TipoEntrenador tipo = null;
+	            
+	            if (tipoBD != null) {
+	                tipo = TipoEntrenador.valueOf(tipoBD.toUpperCase());
+	            }
+
+	            // Instanciar entrenador
 	            Entrenador entrenador = new Entrenador(
 	                    rsEntrenador.getString("dni"),
 	                    rsEntrenador.getString("nombre"),
 	                    rsEntrenador.getString("apellido"),
 	                    salario,
 	                    fechaNac,
-	                    rsEntrenador.getString("numero_de_telefono")
-	            );
-	            
-	            // Asignar el tipo usando el setter
-	            String tipoBD = rsEntrenador.getString("tipo_entrenador");
-	            if (tipoBD != null) {
-	                entrenador.setTipoEntrenador(TipoEntrenador.valueOf(tipoBD.toUpperCase()));
-	            }
+	                    rsEntrenador.getString("numero_de_telefono"),
+	                    tipo);
 
 	            cuerpoTecnico.add(entrenador);
 	        }

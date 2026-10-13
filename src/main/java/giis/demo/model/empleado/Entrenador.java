@@ -25,8 +25,8 @@ public class Entrenador extends EmpleadoDeportivo {
 		return tipoEntrenador == TipoEntrenador.SEGUNDO_ENTRENADOR;
 	}
 	
-	public boolean esPreparadorFisico() {
-        return tipoEntrenador == TipoEntrenador.PREPARADOR_FISICO;
+	public boolean esTecnicoAdicional() {
+        return tipoEntrenador == TipoEntrenador.TECNICO_ADICIONAL;
     }
 	
 	@Override
@@ -47,5 +47,7 @@ public class Entrenador extends EmpleadoDeportivo {
 	
 	
 }
+
+
 
 
