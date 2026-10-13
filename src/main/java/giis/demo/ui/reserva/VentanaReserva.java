@@ -8,6 +8,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JSpinner;
+import javax.swing.JTable;
 import javax.swing.SpinnerDateModel;
 
 import java.util.Calendar;
@@ -15,6 +16,7 @@ import java.util.Date;
 import javax.swing.JButton;
 import java.awt.Color;
 import javax.swing.border.TitledBorder;
+import javax.swing.table.DefaultTableModel;
 
 import giis.demo.model.reserva.Instalacion;
 import giis.demo.model.reserva.RealizarReserva;
@@ -63,6 +65,9 @@ public class VentanaReserva extends JFrame {
 	private JButton btCancelar;
 	
 	private CerrarVentana cv;
+	
+	private JTable tablaHorarios;
+	private DefaultTableModel modeloTablaHorarios;
 
 	/**
 	 * Create the frame.

@@ -34,6 +34,7 @@ import giis.demo.model.equipo.CategoriaEquipo;
 import giis.demo.model.equipo.Equipo;
 import giis.demo.model.horarios.HorarioPeriodico;
 import giis.demo.model.reserva.Instalacion;
+import giis.demo.model.reserva.Intervalo;
 import giis.demo.model.reserva.Reserva;
 import giis.demo.model.reserva.Usuario;
 import giis.demo.model.tienda.Producto;
@@ -356,6 +357,7 @@ public class JDBC {
 		
 	}
 	
+
 	/**
 	 * Comprueba si para una fecha y hora de inicio y fin dadas, una instalación concreta está libre
 	 * @param id_instalacion
@@ -370,4 +372,31 @@ public class JDBC {
 		return ComprobarDisponibilidadJdbc.estaDisponible(con, id_instalacion, fecha, horaInicio, horaFin);
 		
 	}
+	
+	/**
+	 * Obtiene las franjas ocupadas de una instalacion en una fecha indicando el motivo
+	 * @param idInstalacion
+	 * @param fecha
+	 * @return lista de los intervalos
+	 * @throws SQLException
+	 */
+	public List<Intervalo> obtenerOcupaciones(int idInstalacion, LocalDate fecha) throws SQLException{
+		
+		return ComprobarDisponibilidadJdbc.obtenerIntervalosOcupados(con, idInstalacion, fecha);
+		
+	}
+	
+	/**
+	 * Obtiene los intervalos disponibles
+	 * @param idInstalacion
+	 * @param fecha
+	 * @return lista de los intervalos
+	 * @throws SQLException
+	 */
+	public List<Intervalo> obtenerIntervalosDisponibels(int idInstalacion, LocalDate fecha) throws SQLException {
+		
+		return ComprobarDisponibilidadJdbc.obtenerIntervalosDisponibles(con, idInstalacion, fecha);
+		
+	}
+	
 }

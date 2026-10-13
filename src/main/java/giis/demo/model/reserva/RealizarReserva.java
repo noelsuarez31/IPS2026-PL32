@@ -1,6 +1,9 @@
 package giis.demo.model.reserva;
 
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
 
 import giis.demo.jdbc.JDBC;
 
@@ -44,6 +47,35 @@ public class RealizarReserva {
 		return jdbc.registrarReserva(reserva);
 		
 	}
+	
+	/**
+	 * Obtiene las franjas ocupadas de una instalacion en una fecha
+	 * @param id_Instalacion
+	 * @param fecha
+	 * @return las franajs ocupadas y el motivo
+	 * @throws SQLException
+	 */
+	public List<Intervalo> obtenerOcupaciones(int id_Instalacion, LocalDate fecha) throws SQLException{
+		
+		return jdbc.obtenerOcupaciones(id_Instalacion, fecha);
+		
+	}
+	
+	/**
+	 * Comprueba si el horario elegido por el usuario está disponible
+	 * @param idInstalacion
+	 * @param fecha
+	 * @param horaInicio
+	 * @param horaFin
+	 * @return true si es válido, false en caso contrario
+	 * @throws SQLException
+	 */
+	public boolean comprobarDisponibilidad(int idInstalacion, LocalDate fecha, LocalTime horaInicio, LocalTime horaFin) throws SQLException {
+		
+		return jdbc.comprobarDisponibilidad(idInstalacion, fecha, horaInicio, horaFin);
+		
+	}
+	
 	
 	public void close() throws SQLException {
 		
