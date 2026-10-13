@@ -5,6 +5,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import giis.demo.model.reserva.Usuario;
+
 public class UsuarioJdbc {
 
 	private static final String QUERY_FIND_USER = "SELECT id_usuario FROM Usuario WHERE nombre = ? AND tarjeta_bancaria=?";
@@ -20,12 +22,12 @@ public class UsuarioJdbc {
 	 * @return el id del usuario si existe, -1 si no existe
 	 * @throws SQLException
 	 */
-	public static int checkUserExists(Connection con, String name, String card) throws SQLException {
+	public static int checkUserExists(Connection con, Usuario usuario) throws SQLException {
 
 		try (PreparedStatement ps = con.prepareStatement(QUERY_FIND_USER)) {
 
-			ps.setString(1, name);
-			ps.setString(2, card);
+			ps.setString(1, usuario.getName());
+			ps.setString(2, usuario.getTarjetaBancaria());
 
 			try (ResultSet rs = ps.executeQuery()) {
 				if(rs.next()) {
@@ -44,12 +46,12 @@ public class UsuarioJdbc {
 	 * @throws SQLException
 	 * @return devuelve el id del nuevo usuario
 	 */
-	public static int guardarUsuario(Connection con, String name, String card) throws SQLException {
+	public static int guardarUsuario(Connection con, Usuario usuario) throws SQLException {
 
 		try (PreparedStatement ps = con.prepareStatement(QUERY_INSERT_USER)) {
 
-			ps.setString(1, name);
-			ps.setString(2, card);
+			ps.setString(1, usuario.getName());
+			ps.setString(2, usuario.getTarjetaBancaria());
 
 			ps.executeUpdate();
 			
@@ -69,15 +71,15 @@ public class UsuarioJdbc {
 	 * @return el id del usuario
 	 * @throws SQLException
 	 */
-	public static int obtenerOCrear(Connection con, String name, String card) throws SQLException {
+	public static void obtenerOCrear(Connection con, Usuario usuario) throws SQLException {
 		
-		int id = checkUserExists(con, name, card);
+		int id = checkUserExists(con, usuario);
 		
 		if(id != -1) {
-			return id;
+			usuario.setUsuarioId(id);
 		}
 		
-		return guardarUsuario(con, name, card);
+		usuario.setUsuarioId(guardarUsuario(con, usuario));
 	}
 	
 

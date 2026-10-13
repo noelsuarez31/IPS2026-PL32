@@ -2,6 +2,9 @@ package giis.demo.ui.reserva;
 
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+
+import giis.demo.model.reserva.Usuario;
+
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import javax.swing.JLabel;
@@ -256,8 +259,10 @@ public class VentaRegistroUsuario extends JDialog {
 			return false;
 		}
 		
+		Usuario user = new Usuario(name, cardNumber);
+		this.vr.getRealizarReserva().guardarUsuario(user);
+
 		
-		int idUsuario = this.vr.getRealizarReserva().guardarUsuario(name, cardNumber);
 		JOptionPane.showMessageDialog(
 	            contentPane,
 	            "Usuario registrado correctamente",

@@ -17,7 +17,9 @@ import giis.demo.jdbc.entrevistas.FranjaJdbc;
 import giis.demo.jdbc.equipo.CategoriaEquipoJdbc;
 import giis.demo.jdbc.equipo.EquipoJdbc;
 import giis.demo.jdbc.horarios.HorarioPeriodicoJdbc;
+import giis.demo.jdbc.reservas.ComprobarDisponibilidadJdbc;
 import giis.demo.jdbc.reservas.InstalacionJdbc;
+import giis.demo.jdbc.reservas.ReservaJdbc;
 import giis.demo.jdbc.reservas.UsuarioJdbc;
 import giis.demo.jdbc.tienda.RegistrarVentaMerchandising;
 import giis.demo.model.empleado.EmpleadoDeportivo;
@@ -32,6 +34,8 @@ import giis.demo.model.equipo.CategoriaEquipo;
 import giis.demo.model.equipo.Equipo;
 import giis.demo.model.horarios.HorarioPeriodico;
 import giis.demo.model.reserva.Instalacion;
+import giis.demo.model.reserva.Reserva;
+import giis.demo.model.reserva.Usuario;
 import giis.demo.model.tienda.Producto;
 
 public class JDBC {
@@ -228,9 +232,9 @@ public class JDBC {
 	 * @return el id del usuario en la BBDD
 	 * @throws SQLException
 	 */
-	public int obtenerOCrearUsuario(String name, String card) throws SQLException {
+	public void obtenerOCrearUsuario(Usuario user) throws SQLException {
 
-		return UsuarioJdbc.obtenerOCrear(con, name, card);
+		UsuarioJdbc.obtenerOCrear(con, user);
 	}
 
 	public Connection getCon() {
@@ -339,5 +343,31 @@ public class JDBC {
 	public void almacenarVentaMerchandising(double total, Map<giis.demo.model.tienda.Producto, Integer> lineasCesta) throws SQLException {
 		RegistrarVentaMerchandising.registrar(con, total, lineasCesta);
 	}
-
+	
+	/**
+	 * Realiza la reserva de la instalacion
+	 * @param reserva
+	 * @return true si se ha añadido la reserva a la BBDD, false en caso contrario
+	 * @throws SQLException 
+	 */
+	public boolean registrarReserva(Reserva reserva) throws SQLException {
+		
+		return ReservaJdbc.registrarReserva(con, reserva)==1;
+		
+	}
+	
+	/**
+	 * Comprueba si para una fecha y hora de inicio y fin dadas, una instalación concreta está libre
+	 * @param id_instalacion
+	 * @param fecha
+	 * @param horaInicio
+	 * @param horaFin
+	 * @return true si está libre, false en caso contrario
+	 * @throws SQLException
+	 */
+	public boolean comprobarDisponibilidad(int id_instalacion, LocalDate fecha, LocalTime horaInicio, LocalTime horaFin) throws SQLException {
+		
+		return ComprobarDisponibilidadJdbc.estaDisponible(con, id_instalacion, fecha, horaInicio, horaFin);
+		
+	}
 }

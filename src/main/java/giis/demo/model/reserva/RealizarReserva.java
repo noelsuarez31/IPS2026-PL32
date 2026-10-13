@@ -27,9 +27,21 @@ public class RealizarReserva {
 	 * @return el id del usuario
 	 * @throws SQLException
 	 */
-	public int guardarUsuario(String name, String cardNumber) throws SQLException {
+	public void guardarUsuario(Usuario user) throws SQLException {
 		
-		return jdbc.obtenerOCrearUsuario(name, cardNumber);
+		jdbc.obtenerOCrearUsuario(user);
+		
+	}
+	
+	/**
+	 * Añade la reserva a la BBDD
+	 * @param reserva
+	 * @return true si se ha podido realizar la reseva, false en caso contrario
+	 * @throws SQLException
+	 */
+	public boolean registrarNuevaReserva(Reserva reserva) throws SQLException {
+		
+		return jdbc.registrarReserva(reserva);
 		
 	}
 	

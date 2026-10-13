@@ -8,8 +8,8 @@ import giis.demo.model.reserva.Reserva;
 
 public class ReservaJdbc {
 
-	private static String QUERY_INSERT_BOOK = "INSERT INTO (Id_reserva, fecha, hora_inicio, hora_fin, importe, fecha_registro,"
-			+ "id_usuario, id_instalacion) VALUES (?,?,?,?,?,?,?,?)";
+	private static String QUERY_INSERT_BOOK = "INSERT INTO Reserva(fecha, hora_inicio, hora_fin, importe, fecha_registro,"
+			+ "id_usuario, id_instalacion) VALUES (?,?,?,?,?,?,?)";
 
 	/**
 	 * Añade la reserva a la BBDD
@@ -24,15 +24,15 @@ public class ReservaJdbc {
 
 		try (PreparedStatement ps = con.prepareStatement(QUERY_INSERT_BOOK)) {
 
-			ps.setInt(1, reserva.getInstalacionId());
 
-			// ps.setString(2, reserva.getFechaReserva());
-			// ps.setString(3, reserva.getHoraInicio());
-			// ps.setString(4, reserva.getHoraFin());
+			ps.setString(1, reserva.getFechaReserva().toString());
+			ps.setString(2, reserva.getHoraInicio().toString());
+			ps.setString(3, reserva.getHoraFin().toString());
 
-			ps.setDouble(5, reserva.getImporte());
+			ps.setDouble(4, reserva.getImporte());
+			ps.setString(5, reserva.getFechaRegistro().toString());
 			ps.setInt(6, reserva.getUserId());
-			ps.setInt(0, 0);
+			ps.setInt(7, reserva.getInstalacionId());
 
 			return ps.executeUpdate();
 
@@ -40,7 +40,7 @@ public class ReservaJdbc {
 
 	}
 
-	public static int registrarVenta(Connection con, Reserva reserva) throws SQLException {
+	public static int registrarReserva(Connection con, Reserva reserva) throws SQLException {
 
 		con.setAutoCommit(false);
 

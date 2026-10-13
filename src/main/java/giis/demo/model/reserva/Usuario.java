@@ -13,9 +13,8 @@ public class Usuario {
 	 * @param name
 	 * @param tarjetaBancaria
 	 */
-	public Usuario(int usuarioId, String name, String tarjetaBancaria) {
+	public Usuario(String name, String tarjetaBancaria) {
 		
-		this.usuarioId = usuarioId;
 		this.name = name;
 		this.tarjetaBancaria = tarjetaBancaria;
 	}
@@ -32,6 +31,8 @@ public class Usuario {
 		return tarjetaBancaria;
 	}
 	
-	
+	public void setUsuarioId(int id) {
+		this.usuarioId = id;
+	}
 
 }
