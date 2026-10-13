@@ -6,14 +6,12 @@ import java.sql.SQLException;
 import java.util.List;
 
 import giis.demo.jdbc.empleado.EmpleadoDeportivoJdbc;
-import giis.demo.jdbc.empleado.EntrenadorJdbc;
 import giis.demo.jdbc.entradas.ButacaJdbc;
 import giis.demo.jdbc.entradas.PartidoJdbc;
 import giis.demo.jdbc.entradas.RegistrarVentaJdbc;
 import giis.demo.jdbc.equipo.CategoriaEquipoJdbc;
 import giis.demo.jdbc.equipo.EquipoJdbc;
 import giis.demo.model.empleado.EmpleadoDeportivo;
-import giis.demo.model.empleado.Entrenador;
 import giis.demo.model.entradas.Butaca;
 import giis.demo.model.entradas.Partido;
 import giis.demo.model.entradas.enumerados.TipoSeccion;
@@ -138,12 +136,12 @@ public class JDBC {
 	}
 
 	/**
-	 * Devuelve una lista de entrenadores que no tienen equipo asignado
+	 * Devuelve una lista de empleados deportivos con posicion ENTRENADOR que no tienen equipo asignado
 	 * @return
 	 * @throws SQLException
 	 */
-	public List<Entrenador> obtenerEntrenadoresDisponibles() throws SQLException {
-		return EntrenadorJdbc.obtenerEntrenadoresDisponibles(con);
+	public List<EmpleadoDeportivo> obtenerEntrenadoresDisponibles() throws SQLException {
+		return EmpleadoDeportivoJdbc.obtenerEntrenadoresDisponibles(con);
 	}
 
 	/**
@@ -157,7 +155,7 @@ public class JDBC {
 	 * @throws SQLException
 	 */
 	public void almacenarEquipo(Equipo equipo, List<EmpleadoDeportivo> jugadores, 
-			List<Entrenador> entrenadores, List<EmpleadoDeportivo> tecnicosAdicionales) throws SQLException {
+			List<EmpleadoDeportivo> entrenadores, List<EmpleadoDeportivo> tecnicosAdicionales) throws SQLException {
 		EquipoJdbc.almacenarEquipo(con, equipo, jugadores, entrenadores, tecnicosAdicionales);
 	}
 

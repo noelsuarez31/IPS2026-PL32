@@ -10,7 +10,6 @@ drop table if exists Butaca;
 drop table if exists BaseEmpleado;
 drop table if exists EmpleadoDeportivo;
 drop table if exists EmpleadoNoDeportivo;
-drop table if exists Entrenador;
 drop table if exists CategoriaEquipo;
 drop table if exists Equipo;
 
@@ -78,13 +77,6 @@ CREATE TABLE IF NOT EXISTS "EmpleadoNoDeportivo" (
     "posicion" TEXT NOT NULL,
     PRIMARY KEY("dni"),
     FOREIGN KEY("dni") REFERENCES "BaseEmpleado"("dni") ON DELETE CASCADE ON UPDATE CASCADE
-);
-
-CREATE TABLE IF NOT EXISTS "Entrenador" (
-    "dni" TEXT,
-    "tipo_entrenador" TEXT NOT NULL,
-    PRIMARY KEY("dni"),
-    FOREIGN KEY("dni") REFERENCES "EmpleadoDeportivo"("dni") ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS "CategoriaEquipo" (

@@ -8,7 +8,6 @@ import java.sql.Statement;
 import java.util.List;
 
 import giis.demo.model.empleado.EmpleadoDeportivo;
-import giis.demo.model.empleado.Entrenador;
 import giis.demo.model.equipo.Equipo;
 
     public class EquipoJdbc {
@@ -33,7 +32,7 @@ import giis.demo.model.equipo.Equipo;
          * @throws SQLException
          */
         public static void almacenarEquipo(Connection con, 
-                Equipo equipo, List<EmpleadoDeportivo> jugadores, List<Entrenador> entrenadores, List<EmpleadoDeportivo> tecnicosAdicionales) throws SQLException {
+                Equipo equipo, List<EmpleadoDeportivo> jugadores, List<EmpleadoDeportivo> entrenadores, List<EmpleadoDeportivo> tecnicosAdicionales) throws SQLException {
 
             boolean originalAutoCommit = con.getAutoCommit();
             
@@ -55,7 +54,7 @@ import giis.demo.model.equipo.Equipo;
                     validarMiembroSinEquipo(con, ed.getDni(), ed.getNombre(), "jugador");
                 }
                 
-                for(Entrenador entr : entrenadores) {
+                for(EmpleadoDeportivo entr : entrenadores) {
                     validarMiembroSinEquipo(con, entr.getDni(), entr.getNombre(), "entrenador");
                 }
                 
@@ -92,7 +91,7 @@ import giis.demo.model.equipo.Equipo;
                     }
                 }
                 
-                for(Entrenador entr : entrenadores) {
+                for(EmpleadoDeportivo entr : entrenadores) {
                     try(PreparedStatement pstSaveEntrenadores = con.prepareStatement(QUERY_SAVE_TEAM_MEMBERS)){
                         pstSaveEntrenadores.setInt(1, equipo.getIdEquipo());
                         pstSaveEntrenadores.setString(2, entr.getDni());

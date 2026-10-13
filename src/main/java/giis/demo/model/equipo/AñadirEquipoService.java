@@ -8,7 +8,6 @@ import giis.demo.exceptions.UnauthorizedException;
 import giis.demo.jdbc.JDBC;
 import giis.demo.model.empleado.BaseEmpleado;
 import giis.demo.model.empleado.EmpleadoDeportivo;
-import giis.demo.model.empleado.Entrenador;
 import giis.demo.model.empleado.Posicion;
 
 
@@ -25,7 +24,7 @@ public class AñadirEquipoService {
 	 * @param categoria
 	 * @param nombreEquipo
 	 */
-	public void añadirEquipo(List<EmpleadoDeportivo> jugadores, List<Entrenador> entrenadores, List<EmpleadoDeportivo> tecnicosAdicionales,
+	public void añadirEquipo(List<EmpleadoDeportivo> jugadores, List<EmpleadoDeportivo> entrenadores, List<EmpleadoDeportivo> tecnicosAdicionales,
 			String tipo, CategoriaEquipo categoria, String nombreEquipo) {
 		// pedirPermiso(Posicion.GERENTE);
 		
@@ -34,8 +33,7 @@ public class AñadirEquipoService {
 		try {
 			jdbc.almacenarEquipo(equipo, jugadores, entrenadores, tecnicosAdicionales);
 		} catch (SQLException sqle) {
-			throw new TeamException(sqle.getMessage());
-			// throw new TeamException("SQLException: Error al almacenar el equipo en la BBDD");
+			throw new TeamException("SQLException: Error al almacenar el equipo en la BBDD");
 		}
 	}
 	
@@ -52,7 +50,7 @@ public class AñadirEquipoService {
 	 * @return
 	 * @throws TeamException
 	 */
-	private Equipo crearEquipo(List<EmpleadoDeportivo> jugadores, List<Entrenador> entrenadores, List<EmpleadoDeportivo> tecnicosAdicionales,
+	private Equipo crearEquipo(List<EmpleadoDeportivo> jugadores, List<EmpleadoDeportivo> entrenadores, List<EmpleadoDeportivo> tecnicosAdicionales,
 			String tipo, CategoriaEquipo categoria, String nombre) throws TeamException{
 		if(jugadores == null || entrenadores == null || tecnicosAdicionales == null || tipo == null || categoria == null || nombre == null) {
 			throw new TeamException("No se admiten valores nulos");
@@ -105,11 +103,12 @@ public class AñadirEquipoService {
 	 * Llama al metodo de jdbc que obtiene los entrenadores sin equipo
 	 * @return
 	 */
-	public List<Entrenador> obtenerEntrenadoresDisponibles() {
+	public List<EmpleadoDeportivo> obtenerEntrenadoresDisponibles() {
 		try {
 			return jdbc.obtenerEntrenadoresDisponibles();
 		} catch (SQLException e) {
-			throw new TeamException("SQLException: Error al obtener los entrenadores disponibles");
+			throw new TeamException(e.getMessage());
+			//throw new TeamException("SQLException: Error al obtener los entrenadores disponibles");
 		}
 	}
 
