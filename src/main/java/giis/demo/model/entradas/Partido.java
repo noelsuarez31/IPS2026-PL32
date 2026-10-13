@@ -13,7 +13,7 @@ public class Partido {
 	private LocalTime horaFin;
 	private int id_local;
 	private int id_visitante;
-	
+	private int id_instalacion;
 	
 	
 	//Atributos extras para facilitar la comprensión
@@ -30,7 +30,8 @@ public class Partido {
 	 * @param nameLocal
 	 * @param nameVisitante
 	 */
-	public Partido(int id_partido, LocalDate fecha, LocalTime horaInicio, LocalTime horaFin, int id_local, int id_visitante, String nameLocal, String nameVisitante) {
+	public Partido(int id_partido, LocalDate fecha, LocalTime horaInicio, LocalTime horaFin, int id_local, 
+			int id_visitante, String nameLocal, String nameVisitante, int id_instalacion) {
 		
 		this.id_partido = id_partido;
 		this.fecha = fecha;
@@ -40,8 +41,19 @@ public class Partido {
 		this.id_visitante = id_visitante;
 		this.nameLocal = nameLocal;
 		this.nameVisitante = nameVisitante;
+		this.id_instalacion = id_instalacion;
 	}
 	
+	/**
+	 * Devuelve el id de la instalacion
+	 * @return el id de la instalacion dónde se juega el partido
+	 */
+	public int getId_instalacion() {
+		
+		return id_instalacion;
+	
+	}
+
 	/**
 	 * Devuelve el id del partido
 	 * @return el id del partido

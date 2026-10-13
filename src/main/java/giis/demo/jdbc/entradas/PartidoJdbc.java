@@ -16,7 +16,7 @@ public class PartidoJdbc {
 	// CHECK PARTIDO2
 
 	private static final String QUERY_MATCH = "select id_partido, fecha, hora_inicio, hora_fin,"
-			+ "id_local, id_visitante, eq1.nombre as nombre_local, eq2.nombre as nombre_visitante from partido p, Equipo eq1,\r\n"
+			+ "id_local, id_visitante, eq1.nombre as nombre_local, eq2.nombre as nombre_visitante p.id_visitante from partido2 p, Equipo eq1,\r\n"
 			+ "Equipo eq2 WHERE p.id_local = eq1.id_equipo AND p.id_visitante = eq2.id_equipo "
 			+ "AND p.fecha >= ? ORDER BY p.fecha";
 
@@ -44,9 +44,8 @@ public class PartidoJdbc {
 							rs.getInt("id_partido"), LocalDate.parse(rs.getString("fecha")),
 							LocalTime.parse(rs.getString("hora_inicio")), LocalTime.parse(rs.getString("hora_fin")),
 							rs.getInt("id_local"), rs.getInt("id_visitante"), rs.getString("nombre_local"),
-							rs.getString("nombre_visitante")
-
-					);
+							rs.getString("nombre_visitante"),rs.getInt("id_visitante"));
+					
 
 					partidos.add(partido);
 

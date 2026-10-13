@@ -20,6 +20,9 @@ delete from Entrevista;
 delete from Producto;
 delete from LineaVenta;
 
+delete from Partido2;
+delete from Enrenamiento2;
+
 INSERT INTO "Producto" ("nombre", "tipo", "precio") VALUES 
 ('Sudadera', 'ParteArriba', 65.00),
 ('Camiseta', 'ParteArriba', 35.00),
@@ -3883,32 +3886,39 @@ insert into Equipo (nombre, es_propio, tipo_equipo, id_categoria) values ('Racin
 insert into Equipo (nombre, es_propio, tipo_equipo, id_categoria) values ('Levante', 0, 'Profesional', (select id_categoria from CategoriaEquipo where nombre = 'Primer equipo'));
 insert into Equipo (nombre, es_propio, tipo_equipo, id_categoria) values ('Alavés', 0, 'Profesional', (select id_categoria from CategoriaEquipo where nombre = 'Primer equipo'));
 
-INSERT INTO Partido (id_partido, fecha, hora_inicio, hora_fin, id_local, id_visitante)
+INSERT INTO Partido2 (id_partido, fecha, hora_inicio, hora_fin, id_local, id_visitante)
 VALUES (
     1, '2027-03-14', '16:15:00', '18:15:00',
     (SELECT id_equipo FROM Equipo WHERE nombre = 'Real Oviedo'),
-    (SELECT id_equipo FROM Equipo WHERE nombre = 'Sporting')
+    (SELECT id_equipo FROM Equipo WHERE nombre = 'Sporting'),3
 );
 
-INSERT INTO Partido (id_partido, fecha, hora_inicio, hora_fin, id_local, id_visitante)
+INSERT INTO Partido2 (id_partido, fecha, hora_inicio, hora_fin, id_local, id_visitante)
 VALUES (
     2, '2027-03-28', '18:30:00', '20:30:00',
     (SELECT id_equipo FROM Equipo WHERE nombre = 'Real Oviedo'),
-    (SELECT id_equipo FROM Equipo WHERE nombre = 'Racing')
+    (SELECT id_equipo FROM Equipo WHERE nombre = 'Racing'),1
 );
 
-INSERT INTO Partido (id_partido, fecha, hora_inicio, hora_fin, id_local, id_visitante)
+INSERT INTO Partido2 (id_partido, fecha, hora_inicio, hora_fin, id_local, id_visitante)
 VALUES (
     3, '2027-04-11', '16:15:00', '18:15:00',
     (SELECT id_equipo FROM Equipo WHERE nombre = 'Real Oviedo B'),
-    (SELECT id_equipo FROM Equipo WHERE nombre = 'Levante')
+    (SELECT id_equipo FROM Equipo WHERE nombre = 'Levante'),2
 );
 
-INSERT INTO Partido (id_partido, fecha, hora_inicio, hora_fin, id_local, id_visitante)
+INSERT INTO Partido2 (id_partido, fecha, hora_inicio, hora_fin, id_local, id_visitante)
 VALUES (
     4, '2027-04-25', '18:30:00', '20:30:00',
     (SELECT id_equipo FROM Equipo WHERE nombre = 'Real Oviedo B'),
-    (SELECT id_equipo FROM Equipo WHERE nombre = 'Alavés')
+    (SELECT id_equipo FROM Equipo WHERE nombre = 'Alavés'),1
+);
+
+INSERT INTO Partido2 (id_partido, fecha, hora_inicio, hora_fin, id_local, id_visitante)
+VALUES (
+    4, '2027-04-25', '18:30:00', '20:30:00',
+    (SELECT id_equipo FROM Equipo WHERE nombre = 'Real Oviedo B'),
+    (SELECT id_equipo FROM Equipo WHERE nombre = 'Alavés'), 1
 );
 
 INSERT INTO "FranjaHoraria" ("dni_jugador", "fecha", "hora_inicio", "hora_fin") VALUES 
@@ -3919,11 +3929,22 @@ INSERT INTO "Entrevista" ("id_franja") VALUES
 (1),
 (2);
 
-INSERT INTO "Entrenamiento" ("fecha", "hora_inicio", "hora_fin", "id_equipo") VALUES 
-('2026-10-12', '16:00:00', '18:00:00', 9),
-('2026-10-13', '17:00:00', '19:00:00', 10);
+INSERT INTO "Entrenamiento2" ("fecha", "hora_inicio", "hora_fin", "id_equipo") VALUES 
+('2026-10-21', '16:00:00', '18:00:00', 9),
+('2026-10-30', '17:00:00', '19:00:00', 10),2;
 
-INSERT INTO "Partido" ("fecha", "hora_inicio", "hora_fin", "id_local", "id_visitante") VALUES 
+INSERT INTO "Entrenamiento2" ("fecha", "hora_inicio", "hora_fin", "id_equipo") VALUES 
+('2026-10-22', '16:00:00', '18:00:00', 9),
+('2026-10-24', '17:00:00', '19:00:00', 10),3;
+INSERT INTO "Entrenamiento2" ("fecha", "hora_inicio", "hora_fin", "id_equipo") VALUES 
+('2026-10-27', '16:00:00', '18:00:00', 9),
+('2026-10-25', '17:00:00', '19:00:00', 10),1;
+
+INSERT INTO "Partido2" ("fecha", "hora_inicio", "hora_fin", "id_local", "id_visitante") VALUES 
+('2026-10-20', '21:00:00', '23:00:00', 9, 10),
+('2026-10-27', '18:30:00', '20:30:00', 10, 9);
+
+INSERT INTO "Partido2" ("fecha", "hora_inicio", "hora_fin", "id_local", "id_visitante") VALUES 
 ('2026-10-20', '21:00:00', '23:00:00', 9, 10),
 ('2026-10-27', '18:30:00', '20:30:00', 10, 9);
 
