@@ -286,9 +286,9 @@ INSERT INTO "FranjaHoraria" ("dni_jugador", "fecha", "hora_inicio", "hora_fin") 
 ('11111111A', '2026-10-15', '10:00:00', '11:00:00'),
 ('11111111A', '2026-10-16', '12:00:00', '13:00:00');
 
-INSERT INTO "Entrevista" ("id_franja") VALUES 
-(1),
-(2);
+INSERT INTO "Entrevista" ("id_franja","nombre_medio") VALUES 
+(1, "Mundo Deportivo"),
+(2, "Marca");
 
 INSERT INTO "Entrenamiento" ("fecha", "hora_inicio", "hora_fin", "id_equipo") VALUES 
 ('2026-10-20', '16:00:00', '18:00:00', 1),

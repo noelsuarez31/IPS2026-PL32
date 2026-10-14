@@ -13,6 +13,8 @@ import giis.demo.ui.entradas.VentanaVentaEntradas;
 import giis.demo.ui.equipo.VentanaAñadirEquipo;
 import giis.demo.ui.horarios.VentanaHorarioPeriodico;
 import giis.demo.ui.reserva.VentanaReserva;
+import giis.demo.model.entrevistas.CrearEntrevistaService;
+import giis.demo.ui.entrevistas.VentanaCrearEntrevistas;
 import giis.demo.ui.entrevistas.VentanaCrearFranjas;
 
 import java.awt.Color;
@@ -31,6 +33,7 @@ public class VentanaPrincipal extends JFrame {
 	private AñadirEquipoService añadirEquipo = new AñadirEquipoService();
 	private GestionHorariosPeriodicos ghp = new GestionHorariosPeriodicos();
 	private CrearFranjaService cfs = new CrearFranjaService();
+	private CrearEntrevistaService ces = new CrearEntrevistaService();
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
@@ -49,6 +52,8 @@ public class VentanaPrincipal extends JFrame {
 	private JMenuItem mntmAñadirHorarioPeriodico;
 	private JMenu mnGestorDeInstalaciones;
 	private JMenuItem mntmCrearFranjas;
+	private JMenu mnDirectorDeComunicaciones;
+	private JMenuItem mntmAsignarEntrevistas;
 
 	/**
 	 * Create the frame.
@@ -97,6 +102,7 @@ public class VentanaPrincipal extends JFrame {
 			menuBar.add(getMnVendedorDeEntradas());
 			menuBar.add(getMnTienda());
 			menuBar.add(getMnGestorDeInstalaciones());
+			menuBar.add(getMnDirectorDeComunicaciones());
 		}
 		return menuBar;
 	}
@@ -312,5 +318,33 @@ public class VentanaPrincipal extends JFrame {
 		VentanaReserva vr = new VentanaReserva(this);
 		this.setVisible(false);
 		vr.setVisible(true);
+	}
+	private JMenu getMnDirectorDeComunicaciones() {
+		if (mnDirectorDeComunicaciones == null) {
+			mnDirectorDeComunicaciones = new JMenu("Director de comunicaciones");
+			mnDirectorDeComunicaciones.add(getMntmAsignarEntrevistas());
+		}
+		return mnDirectorDeComunicaciones;
+	}
+	private JMenuItem getMntmAsignarEntrevistas() {
+		if (mntmAsignarEntrevistas == null) {
+			mntmAsignarEntrevistas = new JMenuItem("Asignar entrevistas");
+			mntmAsignarEntrevistas.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					abrirVentanaCrearEntrevistas();
+				}
+			});
+		}
+		return mntmAsignarEntrevistas;
+	}
+	
+	private void abrirVentanaCrearEntrevistas() {
+		VentanaCrearEntrevistas vCrearEntrev = new VentanaCrearEntrevistas(this);
+		this.setVisible(false);
+		vCrearEntrev.setVisible(true);
+	}
+
+	public CrearEntrevistaService getCrearEntrevistaService() {
+		return this.ces;
 	}
 }

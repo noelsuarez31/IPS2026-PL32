@@ -144,6 +144,7 @@ CREATE TABLE IF NOT EXISTS "FranjaHoraria" (
 CREATE TABLE IF NOT EXISTS "Entrevista" (
 	"id_entrevista" INTEGER PRIMARY KEY AUTOINCREMENT,
 	"id_franja" NOT NULL,
+	"nombre_medio" NOT NULL,
 	FOREIGN KEY ("id_franja") REFERENCES "FranjaHoraria"("id_franja")
 );
 

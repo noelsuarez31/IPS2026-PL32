@@ -12,6 +12,7 @@ import giis.demo.jdbc.empleado.EmpleadoDeportivoJdbc;
 import giis.demo.jdbc.entradas.ButacaJdbc;
 import giis.demo.jdbc.entradas.PartidoJdbc;
 import giis.demo.jdbc.entradas.RegistrarVentaJdbc;
+import giis.demo.jdbc.entrevistas.EntrevistaJdbc;
 import giis.demo.jdbc.entrevistas.FranjaJdbc;
 import giis.demo.jdbc.equipo.CategoriaEquipoJdbc;
 import giis.demo.jdbc.equipo.EquipoJdbc;
@@ -395,6 +396,24 @@ public class JDBC {
 		
 		return ComprobarDisponibilidadJdbc.obtenerIntervalosDisponibles(con, idInstalacion, fecha);
 		
+	}
+
+	public void crearEntrevistaYEliminarFranjasCoincidentes(EmpleadoDeportivo jugadorSeleccionado,
+			FranjaHoraria franjaSeleccionada, String nombreMedioCom) throws SQLException {
+		EntrevistaJdbc.crearEntrevistaYEliminarFranjasCoincidentes(con, 
+				jugadorSeleccionado, franjaSeleccionada, nombreMedioCom);
+	}
+
+	public List<FranjaHoraria> cargarFranjas(EmpleadoDeportivo jugadorSeleccionado, LocalDate fechaSeleccionada) throws SQLException {
+		return EntrevistaJdbc.cargarFranjas(con, jugadorSeleccionado, fechaSeleccionada);
+	}
+
+	public List<EmpleadoDeportivo> getJugadoresConFranjas() throws SQLException {
+		return EntrevistaJdbc.getJugadoresConFranjas(con);
+	}
+
+	public List<LocalDate> getDiasConFranja(EmpleadoDeportivo jugadorSeleccionado, int mes, int año) throws SQLException {
+		return EntrevistaJdbc.getDiasConFranja(con, jugadorSeleccionado, mes, año);
 	}
 	
 }
