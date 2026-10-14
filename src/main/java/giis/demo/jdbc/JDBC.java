@@ -18,11 +18,7 @@ import giis.demo.jdbc.equipo.EquipoJdbc;
 import giis.demo.jdbc.horarios.HorarioPeriodicoJdbc;
 import giis.demo.jdbc.tienda.RegistrarVentaMerchandising;
 import giis.demo.model.empleado.EmpleadoDeportivo;
-<<<<<<< HEAD
 import giis.demo.model.empleado.EmpleadoNoDeportivo;
-import giis.demo.model.empleado.Entrenador;
-=======
->>>>>>> refs/heads/HU-35029
 import giis.demo.model.entradas.Butaca;
 import giis.demo.model.entradas.Partido;
 import giis.demo.model.entradas.enumerados.TipoSeccion;

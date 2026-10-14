@@ -262,13 +262,8 @@ public class VentanaAñadirEquipo extends JFrame {
 		if (cbSegundoEntrenador == null) {
 			cbSegundoEntrenador = new JComboBox<EmpleadoDeportivo>();
 			cbSegundoEntrenador.setFont(new Font("Tahoma", Font.PLAIN, 15));
-<<<<<<< HEAD
-			List<Entrenador> tecnicos = club.obtenerEntrenadoresDisponibles();
-			cbSegundoEntrenador.setModel(new DefaultComboBoxModel<Entrenador>(tecnicos.toArray(new Entrenador[0])));
-=======
 			List<EmpleadoDeportivo> tecnicos = club.obtenerEntrenadoresDisponibles();
 			cbSegundoEntrenador.setModel(new DefaultComboBoxModel<EmpleadoDeportivo>(tecnicos.toArray(new EmpleadoDeportivo[0])));
->>>>>>> refs/heads/HU-35029
 			gestionNoSonIguales(tecnicos);
 		}
 		return cbSegundoEntrenador;
@@ -460,20 +455,13 @@ public class VentanaAñadirEquipo extends JFrame {
         }
 	}
 	
-<<<<<<< HEAD
-	private void gestionNoSonIguales(List<Entrenador> tecnicos) {
-	    if (tecnicos != null && tecnicos.size() > 1) {
-	        String dniPrimerEntrenador = ((Entrenador) getCbPrimerEntrenador().getSelectedItem()).getDni();
-	        String dniSegundoEntrenador = ((Entrenador) getCbSegundoEntrenador().getSelectedItem()).getDni();
-=======
 	private void gestionNoSonIguales(List<EmpleadoDeportivo> tecnicos) {
-	    if (tecnicos != null && tecnicos.size() > 1) {
-	        String dniPrimerEntrenador = ((EmpleadoDeportivo) getCbPrimerEntrenador().getSelectedItem()).getDni();
-	        String dniSegundoEntrenador = ((EmpleadoDeportivo) getCbSegundoEntrenador().getSelectedItem()).getDni();
->>>>>>> refs/heads/HU-35029
-	        if(dniPrimerEntrenador.equals(dniSegundoEntrenador)) {
-	        	getCbSegundoEntrenador().setSelectedItem(tecnicos.get(1));
-	        }
-	    }
-	}
+    if (tecnicos != null && tecnicos.size() > 1) {
+        String dniPrimerEntrenador = ((EmpleadoDeportivo) getCbPrimerEntrenador().getSelectedItem()).getDni();
+        String dniSegundoEntrenador = ((EmpleadoDeportivo) getCbSegundoEntrenador().getSelectedItem()).getDni();
+        if(dniPrimerEntrenador.equals(dniSegundoEntrenador)) {
+        	getCbSegundoEntrenador().setSelectedItem(tecnicos.get(1));
+        }
+    }
+}
 }
