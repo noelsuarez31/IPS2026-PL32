@@ -14,6 +14,8 @@ drop table if exists Entrenador;
 drop table if exists CategoriaEquipo;
 drop table if exists Equipo;
 
+drop table if exists HorarioPeriodico;
+
 CREATE TABLE IF NOT EXISTS "butaca" (
 	"id_butaca"	INTEGER,
 	"tribuna"	TEXT NOT NULL CHECK("tribuna" IN ('A', 'B', 'C', 'D')),
@@ -102,4 +104,12 @@ CREATE TABLE IF NOT EXISTS "Equipo" (
     "tipo_equipo" TEXT NOT NULL,
     "id_categoria" INTEGER NOT NULL,
     FOREIGN KEY("id_categoria") REFERENCES "CategoriaEquipo"("id_categoria") ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS "horario_periodico" (
+	"id_horario"	INTEGER PRIMARY KEY AUTOINCREMENT,
+	"id_empleado"	INTEGER NOT NULL,
+	"dia_semana"	INTEGER NOT NULL CHECK("dia_semana" BETWEEN 1 AND 7),
+	"hora_inicio"	TEXT NOT NULL,
+	"hora_fin"		TEXT NOT NULL
 );

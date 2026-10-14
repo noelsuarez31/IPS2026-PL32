@@ -3714,9 +3714,7 @@ INSERT INTO "entrada" VALUES (99,1,27,80,30.0);
 INSERT INTO "entrada" VALUES (100,1,27,81,30.0);
 INSERT INTO "entrada" VALUES (101,1,27,82,30.0);
 INSERT INTO "entrada" VALUES (102,1,27,83,30.0);
-INSERT INTO "partido" VALUES (1,'2026-10-18',1,3);
-INSERT INTO "partido" VALUES (2,'2026-11-02',1,4);
-INSERT INTO "partido" VALUES (3,'2026-11-15',2,5);
+
 INSERT INTO "venta" VALUES (1,'2026-10-05','Entradas partido 1','ENTRADAS',120.0);
 INSERT INTO "venta" VALUES (2,'2026-10-05','Entradas partido 1','ENTRADAS',90.0);
 INSERT INTO "venta" VALUES (3,'2026-10-06','Entradas partido 1','ENTRADAS',450.0);
@@ -3860,3 +3858,18 @@ INSERT INTO "EmpleadoDeportivo" ("dni", "posicion") VALUES ('60606060D', 'JUGADO
 INSERT INTO "EmpleadoDeportivo" ("dni", "posicion") VALUES ('60606060E', 'JUGADOR');
 INSERT INTO "EmpleadoDeportivo" ("dni", "posicion") VALUES ('60606060F', 'JUGADOR');
 INSERT INTO "EmpleadoDeportivo" ("dni", "posicion") VALUES ('60606060G', 'JUGADOR');
+
+insert into CategoriaEquipo (nombre, edad_minima, edad_maxima, tipo_equipo) values ('Profesional', 16, 99, 'PROFESIONAL');
+
+insert into Equipo (nombre, es_propio, tipo_equipo, id_categoria) values ('Real Oviedo', 1, 'PROFESIONAL', (select id_categoria from CategoriaEquipo where nombre = 'Profesional'));
+insert into Equipo (nombre, es_propio, tipo_equipo, id_categoria) values ('Real Oviedo B', 1, 'PROFESIONAL', (select id_categoria from CategoriaEquipo where nombre = 'Profesional'));
+insert into Equipo (nombre, es_propio, tipo_equipo, id_categoria) values ('Sporting', 0, 'PROFESIONAL', (select id_categoria from CategoriaEquipo where nombre = 'Profesional'));
+insert into Equipo (nombre, es_propio, tipo_equipo, id_categoria) values ('Racing', 0, 'PROFESIONAL', (select id_categoria from CategoriaEquipo where nombre = 'Profesional'));
+insert into Equipo (nombre, es_propio, tipo_equipo, id_categoria) values ('Levante', 0, 'PROFESIONAL', (select id_categoria from CategoriaEquipo where nombre = 'Profesional'));
+insert into Equipo (nombre, es_propio, tipo_equipo, id_categoria) values ('Alavés', 0, 'PROFESIONAL', (select id_categoria from CategoriaEquipo where nombre = 'Profesional'));
+
+insert into Partido (id_partido, fecha, id_local, id_visitante) values (1, '2027-03-14', (select id_equipo from Equipo where nombre = 'Real Oviedo'), (select id_equipo from Equipo where nombre = 'Sporting'));
+insert into Partido (id_partido, fecha, id_local, id_visitante) values (2, '2027-03-28', (select id_equipo from Equipo where nombre = 'Real Oviedo'), (select id_equipo from Equipo where nombre = 'Racing'));
+insert into Partido (id_partido, fecha, id_local, id_visitante) values (3, '2027-04-11', (select id_equipo from Equipo where nombre = 'Real Oviedo B'), (select id_equipo from Equipo where nombre = 'Levante'));
+insert into Partido (id_partido, fecha, id_local, id_visitante) values (4, '2027-04-25', (select id_equipo from Equipo where nombre = 'Real Oviedo B'), (select id_equipo from Equipo where nombre = 'Alavés'));
+

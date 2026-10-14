@@ -12,6 +12,7 @@ import giis.demo.model.tienda.VentaMerchandising;
 import giis.demo.ui.entradas.VentanaVentaEntradas;
 import giis.demo.ui.equipo.VentanaAñadirEquipo;
 import giis.demo.ui.horarios.VentanaHorarioPeriodico;
+import giis.demo.ui.reserva.VentanaReserva;
 import giis.demo.ui.entrevistas.VentanaCrearFranjas;
 
 import java.awt.Color;
@@ -46,6 +47,7 @@ public class VentanaPrincipal extends JFrame {
 	private JMenuItem mntmVerTienda;
 	private JMenuItem mntmAñadirEquipo;
 	private JMenuItem mntmAñadirHorarioPeriodico;
+	private JMenu mnGestorDeInstalaciones;
 	private JMenuItem mntmCrearFranjas;
 
 	/**
@@ -55,7 +57,7 @@ public class VentanaPrincipal extends JFrame {
 		setTitle("Ventana Inicial");
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 600, 420);
+		setBounds(100, 100, 740, 420);
 		setJMenuBar(getMenuBar_1());
 		contentPane = new JPanel();
 		contentPane.setBackground(new Color(240, 240, 240));
@@ -65,7 +67,7 @@ public class VentanaPrincipal extends JFrame {
 		
 		JLabel lbInicio = new JLabel("¡Bienvenido!");
 		lbInicio.setBackground(new Color(240, 240, 240));
-		lbInicio.setBounds(256, 159, 90, 20);
+		lbInicio.setBounds(314, 154, 90, 20);
 		contentPane.add(lbInicio);
 		
 		this.setLocationRelativeTo(null);
@@ -94,6 +96,7 @@ public class VentanaPrincipal extends JFrame {
 			menuBar.add(getMnGerente());
 			menuBar.add(getMnVendedorDeEntradas());
 			menuBar.add(getMnTienda());
+			menuBar.add(getMnGestorDeInstalaciones());
 		}
 		return menuBar;
 	}
@@ -280,5 +283,34 @@ public class VentanaPrincipal extends JFrame {
 	
 	public CrearFranjaService getCrearFranjaService() {
 		return this.cfs;
+	}
+	
+	private JMenu getMnGestorDeInstalaciones() {
+		if (mnGestorDeInstalaciones == null) {
+			mnGestorDeInstalaciones = new JMenu("Gestor de Instalaciones");
+			mnGestorDeInstalaciones.setMnemonic('S');
+			
+			JMenuItem mntmReservaDeInstalaciones = new JMenuItem("Reserva de Instalaciones");
+			mntmReservaDeInstalaciones.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					try {
+						abrirVentanaReserva();
+					} catch (SQLException e1) {
+						
+						System.err.print("Se ha producido un error al intentar abrir la ventana de reserva");
+						e1.printStackTrace();
+					}
+				}
+			});
+			mnGestorDeInstalaciones.add(mntmReservaDeInstalaciones);
+		}
+		return mnGestorDeInstalaciones;
+	}
+	
+	private void abrirVentanaReserva() throws SQLException {
+		
+		VentanaReserva vr = new VentanaReserva(this);
+		this.setVisible(false);
+		vr.setVisible(true);
 	}
 }

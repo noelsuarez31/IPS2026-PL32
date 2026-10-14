@@ -39,7 +39,6 @@ import java.awt.GridLayout;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.border.TitledBorder;
-import java.awt.SystemColor;
 
 public class VentanaVentaEntradas extends JFrame {
 
@@ -70,7 +69,6 @@ public class VentanaVentaEntradas extends JFrame {
 	private JPanel panelLeyenda;
 	private JButton btVerde;
 	private JLabel lbLibre;
-	private JButton btRojo;
 	private JLabel lbOcupado;
 	private JPanel panelTitulo;
 	private JLabel lbTitulo;
@@ -85,8 +83,9 @@ public class VentanaVentaEntradas extends JFrame {
 
 	private MostrarAsientos ma;
 	private CerrarVentana cv;
-	private JButton btAzul;
 	private JLabel lbReservado;
+	private JButton btRojo;
+	private JButton btAzul;
 
 	/**
 	 * Create the frame.
@@ -94,6 +93,7 @@ public class VentanaVentaEntradas extends JFrame {
 	 * @throws SQLException
 	 */
 	public VentanaVentaEntradas(VentanaPrincipal vp) throws SQLException {
+		setResizable(false);
 
 		this.ma = new MostrarAsientos();
 		this.cv = new CerrarVentana();
@@ -101,13 +101,12 @@ public class VentanaVentaEntradas extends JFrame {
 		this.addWindowListener(cv);
 
 		this.setTitle("Compra de entradas");
-		this.setResizable(false);
 
 		this.vp = vp;
 		this.venta = new VentaDeEntradas();
 
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-		setBounds(100, 100, 1000, 587);
+		setBounds(100, 100, 1172, 642);
 
 		contentPane = new JPanel();
 		contentPane.setBackground(new Color(240, 240, 240));
@@ -261,7 +260,7 @@ public class VentanaVentaEntradas extends JFrame {
 		if (spNumEntradas == null) {
 
 			spNumEntradas = new JSpinner();
-			spNumEntradas.setBounds(183, 57, 39, 20);
+			spNumEntradas.setBounds(183, 57, 51, 27);
 			spNumEntradas.setModel(new SpinnerNumberModel(1, 1, 15, 1));
 		}
 
@@ -491,6 +490,9 @@ public class VentanaVentaEntradas extends JFrame {
 			tablaAsientos.setTableHeader(null);
 			tablaAsientos.setRowHeight(22);
 
+			tablaAsientos.setShowGrid(true);
+			tablaAsientos.setGridColor(Color.BLACK);
+			
 			for (int i = 0; i < 15; i++) {
 				tablaAsientos.getColumnModel().getColumn(i).setPreferredWidth(25);
 			}
@@ -575,15 +577,6 @@ public class VentanaVentaEntradas extends JFrame {
 			lbLibre.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		}
 		return lbLibre;
-	}
-
-	private JButton getBtRojo() {
-		if (btRojo == null) {
-			btRojo = new JButton("");
-			btRojo.setBackground(Color.RED);
-			btRojo.setEnabled(false);
-		}
-		return btRojo;
 	}
 
 	private JLabel getLbOcupado() {
@@ -795,14 +788,6 @@ public class VentanaVentaEntradas extends JFrame {
 
 		}
 	}
-	private JButton getBtAzul() {
-		if (btAzul == null) {
-			btAzul = new JButton("");
-			btAzul.setEnabled(false);
-			btAzul.setBackground(SystemColor.textHighlight);
-		}
-		return btAzul;
-	}
 	private JLabel getLbReservado() {
 		if (lbReservado == null) {
 			lbReservado = new JLabel("Reservado");
@@ -810,5 +795,19 @@ public class VentanaVentaEntradas extends JFrame {
 			lbReservado.setBackground(Color.WHITE);
 		}
 		return lbReservado;
+	}
+	private JButton getBtRojo() {
+		if (btRojo == null) {
+			btRojo = new JButton("");
+			btRojo.setBackground(Color.RED);
+		}
+		return btRojo;
+	}
+	private JButton getBtAzul() {
+		if (btAzul == null) {
+			btAzul = new JButton("");
+			btAzul.setBackground(Color.BLUE);
+		}
+		return btAzul;
 	}
 }
