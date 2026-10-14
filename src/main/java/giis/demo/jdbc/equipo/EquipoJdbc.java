@@ -8,7 +8,6 @@ import java.sql.Statement;
 import java.util.List;
 
 import giis.demo.model.empleado.EmpleadoDeportivo;
-import giis.demo.model.empleado.Entrenador;
 import giis.demo.model.equipo.Equipo;
 
 public class EquipoJdbc {
@@ -25,7 +24,6 @@ public class EquipoJdbc {
 	 * (autoincremental). Comprueba que los jugadores, los entrenadores y los
 	 * miembros del cuerpo tecnico adicional no tienen equipo asignado (ya que no se
 	 * pueden repetir). Si no lo tienen, les asigna el id_equipo correspondiente
-	 * 
 	 * @param con
 	 * @param equipo
 	 * @param jugadores

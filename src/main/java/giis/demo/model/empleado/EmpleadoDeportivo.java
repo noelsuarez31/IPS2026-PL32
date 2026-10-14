@@ -42,6 +42,11 @@ public class EmpleadoDeportivo extends BaseEmpleado{
 		this.idEquipo = idEquipo;
 	}
 	
+	public boolean esMismoEntrenador(EmpleadoDeportivo other) {
+		return (this.getDni().equals(other.getDni()));
+	}
+	
+	
 	public int getIdEquipo() {
 		return this.idEquipo;
 	}
