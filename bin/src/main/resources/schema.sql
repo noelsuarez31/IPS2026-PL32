@@ -16,6 +16,7 @@ drop table if exists Equipo;
 
 drop table if exists HorarioPeriodico;
 
+<<<<<<< HEAD
 drop table if exists Partido2;
 drop table if exists Entrenamiento;
 drop table if exists FranjaHoraria;
@@ -24,6 +25,8 @@ drop table if exists Entrevista;
 drop table if exists LineaVenta;
 drop table if exists Producto;
 
+=======
+>>>>>>> refs/remotes/origin/main
 CREATE TABLE IF NOT EXISTS "butaca" (
 	"id_butaca"	INTEGER,
 	"tribuna"	TEXT NOT NULL CHECK("tribuna" IN ('A', 'B', 'C', 'D')),
@@ -120,6 +123,7 @@ CREATE TABLE IF NOT EXISTS "horario_periodico" (
 	"dia_semana"	INTEGER NOT NULL CHECK("dia_semana" BETWEEN 1 AND 7),
 	"hora_inicio"	TEXT NOT NULL,
 	"hora_fin"		TEXT NOT NULL
+<<<<<<< HEAD
 );
 
 CREATE TABLE IF NOT EXISTS "Partido2" (
@@ -173,4 +177,6 @@ CREATE TABLE IF NOT EXISTS "LineaVenta" (
 	PRIMARY KEY("id_venta", "id_producto"),
 	FOREIGN KEY("id_venta") REFERENCES "venta"("id_venta") ON DELETE CASCADE,
 	FOREIGN KEY("id_producto") REFERENCES "Producto"("id_producto") ON DELETE CASCADE
+=======
+>>>>>>> refs/remotes/origin/main
 );

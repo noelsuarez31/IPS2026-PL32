@@ -8,6 +8,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+
 import giis.demo.model.empleado.EmpleadoDeportivo;
 import giis.demo.model.empleado.Posicion;
 import giis.demo.model.equipo.CategoriaEquipo;
@@ -19,6 +20,10 @@ public class EmpleadoDeportivoJdbc {
 	
 	private final static String QUERY_GET_PLAYERS = "SELECT * FROM EmpleadoDeportivo WHERE posicion = ? AND id_equipo IS NULL";
 	private final static String QUERY_GET_COMPLETE_PLAYERS = "SELECT * FROM BaseEmpleado be, EmpleadoDeportivo ed "
+			+ "WHERE be.dni=ed.dni AND ed.dni=?";
+	
+	private final static String QUERY_GET_MANAGERS = "SELECT * FROM EmpleadoDeportivo WHERE posicion=? AND id_equipo IS NULL";
+	private final static String QUERY_GET_COMPLETE_MANAGERS = "SELECT * FROM BaseEmpleado be, EmpleadoDeportivo ed "
 			+ "WHERE be.dni=ed.dni AND ed.dni=?";
 	
 	/**
@@ -95,6 +100,37 @@ public class EmpleadoDeportivoJdbc {
 		}
 		
 		return jugadoresFiltradosPorCategoria;
+	}
+	
+	/**
+	 * Devuelve una lista de empleados deportivos con posicion ENTRENADOR
+	 * que no tienen asignado ningun equipo
+	 * @param con
+	 * @return
+	 * @throws SQLException
+	 */
+	public static List<EmpleadoDeportivo> obtenerEntrenadoresDisponibles(Connection con) throws SQLException {
+		List<EmpleadoDeportivo> cuerpoTecnico = new ArrayList<EmpleadoDeportivo>();
+		
+		try(PreparedStatement pst = con.prepareStatement(QUERY_GET_MANAGERS)){
+			pst.setString(1, Posicion.ENTRENADOR.name());
+			ResultSet rsEntrenador = pst.executeQuery();
+			while(rsEntrenador.next()) {
+				String dniEntrenador = rsEntrenador.getString(1);
+				
+				try(PreparedStatement pst2 = con.prepareStatement(QUERY_GET_COMPLETE_MANAGERS);){
+					pst2.setString(1, dniEntrenador);
+					ResultSet rsEntrenadorCompleto = pst2.executeQuery();
+					while(rsEntrenadorCompleto.next()) {
+						EmpleadoDeportivo entrenador = new EmpleadoDeportivo(dniEntrenador, rsEntrenadorCompleto.getString(2), rsEntrenadorCompleto.getString(3),
+								rsEntrenadorCompleto.getBigDecimal(4), LocalDate.parse(rsEntrenadorCompleto.getString(5)) ,rsEntrenadorCompleto.getString(6), Posicion.JUGADOR);
+						cuerpoTecnico.add(entrenador);
+					}
+				}
+			}
+		}
+		
+		return cuerpoTecnico;
 	}
 
 }
