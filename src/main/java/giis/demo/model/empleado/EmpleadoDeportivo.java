@@ -7,7 +7,7 @@ import java.time.Period;
 import giis.demo.exceptions.EmployeeException;
 
 public class EmpleadoDeportivo extends BaseEmpleado{
-	private Posicion posicion;
+	private Posicion posicion; // en bbdd en mayusculas (ENTRENADOR, JUGADOR, ...)
 	
 	private int idEquipo;
 	
@@ -32,6 +32,7 @@ public class EmpleadoDeportivo extends BaseEmpleado{
 	    return Period.between(getFechaNacimiento(), LocalDate.now()).getYears();
 	}
 	
+	//TODO: incluir dni tambien?
 	@Override
 	public String toString() {
 		return String.format("%s, %s", getApellido(), getNombre());
@@ -39,5 +40,14 @@ public class EmpleadoDeportivo extends BaseEmpleado{
 	
 	public void setIdEquipo(int idEquipo) {
 		this.idEquipo = idEquipo;
+	}
+	
+	public boolean esMismoEntrenador(EmpleadoDeportivo other) {
+		return (this.getDni().equals(other.getDni()));
+	}
+	
+	
+	public int getIdEquipo() {
+		return this.idEquipo;
 	}
 }

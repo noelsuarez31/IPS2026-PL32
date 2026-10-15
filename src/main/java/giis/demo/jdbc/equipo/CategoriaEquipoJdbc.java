@@ -10,9 +10,9 @@ import java.util.List;
 import giis.demo.model.equipo.CategoriaEquipo;
 
 public class CategoriaEquipoJdbc {
-	public final static String QUERY_GET_CATEGORY_NAME = "SELECT * FROM CategoriaEquipo WHERE nombre=?";
+	private final static String QUERY_GET_CATEGORY_NAME = "SELECT * FROM CategoriaEquipo WHERE nombre=?";
 	
-	public final static String 	QUERY_CATEGORIES_FOR_TIPE = "SELECT * FROM CategoriaEquipo WHERE tipo_equipo=?";
+	private final static String QUERY_CATEGORIES_FOR_TIPE = "SELECT * FROM CategoriaEquipo WHERE tipo_equipo=?";
 	
 	/**
 	 * Devuelve un objeto categoriaEquipo con todos los atributos

@@ -29,7 +29,6 @@ import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 
 import giis.demo.model.empleado.EmpleadoDeportivo;
-import giis.demo.model.empleado.Entrenador;
 import giis.demo.model.equipo.AñadirEquipoService;
 import giis.demo.model.equipo.CategoriaEquipo;
 import giis.demo.ui.VentanaPrincipal;
@@ -52,8 +51,8 @@ public class VentanaAñadirEquipo extends JFrame {
 	private JPanel pnCentro;
 	private JPanel pnCuerpoTecnico;
 	private JLabel lbPrimerEntrenador;
-	private JComboBox<Entrenador> cbPrimerEntrenador;
-	private JComboBox<Entrenador> cbSegundoEntrenador;
+	private JComboBox<EmpleadoDeportivo> cbPrimerEntrenador;
+	private JComboBox<EmpleadoDeportivo> cbSegundoEntrenador;
 	private JPanel pnPrimerYSegundoEntrenador;
 	private JLabel lbSegundoEntrenador;
 	private JPanel pnRestoDeTecnicos;
@@ -117,7 +116,7 @@ public class VentanaAñadirEquipo extends JFrame {
 	private JLabel getLbTipoEquipo() {
 		if (lbTipoEquipo == null) {
 			lbTipoEquipo = new JLabel("Tipo de Equipo:");
-			lbTipoEquipo.setFont(new Font("Tahoma", Font.PLAIN, 16));
+			lbTipoEquipo.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		}
 		return lbTipoEquipo;
 	}
@@ -126,7 +125,7 @@ public class VentanaAñadirEquipo extends JFrame {
 		if (cbTipoEquipo == null) {
 			cbTipoEquipo = new JComboBox<String>();
 			cbTipoEquipo.setModel(new DefaultComboBoxModel<String>(new String[] {"Profesional", "En formacion"}));
-			cbTipoEquipo.setFont(new Font("Tahoma", Font.PLAIN, 16));
+			cbTipoEquipo.setFont(new Font("Tahoma", Font.PLAIN, 14));
 			cbTipoEquipo.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					String seleccionado = (String) cbTipoEquipo.getSelectedItem();
@@ -158,7 +157,7 @@ public class VentanaAñadirEquipo extends JFrame {
 	private JLabel getLbCategoriaEquipo() {
 		if (lbCategoriaEquipo == null) {
 			lbCategoriaEquipo = new JLabel("Categoria del Equipo:");
-			lbCategoriaEquipo.setFont(new Font("Tahoma", Font.PLAIN, 16));
+			lbCategoriaEquipo.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		}
 		return lbCategoriaEquipo;
 	}
@@ -187,7 +186,7 @@ public class VentanaAñadirEquipo extends JFrame {
 			        }
 			    }
 			});
-			cbCategoriaEquipo.setFont(new Font("Tahoma", Font.PLAIN, 16));
+			cbCategoriaEquipo.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		}
 		return cbCategoriaEquipo;
 	}
@@ -241,12 +240,12 @@ public class VentanaAñadirEquipo extends JFrame {
 		return lbPrimerEntrenador;
 	}
 	
-	private JComboBox<Entrenador> getCbPrimerEntrenador() {
+	private JComboBox<EmpleadoDeportivo> getCbPrimerEntrenador() {
 		if (cbPrimerEntrenador == null) {
-			cbPrimerEntrenador = new JComboBox<Entrenador>();
+			cbPrimerEntrenador = new JComboBox<EmpleadoDeportivo>();
 			cbPrimerEntrenador.setFont(new Font("Tahoma", Font.PLAIN, 15));
-			List<Entrenador> tecnicos = club.obtenerEntrenadoresDisponibles();
-			cbPrimerEntrenador.setModel(new DefaultComboBoxModel<Entrenador>(tecnicos.toArray(new Entrenador[0])));
+			List<EmpleadoDeportivo> tecnicos = club.obtenerEntrenadoresDisponibles();
+			cbPrimerEntrenador.setModel(new DefaultComboBoxModel<EmpleadoDeportivo>(tecnicos.toArray(new EmpleadoDeportivo[0])));
 		}
 		return cbPrimerEntrenador;
 	}
@@ -259,16 +258,17 @@ public class VentanaAñadirEquipo extends JFrame {
 		return lbSegundoEntrenador;
 	}
 	
-	private JComboBox<Entrenador> getCbSegundoEntrenador() {
+	private JComboBox<EmpleadoDeportivo> getCbSegundoEntrenador() {
 		if (cbSegundoEntrenador == null) {
-			cbSegundoEntrenador = new JComboBox<Entrenador>();
+			cbSegundoEntrenador = new JComboBox<EmpleadoDeportivo>();
 			cbSegundoEntrenador.setFont(new Font("Tahoma", Font.PLAIN, 15));
-			List<Entrenador> tecnicos = club.obtenerEntrenadoresDisponibles();
-			cbSegundoEntrenador.setModel(new DefaultComboBoxModel<Entrenador>(tecnicos.toArray(new Entrenador[0])));
+			List<EmpleadoDeportivo> tecnicos = club.obtenerEntrenadoresDisponibles();
+			cbSegundoEntrenador.setModel(new DefaultComboBoxModel<EmpleadoDeportivo>(tecnicos.toArray(new EmpleadoDeportivo[0])));
+			gestionNoSonIguales(tecnicos);
 		}
 		return cbSegundoEntrenador;
 	}
-	
+
 	private JPanel getPnRestoDeTecnicos() {
 		if (pnRestoDeTecnicos == null) {
 			pnRestoDeTecnicos = new JPanel(new BorderLayout(0, 3));
@@ -394,14 +394,14 @@ public class VentanaAñadirEquipo extends JFrame {
 	private JLabel getLbNombreEquipo() {
 		if (lbNombreEquipo == null) {
 			lbNombreEquipo = new JLabel("Nombre del equipo:");
-			lbNombreEquipo.setFont(new Font("Tahoma", Font.PLAIN, 16));
+			lbNombreEquipo.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		}
 		return lbNombreEquipo;
 	}
 	private JTextField getTxNombreEquipo() {
 		if (txNombreEquipo == null) {
 			txNombreEquipo = new JTextField();
-			txNombreEquipo.setFont(new Font("Tahoma", Font.PLAIN, 16));
+			txNombreEquipo.setFont(new Font("Tahoma", Font.PLAIN, 14));
 			txNombreEquipo.setColumns(10);
 		}
 		return txNombreEquipo;
@@ -409,11 +409,11 @@ public class VentanaAñadirEquipo extends JFrame {
 	
 	private void crearEquipo() {
 		List<EmpleadoDeportivo> jugadoresSeleccionados = getListJugadores().getSelectedValuesList();
-        List<Entrenador> entrenadoresSeleccionados = new ArrayList<>();
+        List<EmpleadoDeportivo> entrenadoresSeleccionados = new ArrayList<>();
         List<EmpleadoDeportivo> restoTecnicosSeleccionados = new ArrayList<>();
         
-        Entrenador primerEntrenador = (Entrenador) getCbPrimerEntrenador().getSelectedItem();
-        Entrenador segundoEntrenador = (Entrenador) getCbSegundoEntrenador().getSelectedItem();
+        EmpleadoDeportivo primerEntrenador = (EmpleadoDeportivo) getCbPrimerEntrenador().getSelectedItem();
+        EmpleadoDeportivo segundoEntrenador = (EmpleadoDeportivo) getCbSegundoEntrenador().getSelectedItem();
         
         if (primerEntrenador != null) {
         	entrenadoresSeleccionados.add(primerEntrenador);
@@ -454,4 +454,14 @@ public class VentanaAñadirEquipo extends JFrame {
             JOptionPane.showMessageDialog(null, ex.getMessage(), "Error de validación", JOptionPane.ERROR_MESSAGE);
         }
 	}
+	
+	private void gestionNoSonIguales(List<EmpleadoDeportivo> tecnicos) {
+    if (tecnicos != null && tecnicos.size() > 1) {
+        String dniPrimerEntrenador = ((EmpleadoDeportivo) getCbPrimerEntrenador().getSelectedItem()).getDni();
+        String dniSegundoEntrenador = ((EmpleadoDeportivo) getCbSegundoEntrenador().getSelectedItem()).getDni();
+        if(dniPrimerEntrenador.equals(dniSegundoEntrenador)) {
+        	getCbSegundoEntrenador().setSelectedItem(tecnicos.get(1));
+        }
+    }
+}
 }

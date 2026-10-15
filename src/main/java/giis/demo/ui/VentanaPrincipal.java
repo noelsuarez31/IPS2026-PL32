@@ -5,12 +5,18 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import giis.demo.ui.tienda.VentanaTienda;
+import giis.demo.model.entrevistas.CrearFranjaService;
 import giis.demo.model.equipo.AñadirEquipoService;
 import giis.demo.model.horarios.GestionHorariosEspecificos;
 import giis.demo.model.horarios.GestionHorariosPeriodicos;
+import giis.demo.model.tienda.VentaMerchandising;
 import giis.demo.ui.entradas.VentanaVentaEntradas;
 import giis.demo.ui.equipo.VentanaAñadirEquipo;
 import giis.demo.ui.horarios.VentanaHorarioPeriodico;
+import giis.demo.ui.reserva.VentanaReserva;
+import giis.demo.model.entrevistas.CrearEntrevistaService;
+import giis.demo.ui.entrevistas.VentanaCrearEntrevistas;
+import giis.demo.ui.entrevistas.VentanaCrearFranjas;
 
 import java.awt.Color;
 import javax.swing.JMenuBar;
@@ -28,6 +34,8 @@ public class VentanaPrincipal extends JFrame {
 	private AñadirEquipoService añadirEquipo = new AñadirEquipoService();
 	private GestionHorariosPeriodicos ghp = new GestionHorariosPeriodicos();
 	private GestionHorariosEspecificos ghe = new GestionHorariosEspecificos();
+	private CrearFranjaService cfs = new CrearFranjaService();
+	private CrearEntrevistaService ces = new CrearEntrevistaService();
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
@@ -44,6 +52,10 @@ public class VentanaPrincipal extends JFrame {
 	private JMenuItem mntmVerTienda;
 	private JMenuItem mntmAñadirEquipo;
 	private JMenuItem mntmAñadirHorarioPeriodico;
+	private JMenu mnGestorDeInstalaciones;
+	private JMenuItem mntmCrearFranjas;
+	private JMenu mnDirectorDeComunicaciones;
+	private JMenuItem mntmAsignarEntrevistas;
 
 	/**
 	 * Create the frame.
@@ -52,7 +64,7 @@ public class VentanaPrincipal extends JFrame {
 		setTitle("Ventana Inicial");
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 600, 420);
+		setBounds(100, 100, 740, 420);
 		setJMenuBar(getMenuBar_1());
 		contentPane = new JPanel();
 		contentPane.setBackground(new Color(240, 240, 240));
@@ -62,7 +74,7 @@ public class VentanaPrincipal extends JFrame {
 		
 		JLabel lbInicio = new JLabel("¡Bienvenido!");
 		lbInicio.setBackground(new Color(240, 240, 240));
-		lbInicio.setBounds(256, 159, 90, 20);
+		lbInicio.setBounds(314, 154, 90, 20);
 		contentPane.add(lbInicio);
 		
 		this.setLocationRelativeTo(null);
@@ -91,6 +103,8 @@ public class VentanaPrincipal extends JFrame {
 			menuBar.add(getMnGerente());
 			menuBar.add(getMnVendedorDeEntradas());
 			menuBar.add(getMnTienda());
+			menuBar.add(getMnGestorDeInstalaciones());
+			menuBar.add(getMnDirectorDeComunicaciones());
 		}
 		return menuBar;
 	}
@@ -126,6 +140,7 @@ public class VentanaPrincipal extends JFrame {
 		if (mnEntrenador == null) {
 			mnEntrenador = new JMenu("Entrenador");
 			mnEntrenador.setMnemonic('T');
+			mnEntrenador.add(getMntmCrearFranjas());
 		}
 		return mnEntrenador;
 	}
@@ -193,9 +208,24 @@ public class VentanaPrincipal extends JFrame {
 	}
 
 	public void abrirVentanaTienda() {
-		VentanaTienda vT = new VentanaTienda(this);
-		this.setVisible(false);
-		vT.setVisible(true);
+	    try {
+	        // Instanciar lógica 
+	        VentaMerchandising ventaActiva = new VentaMerchandising();
+	        
+	        // Cargar BBDD a memoria
+	        ventaActiva.cargarCatalogo(); 
+	        
+	        // Pasarle el controlador
+	        VentanaTienda vT = new VentanaTienda(this, ventaActiva);
+	        this.setVisible(false);
+	        vT.setVisible(true);
+	        
+	    } catch (SQLException ex) {
+	        javax.swing.JOptionPane.showMessageDialog(this, 
+	            "Error al conectar con la base de datos para cargar el catálogo:\n" + ex.getMessage(), 
+	            "Error Crítico", javax.swing.JOptionPane.ERROR_MESSAGE);
+	        ex.printStackTrace();
+	    }
 	}
 	private JMenuItem getMntmVerTienda() {
 		if (mntmVerTienda == null) {
@@ -248,4 +278,81 @@ public class VentanaPrincipal extends JFrame {
 	}
 	
 	
+	private JMenu getMnGestorDeInstalaciones() {
+		if (mnGestorDeInstalaciones == null) {
+			mnGestorDeInstalaciones = new JMenu("Gestor de Instalaciones");
+			mnGestorDeInstalaciones.setMnemonic('S');
+			
+			JMenuItem mntmReservaDeInstalaciones = new JMenuItem("Reserva de Instalaciones");
+			mntmReservaDeInstalaciones.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					try {
+						abrirVentanaReserva();
+					} catch (SQLException e1) {
+						
+						System.err.print("Se ha producido un error al intentar abrir la ventana de reserva");
+						e1.printStackTrace();
+					}
+				}
+			});
+			mnGestorDeInstalaciones.add(mntmReservaDeInstalaciones);
+		}
+		return mnGestorDeInstalaciones;
+	}
+	private JMenuItem getMntmCrearFranjas() {
+		if (mntmCrearFranjas == null) {
+			mntmCrearFranjas = new JMenuItem("Crear franjas");
+			mntmCrearFranjas.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					abrirVentanaCrearFranjas();
+				}
+			});
+		}
+		return mntmCrearFranjas;
+	}
+
+	private void abrirVentanaCrearFranjas() {
+		VentanaCrearFranjas vFranjas = new VentanaCrearFranjas(this);
+		this.setVisible(false);
+		vFranjas.setVisible(true);
+	}
+	
+	public CrearFranjaService getCrearFranjaService() {
+		return this.cfs;
+	}
+	
+	private void abrirVentanaReserva() throws SQLException {
+		
+		VentanaReserva vr = new VentanaReserva(this);
+		this.setVisible(false);
+		vr.setVisible(true);
+	}
+	private JMenu getMnDirectorDeComunicaciones() {
+		if (mnDirectorDeComunicaciones == null) {
+			mnDirectorDeComunicaciones = new JMenu("Director de comunicaciones");
+			mnDirectorDeComunicaciones.add(getMntmAsignarEntrevistas());
+		}
+		return mnDirectorDeComunicaciones;
+	}
+	private JMenuItem getMntmAsignarEntrevistas() {
+		if (mntmAsignarEntrevistas == null) {
+			mntmAsignarEntrevistas = new JMenuItem("Asignar entrevistas");
+			mntmAsignarEntrevistas.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					abrirVentanaCrearEntrevistas();
+				}
+			});
+		}
+		return mntmAsignarEntrevistas;
+	}
+	
+	private void abrirVentanaCrearEntrevistas() {
+		VentanaCrearEntrevistas vCrearEntrev = new VentanaCrearEntrevistas(this);
+		this.setVisible(false);
+		vCrearEntrev.setVisible(true);
+	}
+
+	public CrearEntrevistaService getCrearEntrevistaService() {
+		return this.ces;
+	}
 }

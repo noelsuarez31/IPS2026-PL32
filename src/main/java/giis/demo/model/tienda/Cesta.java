@@ -1,34 +1,48 @@
 package giis.demo.model.tienda;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class Cesta {
-	
-	private List<Producto> productos = new ArrayList<>();
+    private Map<Producto, Integer> lineas = new LinkedHashMap<>();
 
     public void añadirProducto(Producto p) {
-        productos.add(p);
+        lineas.put(p, lineas.getOrDefault(p, 0) + 1);
     }
 
     public void eliminarProducto(Producto p) {
-        productos.remove(p);
+        lineas.remove(p);
     }
 
     public void vaciar() {
-        productos.clear();
+        lineas.clear();
     }
 
     public double getTotal() {
         double total = 0.0;
-        for (Producto p : productos) {
-            total += p.getPrecio();
+        for (Map.Entry<Producto, Integer> entry : lineas.entrySet()) {
+            total += entry.getKey().getPrecio() * entry.getValue();
         }
         return total;
     }
 
-    public List<Producto> getProductos() {
-        return new ArrayList<>(productos);
+    public int getNumProductosDistintos() {
+        return lineas.size();
     }
 
+    public int getTotalUnidades() {
+        int total = 0;
+        for (int cantidad : lineas.values()) {
+            total += cantidad;
+        }
+        return total;
+    }
+
+    public Map<Producto, Integer> getLineas() {
+        return lineas;
+    }
+
+    public boolean isVacia() {
+        return lineas.isEmpty();
+    }
 }

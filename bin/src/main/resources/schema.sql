@@ -14,6 +14,19 @@ drop table if exists Entrenador;
 drop table if exists CategoriaEquipo;
 drop table if exists Equipo;
 
+drop table if exists HorarioPeriodico;
+
+<<<<<<< HEAD
+drop table if exists Partido2;
+drop table if exists Entrenamiento;
+drop table if exists FranjaHoraria;
+drop table if exists Entrevista;
+
+drop table if exists LineaVenta;
+drop table if exists Producto;
+
+=======
+>>>>>>> refs/remotes/origin/main
 CREATE TABLE IF NOT EXISTS "butaca" (
 	"id_butaca"	INTEGER,
 	"tribuna"	TEXT NOT NULL CHECK("tribuna" IN ('A', 'B', 'C', 'D')),
@@ -102,4 +115,68 @@ CREATE TABLE IF NOT EXISTS "Equipo" (
     "tipo_equipo" TEXT NOT NULL,
     "id_categoria" INTEGER NOT NULL,
     FOREIGN KEY("id_categoria") REFERENCES "CategoriaEquipo"("id_categoria") ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS "horario_periodico" (
+	"id_horario"	INTEGER PRIMARY KEY AUTOINCREMENT,
+	"id_empleado"	INTEGER NOT NULL,
+	"dia_semana"	INTEGER NOT NULL CHECK("dia_semana" BETWEEN 1 AND 7),
+	"hora_inicio"	TEXT NOT NULL,
+	"hora_fin"		TEXT NOT NULL
+<<<<<<< HEAD
+);
+
+CREATE TABLE IF NOT EXISTS "Partido2" (
+	"id_partido" INTEGER PRIMARY KEY AUTOINCREMENT,
+	"fecha"	DATE NOT NULL,
+	"hora_inicio" TIME NOT NULL,
+	"hora_fin" TIME NOT NULL,
+	"id_local"	INTEGER NOT NULL,
+	"id_visitante"	INTEGER NOT NULL,
+	FOREIGN KEY("id_local") REFERENCES "Equipo"("id_equipo"),
+	FOREIGN KEY("id_visitante") REFERENCES "Equipo"("id_equipo"),
+	CHECK("id_local" <> "id_visitante")
+);
+
+CREATE TABLE IF NOT EXISTS "Entrenamiento" (
+	"id_entrenamiento" INTEGER PRIMARY KEY AUTOINCREMENT,
+	"fecha" DATE NOT NULL,
+	"hora_inicio" TIME NOT NULL,
+	"hora_fin" TIME NOT NULL,
+	"id_equipo" INTEGER NOT NULL,
+	FOREIGN KEY ("id_equipo") REFERENCES "Equipo"("id_equipo")
+);
+
+CREATE TABLE IF NOT EXISTS "FranjaHoraria" (
+	"id_franja" INTEGER PRIMARY KEY AUTOINCREMENT,
+	"dni_jugador" TEXT NOT NULL,
+	"fecha" DATE NOT NULL,
+	"hora_inicio" TIME NOT NULL,
+	"hora_fin" TIME NOT NULL,
+	FOREIGN KEY ("dni_jugador") REFERENCES "EmpleadoDeportivo"("dni")
+);
+
+CREATE TABLE IF NOT EXISTS "Entrevista" (
+	"id_entrevista" INTEGER PRIMARY KEY AUTOINCREMENT,
+	"id_franja" NOT NULL,
+	FOREIGN KEY ("id_franja") REFERENCES "FranjaHoraria"("id_franja")
+);
+
+CREATE TABLE IF NOT EXISTS "Producto" (
+	"id_producto" INTEGER PRIMARY KEY AUTOINCREMENT,
+	"nombre" TEXT NOT NULL,
+	"tipo" TEXT NOT NULL,
+	"precio" REAL NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS "LineaVenta" (
+	"id_venta" INTEGER NOT NULL,
+	"id_producto" INTEGER NOT NULL,
+	"unidades" INTEGER NOT NULL,
+	"precio_unitario" REAL NOT NULL,
+	PRIMARY KEY("id_venta", "id_producto"),
+	FOREIGN KEY("id_venta") REFERENCES "venta"("id_venta") ON DELETE CASCADE,
+	FOREIGN KEY("id_producto") REFERENCES "Producto"("id_producto") ON DELETE CASCADE
+=======
+>>>>>>> refs/remotes/origin/main
 );

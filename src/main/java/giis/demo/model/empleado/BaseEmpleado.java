@@ -10,8 +10,8 @@ public abstract class BaseEmpleado {
 	private String nombre;
 	private String apellido;
 	private BigDecimal salario;
-	private LocalDate fechaNacimiento;
-	private String numeroDeTelefono;
+	private LocalDate fechaNacimiento; // en bbdd fecha_nacimiento
+	private String numeroDeTelefono; //en bbdd numero_de_telefono
 	
 	public BaseEmpleado(String dni, String nombre, String apellido, BigDecimal salario, LocalDate fechaDeNacimiento,
 			String numeroTelefono) {
@@ -20,7 +20,7 @@ public abstract class BaseEmpleado {
 		}
 		
 		if(nombre == null || nombre.isBlank()) {
-			throw new EmployeeException("dni no puede ser null ni blanco");
+			throw new EmployeeException("nombre no puede ser null ni blanco");
 		}
 		
 		if(apellido == null || apellido.isBlank()) {
@@ -69,7 +69,7 @@ public abstract class BaseEmpleado {
 		return this.numeroDeTelefono;
 	}
 	
-	public String getSalario() {
-		return this.numeroDeTelefono;
+	public BigDecimal getSalario() {
+		return this.salario;
 	}
 }

@@ -3,29 +3,43 @@ package giis.demo.jdbc;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
+import java.util.Map;
 
 import giis.demo.jdbc.empleado.EmpleadoDeportivoJdbc;
 import giis.demo.jdbc.empleado.EmpleadoNoDeportivoJdbc;
-import giis.demo.jdbc.empleado.EntrenadorJdbc;
 import giis.demo.jdbc.entradas.ButacaJdbc;
 import giis.demo.jdbc.entradas.PartidoJdbc;
 import giis.demo.jdbc.entradas.RegistrarVentaJdbc;
+import giis.demo.jdbc.entrevistas.EntrevistaJdbc;
+import giis.demo.jdbc.entrevistas.FranjaJdbc;
 import giis.demo.jdbc.equipo.CategoriaEquipoJdbc;
 import giis.demo.jdbc.equipo.EquipoJdbc;
 import giis.demo.jdbc.horarios.HorarioEspecificoJdbc;
 import giis.demo.jdbc.horarios.HorarioPeriodicoJdbc;
+import giis.demo.jdbc.reservas.ComprobarDisponibilidadJdbc;
+import giis.demo.jdbc.reservas.InstalacionJdbc;
+import giis.demo.jdbc.reservas.ReservaJdbc;
+import giis.demo.jdbc.reservas.UsuarioJdbc;
+import giis.demo.jdbc.tienda.RegistrarVentaMerchandising;
 import giis.demo.model.empleado.EmpleadoDeportivo;
 import giis.demo.model.empleado.EmpleadoNoDeportivo;
-import giis.demo.model.empleado.Entrenador;
 import giis.demo.model.entradas.Butaca;
 import giis.demo.model.entradas.Partido;
 import giis.demo.model.entradas.enumerados.TipoSeccion;
 import giis.demo.model.entradas.enumerados.TipoTribuna;
+import giis.demo.model.entrevistas.FranjaHoraria;
 import giis.demo.model.equipo.CategoriaEquipo;
 import giis.demo.model.equipo.Equipo;
 import giis.demo.model.horarios.HorarioEspecifico;
 import giis.demo.model.horarios.HorarioPeriodico;
+import giis.demo.model.reserva.Instalacion;
+import giis.demo.model.reserva.Intervalo;
+import giis.demo.model.reserva.Reserva;
+import giis.demo.model.reserva.Usuario;
+import giis.demo.model.tienda.Producto;
 
 public class JDBC {
 
@@ -157,12 +171,12 @@ public class JDBC {
 	}
 
 	/**
-	 * Devuelve una lista de entrenadores que no tienen equipo asignado
+	 * Devuelve una lista de empleados deportivos con posicion ENTRENADOR que no tienen equipo asignado
 	 * @return
 	 * @throws SQLException
 	 */
-	public List<Entrenador> obtenerEntrenadoresDisponibles() throws SQLException {
-		return EntrenadorJdbc.obtenerEntrenadoresDisponibles(con);
+	public List<EmpleadoDeportivo> obtenerEntrenadoresDisponibles() throws SQLException {
+		return EmpleadoDeportivoJdbc.obtenerEntrenadoresDisponibles(con);
 	}
 
 	/**
@@ -176,7 +190,7 @@ public class JDBC {
 	 * @throws SQLException
 	 */
 	public void almacenarEquipo(Equipo equipo, List<EmpleadoDeportivo> jugadores, 
-			List<Entrenador> entrenadores, List<EmpleadoDeportivo> tecnicosAdicionales) throws SQLException {
+			List<EmpleadoDeportivo> entrenadores, List<EmpleadoDeportivo> tecnicosAdicionales) throws SQLException {
 		EquipoJdbc.almacenarEquipo(con, equipo, jugadores, entrenadores, tecnicosAdicionales);
 	}
 	
@@ -217,9 +231,239 @@ public class JDBC {
 	public List<HorarioEspecifico> getHorariosEspecificosRango(String dniEmpleado, String fechaInicio, String fechaFin) throws SQLException {
 		return HorarioEspecificoJdbc.getHorariosRango(con, dniEmpleado, fechaInicio, fechaFin);
 	}
+	
+	
+	
+	/**
+	 * Devuelve las instalaciones disponibles a reservar
+	 * @return instalaciones disponibles para que un usuario externo realice la reserva
+	 * @throws SQLException
+	 */
+	public List<Instalacion> getAvailableInstalations() throws SQLException{
+		
+		return InstalacionJdbc.getAvailableInstalations(con);
+		
+	}
+	
+	/**
+	 * Devuelve el id del usuario con el nombre y la tarjeta dados.
+	 * Si no existe, se crea
+	 * @param name
+	 * @param card
+	 * @return el id del usuario en la BBDD
+	 * @throws SQLException
+	 */
+	public void obtenerOCrearUsuario(Usuario user) throws SQLException {
+
+		UsuarioJdbc.obtenerOCrear(con, user);
+	}
 
 	public Connection getCon() {
 		return con;
 	}
 
+	/**
+	 * Devuelve una lista de los jugadores que pertenecen al equipo
+	 * que tiene como id el pasado por parametro
+	 * @param idEquipoProfesional
+	 * @return
+	 * @throws SQLException
+	 */
+	public List<EmpleadoDeportivo> cargarJugadoresEquipoProfesional(int idEquipoProfesional) throws SQLException {
+		return FranjaJdbc.cargarJugadoresEquipoProfesional(con, idEquipoProfesional);
+	}
+
+	/**
+	 * Devuelve una lista de dnis que pertenecen a entrenadores de equipos
+	 * profesionales
+	 * @return
+	 * @throws SQLException
+	 */
+	public List<String> obtenerDnisEntrenadoresDeEquiposProfesionales() throws SQLException {
+		return FranjaJdbc.obtenerDnisEntrenadoresDeEquiposProfesionales(con);
+	}
+
+	/**
+	 * Almacena la franja segun los datos pasados por parametro
+	 * @param nuevaFranja
+	 * @throws SQLException
+	 */
+	public void almacenarFranja(FranjaHoraria nuevaFranja) throws SQLException {
+		FranjaJdbc.almacenarFranja(con, nuevaFranja);
+	}
+
+	/**
+	 * Devuelve true si el jugador tiene asignada una entrevista para esa fecha
+	 * @param jugador
+	 * @param fechaFranja
+	 * @return
+	 * @throws SQLException
+	 */
+	public boolean jugadorTieneAsignadaEntrevista(EmpleadoDeportivo jugador, LocalDate fechaFranja) 
+			throws SQLException {
+		return FranjaJdbc.jugadorTieneAsignadaEntrevista(con, jugador, fechaFranja);
+	}
+
+	/**
+	 * Devuelve el id del equipo al que entrena el entrenador con dni
+	 * el que se pasa por parametro
+	 * @param dniEntrenador
+	 * @return
+	 * @throws SQLException
+	 */
+	public int getIdEquipo(String dniEntrenador) throws SQLException {
+		return FranjaJdbc.getIdEquipo(con, dniEntrenador);
+	}
+
+	/**
+	 * Devuelve true si el equipo al que pertenece el jugador tiene 
+	 * asignado un entrenamiento/partido que tenga conflicto con la
+	 * fecha y horas pasadas por parametro
+	 * @param jugador
+	 * @param fechaFranja
+	 * @param horaInicio
+	 * @param horaFin
+	 * @return
+	 * @throws SQLException
+	 */
+	public String equipoTienePartidoOEntrenamiento(EmpleadoDeportivo jugador, LocalDate fechaFranja,
+			LocalTime horaInicio, LocalTime horaFin) throws SQLException {
+		return FranjaJdbc.equipoTienePartidoOEntrenamiento(con, jugador, fechaFranja, horaInicio, horaFin);
+	}
+
+	/**
+	 * Devuelve true si el jugador pasado por parametro ya tiene una franja
+	 * para esa fecha y hora o tiene otra que tenga conflicto
+	 * @param jugador
+	 * @param fechaFranja
+	 * @param horaInicio
+	 * @param horaFin
+	 * @return
+	 * @throws SQLException
+	 */
+	public boolean yaHayEsaFranjaParaEseJugador(EmpleadoDeportivo jugador, LocalDate fechaFranja, LocalTime horaInicio,
+			LocalTime horaFin) throws SQLException {
+		return FranjaJdbc.yaHayEsaFranjaParaEseJugador(con, jugador, fechaFranja, horaInicio, horaFin);
+	}
+	
+	/**
+	 * Obtiene el catálogo de productos disponibles en la base de datos
+	 * @return lista de productos
+	 * @throws SQLException
+	 */
+	public List<Producto> getProductosTienda() throws SQLException {
+		return giis.demo.jdbc.tienda.ProductoJdbc.getProductos(con);
+	}
+
+	/**
+	 * Almacena la venta de merchandising de forma transaccional
+	 * @param total Importe total de la cesta
+	 * @param lineasCesta Mapa con los productos y sus cantidades
+	 * @throws SQLException
+	 */
+	public void almacenarVentaMerchandising(double total, Map<giis.demo.model.tienda.Producto, Integer> lineasCesta) throws SQLException {
+		RegistrarVentaMerchandising.registrar(con, total, lineasCesta);
+	}
+	
+	/**
+	 * Realiza la reserva de la instalacion
+	 * @param reserva
+	 * @return true si se ha añadido la reserva a la BBDD, false en caso contrario
+	 * @throws SQLException 
+	 */
+	public boolean registrarReserva(Reserva reserva) throws SQLException {
+		
+		return ReservaJdbc.registrarReserva(con, reserva)==1;
+		
+	}
+	
+
+	/**
+	 * Comprueba si para una fecha y hora de inicio y fin dadas, una instalación concreta está libre
+	 * @param id_instalacion
+	 * @param fecha
+	 * @param horaInicio
+	 * @param horaFin
+	 * @return true si está libre, false en caso contrario
+	 * @throws SQLException
+	 */
+	public boolean comprobarDisponibilidad(int id_instalacion, LocalDate fecha, LocalTime horaInicio, LocalTime horaFin) throws SQLException {
+		
+		return ComprobarDisponibilidadJdbc.estaDisponible(con, id_instalacion, fecha, horaInicio, horaFin);
+		
+	}
+	
+	/**
+	 * Obtiene las franjas ocupadas de una instalacion en una fecha indicando el motivo
+	 * @param idInstalacion
+	 * @param fecha
+	 * @return lista de los intervalos
+	 * @throws SQLException
+	 */
+	public List<Intervalo> obtenerOcupaciones(int idInstalacion, LocalDate fecha) throws SQLException{
+		
+		return ComprobarDisponibilidadJdbc.obtenerIntervalosOcupados(con, idInstalacion, fecha);
+		
+	}
+	
+	/**
+	 * Obtiene los intervalos disponibles
+	 * @param idInstalacion
+	 * @param fecha
+	 * @return lista de los intervalos
+	 * @throws SQLException
+	 */
+	public List<Intervalo> obtenerIntervalosDisponibels(int idInstalacion, LocalDate fecha) throws SQLException {
+		
+		return ComprobarDisponibilidadJdbc.obtenerIntervalosDisponibles(con, idInstalacion, fecha);
+		
+	}
+
+	/**
+	 * Crea la entrevista y elimina las franjas del jugador para ese mismo dia
+	 * @param jugadorSeleccionado
+	 * @param franjaSeleccionada
+	 * @param nombreMedioCom
+	 * @throws SQLException
+	 */
+	public void crearEntrevistaYEliminarFranjasCoincidentes(EmpleadoDeportivo jugadorSeleccionado,
+			FranjaHoraria franjaSeleccionada, String nombreMedioCom) throws SQLException {
+		EntrevistaJdbc.crearEntrevistaYEliminarFranjasCoincidentes(con, 
+				jugadorSeleccionado, franjaSeleccionada, nombreMedioCom);
+	}
+
+	/**
+	 * Devuelve una lista de Franjas Horarias para el jugador y fecha seleccionados
+	 * @param jugadorSeleccionado
+	 * @param fechaSeleccionada
+	 * @return
+	 * @throws SQLException
+	 */
+	public List<FranjaHoraria> cargarFranjas(EmpleadoDeportivo jugadorSeleccionado, LocalDate fechaSeleccionada) throws SQLException {
+		return EntrevistaJdbc.cargarFranjas(con, jugadorSeleccionado, fechaSeleccionada);
+	}
+
+	/**
+	 * Devuelve una lista de los jugadores que tienen franjas creadas
+	 * sin entrevistas asociadas
+	 * @return
+	 * @throws SQLException
+	 */
+	public List<EmpleadoDeportivo> getJugadoresConFranjas() throws SQLException {
+		return EntrevistaJdbc.getJugadoresConFranjas(con);
+	}
+
+	/**
+	 * Devuelve los dias del mes y año seleccionados que el jugador tiene 
+	 * franjas
+	 * @param jugadorSeleccionado
+	 * @param mes
+	 * @param año
+	 * @return
+	 * @throws SQLException
+	 */
+	public List<LocalDate> getDiasConFranjaYSinEntrevista(EmpleadoDeportivo jugadorSeleccionado, int mes, int año) throws SQLException {
+		return EntrevistaJdbc.getDiasConFranjaYSinEntrevista(con, jugadorSeleccionado, mes, año);
+	}
+	
 }

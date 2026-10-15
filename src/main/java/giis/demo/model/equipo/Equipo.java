@@ -6,8 +6,10 @@ public class Equipo {
 
 	private int id_equipo;
 	private String nombre;
-	private String tipoEquipo;
-	private CategoriaEquipo categoriaEquipo;
+	private String tipoEquipo; //en bbdd: 'Profesional' o 'En formacion'
+	private CategoriaEquipo categoriaEquipo; 
+	// en bbdd: si es profesional: 'Primer equipo' o 'Filial'
+	// si es en formacion: 'Juvenil', ...
 	private boolean isPropio;
 	
 	

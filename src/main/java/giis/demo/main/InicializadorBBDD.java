@@ -7,6 +7,7 @@ import java.awt.event.ActionListener;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.UIManager;
 
 import giis.demo.ui.VentanaPrincipal;
 import giis.demo.util.Database;
@@ -24,6 +25,7 @@ public class InicializadorBBDD {
         EventQueue.invokeLater(new Runnable() { //NOSONAR codigo autogenerado
             public void run() {
                 try {
+                	UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
                     InicializadorBBDD window = new InicializadorBBDD();
                     window.frame.setVisible(true);
                 } catch (Exception e) {
