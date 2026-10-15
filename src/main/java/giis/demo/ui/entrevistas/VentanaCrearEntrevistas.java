@@ -40,6 +40,8 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.event.ListSelectionEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeEvent;
+import javax.swing.JScrollPane;
+import javax.swing.JScrollBar;
 
 public class VentanaCrearEntrevistas extends JFrame {
 	
@@ -71,6 +73,7 @@ public class VentanaCrearEntrevistas extends JFrame {
 	private JPanel pnComboFranjas;
 	private JComboBox<FranjaHoraria> cbFranjas;
 	private JPanel pnCentral;
+	private JScrollPane scrListaJugadores;
 
 	public VentanaCrearEntrevistas(VentanaPrincipal vPrincipal) {
 		this.vPrincipal = vPrincipal;
@@ -78,7 +81,7 @@ public class VentanaCrearEntrevistas extends JFrame {
 		
 		setTitle("Añadir entrevistas");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 864, 468);
+		setBounds(100, 100, 903, 499);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -91,7 +94,7 @@ public class VentanaCrearEntrevistas extends JFrame {
 	private JLabel getLbTitulo() {
 		if (lbTitulo == null) {
 			lbTitulo = new JLabel("Seleccion de entrevistas para medios");
-			lbTitulo.setFont(new Font("Tahoma", Font.PLAIN, 15));
+			lbTitulo.setFont(new Font("Tahoma", Font.PLAIN, 17));
 			lbTitulo.setHorizontalAlignment(SwingConstants.CENTER);
 		}
 		return lbTitulo;
@@ -149,7 +152,7 @@ public class VentanaCrearEntrevistas extends JFrame {
 					vPrincipal.setVisible(true);
 				}
 			});
-			btnCancelar.setFont(new Font("Tahoma", Font.PLAIN, 12));
+			btnCancelar.setFont(new Font("Tahoma", Font.PLAIN, 13));
 		}
 		return btnCancelar;
 	}
@@ -161,7 +164,7 @@ public class VentanaCrearEntrevistas extends JFrame {
 					crearEntrevista();
 				}
 			});
-			btnCrearEntrevista.setFont(new Font("Tahoma", Font.PLAIN, 12));
+			btnCrearEntrevista.setFont(new Font("Tahoma", Font.PLAIN, 13));
 		}
 		return btnCrearEntrevista;
 	}
@@ -169,11 +172,19 @@ public class VentanaCrearEntrevistas extends JFrame {
 		if (pnListaJugadores == null) {
 			pnListaJugadores = new JPanel();
 			pnListaJugadores.setLayout(new BorderLayout(0, 0));
-			pnListaJugadores.add(getListJugadoresConFranja());
+			pnListaJugadores.add(getScrListaJugadores(), BorderLayout.CENTER);
 			pnListaJugadores.add(getLbListaJugadores(), BorderLayout.NORTH);
 		}
 		return pnListaJugadores;
 	}
+	
+	private JScrollPane getScrListaJugadores() {
+		if (scrListaJugadores == null) {
+			scrListaJugadores = new JScrollPane(getListJugadoresConFranja());
+		}
+		return scrListaJugadores;
+	}
+	
 	private JList<EmpleadoDeportivo> getListJugadoresConFranja() {
 		if (listJugadoresConFranja == null) {
 			listJugadoresConFranja = new JList<EmpleadoDeportivo>();
@@ -207,7 +218,7 @@ public class VentanaCrearEntrevistas extends JFrame {
 	private JCalendar getCalendarioDias() {
 		if (calendarioDias == null) {
 			calendarioDias = new JCalendar();
-			calendarioDias.getDayChooser().addPropertyChangeListener("month", new PropertyChangeListener() {
+			calendarioDias.getDayChooser().addPropertyChangeListener("day", new PropertyChangeListener() {
 				@Override
 				public void propertyChange(PropertyChangeEvent evt) {
 					try {
@@ -248,14 +259,14 @@ public class VentanaCrearEntrevistas extends JFrame {
 	private JLabel getLbListaJugadores() {
 		if (lbListaJugadores == null) {
 			lbListaJugadores = new JLabel("Lista de jugadores con franjas horarias:");
-			lbListaJugadores.setFont(new Font("Tahoma", Font.PLAIN, 13));
+			lbListaJugadores.setFont(new Font("Tahoma", Font.BOLD, 13));
 		}
 		return lbListaJugadores;
 	}
 	private JLabel getLbCalendarioDias() {
 		if (lbCalendarioDias == null) {
 			lbCalendarioDias = new JLabel("Dias con franjas del jugador seleccionado:");
-			lbCalendarioDias.setFont(new Font("Tahoma", Font.PLAIN, 13));
+			lbCalendarioDias.setFont(new Font("Tahoma", Font.BOLD, 13));
 		}
 		return lbCalendarioDias;
 	}
@@ -264,7 +275,7 @@ public class VentanaCrearEntrevistas extends JFrame {
 		if (lbListaFranjas == null) {
 			lbListaFranjas = new JLabel("Franjas del jugador disponibles para el dia seleccionado:");
 			lbListaFranjas.setHorizontalAlignment(SwingConstants.CENTER);
-			lbListaFranjas.setFont(new Font("Tahoma", Font.PLAIN, 13));
+			lbListaFranjas.setFont(new Font("Tahoma", Font.BOLD, 13));
 		}
 		return lbListaFranjas;
 	}
@@ -272,7 +283,7 @@ public class VentanaCrearEntrevistas extends JFrame {
 		if (lbInformacionEntrevista == null) {
 			lbInformacionEntrevista = new JLabel("Informacion sobre la entrevista");
 			lbInformacionEntrevista.setHorizontalAlignment(SwingConstants.CENTER);
-			lbInformacionEntrevista.setFont(new Font("Tahoma", Font.PLAIN, 13));
+			lbInformacionEntrevista.setFont(new Font("Tahoma", Font.BOLD, 13));
 		}
 		return lbInformacionEntrevista;
 	}
