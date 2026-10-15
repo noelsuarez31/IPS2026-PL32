@@ -167,7 +167,7 @@ public class EntrevistaJdbc {
 	 * @return
 	 * @throws SQLException
 	 */
-	public static List<LocalDate> getDiasConFranja(Connection con, EmpleadoDeportivo jugadorSeleccionado, int mes,
+	public static List<LocalDate> getDiasConFranjaYSinEntrevista(Connection con, EmpleadoDeportivo jugadorSeleccionado, int mes,
 			int año) throws SQLException {
 		List<LocalDate> dias = new ArrayList<>();
 	    

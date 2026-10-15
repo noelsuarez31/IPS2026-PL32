@@ -398,22 +398,51 @@ public class JDBC {
 		
 	}
 
+	/**
+	 * Crea la entrevista y elimina las franjas del jugador para ese mismo dia
+	 * @param jugadorSeleccionado
+	 * @param franjaSeleccionada
+	 * @param nombreMedioCom
+	 * @throws SQLException
+	 */
 	public void crearEntrevistaYEliminarFranjasCoincidentes(EmpleadoDeportivo jugadorSeleccionado,
 			FranjaHoraria franjaSeleccionada, String nombreMedioCom) throws SQLException {
 		EntrevistaJdbc.crearEntrevistaYEliminarFranjasCoincidentes(con, 
 				jugadorSeleccionado, franjaSeleccionada, nombreMedioCom);
 	}
 
+	/**
+	 * Devuelve una lista de Franjas Horarias para el jugador y fecha seleccionados
+	 * @param jugadorSeleccionado
+	 * @param fechaSeleccionada
+	 * @return
+	 * @throws SQLException
+	 */
 	public List<FranjaHoraria> cargarFranjas(EmpleadoDeportivo jugadorSeleccionado, LocalDate fechaSeleccionada) throws SQLException {
 		return EntrevistaJdbc.cargarFranjas(con, jugadorSeleccionado, fechaSeleccionada);
 	}
 
+	/**
+	 * Devuelve una lista de los jugadores que tienen franjas creadas
+	 * sin entrevistas asociadas
+	 * @return
+	 * @throws SQLException
+	 */
 	public List<EmpleadoDeportivo> getJugadoresConFranjas() throws SQLException {
 		return EntrevistaJdbc.getJugadoresConFranjas(con);
 	}
 
-	public List<LocalDate> getDiasConFranja(EmpleadoDeportivo jugadorSeleccionado, int mes, int año) throws SQLException {
-		return EntrevistaJdbc.getDiasConFranja(con, jugadorSeleccionado, mes, año);
+	/**
+	 * Devuelve los dias del mes y año seleccionados que el jugador tiene 
+	 * franjas
+	 * @param jugadorSeleccionado
+	 * @param mes
+	 * @param año
+	 * @return
+	 * @throws SQLException
+	 */
+	public List<LocalDate> getDiasConFranjaYSinEntrevista(EmpleadoDeportivo jugadorSeleccionado, int mes, int año) throws SQLException {
+		return EntrevistaJdbc.getDiasConFranjaYSinEntrevista(con, jugadorSeleccionado, mes, año);
 	}
 	
 }

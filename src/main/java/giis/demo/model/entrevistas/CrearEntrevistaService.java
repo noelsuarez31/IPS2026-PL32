@@ -66,6 +66,7 @@ public class CrearEntrevistaService {
 
 	/**
 	 * Devuelve una lista de jugadores con franjas creadas
+	 * y sin entrevistas asociadas a estas
 	 * @return
 	 * @throws SQLException 
 	 */
@@ -92,7 +93,7 @@ public class CrearEntrevistaService {
 		}
 		
 		try {
-			return jdbc.getDiasConFranja(jugadorSeleccionado, mes, año);
+			return jdbc.getDiasConFranjaYSinEntrevista(jugadorSeleccionado, mes, año);
 		} catch (SQLException e) {
 			throw new RuntimeInterviewException("Error al obtener los dias que el jugador tiene "
 					+ "franjas asociadas");
