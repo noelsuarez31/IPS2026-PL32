@@ -396,9 +396,9 @@ public class VentanaCrearEntrevistas extends JFrame {
 	}
 	
 	private void gestionDestacarDiasCalendario() throws InterviewException {
-		EmpleadoDeportivo jugadorSeleccionado = listJugadoresConFranja.getSelectedValue();
+		EmpleadoDeportivo jugadorSeleccionado = getListJugadoresConFranja().getSelectedValue();
 		if(jugadorSeleccionado != null) {
-			Calendar cal = calendarioDias.getCalendar();
+			Calendar cal = getCalendarioDias().getCalendar();
 			List<LocalDate> diasConFranjas = crearEntrevista.getDiasConFranja(jugadorSeleccionado, cal.get(Calendar.MONTH)+1, cal.get(Calendar.YEAR));
 			resaltarDiasConFranjas(diasConFranjas);
 			getCbFranjas().removeAllItems();
@@ -406,43 +406,46 @@ public class VentanaCrearEntrevistas extends JFrame {
 	}
 	
 	public void resaltarDiasConFranjas(List<LocalDate> diasConFranjas) {
-		// Obtenemos el componente de los días del JCalendar
-		JDayChooser dayChooser = calendarioDias.getDayChooser();
+		if(calendarioDias != null) {
+			// Obtenemos el componente de los días del JCalendar
+			JDayChooser dayChooser = calendarioDias.getDayChooser();
 
-		// El JDayChooser almacena los botones de los días en un array interno o panel.
-		// Podemos buscar los componentes hijos que sean botones (JButton)
-		// correspondientes a los días:
-		Component[] components = dayChooser.getDayPanel().getComponents();
+			// El JDayChooser almacena los botones de los días en un array interno o panel.
+			// Podemos buscar los componentes hijos que sean botones (JButton)
+			// correspondientes a los días:
+			Component[] components = dayChooser.getDayPanel().getComponents();
 
-		for (Component comp : components) {
-			if (comp instanceof JButton) {
-				JButton dayButton = (JButton) comp;
-				String text = dayButton.getText();
+			for (Component comp : components) {
+				if (comp instanceof JButton) {
+					JButton dayButton = (JButton) comp;
+					String text = dayButton.getText();
 
-				if (!text.isEmpty()) {
-					try {
-						int dayNum = Integer.parseInt(text);
-						// Obtenemos el año y mes actual que muestra el calendario
-						int year = getCalendarioDias().getCalendar().get(Calendar.YEAR);
-						int month = getCalendarioDias().getCalendar().get(Calendar.MONTH) + 1;
+					if (!text.isEmpty()) {
+						try {
+							int dayNum = Integer.parseInt(text);
+							// Obtenemos el año y mes actual que muestra el calendario
+							int year = getCalendarioDias().getCalendar().get(Calendar.YEAR);
+							int month = getCalendarioDias().getCalendar().get(Calendar.MONTH) + 1;
 
-						LocalDate fechaBoton = LocalDate.of(year, month, dayNum);
+							LocalDate fechaBoton = LocalDate.of(year, month, dayNum);
 
-						// Si la lista de días con franjas contiene esta fecha, la resaltamos
-						if (diasConFranjas.contains(fechaBoton)) {
-							dayButton.setBackground(new Color(173, 216, 230)); // Azul claro (o el color que prefieras)
-							dayButton.setOpaque(true);
-						} else {
-							// Restauramos el color por defecto para los días sin franjas
-							dayButton.setBackground(null);
-							dayButton.setOpaque(false);
+							// Si la lista de días con franjas contiene esta fecha, la resaltamos
+							if (diasConFranjas.contains(fechaBoton)) {
+								dayButton.setBackground(new Color(173, 216, 230)); // Azul claro (o el color que prefieras)
+								dayButton.setOpaque(true);
+							} else {
+								// Restauramos el color por defecto para los días sin franjas
+								dayButton.setBackground(null);
+								dayButton.setOpaque(false);
+							}
+						} catch (NumberFormatException e) {
+							// Ignorar si el texto del botón no es un número
 						}
-					} catch (NumberFormatException e) {
-						// Ignorar si el texto del botón no es un número
 					}
 				}
 			}
 		}
+		
 	}
 	
 	private void validarFecha() throws InterviewException {
@@ -454,7 +457,7 @@ public class VentanaCrearEntrevistas extends JFrame {
 			JOptionPane.showMessageDialog(null, "Fecha seleccionada invalida. No puede ser anterior a hoy");
 		}
 		
-		Calendar cal = calendarioDias.getCalendar();
+		Calendar cal = getCalendarioDias().getCalendar();
 		List<LocalDate> diasConFranjas = crearEntrevista.getDiasConFranja(getListJugadoresConFranja().getSelectedValue(),
 				cal.get(Calendar.MONTH)+1, cal.get(Calendar.YEAR));
 		
