@@ -23,13 +23,21 @@ public class EntrevistaJdbc {
 	private final static String QUERY_GET_PLAYERS_WITH_SLOTS = 
 		    "SELECT ed.*, bd.* FROM EmpleadoDeportivo ed " +
 		    "JOIN BaseEmpleado bd ON ed.dni = bd.dni " +
-		    "WHERE ed.posicion = ? AND EXISTS (SELECT 1 FROM FranjaHoraria fh WHERE fh.dni_jugador = ed.dni)";
+		    "WHERE ed.posicion = ? AND EXISTS (" +
+		    "    SELECT 1 FROM FranjaHoraria fh " +
+		    "    WHERE fh.dni_jugador = ed.dni " +
+		    "    AND NOT EXISTS (" +
+		    "        SELECT 1 FROM Entrevista e " +
+		    "        WHERE e.id_franja = fh.id_franja" +
+		    "    )" +
+		    ")";
 	
 	// strftime lo que hace es extraer los 4 digitos del año en el primer caso y los dos
 	// del mes en el segundo
 	private final static String QUERY_GET_DAYS_WITH_SLOTS_BY_MONTH = 
-		    "SELECT DISTINCT fecha FROM FranjaHoraria " +
-		    "WHERE dni_jugador = ? AND strftime('%Y', fecha) = ? AND strftime('%m', fecha) = ?";
+		    "SELECT DISTINCT fh.fecha FROM FranjaHoraria fh " +
+		    "WHERE fh.dni_jugador = ? AND strftime('%Y', fh.fecha) = ? AND strftime('%m', fh.fecha) = ? " +
+		    "AND NOT EXISTS (SELECT 1 FROM Entrevista e WHERE e.id_franja = fh.id_franja)";
 	
 	private final static String QUERY_CREATE_INTERVIEW = 
 			"INSERT INTO Entrevista (id_franja, nombre_medio) VALUES (?,?)";

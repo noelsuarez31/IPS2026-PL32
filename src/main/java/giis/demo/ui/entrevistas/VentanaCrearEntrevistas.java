@@ -5,6 +5,16 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
@@ -15,9 +25,13 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import com.toedter.calendar.JCalendar;
 import com.toedter.calendar.JDayChooser;
@@ -27,21 +41,6 @@ import giis.demo.model.empleado.EmpleadoDeportivo;
 import giis.demo.model.entrevistas.CrearEntrevistaService;
 import giis.demo.model.entrevistas.FranjaHoraria;
 import giis.demo.ui.VentanaPrincipal;
-
-import java.awt.event.ActionListener;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.awt.event.ActionEvent;
-import javax.swing.ListSelectionModel;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.event.ListSelectionEvent;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeEvent;
-import javax.swing.JScrollPane;
-import javax.swing.JScrollBar;
 
 public class VentanaCrearEntrevistas extends JFrame {
 	
@@ -60,7 +59,7 @@ public class VentanaCrearEntrevistas extends JFrame {
 	private JButton btnCrearEntrevista;
 	private JPanel pnListaJugadores;
 	private JList<EmpleadoDeportivo> listJugadoresConFranja;
-	private DefaultListModel<EmpleadoDeportivo> modeloListaJugadores = new DefaultListModel<EmpleadoDeportivo>();
+	private DefaultListModel<EmpleadoDeportivo> modeloListaJugadores;
 	private JPanel pnCalendarioDias;
 	private JCalendar calendarioDias;
 	private JLabel lbListaJugadores;
@@ -345,10 +344,18 @@ public class VentanaCrearEntrevistas extends JFrame {
 		
 		try{
 			crearEntrevista.validarYCrearEntrevista(jugadorSeleccionado, fechaSeleccionada, franjaSeleccionada, nombreMedioCom);
-			JOptionPane.showConfirmDialog(null, "Entrevista creada correctamente");
+			JOptionPane.showMessageDialog(null, "Entrevista creada correctamente");
+			gestionarCambios();
 		} catch(InterviewException ie) {
 			JOptionPane.showMessageDialog(null, ie.getMessage());
 		}
+	}
+
+	private void gestionarCambios() throws InterviewException {
+		cargarJugadoresConFranjas();
+		gestionDestacarDiasCalendario();
+		gestionCombo();
+		getTxMedioComunicacion().setText("");
 	}
 
 	private void gestionCombo() throws InterviewException {
@@ -357,8 +364,10 @@ public class VentanaCrearEntrevistas extends JFrame {
 		LocalDate fechaSeleccionada = fechaUtil.
 				toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 		
-		if(jugadorSeleccionado != null || fechaSeleccionada != null) {
+		if(jugadorSeleccionado != null && fechaSeleccionada != null) {
 			cargarFranjasDeJugador(jugadorSeleccionado, fechaSeleccionada);
+		} else {
+			getCbFranjas().setModel(new DefaultComboBoxModel<FranjaHoraria>());
 		}
 	}
 	
@@ -370,6 +379,7 @@ public class VentanaCrearEntrevistas extends JFrame {
 	}
 	
 	private void cargarJugadoresConFranjas() {
+		this.modeloListaJugadores = new DefaultListModel<EmpleadoDeportivo>();
 		List<EmpleadoDeportivo> jugadoresConFranjas = crearEntrevista.getJugadoresConFranjas();
 		
 		for(EmpleadoDeportivo jugador : jugadoresConFranjas) {
@@ -377,6 +387,12 @@ public class VentanaCrearEntrevistas extends JFrame {
 		}
 		
 		getListJugadoresConFranja().setModel(modeloListaJugadores);
+		
+		// Si no hay jugadores en la lista, limpiamos el calendario para que no 
+		// quede nada seleccionado
+		if(modeloListaJugadores.isEmpty()) {
+			resaltarDiasConFranjas(new ArrayList<>());
+		}
 	}
 	
 	private void gestionDestacarDiasCalendario() throws InterviewException {
@@ -419,6 +435,7 @@ public class VentanaCrearEntrevistas extends JFrame {
 						} else {
 							// Restauramos el color por defecto para los días sin franjas
 							dayButton.setBackground(null);
+							dayButton.setOpaque(false);
 						}
 					} catch (NumberFormatException e) {
 						// Ignorar si el texto del botón no es un número
