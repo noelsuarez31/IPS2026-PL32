@@ -6,12 +6,14 @@ import java.sql.SQLException;
 import java.util.List;
 
 import giis.demo.jdbc.empleado.EmpleadoDeportivoJdbc;
+import giis.demo.jdbc.empleado.EmpleadoNoDeportivoJdbc;
 import giis.demo.jdbc.empleado.EntrenadorJdbc;
 import giis.demo.jdbc.entradas.ButacaJdbc;
 import giis.demo.jdbc.entradas.PartidoJdbc;
 import giis.demo.jdbc.entradas.RegistrarVentaJdbc;
 import giis.demo.jdbc.equipo.CategoriaEquipoJdbc;
 import giis.demo.jdbc.equipo.EquipoJdbc;
+import giis.demo.jdbc.horarios.HorarioEspecificoJdbc;
 import giis.demo.jdbc.horarios.HorarioPeriodicoJdbc;
 import giis.demo.model.empleado.EmpleadoDeportivo;
 import giis.demo.model.empleado.EmpleadoNoDeportivo;
@@ -22,6 +24,7 @@ import giis.demo.model.entradas.enumerados.TipoSeccion;
 import giis.demo.model.entradas.enumerados.TipoTribuna;
 import giis.demo.model.equipo.CategoriaEquipo;
 import giis.demo.model.equipo.Equipo;
+import giis.demo.model.horarios.HorarioEspecifico;
 import giis.demo.model.horarios.HorarioPeriodico;
 
 public class JDBC {
@@ -182,7 +185,7 @@ public class JDBC {
 	 * @param horario
 	 * @throws SQLException
 	 */
-	public void añadirHorario(HorarioPeriodico horario) throws SQLException{
+	public void añadirHorarioPeriodico(HorarioPeriodico horario) throws SQLException{
 		HorarioPeriodicoJdbc.añadirHorario(con, horario);
 	}
 	
@@ -191,12 +194,28 @@ public class JDBC {
 	 * @param idEmpleado
 	 * @throws SQLException
 	 */
-	public List<HorarioPeriodico> getHorariosEmpleado(String dniEmpleado)throws SQLException{
+	public List<HorarioPeriodico> getHorariosPeriodicosEmpleado(String dniEmpleado)throws SQLException{
 		return HorarioPeriodicoJdbc.getHorariosEmpleado(con, dniEmpleado);
 	}
 	
 	public List<EmpleadoNoDeportivo> getEmpleadosNoDeportivos() throws SQLException {
-	    return HorarioPeriodicoJdbc.getEmpleadosNoDeportivos(con);
+	    return EmpleadoNoDeportivoJdbc.getEmpleadosNoDeportivos(con);
+	}
+	
+	public void añadirHorarioEspecifico(HorarioEspecifico horario) throws SQLException {
+		HorarioEspecificoJdbc.añadirHorarioEspecifico(con, horario);
+	}
+
+	public boolean tieneHorariosPeriodicos(String dniEmpleado) throws SQLException {
+		return HorarioEspecificoJdbc.tieneHorariosPeriodicos(con, dniEmpleado);
+	}
+
+	public List<HorarioEspecifico> getHorariosEspecificosFecha(String dniEmpleado, String fecha) throws SQLException {
+		return HorarioEspecificoJdbc.getHorariosFecha(con, dniEmpleado, fecha);
+	}
+
+	public List<HorarioEspecifico> getHorariosEspecificosRango(String dniEmpleado, String fechaInicio, String fechaFin) throws SQLException {
+		return HorarioEspecificoJdbc.getHorariosRango(con, dniEmpleado, fechaInicio, fechaFin);
 	}
 
 	public Connection getCon() {

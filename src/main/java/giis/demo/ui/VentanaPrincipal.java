@@ -6,6 +6,7 @@ import javax.swing.border.EmptyBorder;
 
 import giis.demo.ui.tienda.VentanaTienda;
 import giis.demo.model.equipo.AñadirEquipoService;
+import giis.demo.model.horarios.GestionHorariosEspecificos;
 import giis.demo.model.horarios.GestionHorariosPeriodicos;
 import giis.demo.ui.entradas.VentanaVentaEntradas;
 import giis.demo.ui.equipo.VentanaAñadirEquipo;
@@ -26,6 +27,7 @@ public class VentanaPrincipal extends JFrame {
 	private GestionaTienda gestionaTienda = new GestionaTienda();
 	private AñadirEquipoService añadirEquipo = new AñadirEquipoService();
 	private GestionHorariosPeriodicos ghp = new GestionHorariosPeriodicos();
+	private GestionHorariosEspecificos ghe = new GestionHorariosEspecificos();
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
@@ -238,6 +240,11 @@ public class VentanaPrincipal extends JFrame {
 		this.setVisible(false);
 		vHorarioPeriodico.setVisible(true);
 		
+	}
+
+	public GestionHorariosEspecificos getGestionHorariosEspecificos() {
+		
+		return this.ghe;
 	}
 	
 	

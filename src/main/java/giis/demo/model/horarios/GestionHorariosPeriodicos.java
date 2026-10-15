@@ -11,6 +11,8 @@ import giis.demo.util.ApplicationException;
 
 public class GestionHorariosPeriodicos {
 	private JDBC jdbc = new JDBC();
+	
+	
 	/**
 	 * Valida que el nuevo horario cumpla con las restricciones de negocio (máximo 8 horas diarias, 
 	 * máximo 40 horas semanales y sin solapamientos) y lo añade a la base de datos si es correcto.
@@ -20,11 +22,15 @@ public class GestionHorariosPeriodicos {
 	 */
 	public void validarYAnadirHorario(HorarioPeriodico nuevoHorario) throws SQLException {
 		
+		
+		
 		// Pedimos a la BD todos los turnos que ya tiene el empleado
-		List<HorarioPeriodico> horariosExistentes = jdbc.getHorariosEmpleado(nuevoHorario.getDni_empleado());
+		List<HorarioPeriodico> horariosExistentes = jdbc.getHorariosPeriodicosEmpleado(nuevoHorario.getDni_empleado());
 		
 		// Calculamos los minutos exactos del turno que se intenta crear
 		long minutosNuevos = calcularMinutos(nuevoHorario.getHora_inicio(), nuevoHorario.getHora_fin());
+		
+		
 		
 		long minutosTotalesDia = minutosNuevos;
 		long minutosTotalesSemana = minutosNuevos;
@@ -64,7 +70,7 @@ public class GestionHorariosPeriodicos {
 		}
 		
 		// Si nada lanza excepción, el horario es perfecto: a la Base de Datos.
-		jdbc.añadirHorario(nuevoHorario);
+		jdbc.añadirHorarioPeriodico(nuevoHorario);
 	}
 
 	/**
@@ -90,6 +96,6 @@ public class GestionHorariosPeriodicos {
 	}
 
 	public List<HorarioPeriodico> obtenerHorariosDeEmpleado(String dni) throws SQLException {
-		return jdbc.getHorariosEmpleado(dni);
+		return jdbc.getHorariosPeriodicosEmpleado(dni);
 	}
 }

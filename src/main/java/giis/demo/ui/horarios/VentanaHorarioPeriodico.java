@@ -22,8 +22,10 @@ import giis.demo.model.empleado.EmpleadoNoDeportivo;
 import giis.demo.model.horarios.GestionHorariosPeriodicos;
 import giis.demo.model.horarios.HorarioPeriodico;
 import giis.demo.ui.VentanaPrincipal;
+import giis.demo.util.SwingUtil;
 import giis.demo.util.UnexpectedException;
 import javax.swing.JTable;
+import javax.swing.JScrollPane;
 
 public class VentanaHorarioPeriodico extends JFrame {
 	
@@ -51,6 +53,8 @@ public class VentanaHorarioPeriodico extends JFrame {
 	private DefaultTableModel modeloHorarios;
 	private JButton btnAtras;
 	private JLabel lblHorariosDeEmpleado;
+	private JScrollPane scrollPaneEmpleadosNoDep;
+	private JScrollPane scrollPaneHorarioPeriodico;
 
 	/**
 	 * Create the panel.
@@ -75,8 +79,8 @@ public class VentanaHorarioPeriodico extends JFrame {
 		getContentPane().add(getLblMinutoInicio());
 		getContentPane().add(getLblHoraFinal());
 		getContentPane().add(getLblMinutoFinal());
-		getContentPane().add(getTablaEmpleadosNoDeportivos());
-		getContentPane().add(getTablaHorariosPeriodicos());
+		getContentPane().add(getScrollPaneEmpleadosNoDep());
+		getContentPane().add(getScrollPaneHorarioPeriodico());
 		getContentPane().add(getBtnAtras());
 		getContentPane().add(getLblHorariosDeEmpleado());
 		
@@ -87,7 +91,7 @@ public class VentanaHorarioPeriodico extends JFrame {
 		if (cbDia == null) {
 			cbDia = new JComboBox();
 			cbDia.setModel(new DefaultComboBoxModel<String>(new String[] {"Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"}));
-			cbDia.setBounds(288, 66, 68, 18);
+			cbDia.setBounds(208, 66, 68, 18);
 		}
 		return cbDia;
 	}
@@ -95,7 +99,7 @@ public class VentanaHorarioPeriodico extends JFrame {
 		if (spHoraInicio == null) {
 			spHoraInicio = new JSpinner();
 			spHoraInicio.setModel(new SpinnerNumberModel(0, 0, 23, 1));
-			spHoraInicio.setBounds(455, 41, 35, 26);
+			spHoraInicio.setBounds(372, 41, 35, 26);
 		}
 		return spHoraInicio;
 	}
@@ -103,7 +107,7 @@ public class VentanaHorarioPeriodico extends JFrame {
 		if (spMinInicio == null) {
 			spMinInicio = new JSpinner();
 			spMinInicio.setModel(new SpinnerNumberModel(0, 0, 59, 1));
-			spMinInicio.setBounds(599, 41, 35, 26);
+			spMinInicio.setBounds(518, 41, 35, 26);
 		}
 		return spMinInicio;
 	}
@@ -111,7 +115,7 @@ public class VentanaHorarioPeriodico extends JFrame {
 		if (spHoraFin == null) {
 			spHoraFin = new JSpinner();
 			spHoraFin.setModel(new SpinnerNumberModel(0, 0, 23, 1));
-			spHoraFin.setBounds(455, 77, 35, 26);
+			spHoraFin.setBounds(372, 79, 35, 26);
 		}
 		return spHoraFin;
 	}
@@ -119,7 +123,7 @@ public class VentanaHorarioPeriodico extends JFrame {
 		if (spMinFin == null) {
 			spMinFin = new JSpinner();
 			spMinFin.setModel(new SpinnerNumberModel(0, 0, 59, 1));
-			spMinFin.setBounds(599, 79, 35, 26);
+			spMinFin.setBounds(518, 79, 35, 26);
 		}
 		return spMinFin;
 	}
@@ -172,35 +176,35 @@ public class VentanaHorarioPeriodico extends JFrame {
 	private JLabel getLblDiaDeSemana() {
 		if (lblDiaDeSemana == null) {
 			lblDiaDeSemana = new JLabel("Dia de semana:");
-			lblDiaDeSemana.setBounds(177, 69, 101, 12);
+			lblDiaDeSemana.setBounds(115, 69, 101, 12);
 		}
 		return lblDiaDeSemana;
 	}
 	private JLabel getLblHoraInicio() {
 		if (lblHoraInicio == null) {
 			lblHoraInicio = new JLabel("Hora inicio:");
-			lblHoraInicio.setBounds(373, 55, 83, 12);
+			lblHoraInicio.setBounds(303, 47, 83, 12);
 		}
 		return lblHoraInicio;
 	}
 	private JLabel getLblMinutoInicio() {
 		if (lblMinutoInicio == null) {
 			lblMinutoInicio = new JLabel("Minuto inicio:");
-			lblMinutoInicio.setBounds(513, 55, 76, 12);
+			lblMinutoInicio.setBounds(448, 47, 76, 12);
 		}
 		return lblMinutoInicio;
 	}
 	private JLabel getLblHoraFinal() {
 		if (lblHoraFinal == null) {
 			lblHoraFinal = new JLabel("Hora final:");
-			lblHoraFinal.setBounds(373, 83, 60, 12);
+			lblHoraFinal.setBounds(302, 85, 60, 12);
 		}
 		return lblHoraFinal;
 	}
 	private JLabel getLblMinutoFinal() {
 		if (lblMinutoFinal == null) {
 			lblMinutoFinal = new JLabel("Minuto final:");
-			lblMinutoFinal.setBounds(513, 83, 76, 12);
+			lblMinutoFinal.setBounds(448, 85, 76, 12);
 		}
 		return lblMinutoFinal;
 	}
@@ -212,14 +216,12 @@ public class VentanaHorarioPeriodico extends JFrame {
 	private JTable getTablaEmpleadosNoDeportivos() {
 		if (tablaEmpleadosNoDeportivos == null) {
 			tablaEmpleadosNoDeportivos = new JTable();
-			tablaEmpleadosNoDeportivos.setBounds(48, 133, 249, 200);
 		}
 		return tablaEmpleadosNoDeportivos;
 	}
 	private JTable getTablaHorariosPeriodicos() {
 		if (tablaHorariosPeriodicos == null) {
 			tablaHorariosPeriodicos = new JTable();
-			tablaHorariosPeriodicos.setBounds(356, 133, 249, 200);
 		}
 		return tablaHorariosPeriodicos;
 	}
@@ -237,6 +239,7 @@ public class VentanaHorarioPeriodico extends JFrame {
 		cargarEmpleados();
 		
 		// cuando se haga clic en un empleado de la tabla, se cargan sus horarios
+		// getValueIsAdjusting devuelve si true si han habido cambios
 		getTablaEmpleadosNoDeportivos().getSelectionModel().addListSelectionListener(e -> {
 			if (!e.getValueIsAdjusting() && getTablaEmpleadosNoDeportivos().getSelectedRow() != -1) {
 				String dniSeleccionado = (String) getTablaEmpleadosNoDeportivos().getValueAt(getTablaEmpleadosNoDeportivos().getSelectedRow(), 0);
@@ -245,7 +248,7 @@ public class VentanaHorarioPeriodico extends JFrame {
 		});
 
 		// action listener usando el wrapper
-		getBtnGuardar().addActionListener(e -> giis.demo.util.SwingUtil.exceptionWrapper(() -> guardarDatos()));
+		getBtnGuardar().addActionListener(e -> SwingUtil.exceptionWrapper(() -> guardarDatos()));
 	}
 
 	private void cargarEmpleados() {
@@ -303,5 +306,21 @@ public class VentanaHorarioPeriodico extends JFrame {
 			lblHorariosDeEmpleado.setBounds(356, 113, 249, 12);
 		}
 		return lblHorariosDeEmpleado;
+	}
+	private JScrollPane getScrollPaneEmpleadosNoDep() {
+		if (scrollPaneEmpleadosNoDep == null) {
+			scrollPaneEmpleadosNoDep = new JScrollPane();
+			scrollPaneEmpleadosNoDep.setBounds(48, 133, 262, 200);
+			scrollPaneEmpleadosNoDep.setViewportView(getTablaEmpleadosNoDeportivos());
+		}
+		return scrollPaneEmpleadosNoDep;
+	}
+	private JScrollPane getScrollPaneHorarioPeriodico() {
+		if (scrollPaneHorarioPeriodico == null) {
+			scrollPaneHorarioPeriodico = new JScrollPane();
+			scrollPaneHorarioPeriodico.setBounds(356, 133, 249, 170);
+			scrollPaneHorarioPeriodico.setViewportView(getTablaHorariosPeriodicos());
+		}
+		return scrollPaneHorarioPeriodico;
 	}
 }
