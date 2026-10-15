@@ -22,9 +22,7 @@ public class GestionHorariosEspecificos {
 	 */
 	public void validarYAnadirHorario(HorarioEspecifico nuevoHorario) throws SQLException {
 		
-		if (nuevoHorario.getHora_inicio() == nuevoHorario.getHora_fin()) {
-			throw new ApplicationException("Error: Los turnos deben durar al menos 1 minuto");
-		}
+		
 		
 		// para añadir un horario especifico, el empleado debe tener al menos un horario periodico asignado
 		if (!jdbc.tieneHorariosPeriodicos(nuevoHorario.getDni_empleado())) {
@@ -147,7 +145,11 @@ public class GestionHorariosEspecificos {
 		return jdbc.getHorariosEspecificosFecha(dni, fecha);
 	}
 	
-	public List<HorarioPeriodico> obtenerHorariosDeEmpleado(String dni) throws SQLException {
+	public List<HorarioPeriodico> obtenerHorariosPeriodicosDeEmpleado(String dni) throws SQLException {
 		return jdbc.getHorariosPeriodicosEmpleado(dni);
+	}
+
+	public List<HorarioEspecifico> obtenerTodosLosHorariosEspecificosDeEmpleado(String dni) throws SQLException {
+		return jdbc.getHorariosEspecificosEmpleado(dni);
 	}
 }

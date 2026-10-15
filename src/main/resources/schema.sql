@@ -23,14 +23,6 @@ drop table if exists Entrenamiento;
 drop table if exists FranjaHoraria;
 drop table if exists Entrevista;
 
-
-drop table if exists Entrenamiento2;
-drop table if exists Partido2;
-
-drop table if exists Entrenamiento;
-drop table if exists FranjaHoraria;
-drop table if exists Entrevista;
-
 drop table if exists LineaVenta;
 drop table if exists Producto;
 

@@ -55,6 +55,8 @@ public class VentanaHorarioPeriodico extends JFrame {
 	private JLabel lblHorariosDeEmpleado;
 	private JScrollPane scrollPaneEmpleadosNoDep;
 	private JScrollPane scrollPaneHorarioPeriodico;
+	private JLabel lblHorasSemanaTexto;
+	private JLabel lblHorasSemana;
 
 	/**
 	 * Create the panel.
@@ -83,7 +85,8 @@ public class VentanaHorarioPeriodico extends JFrame {
 		getContentPane().add(getScrollPaneHorarioPeriodico());
 		getContentPane().add(getBtnAtras());
 		getContentPane().add(getLblHorariosDeEmpleado());
-		
+		getContentPane().add(getLblHorasSemanaTexto());
+		getContentPane().add(getLblHorasSemana());
 		
 		inicializarTablasYEventos();
 	}
@@ -91,7 +94,7 @@ public class VentanaHorarioPeriodico extends JFrame {
 		if (cbDia == null) {
 			cbDia = new JComboBox();
 			cbDia.setModel(new DefaultComboBoxModel<String>(new String[] {"Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"}));
-			cbDia.setBounds(208, 66, 68, 18);
+			cbDia.setBounds(208, 66, 75, 25);
 		}
 		return cbDia;
 	}
@@ -99,7 +102,7 @@ public class VentanaHorarioPeriodico extends JFrame {
 		if (spHoraInicio == null) {
 			spHoraInicio = new JSpinner();
 			spHoraInicio.setModel(new SpinnerNumberModel(0, 0, 23, 1));
-			spHoraInicio.setBounds(372, 41, 35, 26);
+			spHoraInicio.setBounds(372, 41, 46, 32);
 		}
 		return spHoraInicio;
 	}
@@ -107,7 +110,7 @@ public class VentanaHorarioPeriodico extends JFrame {
 		if (spMinInicio == null) {
 			spMinInicio = new JSpinner();
 			spMinInicio.setModel(new SpinnerNumberModel(0, 0, 59, 1));
-			spMinInicio.setBounds(518, 41, 35, 26);
+			spMinInicio.setBounds(518, 41, 46, 32);
 		}
 		return spMinInicio;
 	}
@@ -115,7 +118,7 @@ public class VentanaHorarioPeriodico extends JFrame {
 		if (spHoraFin == null) {
 			spHoraFin = new JSpinner();
 			spHoraFin.setModel(new SpinnerNumberModel(0, 0, 23, 1));
-			spHoraFin.setBounds(372, 79, 35, 26);
+			spHoraFin.setBounds(372, 79, 46, 32);
 		}
 		return spHoraFin;
 	}
@@ -123,7 +126,7 @@ public class VentanaHorarioPeriodico extends JFrame {
 		if (spMinFin == null) {
 			spMinFin = new JSpinner();
 			spMinFin.setModel(new SpinnerNumberModel(0, 0, 59, 1));
-			spMinFin.setBounds(518, 79, 35, 26);
+			spMinFin.setBounds(518, 79, 46, 32);
 		}
 		return spMinFin;
 	}
@@ -274,9 +277,18 @@ public class VentanaHorarioPeriodico extends JFrame {
 					obtenerNombreDia(h.getDia_semana()), h.getHora_inicio(), h.getHora_fin()
 				});
 			}
+			actualizarHorasSemana(dni);
 		} catch (SQLException ex) {
 			throw new UnexpectedException(ex);
 		}
+	}
+
+	/**
+	 * Actualiza el contador de horas semanales del empleado seleccionado.
+	 */
+	private void actualizarHorasSemana(String dni) throws SQLException {
+		long minutos = ghp.calcularMinutosSemanales(dni);
+		getLblHorasSemana().setText(String.format("%d h %02d min  (máx. 40 h)", minutos / 60, minutos % 60));
 	}
 
 	private String obtenerNombreDia(int dia) {
@@ -322,5 +334,21 @@ public class VentanaHorarioPeriodico extends JFrame {
 			scrollPaneHorarioPeriodico.setViewportView(getTablaHorariosPeriodicos());
 		}
 		return scrollPaneHorarioPeriodico;
+	}
+	
+	private JLabel getLblHorasSemanaTexto() {
+		if (lblHorasSemanaTexto == null) {
+			lblHorasSemanaTexto = new JLabel("Horas semana:");
+			lblHorasSemanaTexto.setFont(new Font("Tahoma", Font.BOLD, 11));
+			lblHorasSemanaTexto.setBounds(356, 315, 90, 16);
+		}
+		return lblHorasSemanaTexto;
+	}
+	private JLabel getLblHorasSemana() {
+		if (lblHorasSemana == null) {
+			lblHorasSemana = new JLabel("-");
+			lblHorasSemana.setBounds(446, 315, 210, 16);
+		}
+		return lblHorasSemana;
 	}
 }

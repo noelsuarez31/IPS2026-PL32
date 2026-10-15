@@ -98,4 +98,18 @@ public class GestionHorariosPeriodicos {
 	public List<HorarioPeriodico> obtenerHorariosDeEmpleado(String dni) throws SQLException {
 		return jdbc.getHorariosPeriodicosEmpleado(dni);
 	}
+	
+	/**
+	 * Calcula los minutos semanales totales que suman todos los horarios periódicos de un empleado.
+	 * @param dni dni del empleado
+	 * @return minutos totales de la semana
+	 * @throws SQLException si falla el acceso a la base de datos
+	 */
+	public long calcularMinutosSemanales(String dni) throws SQLException {
+		long minutos = 0;
+		for (HorarioPeriodico h : jdbc.getHorariosPeriodicosEmpleado(dni)) {
+			minutos += calcularMinutos(h.getHora_inicio(), h.getHora_fin());
+		}
+		return minutos;
+	}
 }

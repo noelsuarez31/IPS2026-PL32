@@ -13,6 +13,7 @@ import giis.demo.model.tienda.VentaMerchandising;
 import giis.demo.ui.entradas.VentanaVentaEntradas;
 import giis.demo.ui.equipo.VentanaAñadirEquipo;
 import giis.demo.ui.horarios.VentanaHorarioPeriodico;
+import giis.demo.ui.horarios.VentanaHorarioEspecifico;
 import giis.demo.ui.reserva.VentanaReserva;
 import giis.demo.model.entrevistas.CrearEntrevistaService;
 import giis.demo.ui.entrevistas.VentanaCrearEntrevistas;
@@ -52,6 +53,7 @@ public class VentanaPrincipal extends JFrame {
 	private JMenuItem mntmVerTienda;
 	private JMenuItem mntmAñadirEquipo;
 	private JMenuItem mntmAñadirHorarioPeriodico;
+	private JMenuItem mntmAñadirHorarioEspecifico;
 	private JMenu mnGestorDeInstalaciones;
 	private JMenuItem mntmCrearFranjas;
 	private JMenu mnDirectorDeComunicaciones;
@@ -150,6 +152,7 @@ public class VentanaPrincipal extends JFrame {
 			mnGerente.setMnemonic('G');
 			mnGerente.add(getMntmAñadirEquipo());
 			mnGerente.add(getMntmAñadirHorarioPeriodico());
+			mnGerente.add(getMntmAñadirHorarioEspecifico());
 		}
 		return mnGerente;
 	}
@@ -270,6 +273,25 @@ public class VentanaPrincipal extends JFrame {
 		this.setVisible(false);
 		vHorarioPeriodico.setVisible(true);
 		
+	}
+	
+	private JMenuItem getMntmAñadirHorarioEspecifico() {
+		if (mntmAñadirHorarioEspecifico == null) {
+			mntmAñadirHorarioEspecifico = new JMenuItem("Añadir horario específico");
+			mntmAñadirHorarioEspecifico.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					abrirVentanaAñadirHorarioEspecifico();
+				}
+			});
+			mntmAñadirHorarioEspecifico.setHorizontalAlignment(SwingConstants.CENTER);
+		}
+		return mntmAñadirHorarioEspecifico;
+	}
+
+	private void abrirVentanaAñadirHorarioEspecifico() {
+		VentanaHorarioEspecifico vHorarioEspecifico = new VentanaHorarioEspecifico(this);
+		this.setVisible(false);
+		vHorarioEspecifico.setVisible(true);
 	}
 
 	public GestionHorariosEspecificos getGestionHorariosEspecificos() {

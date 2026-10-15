@@ -232,6 +232,10 @@ public class JDBC {
 		return HorarioEspecificoJdbc.getHorariosRango(con, dniEmpleado, fechaInicio, fechaFin);
 	}
 	
+	public List<HorarioEspecifico> getHorariosEspecificosEmpleado(String dniEmpleado) throws SQLException {
+		return HorarioEspecificoJdbc.getHorariosEmpleado(con, dniEmpleado);
+	}
+	
 	
 	
 	/**
