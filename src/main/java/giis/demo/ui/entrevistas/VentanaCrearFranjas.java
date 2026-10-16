@@ -1,6 +1,7 @@
 package giis.demo.ui.entrevistas;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -8,6 +9,7 @@ import java.awt.event.ActionListener;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.List;
 
 import javax.swing.BoxLayout;
@@ -20,17 +22,20 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import com.toedter.calendar.JCalendar;
+
 import giis.demo.exceptions.NoAvailableSlotException;
 import giis.demo.model.empleado.EmpleadoDeportivo;
 import giis.demo.model.entrevistas.CrearFranjaService;
 import giis.demo.ui.VentanaPrincipal;
-import javax.swing.JScrollPane;
+import java.time.ZoneId;
 
 public class VentanaCrearFranjas extends JFrame{
 	private VentanaPrincipal vPrincipal;
@@ -49,8 +54,6 @@ public class VentanaCrearFranjas extends JFrame{
 	private DefaultListModel<EmpleadoDeportivo> modelo;
 	private JLabel lbFormularioFranja;
 	private JPanel pnFecha;
-	private JLabel lbFecha;
-	private JTextField txFecha;
 	private JPanel pnHoraInicio;
 	private JLabel lbHoraInicio;
 	private JTextField txHoraInicio;
@@ -59,9 +62,9 @@ public class VentanaCrearFranjas extends JFrame{
 	private JTextField txHoraFin;
 	private JPanel pnBotones;
 	private JButton btnCrearFranja;
-	private JButton btnCambiarJugador;
 	private JButton btnFinalizar;
 	private JScrollPane scrLista;
+	private JCalendar calendarioFecha;
 	
 	public VentanaCrearFranjas(VentanaPrincipal vPrincipal) {
 		this.vPrincipal = vPrincipal;
@@ -189,32 +192,25 @@ public class VentanaCrearFranjas extends JFrame{
 			lbFormularioFranja = new JLabel("Introduzca los datos de la franja:");
 			lbFormularioFranja.setHorizontalAlignment(SwingConstants.CENTER);
 			lbFormularioFranja.setFont(new Font("Tahoma", Font.PLAIN, 15));
+			lbFormularioFranja.setAlignmentX(Component.CENTER_ALIGNMENT);
 		}
 		return lbFormularioFranja;
 	}
 	private JPanel getPnFecha() {
 		if (pnFecha == null) {
 			pnFecha = new JPanel();
-			pnFecha.add(getLbFecha());
-			pnFecha.add(getTxFecha());
+			pnFecha.add(getCalendarioFecha());
 		}
 		return pnFecha;
 	}
-	private JLabel getLbFecha() {
-		if (lbFecha == null) {
-			lbFecha = new JLabel("Fecha (ej: dd/MM/yyyy):");
-			lbFecha.setFont(new Font("Tahoma", Font.PLAIN, 17));
-		}
-		return lbFecha;
+	
+	private JCalendar getCalendarioFecha() {
+	    if (calendarioFecha == null) {
+	        calendarioFecha = new JCalendar();
+	    }
+	    return calendarioFecha;
 	}
-	private JTextField getTxFecha() {
-		if (txFecha == null) {
-			txFecha = new JTextField();
-			txFecha.setFont(new Font("Tahoma", Font.PLAIN, 17));
-			txFecha.setColumns(10);
-		}
-		return txFecha;
-	}
+	
 	private JPanel getPnHoraInicio() {
 		if (pnHoraInicio == null) {
 			pnHoraInicio = new JPanel();
@@ -265,7 +261,6 @@ public class VentanaCrearFranjas extends JFrame{
 		if (pnBotones == null) {
 			pnBotones = new JPanel();
 			pnBotones.add(getBtnCrearFranja());
-			pnBotones.add(getBtnCambiarJugador());
 		}
 		return pnBotones;
 	}
@@ -286,18 +281,6 @@ public class VentanaCrearFranjas extends JFrame{
 		}
 		return btnCrearFranja;
 	}
-	private JButton getBtnCambiarJugador() {
-		if (btnCambiarJugador == null) {
-			btnCambiarJugador = new JButton("Cambiar jugador");
-			btnCambiarJugador.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					habilitarFormularioFranja(false);
-				}
-			});
-			btnCambiarJugador.setFont(new Font("Tahoma", Font.PLAIN, 17));
-		}
-		return btnCambiarJugador;
-	}
 	private JButton getBtnFinalizar() {
 		if (btnFinalizar == null) {
 			btnFinalizar = new JButton("Finalizar");
@@ -308,7 +291,7 @@ public class VentanaCrearFranjas extends JFrame{
 				}
 			});
 			btnFinalizar.setHorizontalAlignment(SwingConstants.RIGHT);
-			btnFinalizar.setFont(new Font("Tahoma", Font.PLAIN, 15));
+			btnFinalizar.setFont(new Font("Tahoma", Font.PLAIN, 16));
 		}
 		return btnFinalizar;
 	}
@@ -339,23 +322,23 @@ public class VentanaCrearFranjas extends JFrame{
 	}
 	
 	private void habilitarFormularioFranja(boolean flag) {
-		getTxFecha().setEnabled(flag);
-		getTxHoraInicio().setEnabled(flag);
-		getTxHoraFin().setEnabled(flag);
-		getBtnCambiarJugador().setEnabled(flag);
-		getBtnCrearFranja().setEnabled(flag);
-		
-		getTxFecha().setText("");
-		getTxHoraInicio().setText("");
-		getTxHoraFin().setText("");
+	    getCalendarioFecha().setEnabled(flag);
+	    getTxHoraInicio().setEnabled(flag);
+	    getTxHoraFin().setEnabled(flag);
+	    getBtnCrearFranja().setEnabled(flag);
+	    
+	    getTxHoraInicio().setText("");
+	    getTxHoraFin().setText("");
 	}
 	
 	private void crearFranja() throws NoAvailableSlotException {
-		DateTimeFormatter formatoFecha = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-		if(getTxFecha().getText() == null || getTxFecha().getText().isBlank()) {
-			throw new NoAvailableSlotException("El campo de la fecha no puede estar vacio");
-		}
-		LocalDate fechaFranja = LocalDate.parse(getTxFecha().getText().trim(), formatoFecha);
+		Date fechaUtil = getCalendarioFecha().getDate();
+	    if (fechaUtil == null) {
+	        throw new NoAvailableSlotException("Debe seleccionar una fecha en el calendario");
+	    }
+	    LocalDate fechaFranja = fechaUtil.toInstant()
+	            .atZone(ZoneId.systemDefault())
+	            .toLocalDate();
 		
 		DateTimeFormatter formatoHora = DateTimeFormatter.ofPattern("HH:mm");
 		if(getTxHoraInicio().getText() == null || getTxHoraInicio().getText().isBlank() 
