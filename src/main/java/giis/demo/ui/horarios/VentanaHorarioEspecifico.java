@@ -177,7 +177,7 @@ public class VentanaHorarioEspecifico extends JFrame {
 	private JLabel getLblEmpleados() {
 		if (lblEmpleados == null) {
 			lblEmpleados = new JLabel("Empleados:");
-			lblEmpleados.setBounds(48, 111, 77, 12);
+			lblEmpleados.setBounds(26, 111, 77, 12);
 		}
 		return lblEmpleados;
 	}
@@ -235,18 +235,35 @@ public class VentanaHorarioEspecifico extends JFrame {
 	}
 	
 	private void inicializarTablasYEventos() {
-		// modelo de la tabla de Empleados
-		modeloEmpleados = new DefaultTableModel(new Object[]{"DNI", "Nombre", "Apellidos", "Salario", "Posición"}, 0);
+		// modelo de la tabla de Empleados (no editable)
+		modeloEmpleados = new DefaultTableModel(new Object[]{"DNI", "Nombre", "Apellidos", "Posición"}, 0) {
+		    private static final long serialVersionUID = 1L;
+		    @Override
+		    public boolean isCellEditable(int row, int column) {
+		        return false;
+		    }
+		};
 		getTablaEmpleadosNoDeportivos().setModel(modeloEmpleados);
-		
-		// modelo de la tabla de horarios periódicos del empleado seleccionado
-		modeloHorariosPeriodicos = new DefaultTableModel(new Object[]{"Día", "Hora Inicio", "Hora Fin"}, 0);
+
+		// modelo de la tabla de horarios periódicos del empleado seleccionado (no editable)
+		modeloHorariosPeriodicos = new DefaultTableModel(new Object[]{"Día", "Hora Inicio", "Hora Fin"}, 0) {
+		    private static final long serialVersionUID = 1L;
+		    @Override
+		    public boolean isCellEditable(int row, int column) {
+		        return false;
+		    }
+		};
 		getTablaHorariosPeriodicos().setModel(modeloHorariosPeriodicos);
-		
-		// modelo de la tabla de horarios específicos del empleado seleccionado
-		modeloHorariosEspecificos = new DefaultTableModel(new Object[]{"Fecha", "Hora Inicio", "Hora Fin"}, 0);
+
+		// modelo de la tabla de horarios específicos del empleado seleccionado (no editable)
+		modeloHorariosEspecificos = new DefaultTableModel(new Object[]{"Fecha", "Hora Inicio", "Hora Fin"}, 0) {
+		    private static final long serialVersionUID = 1L;
+		    @Override
+		    public boolean isCellEditable(int row, int column) {
+		        return false;
+		    }
+		};
 		getTablaHorariosEspecificos().setModel(modeloHorariosEspecificos);
-		
 		cargarEmpleados();
 		
 		// al seleccionar un empleado se cargan sus horarios periódicos y específicos
@@ -288,7 +305,7 @@ public class VentanaHorarioEspecifico extends JFrame {
 			List<EmpleadoNoDeportivo> empleados = ghe.obtenerEmpleadosNoDeportivos();
 			for (EmpleadoNoDeportivo emp : empleados) {
 				modeloEmpleados.addRow(new Object[]{
-					emp.getDni(), emp.getNombre(), emp.getApellido(), emp.getSalario(), emp.getPosicion().name()
+					emp.getDni(), emp.getNombre(), emp.getApellido(), emp.getPosicion().name()
 				});
 			}
 		} catch (SQLException ex) {
@@ -360,14 +377,14 @@ public class VentanaHorarioEspecifico extends JFrame {
 	private JLabel getLblHorariosDeEmpleado() {
 		if (lblHorariosDeEmpleado == null) {
 			lblHorariosDeEmpleado = new JLabel("Horario periódico del empleado:");
-			lblHorariosDeEmpleado.setBounds(356, 111, 249, 14);
+			lblHorariosDeEmpleado.setBounds(383, 111, 249, 14);
 		}
 		return lblHorariosDeEmpleado;
 	}
 	private JScrollPane getScrollPaneEmpleadosNoDep() {
 		if (scrollPaneEmpleadosNoDep == null) {
 			scrollPaneEmpleadosNoDep = new JScrollPane();
-			scrollPaneEmpleadosNoDep.setBounds(48, 133, 262, 200);
+			scrollPaneEmpleadosNoDep.setBounds(26, 133, 336, 200);
 			scrollPaneEmpleadosNoDep.setViewportView(getTablaEmpleadosNoDeportivos());
 		}
 		return scrollPaneEmpleadosNoDep;
@@ -375,7 +392,7 @@ public class VentanaHorarioEspecifico extends JFrame {
 	private JScrollPane getScrollPaneHorarioPeriodico() {
 		if (scrollPaneHorarioPeriodico == null) {
 			scrollPaneHorarioPeriodico = new JScrollPane();
-			scrollPaneHorarioPeriodico.setBounds(356, 128, 300, 90);
+			scrollPaneHorarioPeriodico.setBounds(383, 128, 249, 90);
 			scrollPaneHorarioPeriodico.setViewportView(getTablaHorariosPeriodicos());
 		}
 		return scrollPaneHorarioPeriodico;
@@ -408,14 +425,14 @@ public class VentanaHorarioEspecifico extends JFrame {
 	private JLabel getLblHorariosEspecificos() {
 		if (lblHorariosEspecificos == null) {
 			lblHorariosEspecificos = new JLabel("Horarios específicos del empleado:");
-			lblHorariosEspecificos.setBounds(356, 224, 249, 14);
+			lblHorariosEspecificos.setBounds(383, 224, 249, 14);
 		}
 		return lblHorariosEspecificos;
 	}
 	private JScrollPane getScrollPaneHorarioEspecifico() {
 		if (scrollPaneHorarioEspecifico == null) {
 			scrollPaneHorarioEspecifico = new JScrollPane();
-			scrollPaneHorarioEspecifico.setBounds(356, 240, 300, 100);
+			scrollPaneHorarioEspecifico.setBounds(383, 240, 249, 100);
 			scrollPaneHorarioEspecifico.setViewportView(getTablaHorariosEspecificos());
 		}
 		return scrollPaneHorarioEspecifico;
