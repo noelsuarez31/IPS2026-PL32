@@ -5,6 +5,8 @@ delete from Entrada;
 delete from Venta;
 delete from Partido;
 delete from Butaca;
+delete from HorarioPeriodico;
+delete from HorarioEspecifico;
 delete from EmpleadoDeportivo;
 delete from EmpleadoNoDeportivo;
 delete from BaseEmpleado;

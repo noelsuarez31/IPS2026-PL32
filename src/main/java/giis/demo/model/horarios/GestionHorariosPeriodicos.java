@@ -31,6 +31,9 @@ public class GestionHorariosPeriodicos {
 		long minutosNuevos = calcularMinutos(nuevoHorario.getHora_inicio(), nuevoHorario.getHora_fin());
 		
 		
+		if (minutosNuevos == 0) {
+			throw new ApplicationException("Error: Los turnos deben durar al menos 1 minuto");
+		}
 		
 		long minutosTotalesDia = minutosNuevos;
 		long minutosTotalesSemana = minutosNuevos;
