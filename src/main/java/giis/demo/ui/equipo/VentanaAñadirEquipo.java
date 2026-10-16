@@ -315,41 +315,6 @@ public class VentanaAñadirEquipo extends JFrame {
 		return listRestoTecnicos;
 	}
 	
-//	private JPanel getPnJugadores() {
-//		if (pnJugadores == null) {
-//			pnJugadores = new JPanel();
-//			pnJugadores.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, new Color(255, 255, 255), new Color(160, 160, 160)), "Seleccion de jugadores (Min.7)", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
-//			pnJugadores.setLayout(new BorderLayout(0, 0));
-//			pnJugadores.add(getScrJugadores(), BorderLayout.CENTER);
-//		}
-//		return pnJugadores;
-//	}
-//	
-//	private JScrollPane getScrJugadores() {
-//	    if (scrJugadores == null) {
-//	        scrJugadores = new JScrollPane(getListJugadores());
-//	        scrJugadores.setPreferredSize(new Dimension(0, 120)); // Ajusta la altura si lo consideras necesario
-//	    }
-//	    return scrJugadores;
-//	}
-//	
-//	private JList<EmpleadoDeportivo> getListJugadores() {
-//	    if (listJugadores == null) {
-//	        modeloListaJugadores = new DefaultListModel<>();
-//	        CategoriaEquipo categoriaSeleccionada = club.obtenerObjetoCategoria((String) getCbCategoriaEquipo().getSelectedItem());
-//	        if (categoriaSeleccionada != null) {
-//	            List<EmpleadoDeportivo> listaJugadoresDisponibles = club.obtenerJugadoresDisponibles(categoriaSeleccionada);
-//	            for (EmpleadoDeportivo jugador : listaJugadoresDisponibles) {
-//	                modeloListaJugadores.addElement(jugador);
-//	            }
-//	        }
-//	        listJugadores = new JList<EmpleadoDeportivo>(modeloListaJugadores);
-//	        listJugadores.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-//	        listJugadores.setFont(new Font("Tahoma", Font.PLAIN, 14));
-//	    }
-//	    return listJugadores;
-//	}
-	
 	private JPanel getPnJugadores() {
 	    if (pnJugadores == null) {
 	        pnJugadores = new JPanel();
