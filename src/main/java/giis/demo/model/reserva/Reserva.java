@@ -97,7 +97,7 @@ public class Reserva {
 	}
 
 	/**
-	 * Dwevuelve el id de la instalación que ha sido reservada
+	 * Devuelve el id de la instalación que ha sido reservada
 	 * 
 	 * @return id de la instalación
 	 */

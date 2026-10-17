@@ -109,7 +109,7 @@ public class VentaRegistroUsuario extends JDialog {
 		if (lbTarjeta == null) {
 			lbTarjeta = new JLabel("Tarjeta:");
 			lbTarjeta.setLabelFor(getTfTarjeta());
-			lbTarjeta.setToolTipText("Introduzca su nombre");
+			lbTarjeta.setToolTipText("Introduzca su tarjeta para realizar el pago");
 			lbTarjeta.setDisplayedMnemonic('T');
 			lbTarjeta.setBounds(15, 93, 69, 20);
 		}
@@ -193,9 +193,9 @@ public class VentaRegistroUsuario extends JDialog {
 	}
 
 	private JTextField getTtPrecio() {
-		
+
 		if (tfPrecio == null) {
-			
+
 			tfPrecio = new JTextField();
 			tfPrecio.setEditable(false);
 			tfPrecio.setForeground(Color.RED);
@@ -266,6 +266,9 @@ public class VentaRegistroUsuario extends JDialog {
 		return btCancelar;
 	}
 
+	/**
+	 * Metodo auxiliar para guardar el usuario y hacer la reserva
+	 */
 	private boolean guardarUsuario() throws SQLException {
 
 		String name = this.getTfName().getText();
@@ -281,11 +284,6 @@ public class VentaRegistroUsuario extends JDialog {
 		}
 
 		Usuario user = new Usuario(name, cardNumber);
-		this.vr.getRealizarReserva().guardarUsuario(user);
-
-		JOptionPane.showMessageDialog(contentPane, "Usuario registrado correctamente", "Registro completado",
-				JOptionPane.INFORMATION_MESSAGE);
-
 		Instalacion instalacion = (Instalacion) vr.getCbInstalacion().getSelectedItem();
 
 		if (instalacion == null) {
@@ -296,13 +294,16 @@ public class VentaRegistroUsuario extends JDialog {
 
 		}
 
-		LocalDate fecha = ((Date) vr.getSpFecha().getValue()).toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-
+		Date d = vr.getDcFecha().getDate();
+		if (d == null) {
+			JOptionPane.showMessageDialog(contentPane, "Debes seleccionar una fecha.", "Error",
+					JOptionPane.WARNING_MESSAGE);
+			return false;
+		}
+		LocalDate fecha = d.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 		LocalTime horaInicio = ((Date) vr.getSpInicio().getValue()).toInstant().atZone(ZoneId.systemDefault())
 				.toLocalTime();
-
 		LocalTime horaFin = ((Date) vr.getSpFin().getValue()).toInstant().atZone(ZoneId.systemDefault()).toLocalTime();
-
 		int idInstalacion = instalacion.getInstalacionId();
 
 		boolean disponible = vr.getRealizarReserva().comprobarDisponibilidad(idInstalacion, fecha, horaInicio, horaFin);
@@ -318,6 +319,7 @@ public class VentaRegistroUsuario extends JDialog {
 			return false;
 		}
 
+		this.vr.getRealizarReserva().guardarUsuario(user);
 		Reserva reserva = new Reserva(fecha, horaInicio, horaFin, 0, LocalDate.now(), user.getUsuarioId(),
 				idInstalacion);
 
@@ -352,26 +354,28 @@ public class VentaRegistroUsuario extends JDialog {
 	}
 
 	/**
+	 * Actualiza las etiquetas de precio y duracion en función de los datos
+	 * introducidos en la pantalla anterior
+	 */
+	private void actualizarPrecioYDuracion() {
+
+		LocalTime horaInicio = ((Date) vr.getSpInicio().getValue()).toInstant().atZone(ZoneId.systemDefault())
+				.toLocalTime();
+		LocalTime horaFin = ((Date) vr.getSpFin().getValue()).toInstant().atZone(ZoneId.systemDefault()).toLocalTime();
+
+		long minutos = Duration.between(horaInicio, horaFin).toMinutes();
+		long horas = minutos / 60;
+		double precio = horas * 50.0;
+
+		getTfDuracion().setText(horas + (horas > 1 ? " horas" : " hora"));
+		getTtPrecio().setText(String.format("%.2f €", precio));
+	}
+
+	/**
 	 * Vuelve a la pestaña anterior
 	 */
 	private void reiniciar() {
 
 		this.dispose();
-	}
-	
-	/**
-	 * Actualiza las etiquetas de precio y duracion
-	 */
-	private void actualizarPrecioYDuracion() {
-
-		LocalTime horaInicio = ((Date) vr.getSpInicio().getValue()).toInstant().atZone(ZoneId.systemDefault()).toLocalTime();
-		LocalTime horaFin = ((Date) vr.getSpFin().getValue()).toInstant().atZone(ZoneId.systemDefault()).toLocalTime();
-		
-		long minutos = Duration.between(horaInicio, horaFin).toMinutes();
-		long horas = minutos / 60;
-		double precio = horas * 50.0;
-		
-		getTfDuracion().setText(horas + (horas >1? "horas" : "hora"));
-		getTtPrecio().setText(String.format("%.2f €", precio));
 	}
 }

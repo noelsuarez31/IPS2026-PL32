@@ -38,7 +38,15 @@ public class ReservaJdbc {
 		}
 
 	}
-
+	
+	/**
+	 * Registra la reserva
+	 * 
+	 * @param con
+	 * @param reserva
+	 * @return el numero de las filas insertadas
+	 * @throws SQLException
+	 */
 	public static int registrarReserva(Connection con, Reserva reserva) throws SQLException {
 
 		con.setAutoCommit(false);

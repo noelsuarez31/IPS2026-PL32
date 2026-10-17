@@ -47,7 +47,6 @@ public class VentanaPrincipal extends JFrame {
 	private JMenu mnDirector;
 	private JMenu mnEmpleado;
 	private JMenu mnEncargado;
-	private JMenuItem mntmVentaMerchandising;
 	private JMenu mnEntrenador;
 	private JMenu mnGerente;
 	private JMenu mnVendedorDeEntradas;
@@ -70,7 +69,7 @@ public class VentanaPrincipal extends JFrame {
 		setTitle("Ventana Inicial");
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 740, 420);
+		setBounds(100, 100, 848, 420);
 		setJMenuBar(getMenuBar_1());
 		contentPane = new JPanel();
 		contentPane.setBackground(new Color(240, 240, 240));
@@ -133,15 +132,8 @@ public class VentanaPrincipal extends JFrame {
 		if (mnEncargado == null) {
 			mnEncargado = new JMenu("Encargado");
 			mnEncargado.setMnemonic('N');
-			mnEncargado.add(getMntmVentaMerchandising());
 		}
 		return mnEncargado;
-	}
-	private JMenuItem getMntmVentaMerchandising() {
-		if (mntmVentaMerchandising == null) {
-			mntmVentaMerchandising = new JMenuItem("Venta merchandising");
-		}
-		return mntmVentaMerchandising;
 	}
 	private JMenu getMnEntrenador() {
 		if (mnEntrenador == null) {
@@ -190,6 +182,11 @@ public class VentanaPrincipal extends JFrame {
 		return mniVender;
 	}
 	
+	/**
+	 * Abre la ventana para vender las entradas
+	 * 
+	 * @throws SQLException
+	 */
 	private void abrirVentanaVentaEntradas() throws SQLException {
 		
 		VentanaVentaEntradas vve = new VentanaVentaEntradas(this);
@@ -348,6 +345,11 @@ public class VentanaPrincipal extends JFrame {
 		return this.cfs;
 	}
 	
+	/**
+	 * Abre la ventana para realizar la ventana de la reserva
+	 * 
+	 * @throws SQLException
+	 */
 	private void abrirVentanaReserva() throws SQLException {
 		
 		VentanaReserva vr = new VentanaReserva(this);

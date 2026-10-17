@@ -6,9 +6,11 @@ import java.time.LocalTime;
 public class Entrenamiento {
 	
 	private int id_entrenamiento;
+	
 	private LocalDate fecha;
 	private LocalTime hora_inicio;
 	private LocalTime hora_fin;
+	
 	private int id_equipo;
 	private int id_instalacion;
 	
