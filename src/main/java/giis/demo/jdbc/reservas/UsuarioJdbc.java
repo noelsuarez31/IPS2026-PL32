@@ -40,6 +40,7 @@ public class UsuarioJdbc {
 
 	/**
 	 * Inserta en la base de datos un nuevo usuario
+	 * 
 	 * @param con
 	 * @param name
 	 * @param card
@@ -65,6 +66,7 @@ public class UsuarioJdbc {
 	
 	/**
 	 * Obtiene el id del usuario si ya existe y si no lo crea
+	 * 
 	 * @param con
 	 * @param name
 	 * @param card

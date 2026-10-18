@@ -13,6 +13,13 @@ public class InstalacionJdbc {
 	
 	private static final String QUERY_AVAILABLE_INSTALATIONS = "SELECT id_instalacion, nombre FROM instalacion ";
 	
+	/**
+	 * Obtiene las intalaciones disponibles
+	 * 
+	 * @param con
+	 * @return todas las instalaciones
+	 * @throws SQLException
+	 */
 	public static List<Instalacion> getAvailableInstalations(Connection con) throws SQLException {
 
 		List<Instalacion> instalacionesDisponibles = new ArrayList<Instalacion>();

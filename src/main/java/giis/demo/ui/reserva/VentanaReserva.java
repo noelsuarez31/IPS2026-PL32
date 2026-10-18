@@ -45,6 +45,9 @@ import java.awt.event.ActionEvent;
 import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
 import java.awt.FlowLayout;
+import com.toedter.calendar.JDateChooser;
+import java.awt.GridLayout;
+
 
 public class VentanaReserva extends JFrame {
 
@@ -52,7 +55,6 @@ public class VentanaReserva extends JFrame {
 	private JPanel contentPane;
 	private JPanel panelFecha;
 	private JPanel panelSeleccion;
-	private JSpinner spFecha;
 	private JPanel panelSeleccionFecha;
 	private JPanel panelBtConfirmacion;
 	private JButton btConsulta;
@@ -79,7 +81,15 @@ public class VentanaReserva extends JFrame {
 
 	private JTable tablaHorarios;
 	private DefaultTableModel modeloTablaHorarios;
-
+	private JDateChooser dcFecha;
+	private JPanel panelLeyenda;
+	private JButton btDisponible;
+	private JLabel lbDisponible;
+	private JButton btMargen;
+	private JLabel lbMantenimiento;
+	private JButton byReservado;
+	private JLabel lbOcupado;
+	
 	/**
 	 * Create the frame.
 	 * 
@@ -139,28 +149,17 @@ public class VentanaReserva extends JFrame {
 		return panelSeleccion;
 	}
 
-	JSpinner getSpFecha() {
-
-		if (spFecha == null) {
-
-			Calendar calendario = Calendar.getInstance();
-
-			calendario.set(Calendar.HOUR_OF_DAY, 0);
-			calendario.set(Calendar.MINUTE, 0);
-			calendario.set(Calendar.SECOND, 0);
-			calendario.set(Calendar.MILLISECOND, 0);
-
-			Date fechaMin = calendario.getTime();
-
-			SpinnerDateModel modeloFecha = new SpinnerDateModel(new Date(), fechaMin, null, Calendar.DAY_OF_MONTH);
-
-			spFecha = new JSpinner(modeloFecha);
-			spFecha.setBounds(645, 5, 163, 26);
-
-			JSpinner.DateEditor editor = new JSpinner.DateEditor(spFecha, "dd/MM/yyyy");
-			spFecha.setEditor(editor);
-		}
-		return spFecha;
+	JDateChooser getDcFecha() {
+		
+	    if (dcFecha == null) {
+	        dcFecha = new JDateChooser();
+	        dcFecha.setToolTipText("Pulse para elegir la fecha");
+	        dcFecha.setDateFormatString("dd/MM/yyyy");
+	        dcFecha.setDate(new Date());
+	        dcFecha.setMinSelectableDate(new Date()); // no permite fechas pasadas
+	        dcFecha.setBounds(645, 5, 163, 26);
+	    }
+	    return dcFecha;
 	}
 
 	private JPanel getPanelSeleccionFecha() throws SQLException {
@@ -168,7 +167,7 @@ public class VentanaReserva extends JFrame {
 			panelSeleccionFecha = new JPanel();
 			panelSeleccionFecha.setLayout(null);
 			panelSeleccionFecha.add(getLbFecha());
-			panelSeleccionFecha.add(getSpFecha());
+			panelSeleccionFecha.add(getDcFecha());
 			panelSeleccionFecha.add(getCbInstalacion());
 			panelSeleccionFecha.add(getLbInstalacion());
 		}
@@ -204,7 +203,7 @@ public class VentanaReserva extends JFrame {
 			lbFecha = new JLabel("Seleccione la fecha: ");
 			lbFecha.setBounds(483, 8, 143, 20);
 			lbFecha.setDisplayedMnemonic('C');
-			lbFecha.setLabelFor(getSpFecha());
+			lbFecha.setLabelFor(getDcFecha());
 		}
 		return lbFecha;
 	}
@@ -233,6 +232,7 @@ public class VentanaReserva extends JFrame {
 		if (spInicio == null) {
 
 			spInicio = new JSpinner(crearModeloHora(8, 0));
+			spInicio.setToolTipText("Introduce la hora de inicio");
 			spInicio.setEnabled(false);
 			spInicio.setEditor(new JSpinner.DateEditor(spInicio, "HH:mm"));
 
@@ -263,6 +263,7 @@ public class VentanaReserva extends JFrame {
 		if (spFin == null) {
 
 			spFin = new JSpinner(crearModeloHora(9, 0));
+			spFin.setToolTipText("Introduce la hora de finalizacion");
 			spFin.setEnabled(false);
 			spFin.setEditor(new JSpinner.DateEditor(spFin, "HH:mm"));
 		}
@@ -285,7 +286,7 @@ public class VentanaReserva extends JFrame {
 			btSiguiente.setEnabled(false);
 			btSiguiente.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					registrarDatosDeUsuario();
+					registrarDatos();
 				}
 			});
 			btSiguiente.setMnemonic('S');
@@ -304,6 +305,7 @@ public class VentanaReserva extends JFrame {
 					new Color(0, 0, 0)));
 			panelHorario.setLayout(new BorderLayout(0, 0));
 			panelHorario.add(getSpHorario());
+			panelHorario.add(getPanelLeyenda(), BorderLayout.SOUTH);
 		}
 		return panelHorario;
 	}
@@ -316,7 +318,11 @@ public class VentanaReserva extends JFrame {
 		}
 		return spHorario;
 	}
-
+	
+	/**
+	 * Crea la tabla y colorea las celdas segun este libre, ocupado o en mantenimiento
+	 * @return la tabla
+	 */
 	public JTable getTablaHorarios() {
 
 		if (tablaHorarios == null) {
@@ -381,6 +387,10 @@ public class VentanaReserva extends JFrame {
 
 	}
 
+	/**
+	 * Método auxiliar para reiniciar la interfaz de cara a un nuevo usuario
+	 * @throws SQLException
+	 */
 	public void reiniciar() throws SQLException {
 
 		if (getCbInstalacion().getItemCount() > 0) {
@@ -389,12 +399,12 @@ public class VentanaReserva extends JFrame {
 
 		}
 
-		this.getSpFecha().setValue(new Date());
 		this.getSpInicio().setValue(hora(8, 0));
 		this.getSpFin().setValue(hora(9, 0));
 
 		getCbInstalacion().setEnabled(true);
-		getSpFecha().setEnabled(true);
+		getDcFecha().setDate(new Date());
+		getDcFecha().setEnabled(true);
 
 		btConsulta.setEnabled(getCbInstalacion().getItemCount() > 0);
 		btCancelar.setEnabled(false);
@@ -428,6 +438,9 @@ public class VentanaReserva extends JFrame {
 		return new SpinnerDateModel(hora(h, m), hora(8, 0), hora(22, 0), Calendar.MINUTE);
 	}
 
+	/**
+	 * Obtiene las instalaciones y su disponibilidad para un dia en concreto
+	 */
 	private void consultarHorarios() {
 
 		Instalacion instalacion = (Instalacion) cbInstalacion.getSelectedItem();
@@ -442,8 +455,16 @@ public class VentanaReserva extends JFrame {
 		try {
 
 			int idInstalacion = instalacion.getInstalacionId();
-			LocalDate fecha = ((Date) spFecha.getValue()).toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-
+			Date d = dcFecha.getDate();
+			if (d == null) {
+				
+			    JOptionPane.showMessageDialog(this, "Seleccione una fecha.", "Aviso", JOptionPane.WARNING_MESSAGE);
+			    return;
+			    
+			}
+			
+			LocalDate fecha = d.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+			
 			List<Intervalo> ocupados = rr.obtenerOcupaciones(idInstalacion, fecha);
 			List<Intervalo> disponibles = rr.obtenerIntervalosDisponibles(idInstalacion, fecha);
 
@@ -452,7 +473,8 @@ public class VentanaReserva extends JFrame {
 			todos.addAll(ocupados);
 			todos.addAll(disponibles);
 
-			todos.sort(Comparator.comparing(Intervalo::getHoraInicio));
+			todos.sort(Comparator.comparing(Intervalo::getHoraInicio));//Hay que ordenarlos previamente para que se muestre de forma
+			//correcta al usuario
 
 			modeloTablaHorarios.setRowCount(0);
 
@@ -475,8 +497,8 @@ public class VentanaReserva extends JFrame {
 			}
 
 			this.cbInstalacion.setEnabled(false);
-			this.spFecha.setEnabled(false);
-
+			this.dcFecha.setEnabled(false);
+			
 			this.btConsulta.setEnabled(false);
 			this.btCancelar.setEnabled(true);
 			this.btSiguiente.setEnabled(true);
@@ -509,7 +531,10 @@ public class VentanaReserva extends JFrame {
 		return duracion >= 60 && duracion % 60 == 0;
 	}
 
-	private void registrarDatosDeUsuario() {
+	/**
+	 * Hace las comprobaciones necesarias para comprobar que la reserva es válida
+	 */
+	private void registrarDatos() {
 
 		if (!checkHoras()) {
 			JOptionPane.showMessageDialog(this, "La hora de inicio no puede ser mayor o igual a la hora final.",
@@ -525,7 +550,6 @@ public class VentanaReserva extends JFrame {
 			return;
 		}
 
-		// check is available to book
 
 		Instalacion instalacion = (Instalacion) cbInstalacion.getSelectedItem();
 
@@ -534,7 +558,17 @@ public class VentanaReserva extends JFrame {
 			return;
 		}
 
-		LocalDate fecha = ((Date) spFecha.getValue()).toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+		Date d = dcFecha.getDate();
+		
+		if (d == null) {
+			
+		    JOptionPane.showMessageDialog(this, "Seleccione una fecha.", "Aviso", JOptionPane.WARNING_MESSAGE);
+		    return;
+		    
+		}
+		
+		LocalDate fecha = d.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+		
 		LocalTime inicio = ((Date) spInicio.getValue()).toInstant().atZone(ZoneId.systemDefault()).toLocalTime();
 		LocalTime fin = ((Date) spFin.getValue()).toInstant().atZone(ZoneId.systemDefault()).toLocalTime();
 
@@ -561,6 +595,10 @@ public class VentanaReserva extends JFrame {
 
 	}
 
+	/**
+	 * Permite volver al menú principial
+	 * @throws SQLException
+	 */
 	private void volverAlMenu() throws SQLException {
 
 		this.vp.setVisible(true);
@@ -606,6 +644,7 @@ public class VentanaReserva extends JFrame {
 		if (cbInstalacion == null) {
 			
 			cbInstalacion = new JComboBox<Instalacion>();
+			cbInstalacion.setToolTipText("Pulse para elegir la instalación");
 			cbInstalacion.setModel(new DefaultComboBoxModel<Instalacion>(rr.obtenerInstalacionesDisponibles()));
 			cbInstalacion.setBounds(196, 4, 272, 28);
 		}
@@ -637,11 +676,18 @@ public class VentanaReserva extends JFrame {
 		return btCancelar;
 	}
 
+	/**
+	 * Cierra la conexión con la BBDD
+	 * @throws SQLException
+	 */
 	private void cerrar() throws SQLException {
 
 		this.rr.close();
 	}
 
+	/**
+	 * Clase privada para que al cerrar la ventana, tambien se cierre la conexión
+	 */
 	private class CerrarVentana extends WindowAdapter {
 
 		@Override
@@ -661,5 +707,63 @@ public class VentanaReserva extends JFrame {
 
 		}
 
+	}
+	
+	
+	private JPanel getPanelLeyenda() {
+		if (panelLeyenda == null) {
+			panelLeyenda = new JPanel();
+			panelLeyenda.setBorder(new TitledBorder(null, "Leyenda", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+			panelLeyenda.setLayout(new GridLayout(0, 6, 0, 0));
+			panelLeyenda.add(getBtDisponible());
+			panelLeyenda.add(getLbDisponible());
+			panelLeyenda.add(getBtMargen());
+			panelLeyenda.add(getLbMantenimiento());
+			panelLeyenda.add(getByReservado());
+			panelLeyenda.add(getLbOcupado());
+		}
+		return panelLeyenda;
+	}
+	private JButton getBtDisponible() {
+		if (btDisponible == null) {
+			btDisponible = new JButton("");
+			btDisponible.setRequestFocusEnabled(false);
+			btDisponible.setBackground(new Color(200, 255, 200));
+		}
+		return btDisponible;
+	}
+	private JLabel getLbDisponible() {
+		if (lbDisponible == null) {
+			lbDisponible = new JLabel("Disponible");
+		}
+		return lbDisponible;
+	}
+	private JButton getBtMargen() {
+		if (btMargen == null) {
+			btMargen = new JButton("");
+			btMargen.setRequestFocusEnabled(false);
+			btMargen.setBackground(new Color(255, 220, 160));
+		}
+		return btMargen;
+	}
+	private JLabel getLbMantenimiento() {
+		if (lbMantenimiento == null) {
+			lbMantenimiento = new JLabel("Mantenimiento");
+		}
+		return lbMantenimiento;
+	}
+	private JButton getByReservado() {
+		if (byReservado == null) {
+			byReservado = new JButton("");
+			byReservado.setRequestFocusEnabled(false);
+			byReservado.setBackground(new Color(255, 200, 200));
+		}
+		return byReservado;
+	}
+	private JLabel getLbOcupado() {
+		if (lbOcupado == null) {
+			lbOcupado = new JLabel("Reservado");
+		}
+		return lbOcupado;
 	}
 }

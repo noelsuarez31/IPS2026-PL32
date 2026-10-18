@@ -172,7 +172,7 @@ public class VentanaHorarioPeriodico extends JFrame {
 	private JLabel getLblEmpleados() {
 		if (lblEmpleados == null) {
 			lblEmpleados = new JLabel("Empleados:");
-			lblEmpleados.setBounds(48, 111, 77, 12);
+			lblEmpleados.setBounds(26, 113, 77, 12);
 		}
 		return lblEmpleados;
 	}
@@ -230,14 +230,25 @@ public class VentanaHorarioPeriodico extends JFrame {
 	}
 	
 	private void inicializarTablasYEventos() {
-		// modelo de la tabla de Empleados
-		modeloEmpleados = new DefaultTableModel(new Object[]{"DNI", "Nombre", "Apellidos", "Salario", "Posición"}, 0);
+		// modelo de la tabla de Empleados (no editable)
+		modeloEmpleados = new DefaultTableModel(new Object[]{"DNI", "Nombre", "Apellidos", "Posición"}, 0) {
+		    private static final long serialVersionUID = 1L;
+		    @Override
+		    public boolean isCellEditable(int row, int column) {
+		        return false;
+		    }
+		};
 		getTablaEmpleadosNoDeportivos().setModel(modeloEmpleados);
-		
-		//modelo de la tabla de Horarios del empleado seleccionado
-		modeloHorarios = new DefaultTableModel(new Object[]{"Día", "Hora Inicio", "Hora Fin"}, 0);
+
+		// modelo de la tabla de Horarios del empleado seleccionado (no editable)
+		modeloHorarios = new DefaultTableModel(new Object[]{"Día", "Hora Inicio", "Hora Fin"}, 0) {
+		    private static final long serialVersionUID = 1L;
+		    @Override
+		    public boolean isCellEditable(int row, int column) {
+		        return false;
+		    }
+		};
 		getTablaHorariosPeriodicos().setModel(modeloHorarios);
-		
 		
 		cargarEmpleados();
 		
@@ -260,7 +271,7 @@ public class VentanaHorarioPeriodico extends JFrame {
 			List<EmpleadoNoDeportivo> empleados = ghp.obtenerEmpleadosNoDeportivos();
 			for (EmpleadoNoDeportivo emp : empleados) {
 				modeloEmpleados.addRow(new Object[]{
-					emp.getDni(), emp.getNombre(), emp.getApellido(), emp.getSalario(), emp.getPosicion().name()
+					emp.getDni(), emp.getNombre(), emp.getApellido(), emp.getPosicion().name()
 				});
 			}
 		} catch (SQLException ex) {
@@ -315,14 +326,14 @@ public class VentanaHorarioPeriodico extends JFrame {
 	private JLabel getLblHorariosDeEmpleado() {
 		if (lblHorariosDeEmpleado == null) {
 			lblHorariosDeEmpleado = new JLabel("Horarios del empleado seleccionado:");
-			lblHorariosDeEmpleado.setBounds(356, 113, 249, 12);
+			lblHorariosDeEmpleado.setBounds(383, 113, 249, 12);
 		}
 		return lblHorariosDeEmpleado;
 	}
 	private JScrollPane getScrollPaneEmpleadosNoDep() {
 		if (scrollPaneEmpleadosNoDep == null) {
 			scrollPaneEmpleadosNoDep = new JScrollPane();
-			scrollPaneEmpleadosNoDep.setBounds(48, 133, 262, 200);
+			scrollPaneEmpleadosNoDep.setBounds(26, 133, 336, 200);
 			scrollPaneEmpleadosNoDep.setViewportView(getTablaEmpleadosNoDeportivos());
 		}
 		return scrollPaneEmpleadosNoDep;
@@ -330,7 +341,7 @@ public class VentanaHorarioPeriodico extends JFrame {
 	private JScrollPane getScrollPaneHorarioPeriodico() {
 		if (scrollPaneHorarioPeriodico == null) {
 			scrollPaneHorarioPeriodico = new JScrollPane();
-			scrollPaneHorarioPeriodico.setBounds(356, 133, 249, 170);
+			scrollPaneHorarioPeriodico.setBounds(383, 133, 249, 170);
 			scrollPaneHorarioPeriodico.setViewportView(getTablaHorariosPeriodicos());
 		}
 		return scrollPaneHorarioPeriodico;
@@ -340,14 +351,14 @@ public class VentanaHorarioPeriodico extends JFrame {
 		if (lblHorasSemanaTexto == null) {
 			lblHorasSemanaTexto = new JLabel("Horas semana:");
 			lblHorasSemanaTexto.setFont(new Font("Tahoma", Font.BOLD, 11));
-			lblHorasSemanaTexto.setBounds(356, 315, 90, 16);
+			lblHorasSemanaTexto.setBounds(383, 313, 90, 16);
 		}
 		return lblHorasSemanaTexto;
 	}
 	private JLabel getLblHorasSemana() {
 		if (lblHorasSemana == null) {
 			lblHorasSemana = new JLabel("-");
-			lblHorasSemana.setBounds(446, 315, 210, 16);
+			lblHorasSemana.setBounds(473, 313, 210, 16);
 		}
 		return lblHorasSemana;
 	}

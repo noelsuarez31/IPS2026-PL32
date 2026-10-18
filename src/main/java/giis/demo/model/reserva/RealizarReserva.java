@@ -17,6 +17,12 @@ public class RealizarReserva {
 		
 	}
 	
+	/**
+	 * Devuelve un array con todas las instalaciones disponibles
+	 * 
+	 * @return un array con las instalaciones disponibles
+	 * @throws SQLException
+	 */
 	public Instalacion[] obtenerInstalacionesDisponibles() throws SQLException{
 		
 		Instalacion[] instalaciones = jdbc.getAvailableInstalations().toArray(new Instalacion[0]);
@@ -25,6 +31,7 @@ public class RealizarReserva {
 	
 	/**
 	 * Devuelve el id del usuario que bien ya esta en la BBDD o que ha sido creado
+	 * 
 	 * @param name
 	 * @param cardNumber
 	 * @return el id del usuario
@@ -38,6 +45,7 @@ public class RealizarReserva {
 	
 	/**
 	 * Añade la reserva a la BBDD
+	 * 
 	 * @param reserva
 	 * @return true si se ha podido realizar la reseva, false en caso contrario
 	 * @throws SQLException
@@ -50,6 +58,7 @@ public class RealizarReserva {
 	
 	/**
 	 * Obtiene las franjas ocupadas de una instalacion en una fecha
+	 * 
 	 * @param id_Instalacion
 	 * @param fecha
 	 * @return las franajs ocupadas y el motivo
@@ -63,6 +72,7 @@ public class RealizarReserva {
 	
 	/**
 	 * Obtiene las franjas disponibles de una instalacion en una fecha
+	 * 
 	 * @param id_Instalacion
 	 * @param fecha
 	 * @return las franajs disponibles
@@ -76,6 +86,7 @@ public class RealizarReserva {
 	
 	/**
 	 * Comprueba si el horario elegido por el usuario está disponible
+	 * 
 	 * @param idInstalacion
 	 * @param fecha
 	 * @param horaInicio
@@ -89,7 +100,11 @@ public class RealizarReserva {
 		
 	}
 	
-	
+	/**
+	 * Cierra la conexión con la BBDD
+	 * 
+	 * @throws SQLException
+	 */
 	public void close() throws SQLException {
 		
 		jdbc.close();

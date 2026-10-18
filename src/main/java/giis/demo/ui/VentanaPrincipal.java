@@ -18,6 +18,8 @@ import giis.demo.ui.reserva.VentanaReserva;
 import giis.demo.model.entrevistas.CrearEntrevistaService;
 import giis.demo.ui.entrevistas.VentanaCrearEntrevistas;
 import giis.demo.ui.entrevistas.VentanaCrearFranjas;
+import giis.demo.model.horarios.GestionHorarioSemanal;
+import giis.demo.ui.horarios.VentanaHorarioSemanal;
 
 import java.awt.Color;
 import javax.swing.JMenuBar;
@@ -35,6 +37,7 @@ public class VentanaPrincipal extends JFrame {
 	private AñadirEquipoService añadirEquipo = new AñadirEquipoService();
 	private GestionHorariosPeriodicos ghp = new GestionHorariosPeriodicos();
 	private GestionHorariosEspecificos ghe = new GestionHorariosEspecificos();
+	private GestionHorarioSemanal ghs = new GestionHorarioSemanal();
 	private CrearFranjaService cfs = new CrearFranjaService();
 	private CrearEntrevistaService ces = new CrearEntrevistaService();
 
@@ -44,7 +47,6 @@ public class VentanaPrincipal extends JFrame {
 	private JMenu mnDirector;
 	private JMenu mnEmpleado;
 	private JMenu mnEncargado;
-	private JMenuItem mntmVentaMerchandising;
 	private JMenu mnEntrenador;
 	private JMenu mnGerente;
 	private JMenu mnVendedorDeEntradas;
@@ -54,6 +56,7 @@ public class VentanaPrincipal extends JFrame {
 	private JMenuItem mntmAñadirEquipo;
 	private JMenuItem mntmAñadirHorarioPeriodico;
 	private JMenuItem mntmAñadirHorarioEspecifico;
+	private JMenuItem mntmVisualizarHorarioSemanal;
 	private JMenu mnGestorDeInstalaciones;
 	private JMenuItem mntmCrearFranjas;
 	private JMenu mnDirectorDeComunicaciones;
@@ -66,7 +69,7 @@ public class VentanaPrincipal extends JFrame {
 		setTitle("Ventana Inicial");
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 845, 420);
+		setBounds(100, 100, 848, 420);
 		setJMenuBar(getMenuBar_1());
 		contentPane = new JPanel();
 		contentPane.setBackground(new Color(240, 240, 240));
@@ -121,6 +124,7 @@ public class VentanaPrincipal extends JFrame {
 		if (mnEmpleado == null) {
 			mnEmpleado = new JMenu("Empleado");
 			mnEmpleado.setMnemonic('P');
+			mnEmpleado.add(getMntmVisualizarHorarioSemanal());
 		}
 		return mnEmpleado;
 	}
@@ -128,15 +132,8 @@ public class VentanaPrincipal extends JFrame {
 		if (mnEncargado == null) {
 			mnEncargado = new JMenu("Encargado");
 			mnEncargado.setMnemonic('N');
-			mnEncargado.add(getMntmVentaMerchandising());
 		}
 		return mnEncargado;
-	}
-	private JMenuItem getMntmVentaMerchandising() {
-		if (mntmVentaMerchandising == null) {
-			mntmVentaMerchandising = new JMenuItem("Venta merchandising");
-		}
-		return mntmVentaMerchandising;
 	}
 	private JMenu getMnEntrenador() {
 		if (mnEntrenador == null) {
@@ -185,6 +182,11 @@ public class VentanaPrincipal extends JFrame {
 		return mniVender;
 	}
 	
+	/**
+	 * Abre la ventana para vender las entradas
+	 * 
+	 * @throws SQLException
+	 */
 	private void abrirVentanaVentaEntradas() throws SQLException {
 		
 		VentanaVentaEntradas vve = new VentanaVentaEntradas(this);
@@ -343,6 +345,11 @@ public class VentanaPrincipal extends JFrame {
 		return this.cfs;
 	}
 	
+	/**
+	 * Abre la ventana para realizar la ventana de la reserva
+	 * 
+	 * @throws SQLException
+	 */
 	private void abrirVentanaReserva() throws SQLException {
 		
 		VentanaReserva vr = new VentanaReserva(this);
@@ -376,5 +383,27 @@ public class VentanaPrincipal extends JFrame {
 
 	public CrearEntrevistaService getCrearEntrevistaService() {
 		return this.ces;
+	}
+	
+	private JMenuItem getMntmVisualizarHorarioSemanal() {
+		if (mntmVisualizarHorarioSemanal == null) {
+			mntmVisualizarHorarioSemanal = new JMenuItem("Consultar horarios semanales");
+			mntmVisualizarHorarioSemanal.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					abrirVentanaHorarioSemanal();
+				}
+			});
+		}
+		return mntmVisualizarHorarioSemanal;
+	}
+
+	private void abrirVentanaHorarioSemanal() {
+		VentanaHorarioSemanal vHorarioSemanal = new VentanaHorarioSemanal(this);
+		this.setVisible(false);
+		vHorarioSemanal.setVisible(true);
+	}
+
+	public GestionHorarioSemanal getGestionHorarioSemanal() {
+		return this.ghs;
 	}
 }

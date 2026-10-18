@@ -40,7 +40,8 @@ public class ComprobarDisponibilidadJdbc {
 	 * @return true si está disponible, false en caso contrario
 	 * @throws SQLException
 	 */
-	public static boolean estaDisponible(Connection con, int idInstalacion, LocalDate fecha, LocalTime inicio, LocalTime fin) throws SQLException {
+	public static boolean estaDisponible(Connection con, int idInstalacion, LocalDate fecha, LocalTime inicio,
+			LocalTime fin) throws SQLException {
 
 		if (inicio == null || fin == null || inicio.isBefore(APERTURA) || !inicio.isBefore(fin) || fin.isAfter(CIERRE)
 				|| inicio.plusMinutes(60).isAfter(fin)) {
@@ -71,13 +72,14 @@ public class ComprobarDisponibilidadJdbc {
 	 * @param idInstalacion
 	 * @param fecha
 	 * @return Una lista con los intervalos disponibles
-	 * @throws SQLException 
+	 * @throws SQLException
 	 */
-	public static List<Intervalo> obtenerIntervalosDisponibles(Connection con, int idInstalacion, LocalDate fecha) throws SQLException {
+	public static List<Intervalo> obtenerIntervalosDisponibles(Connection con, int idInstalacion, LocalDate fecha)
+			throws SQLException {
 
 		List<Intervalo> ocupados = obtenerIntervalosOcupados(con, idInstalacion, fecha);
 		ocupados.sort(Comparator.comparing(Intervalo::getHoraInicio));
-		
+
 		List<Intervalo> unidos = new ArrayList<Intervalo>();
 		List<Intervalo> disponibles = new ArrayList<Intervalo>();
 
@@ -141,9 +143,10 @@ public class ComprobarDisponibilidadJdbc {
 	 * @param idInstalacion
 	 * @param fecha
 	 * @return lista con todos los intervales ocupados
-	 * @throws SQLException 
+	 * @throws SQLException
 	 */
-	public static List<Intervalo> obtenerIntervalosOcupados(Connection con, int idInstalacion, LocalDate fecha) throws SQLException {
+	public static List<Intervalo> obtenerIntervalosOcupados(Connection con, int idInstalacion, LocalDate fecha)
+			throws SQLException {
 
 		List<Intervalo> ocupados = new ArrayList<Intervalo>();
 
@@ -164,9 +167,10 @@ public class ComprobarDisponibilidadJdbc {
 		disponibles.add(new Intervalo(inicio, fin, "Disponible"));
 
 	}
-	
+
 	/**
 	 * Metodo para cargar los intervalos y definir los motivos
+	 * 
 	 * @param con
 	 * @param query
 	 * @param idInstalacion
@@ -176,99 +180,98 @@ public class ComprobarDisponibilidadJdbc {
 	 * @param isMatch
 	 * @throws SQLException
 	 */
-	private static void cargarIntervalos(Connection con, String query, int idInstalacion, LocalDate fecha, List<Intervalo> ocupados, boolean isTraining, boolean isMatch) throws SQLException {
-		
-		try(PreparedStatement ps = con.prepareStatement(query)){
-			
+	private static void cargarIntervalos(Connection con, String query, int idInstalacion, LocalDate fecha,
+			List<Intervalo> ocupados, boolean isTraining, boolean isMatch) throws SQLException {
+
+		try (PreparedStatement ps = con.prepareStatement(query)) {
+
 			ps.setInt(1, idInstalacion);
 			ps.setString(2, fecha.toString());
-			
-			try(ResultSet rs = ps.executeQuery()){
-				
-				while(rs.next()) {
-					
+
+			try (ResultSet rs = ps.executeQuery()) {
+
+				while (rs.next()) {
+
 					LocalTime inicio = LocalTime.parse(rs.getString("hora_inicio"));
 					LocalTime fin = LocalTime.parse(rs.getString("hora_fin"));
-					
+
 					boolean equipoLocal = false;
 					String motivo;
-					
-					if(isTraining) {
-						
+
+					if (isTraining) {
+
 						int idEquipo = rs.getInt("id_equipo");
 						equipoLocal = isPropio(con, idEquipo);
 						motivo = "Entrenamiento";
-								
+
 					} else if (isMatch) {
-						
+
 						int idEquipoLocal = rs.getInt("id_local");
 						int idEquipoVisitante = rs.getInt("id_visitante");
-						
+
 						equipoLocal = isPropio(con, idEquipoLocal) || isPropio(con, idEquipoVisitante);
-						
+
 						motivo = "Partido";
-						
+
 					} else {
-						
+
 						motivo = "Reserva";
-						
+
 					}
-					
+
 					LocalTime inicioReal = inicio.isBefore(APERTURA) ? APERTURA : inicio;
 					LocalTime finReal = fin.isAfter(CIERRE) ? CIERRE : fin;
-					
-					if(inicioReal.isBefore(finReal)) {
-						
+
+					if (inicioReal.isBefore(finReal)) {
+
 						ocupados.add(new Intervalo(inicioReal, finReal, motivo));
-						
+
 					}
-					
-					
-					if(equipoLocal && fin.isBefore(CIERRE)) {
-						
+
+					if (equipoLocal && fin.isBefore(CIERRE)) {
+
 						LocalTime inicioMargen = fin.isBefore(APERTURA) ? APERTURA : fin;
 						LocalTime finMargen = fin.plusMinutes(MARGEN_MINUTOS);
-						
+
 						if (finMargen.isAfter(CIERRE)) {
-							
+
 							finMargen = CIERRE;
-							
+
 						}
-						
-						if(inicioMargen.isBefore(finMargen)) {
-							
-							String motivoMargen = isTraining ? "Margen de mantenimiento tras entrenamiento" : 
-								"Margen de manteniento tras partido";
-							
+
+						if (inicioMargen.isBefore(finMargen)) {
+
+							String motivoMargen = isTraining ? "Margen de mantenimiento tras entrenamiento": "Margen de manteniento tras partido";
 							ocupados.add(new Intervalo(inicioMargen, finMargen, motivoMargen));
-							
+
 						}
-						
+
 					}
-									
+
 				}
-				
+
 			}
-			
+
 		}
-		
+
 	}
-	
+
 	/**
 	 * Metodo auxiliar para comprobar si un equipo es propio
+	 * 
 	 * @param con
 	 * @param idEquipo
 	 * @return true si el equipo es propio, false en caso contrario
 	 * @throws SQLException
 	 */
 	private static boolean isPropio(Connection con, int idEquipo) throws SQLException {
-		
+
 		try (PreparedStatement ps = con.prepareStatement(QUERY_CHECK_TEAM_IS_LOCAL)) {
-			
+
 			ps.setInt(1, idEquipo);
-			
+
 			try (ResultSet rs = ps.executeQuery()) {
-				
+
 				return rs.next() && rs.getInt("es_propio") == 1;
 			}
 		}
