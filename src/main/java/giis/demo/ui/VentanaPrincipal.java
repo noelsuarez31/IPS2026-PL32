@@ -66,7 +66,7 @@ public class VentanaPrincipal extends JFrame {
 		setTitle("Ventana Inicial");
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 740, 420);
+		setBounds(100, 100, 845, 420);
 		setJMenuBar(getMenuBar_1());
 		contentPane = new JPanel();
 		contentPane.setBackground(new Color(240, 240, 240));

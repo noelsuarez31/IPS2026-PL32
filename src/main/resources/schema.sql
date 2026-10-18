@@ -16,9 +16,6 @@ drop table if exists Equipo;
 drop table if exists HorarioPeriodico;
 drop table if exists HorarioEspecifico;
 
-drop table if exists Entrenamiento2;
-drop table if exists Partido2;
-
 drop table if exists Entrenamiento;
 drop table if exists FranjaHoraria;
 drop table if exists Entrevista;
@@ -122,28 +119,6 @@ CREATE TABLE IF NOT EXISTS "HorarioEspecifico" (
 	FOREIGN KEY("dni_empleado") REFERENCES "EmpleadoNoDeportivo"("dni") ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-
-CREATE TABLE IF NOT EXISTS "Partido" (
-	"id_partido" INTEGER PRIMARY KEY AUTOINCREMENT,
-	"fecha"	DATE NOT NULL,
-	"hora_inicio" TIME NOT NULL,
-	"hora_fin" TIME NOT NULL,
-	"id_local"	INTEGER NOT NULL,
-	"id_visitante"	INTEGER NOT NULL,
-	FOREIGN KEY("id_local") REFERENCES "Equipo"("id_equipo"),
-	FOREIGN KEY("id_visitante") REFERENCES "Equipo"("id_equipo"),
-	CHECK("id_local" <> "id_visitante")
-);
-
-CREATE TABLE IF NOT EXISTS "Entrenamiento" (
-	"id_entrenamiento" INTEGER PRIMARY KEY AUTOINCREMENT,
-	"fecha" DATE NOT NULL,
-	"hora_inicio" TIME NOT NULL,
-	"hora_fin" TIME NOT NULL,
-	"id_equipo" INTEGER NOT NULL,
-	FOREIGN KEY ("id_equipo") REFERENCES "Equipo"("id_equipo")
-);
-
 CREATE TABLE IF NOT EXISTS "FranjaHoraria" (
 	"id_franja" INTEGER PRIMARY KEY AUTOINCREMENT,
 	"dni_jugador" TEXT NOT NULL,
@@ -177,7 +152,7 @@ CREATE TABLE IF NOT EXISTS "LineaVenta" (
 	FOREIGN KEY("id_producto") REFERENCES "Producto"("id_producto") ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS "Partido2" (
+CREATE TABLE IF NOT EXISTS "Partido" (
 	"id_partido" INTEGER PRIMARY KEY AUTOINCREMENT,
 	"fecha"	DATE NOT NULL,
 	"hora_inicio" TIME NOT NULL,
@@ -191,7 +166,7 @@ CREATE TABLE IF NOT EXISTS "Partido2" (
 	CHECK("id_local" <> "id_visitante")
 );
 
-CREATE TABLE IF NOT EXISTS "Entrenamiento2" (
+CREATE TABLE IF NOT EXISTS "Entrenamiento" (
 	"id_entrenamiento" INTEGER PRIMARY KEY AUTOINCREMENT,
 	"fecha" DATE NOT NULL,
 	"hora_inicio" TIME NOT NULL,

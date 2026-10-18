@@ -20,21 +20,20 @@ public class FranjaJdbc {
 			"SELECT * FROM EmpleadoDeportivo ed, BaseEmpleado bd WHERE id_equipo=? AND "
 			+ "bd.dni=ed.dni AND posicion='JUGADOR'";
 	private final static String QUERY_GET_DNIS_FOR_TRAINERS_PROFESIONAL_TEAMS = 
-			"SELECT en.dni FROM Entrenador en, EmpleadoDeportivo ed, Equipo e WHERE "
-			+ "ed.id_equipo=e.id_equipo AND ed.dni=en.dni AND e.tipo_equipo='Profesional'";
+			"SELECT ed.dni FROM EmpleadoDeportivo ed, Equipo e WHERE "
+			+ "ed.id_equipo=e.id_equipo AND ed.posicion='ENTRENADOR' AND e.tipo_equipo='Profesional'";
 	private final static String QUERY_SAVE_SLOT = 
 			"INSERT INTO FranjaHoraria (dni_jugador, fecha, hora_inicio, hora_fin) VALUES "
 			+ "(?,?,?,?)";
 	private final static String QUERY_GET_INTERVIEW_ASSOCIATED_TO_PLAYER = 
 			"SELECT e.id_entrevista FROM Entrevista e, FranjaHoraria f WHERE "
 			+ "e.id_franja=f.id_franja AND f.fecha=? AND f.dni_jugador=?";
-	private final static String QUERY_GET_MATCHES_OF_TEAM_FOR_DATE = "SELECT * FROM Partido2 "
+	private final static String QUERY_GET_MATCHES_OF_TEAM_FOR_DATE = "SELECT * FROM Partido "
 			+ "WHERE (id_local=? OR id_visitante=?) AND fecha=?";
 	private final static String QUERY_GET_TRAINING_SESSIONS_OF_TEAM_FOR_DATE = "SELECT * FROM Entrenamiento "
 			+ "WHERE id_equipo=? AND fecha=?";
 	private final static String QUERY_GET_TEAM_ID = 
-			"SELECT ed.id_equipo FROM Entrenador e, EmpleadoDeportivo ed WHERE e.dni=? "
-			+ "AND ed.dni=e.dni";
+			"SELECT ed.id_equipo FROM Entrenador e, EmpleadoDeportivo ed WHERE e.dni=?";
 	private final static String QUERY_SLOT_ALREADY_EXISTS = 
 			"SELECT * FROM FranjaHoraria WHERE dni_jugador=? AND fecha=?";
 	
@@ -178,7 +177,6 @@ public class FranjaJdbc {
 			LocalDate fechaFranja, LocalTime horaInicio, LocalTime horaFin) throws SQLException {
 		String motivoConflicto = "";
 		DateTimeFormatter formatoHora = DateTimeFormatter.ofPattern("HH:mm");
-		DateTimeFormatter formatoBBDD = DateTimeFormatter.ofPattern("H[:m][s]");
 		
 		try(PreparedStatement pst = con.prepareStatement(QUERY_GET_MATCHES_OF_TEAM_FOR_DATE);){
 			pst.setInt(1, jugador.getIdEquipo());

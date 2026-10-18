@@ -11,9 +11,6 @@ delete from BaseEmpleado;
 delete from Equipo;
 delete from CategoriaEquipo;
 
-delete from Entrenamiento2;
-delete from Partido2;
-
 delete from Entrenamiento;
 delete from FranjaHoraria;
 delete from Entrevista;
@@ -321,25 +318,15 @@ INSERT INTO "Entrevista" ("id_franja","nombre_medio") VALUES
 (1, "Mundo Deportivo"),
 (2, "Marca");
 
-INSERT INTO "Entrenamiento" ("fecha", "hora_inicio", "hora_fin", "id_equipo") VALUES 
-('2026-10-20', '16:00:00', '18:00:00', 1),
-('2026-10-27', '17:00:00', '19:00:00', 2);
-
-INSERT INTO "Partido" ("fecha", "hora_inicio", "hora_fin", "id_local", "id_visitante") VALUES 
-('2026-10-20', '21:00:00', '23:00:00', 1, 2),
-('2026-10-27', '18:30:00', '20:30:00', 3, 4),
-('2026-10-29', '19:30:00', '22:30:00', 5, 6),
-('2026-11-03', '14:30:00', '16:30:00', 7, 8);
-
-INSERT INTO "Entrenamiento2" ("fecha", "hora_inicio", "hora_fin", "id_equipo", "id_instalacion") VALUES 
+INSERT INTO "Entrenamiento" ("fecha", "hora_inicio", "hora_fin", "id_equipo", "id_instalacion") VALUES 
 ('2026-10-20', '16:00:00', '18:00:00', 1, 1),
-('2026-10-27', '17:00:00', '19:00:00', 3, 1);
+('2026-10-27', '17:00:00', '19:00:00', 9, 1);
 
-INSERT INTO "Partido2" ("fecha", "hora_inicio", "hora_fin", "id_local", "id_visitante", "id_instalacion") VALUES 
+INSERT INTO "Partido" ("fecha", "hora_inicio", "hora_fin", "id_local", "id_visitante", "id_instalacion") VALUES 
 ('2026-10-20', '21:00:00', '23:00:00', 1, 2, 1),
 ('2026-10-27', '18:30:00', '20:30:00', 3, 4, 2),
 ('2026-10-29', '19:30:00', '22:30:00', 5, 6, 2),
-('2026-11-03', '14:30:00', '16:30:00', 7, 8, 3);
+('2026-11-03', '14:30:00', '16:30:00', 7, 9, 3);
 
 insert into Instalacion (nombre) values ('Campo de fútbol 1');
 insert into Instalacion (nombre) values ('Campo de fútbol 2');
