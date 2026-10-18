@@ -197,7 +197,7 @@ public class VentanaAltaEmpleado extends JFrame {
 		return cbPosicion;
 	}
 
-	private static String formatearPosicion(Object posicion) {
+	static String formatearPosicion(Object posicion) {
 		if (posicion == null) {
 			return "";
 		}

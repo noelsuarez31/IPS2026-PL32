@@ -3,7 +3,6 @@
 --Para giis.demo.tkrun:
 Drop table if exists Entrada;
 drop table if exists Venta;
-drop table if exists Venta2;
 drop table if exists Partido;
 drop table if exists Butaca;
 
@@ -48,20 +47,11 @@ CREATE TABLE IF NOT EXISTS "entrada" (
 	FOREIGN KEY("id_venta") REFERENCES "venta"("id_venta")
 );
 
-CREATE TABLE IF NOT EXISTS "venta2" (
-	"id_venta"	INTEGER,
-	"fecha"	TEXT NOT NULL,
-	"concepto"	TEXT,
-	"tipo"	TEXT NOT NULL CHECK("tipo" IN ('ENTRADAS', 'MERCHANDISING', 'ABONOS', 'CAMPANAS_ACCIONISTAS')),
-	"total"	REAL NOT NULL,
-	PRIMARY KEY("id_venta")
-);
-
 CREATE TABLE IF NOT EXISTS "venta" (
 	"id_venta"	INTEGER,
 	"fecha"	TEXT NOT NULL,
 	"concepto"	TEXT,
-	"tipo"	TEXT NOT NULL CHECK("tipo" IN ('ENTRADAS', 'MERCHANDISING')),
+	"tipo"	TEXT NOT NULL CHECK("tipo" IN ('ENTRADAS', 'MERCHANDISING', 'ABONOS', 'CAMPANAS_ACCIONISTAS')),
 	"total"	REAL NOT NULL,
 	PRIMARY KEY("id_venta")
 );

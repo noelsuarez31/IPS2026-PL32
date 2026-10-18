@@ -524,4 +524,62 @@ public class JDBC {
 		return HistorialJdbc.getDetalleVentaMerchandising(con, idVenta);
 	}
 	
+	public boolean existeTelefonoEnOtroEmpleado(String telefono, String dniPropio) throws SQLException {
+		return BaseEmpleadoJdbc.existeTelefonoEnOtroEmpleado(con, telefono, dniPropio);
+	}
+
+	/**
+	 * Devuelve todos los empleados (deportivos y no deportivos)
+	 * @throws SQLException
+	 */
+	public List<BaseEmpleado> getEmpleados() throws SQLException {
+		return BaseEmpleadoJdbc.getEmpleados(con);
+	}
+
+	/**
+	 * Devuelve la categoria del equipo indicado (con sus limites de edad)
+	 * @throws SQLException
+	 */
+	public CategoriaEquipo obtenerCategoriaDeEquipo(int idEquipo) throws SQLException {
+		return CategoriaEquipoJdbc.obtenerCategoriaDeEquipo(con, idEquipo);
+	}
+
+	/**
+	 * Modifica los datos de un empleado en una unica transaccion
+	 * @param dniOriginal dni que tenia el empleado antes de la modificacion
+	 * @param empleado datos nuevos
+	 * @throws SQLException
+	 */
+	public void modificarEmpleado(String dniOriginal, BaseEmpleado empleado) throws SQLException {
+		boolean autoCommitOriginal = con.getAutoCommit();
+		try {
+			con.setAutoCommit(false);
+			BaseEmpleadoJdbc.actualizarEmpleado(con, dniOriginal, empleado);
+			con.commit();
+		} catch (SQLException e) {
+			con.rollback();
+			throw e;
+		} finally {
+			con.setAutoCommit(autoCommitOriginal);
+		}
+	}
+
+	/**
+	 * Elimina un empleado y sus datos dependientes en una unica transaccion
+	 * @throws SQLException
+	 */
+	public void eliminarEmpleado(String dni) throws SQLException {
+		boolean autoCommitOriginal = con.getAutoCommit();
+		try {
+			con.setAutoCommit(false);
+			BaseEmpleadoJdbc.eliminarEmpleado(con, dni);
+			con.commit();
+		} catch (SQLException e) {
+			con.rollback();
+			throw e;
+		} finally {
+			con.setAutoCommit(autoCommitOriginal);
+		}
+	}
+	
 }

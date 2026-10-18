@@ -12,6 +12,10 @@ import giis.demo.model.equipo.CategoriaEquipo;
 public class CategoriaEquipoJdbc {
 	private final static String QUERY_GET_CATEGORY_NAME = "SELECT * FROM CategoriaEquipo WHERE nombre=?";
 	
+	private final static String QUERY_GET_CATEGORY_OF_TEAM = "SELECT c.nombre, c.id_categoria, c.edad_minima, "
+			+ "c.edad_maxima, c.tipo_equipo FROM Equipo e JOIN CategoriaEquipo c ON c.id_categoria = e.id_categoria "
+			+ "WHERE e.id_equipo = ?";
+	
 	private final static String QUERY_CATEGORIES_FOR_TIPE = "SELECT * FROM CategoriaEquipo WHERE tipo_equipo=?";
 	
 	/**
@@ -61,6 +65,28 @@ public class CategoriaEquipoJdbc {
 		}
 	    
 		return categoriasPorTipo;
+	}
+	
+	/**
+	 * Devuelve la categoria del equipo indicado, o null si el equipo no existe
+	 * @param con
+	 * @param idEquipo
+	 * @return CategoriaEquipo
+	 * @throws SQLException
+	 */
+	public static CategoriaEquipo obtenerCategoriaDeEquipo(Connection con, int idEquipo) throws SQLException {
+		try (PreparedStatement pst = con.prepareStatement(QUERY_GET_CATEGORY_OF_TEAM)) {
+			pst.setInt(1, idEquipo);
+			try (ResultSet rs = pst.executeQuery()) {
+				if (rs.next()) {
+					CategoriaEquipo categoria = new CategoriaEquipo(rs.getString("nombre"), rs.getInt("edad_minima"),
+							rs.getInt("edad_maxima"), rs.getString("tipo_equipo"));
+					categoria.setIdCategoria(rs.getInt("id_categoria"));
+					return categoria;
+				}
+			}
+		}
+		return null;
 	}
 	
 }
