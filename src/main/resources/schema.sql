@@ -1,9 +1,9 @@
---Primero se deben borrar todas las tablas (de detalle a maestro) y lugo anyadirlas (de maestro a detalle)
---(en este caso en cada aplicacion se usa solo una tabla, por lo que no hace falta)
+--Primero se deben borrar todas las tablas
 
 --Para giis.demo.tkrun:
 Drop table if exists Entrada;
 drop table if exists Venta;
+drop table if exists Venta2;
 drop table if exists Partido;
 drop table if exists Butaca;
 
@@ -46,6 +46,15 @@ CREATE TABLE IF NOT EXISTS "entrada" (
 	FOREIGN KEY("id_butaca") REFERENCES "butaca"("id_butaca"),
 	FOREIGN KEY("id_partido") REFERENCES "partido"("id_partido"),
 	FOREIGN KEY("id_venta") REFERENCES "venta"("id_venta")
+);
+
+CREATE TABLE IF NOT EXISTS "venta2" (
+	"id_venta"	INTEGER,
+	"fecha"	TEXT NOT NULL,
+	"concepto"	TEXT,
+	"tipo"	TEXT NOT NULL CHECK("tipo" IN ('ENTRADAS', 'MERCHANDISING', 'ABONOS', 'CAMPANAS_ACCIONISTAS')),
+	"total"	REAL NOT NULL,
+	PRIMARY KEY("id_venta")
 );
 
 CREATE TABLE IF NOT EXISTS "venta" (

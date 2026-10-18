@@ -8,12 +8,14 @@ import giis.demo.ui.tienda.VentanaTienda;
 import giis.demo.model.contrataciones.GestorEmpleados;
 import giis.demo.model.entrevistas.CrearFranjaService;
 import giis.demo.model.equipo.AñadirEquipoService;
+import giis.demo.model.historial.HistorialVentas;
 import giis.demo.model.horarios.GestionHorariosEspecificos;
 import giis.demo.model.horarios.GestionHorariosPeriodicos;
 import giis.demo.model.tienda.VentaMerchandising;
 import giis.demo.ui.contrataciones.VentanaAltaEmpleado;
 import giis.demo.ui.entradas.VentanaVentaEntradas;
 import giis.demo.ui.equipo.VentanaAñadirEquipo;
+import giis.demo.ui.historial.VentanaHistorialVentas;
 import giis.demo.ui.horarios.VentanaHorarioPeriodico;
 import giis.demo.ui.horarios.VentanaHorarioEspecifico;
 import giis.demo.ui.reserva.VentanaReserva;
@@ -58,6 +60,7 @@ public class VentanaPrincipal extends JFrame {
 	private JMenuItem mntmVerTienda;
 	private JMenuItem mntmAñadirEquipo;
 	private JMenuItem mntmAltaEmpleado;
+	private JMenuItem mntmHistorialVentas;
 	private JMenuItem mntmAñadirHorarioPeriodico;
 	private JMenuItem mntmAñadirHorarioEspecifico;
 	private JMenuItem mntmVisualizarHorarioSemanal;
@@ -155,9 +158,28 @@ public class VentanaPrincipal extends JFrame {
 			mnGerente.add(getMntmAñadirHorarioPeriodico());
 			mnGerente.add(getMntmAñadirHorarioEspecifico());
 			mnGerente.add(getMntmAltaEmpleado());
+			mnGerente.add(getMntmHistorialVentas());
 		}
 		return mnGerente;
 	}
+	private JMenuItem getMntmHistorialVentas() {
+		if (mntmHistorialVentas == null) {
+			mntmHistorialVentas = new JMenuItem("Historial de ventas");
+			mntmHistorialVentas.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					abrirVentanaHistorialVentas();
+				}
+			});
+		}
+		return mntmHistorialVentas;
+	}
+	
+	private void abrirVentanaHistorialVentas() {
+		VentanaHistorialVentas ventana = new VentanaHistorialVentas(this, new HistorialVentas());
+		this.setVisible(false);
+		ventana.setVisible(true);
+	}
+	
 	private JMenuItem getMntmAltaEmpleado() {
 		if (mntmAltaEmpleado == null) {
 			mntmAltaEmpleado = new JMenuItem("Alta de empleado");

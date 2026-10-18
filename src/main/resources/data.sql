@@ -3,6 +3,7 @@
 --Para giis.demo.tkrun:
 delete from Entrada;
 delete from Venta;
+delete from Venta2;
 delete from Partido;
 delete from Butaca;
 delete from HorarioPeriodico;
@@ -162,6 +163,16 @@ INSERT INTO "venta" VALUES (24,'2026-10-04','ENTRADAS PARA EL PARTIDO 1','ENTRAD
 INSERT INTO "venta" VALUES (25,'2026-10-04','ENTRADAS PARA EL PARTIDO 1','ENTRADAS',30.0);
 INSERT INTO "venta" VALUES (26,'2026-10-04','ENTRADAS PARA EL PARTIDO 1','ENTRADAS',30.0);
 INSERT INTO "venta" VALUES (27,'2026-10-06','ENTRADAS PARA EL PARTIDO 1','ENTRADAS',120.0);
+INSERT INTO "venta2" VALUES (28,'2026-10-09 10:15','Abono de temporada','ABONOS',350.0);
+INSERT INTO "venta2" VALUES (29,'2026-10-12 16:40','Campaña de accionistas','CAMPANAS_ACCIONISTAS',1200.0);
+INSERT INTO "venta2" VALUES (30,'2026-10-23 17:45','Venta Merchandising','MERCHANDISING',97.0);
+INSERT INTO "LineaVenta" ("id_venta", "id_producto", "unidades", "precio_unitario") VALUES
+(12, (SELECT id_producto FROM Producto WHERE nombre='Camiseta'), 1, 35.0),
+(12, (SELECT id_producto FROM Producto WHERE nombre='Pantalon'), 1, 35.0),
+(12, (SELECT id_producto FROM Producto WHERE nombre='Taza'), 1, 12.0),
+(30, (SELECT id_producto FROM Producto WHERE nombre='Sudadera'), 1, 65.0),
+(30, (SELECT id_producto FROM Producto WHERE nombre='Gorra'), 2, 16.0);
+
 INSERT INTO "CategoriaEquipo" ("nombre", "edad_minima", "edad_maxima", "tipo_equipo") VALUES 
 ('Primer equipo', 23, 40, 'Profesional'),
 ('Filial', 23, 40, 'Profesional'),

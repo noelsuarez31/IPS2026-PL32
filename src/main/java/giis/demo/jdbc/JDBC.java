@@ -18,6 +18,7 @@ import giis.demo.jdbc.entrevistas.EntrevistaJdbc;
 import giis.demo.jdbc.entrevistas.FranjaJdbc;
 import giis.demo.jdbc.equipo.CategoriaEquipoJdbc;
 import giis.demo.jdbc.equipo.EquipoJdbc;
+import giis.demo.jdbc.historial.HistorialJdbc;
 import giis.demo.jdbc.horarios.HorarioEspecificoJdbc;
 import giis.demo.jdbc.horarios.HorarioPeriodicoJdbc;
 import giis.demo.jdbc.reservas.ComprobarDisponibilidadJdbc;
@@ -36,6 +37,8 @@ import giis.demo.model.entradas.enumerados.TipoTribuna;
 import giis.demo.model.entrevistas.FranjaHoraria;
 import giis.demo.model.equipo.CategoriaEquipo;
 import giis.demo.model.equipo.Equipo;
+import giis.demo.model.historial.Ingreso;
+import giis.demo.model.historial.LineaDetalle;
 import giis.demo.model.horarios.HorarioEspecifico;
 import giis.demo.model.horarios.HorarioPeriodico;
 import giis.demo.model.reserva.Instalacion;
@@ -503,6 +506,22 @@ public class JDBC {
 	 */
 	public List<LocalDate> getDiasConFranjaYSinEntrevista(EmpleadoDeportivo jugadorSeleccionado, int mes, int año) throws SQLException {
 		return EntrevistaJdbc.getDiasConFranjaYSinEntrevista(con, jugadorSeleccionado, mes, año);
+	}
+	
+	/**
+	 * Devuelve los ingresos (ventas y reservas) producidos entre dos fechas, ambas incluidas
+	 * @throws SQLException
+	 */
+	public List<Ingreso> getIngresos(LocalDate desde, LocalDate hasta) throws SQLException {
+		return HistorialJdbc.getIngresos(con, desde, hasta);
+	}
+
+	/**
+	 * Devuelve las lineas (producto, unidades, precio unitario) de una venta de merchandising
+	 * @throws SQLException
+	 */
+	public List<LineaDetalle> getDetalleVentaMerchandising(int idVenta) throws SQLException {
+		return HistorialJdbc.getDetalleVentaMerchandising(con, idVenta);
 	}
 	
 }
