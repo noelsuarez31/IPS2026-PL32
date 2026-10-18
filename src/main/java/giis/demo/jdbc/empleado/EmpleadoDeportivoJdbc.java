@@ -21,7 +21,7 @@ public class EmpleadoDeportivoJdbc {
 	private final static String QUERY_GET_PLAYERS = "SELECT * FROM EmpleadoDeportivo WHERE posicion = ? AND id_equipo IS NULL";
 	private final static String QUERY_GET_COMPLETE_PLAYERS = "SELECT * FROM BaseEmpleado be, EmpleadoDeportivo ed "
 			+ "WHERE be.dni=ed.dni AND ed.dni=?";
-	
+	private final static String QUERY_INSERT_DEPORTIVO = "INSERT INTO EmpleadoDeportivo (dni, posicion, id_equipo) VALUES (?, ?, NULL)";
 	private final static String QUERY_GET_MANAGERS = "SELECT * FROM EmpleadoDeportivo WHERE posicion=? AND id_equipo IS NULL";
 	private final static String QUERY_GET_COMPLETE_MANAGERS = "SELECT * FROM BaseEmpleado be, EmpleadoDeportivo ed "
 			+ "WHERE be.dni=ed.dni AND ed.dni=?";
@@ -131,6 +131,21 @@ public class EmpleadoDeportivoJdbc {
 		}
 		
 		return cuerpoTecnico;
+	}
+
+	/**
+	 * Inserta un empleado deportivo recien dado de alta (sin equipo asignado).
+	 * Los datos comunes se insertan antes con BaseEmpleadoJdbc
+	 * @param con
+	 * @param emp
+	 * @throws SQLException
+	 */
+	public static void insertarEmpleadoDeportivo(Connection con, EmpleadoDeportivo emp) throws SQLException {
+		try (PreparedStatement pst = con.prepareStatement(QUERY_INSERT_DEPORTIVO)) {
+			pst.setString(1, emp.getDni());
+			pst.setString(2, emp.getPosicion().name());
+			pst.executeUpdate();
+		}
 	}
 
 }

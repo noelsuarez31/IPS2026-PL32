@@ -12,7 +12,6 @@ delete from EmpleadoNoDeportivo;
 delete from BaseEmpleado;
 delete from Equipo;
 delete from CategoriaEquipo;
-
 delete from Entrenamiento;
 delete from FranjaHoraria;
 delete from Entrevista;
@@ -319,7 +318,6 @@ INSERT INTO "FranjaHoraria" ("dni_jugador", "fecha", "hora_inicio", "hora_fin") 
 INSERT INTO "Entrevista" ("id_franja","nombre_medio") VALUES 
 (1, "Mundo Deportivo"),
 (2, "Marca");
-
 INSERT INTO "Entrenamiento" ("fecha", "hora_inicio", "hora_fin", "id_equipo", "id_instalacion") VALUES 
 ('2026-10-20', '16:00:00', '18:00:00', 1, 1),
 ('2026-10-27', '17:00:00', '19:00:00', 9, 1);

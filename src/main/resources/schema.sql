@@ -15,7 +15,6 @@ drop table if exists Equipo;
 
 drop table if exists HorarioPeriodico;
 drop table if exists HorarioEspecifico;
-
 drop table if exists Entrenamiento;
 drop table if exists FranjaHoraria;
 drop table if exists Entrevista;

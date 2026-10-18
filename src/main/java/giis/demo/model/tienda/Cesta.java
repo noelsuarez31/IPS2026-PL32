@@ -1,5 +1,6 @@
 package giis.demo.model.tienda;
 
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -39,7 +40,7 @@ public class Cesta {
     }
 
     public Map<Producto, Integer> getLineas() {
-        return lineas;
+        return Collections.unmodifiableMap(lineas);
     }
 
     public boolean isVacia() {

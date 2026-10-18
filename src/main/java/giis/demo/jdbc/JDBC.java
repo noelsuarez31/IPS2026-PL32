@@ -8,6 +8,7 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 
+import giis.demo.jdbc.empleado.BaseEmpleadoJdbc;
 import giis.demo.jdbc.empleado.EmpleadoDeportivoJdbc;
 import giis.demo.jdbc.empleado.EmpleadoNoDeportivoJdbc;
 import giis.demo.jdbc.entradas.ButacaJdbc;
@@ -23,7 +24,9 @@ import giis.demo.jdbc.reservas.ComprobarDisponibilidadJdbc;
 import giis.demo.jdbc.reservas.InstalacionJdbc;
 import giis.demo.jdbc.reservas.ReservaJdbc;
 import giis.demo.jdbc.reservas.UsuarioJdbc;
+import giis.demo.jdbc.tienda.ProductoJdbc;
 import giis.demo.jdbc.tienda.RegistrarVentaMerchandising;
+import giis.demo.model.empleado.BaseEmpleado;
 import giis.demo.model.empleado.EmpleadoDeportivo;
 import giis.demo.model.empleado.EmpleadoNoDeportivo;
 import giis.demo.model.entradas.Butaca;
@@ -262,6 +265,38 @@ public class JDBC {
 		UsuarioJdbc.obtenerOCrear(con, user);
 	}
 
+	/**
+	 * Da de alta un empleado (datos comunes + datos de su tipo) en una unica transaccion
+	 * @param empleado EmpleadoDeportivo o EmpleadoNoDeportivo
+	 * @throws SQLException
+	 */
+	public void almacenarEmpleado(BaseEmpleado empleado) throws SQLException {
+		boolean autoCommitOriginal = con.getAutoCommit();
+		try {
+			con.setAutoCommit(false);
+			BaseEmpleadoJdbc.insertarBaseEmpleado(con, empleado);
+			if (empleado instanceof EmpleadoDeportivo) {
+				EmpleadoDeportivoJdbc.insertarEmpleadoDeportivo(con, (EmpleadoDeportivo) empleado);
+			} else {
+				EmpleadoNoDeportivoJdbc.insertarEmpleadoNoDeportivo(con, (EmpleadoNoDeportivo) empleado);
+			}
+			con.commit();
+		} catch (SQLException e) {
+			con.rollback();
+			throw e;
+		} finally {
+			con.setAutoCommit(autoCommitOriginal);
+		}
+	}
+	
+	public boolean existeDniEmpleado(String dni) throws SQLException {
+		return BaseEmpleadoJdbc.existeDni(con, dni);
+	}
+	
+	public boolean existeTelefonoEmpleado(String telefono) throws SQLException {
+		return BaseEmpleadoJdbc.existeTelefono(con, telefono);
+	}
+
 	public Connection getCon() {
 		return con;
 	}
@@ -356,7 +391,7 @@ public class JDBC {
 	 * @throws SQLException
 	 */
 	public List<Producto> getProductosTienda() throws SQLException {
-		return giis.demo.jdbc.tienda.ProductoJdbc.getProductos(con);
+		return ProductoJdbc.getProductos(con);
 	}
 
 	/**
@@ -365,7 +400,7 @@ public class JDBC {
 	 * @param lineasCesta Mapa con los productos y sus cantidades
 	 * @throws SQLException
 	 */
-	public void almacenarVentaMerchandising(double total, Map<giis.demo.model.tienda.Producto, Integer> lineasCesta) throws SQLException {
+	public void almacenarVentaMerchandising(double total, Map<Producto, Integer> lineasCesta) throws SQLException {
 		RegistrarVentaMerchandising.registrar(con, total, lineasCesta);
 	}
 	

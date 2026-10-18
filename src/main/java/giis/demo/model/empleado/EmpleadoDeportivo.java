@@ -15,8 +15,8 @@ public class EmpleadoDeportivo extends BaseEmpleado{
 			LocalDate fechaDeNacimiento, String numeroTelefono, Posicion posicion) {
 		super(dni, nombre, apellido, salario, fechaDeNacimiento, numeroTelefono);
 		
-		if(posicion == null && posicion != Posicion.JUGADOR && posicion != Posicion.ENTRENADOR
-				&& posicion != Posicion.TECNICO_ADICIONAL) {
+		if(posicion == null || (posicion != Posicion.JUGADOR && posicion != Posicion.ENTRENADOR
+				&& posicion != Posicion.TECNICO_ADICIONAL)) {
 			throw new EmployeeException("Posicion invalida");
 		}
 		

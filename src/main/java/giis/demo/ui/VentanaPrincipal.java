@@ -5,11 +5,13 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import giis.demo.ui.tienda.VentanaTienda;
+import giis.demo.model.contrataciones.GestorEmpleados;
 import giis.demo.model.entrevistas.CrearFranjaService;
 import giis.demo.model.equipo.AñadirEquipoService;
 import giis.demo.model.horarios.GestionHorariosEspecificos;
 import giis.demo.model.horarios.GestionHorariosPeriodicos;
 import giis.demo.model.tienda.VentaMerchandising;
+import giis.demo.ui.contrataciones.VentanaAltaEmpleado;
 import giis.demo.ui.entradas.VentanaVentaEntradas;
 import giis.demo.ui.equipo.VentanaAñadirEquipo;
 import giis.demo.ui.horarios.VentanaHorarioPeriodico;
@@ -40,6 +42,7 @@ public class VentanaPrincipal extends JFrame {
 	private GestionHorarioSemanal ghs = new GestionHorarioSemanal();
 	private CrearFranjaService cfs = new CrearFranjaService();
 	private CrearEntrevistaService ces = new CrearEntrevistaService();
+	private GestorEmpleados gestorEmpleados = new GestorEmpleados();
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
@@ -54,6 +57,7 @@ public class VentanaPrincipal extends JFrame {
 	private JMenu mnTienda;
 	private JMenuItem mntmVerTienda;
 	private JMenuItem mntmAñadirEquipo;
+	private JMenuItem mntmAltaEmpleado;
 	private JMenuItem mntmAñadirHorarioPeriodico;
 	private JMenuItem mntmAñadirHorarioEspecifico;
 	private JMenuItem mntmVisualizarHorarioSemanal;
@@ -150,8 +154,32 @@ public class VentanaPrincipal extends JFrame {
 			mnGerente.add(getMntmAñadirEquipo());
 			mnGerente.add(getMntmAñadirHorarioPeriodico());
 			mnGerente.add(getMntmAñadirHorarioEspecifico());
+			mnGerente.add(getMntmAltaEmpleado());
 		}
 		return mnGerente;
+	}
+	private JMenuItem getMntmAltaEmpleado() {
+		if (mntmAltaEmpleado == null) {
+			mntmAltaEmpleado = new JMenuItem("Alta de empleado");
+			mntmAltaEmpleado.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					abrirVentanaAltaEmpleado();
+				}
+			});
+		}
+		return mntmAltaEmpleado;
+	}
+	
+	private void abrirVentanaAltaEmpleado() {
+		VentanaAltaEmpleado ventana = new VentanaAltaEmpleado(gestorEmpleados);
+		this.setVisible(false);
+		ventana.addWindowListener(new java.awt.event.WindowAdapter() {
+			@Override
+			public void windowClosed(java.awt.event.WindowEvent e) {
+				VentanaPrincipal.this.setVisible(true);
+			}
+		});
+		ventana.setVisible(true);
 	}
 	private JMenu getMnVendedorDeEntradas() {
 		if (mnVendedorDeEntradas == null) {

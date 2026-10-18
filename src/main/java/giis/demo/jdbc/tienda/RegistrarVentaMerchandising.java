@@ -5,12 +5,17 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
 import giis.demo.model.tienda.Producto;
 
 public class RegistrarVentaMerchandising {
+
+	private static final DateTimeFormatter FORMATO_FECHA_HORA = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+	private static final String CONCEPTO_VENTA = "Venta Merchandising";
+	private static final String TIPO_VENTA = "MERCHANDISING";
 
 	private static final String QUERY_INSERT_VENTA = "INSERT INTO Venta(fecha, concepto, tipo, total) VALUES (?,?,?,?)";
 	private static final String QUERY_INSERT_LINEA = "INSERT INTO LineaVenta(id_venta, id_producto, unidades, precio_unitario) VALUES (?,?,?,?)";
@@ -32,9 +37,9 @@ public class RegistrarVentaMerchandising {
 
 	private static int insertarVenta(Connection con, double total) throws SQLException {
 		try (PreparedStatement ps = con.prepareStatement(QUERY_INSERT_VENTA, Statement.RETURN_GENERATED_KEYS)) {
-			ps.setString(1, LocalDate.now().toString());
-			ps.setString(2, "Venta Merchandising");
-			ps.setString(3, "MERCHANDISING");
+			ps.setString(1, LocalDateTime.now().format(FORMATO_FECHA_HORA));
+			ps.setString(2, CONCEPTO_VENTA);
+			ps.setString(3, TIPO_VENTA);
 			ps.setDouble(4, total);
 			
 			ps.executeUpdate();
@@ -50,7 +55,7 @@ public class RegistrarVentaMerchandising {
 		try (PreparedStatement ps = con.prepareStatement(QUERY_INSERT_LINEA)) {
 			for (Map.Entry<Producto, Integer> entry : lineasCesta.entrySet()) {
 				ps.setInt(1, idVenta);
-				ps.setInt(2, entry.getKey().getId_producto()); // Requiere que Producto tenga el getter
+				ps.setInt(2, entry.getKey().getId_producto());
 				ps.setInt(3, entry.getValue());
 				ps.setDouble(4, entry.getKey().getPrecio());
 				ps.executeUpdate();

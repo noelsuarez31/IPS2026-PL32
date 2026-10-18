@@ -13,6 +13,23 @@ import giis.demo.model.empleado.EmpleadoNoDeportivo;
 import giis.demo.model.empleado.Posicion;
 
 public class EmpleadoNoDeportivoJdbc {
+	private static final String QUERY_INSERT_NO_DEPORTIVO = "INSERT INTO EmpleadoNoDeportivo (dni, posicion) VALUES (?, ?)";
+	
+	/**
+	 * Inserta un empleado no deportivo recien dado de alta.
+	 * Los datos comunes se insertan antes con BaseEmpleadoJdbc
+	 * @param con
+	 * @param emp
+	 * @throws SQLException
+	 */
+	public static void insertarEmpleadoNoDeportivo(Connection con, EmpleadoNoDeportivo emp) throws SQLException {
+		try (PreparedStatement pst = con.prepareStatement(QUERY_INSERT_NO_DEPORTIVO)) {
+			pst.setString(1, emp.getDni());
+			pst.setString(2, emp.getPosicion().name());
+			pst.executeUpdate();
+		}
+	}
+	
 	//consulta los empleados no deportivos
 		private static final String GET_NO_DEPORTIVOS = "SELECT be.dni, be.nombre, be.apellido, be.salario, be.fecha_nacimiento, be.numero_de_telefono, end.posicion " +
 													    "FROM EmpleadoNoDeportivo end " +
