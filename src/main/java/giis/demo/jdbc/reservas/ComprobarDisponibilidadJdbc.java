@@ -19,10 +19,10 @@ public class ComprobarDisponibilidadJdbc {
 	private static final LocalTime CIERRE = LocalTime.of(22, 0);
 
 	private static final String QUERY_ENTRENAMIENTOS = "SELECT hora_inicio, hora_fin, id_equipo "
-			+ "FROM Entrenamiento2 " + "WHERE id_instalacion = ? AND fecha = ?";
+			+ "FROM Entrenamiento " + "WHERE id_instalacion = ? AND fecha = ?";
 
 	private static final String QUERY_PARTIDOS = "SELECT hora_inicio, hora_fin, id_local, id_visitante  "
-			+ "FROM Partido2 WHERE id_instalacion = ? " + "AND fecha = ?";
+			+ "FROM Partido WHERE id_instalacion = ? " + "AND fecha = ?";
 
 	private static final String QUERY_RESERVAS = "SELECT hora_inicio, hora_fin From Reserva "
 			+ "WHERE id_instalacion=? AND fecha = ?";
