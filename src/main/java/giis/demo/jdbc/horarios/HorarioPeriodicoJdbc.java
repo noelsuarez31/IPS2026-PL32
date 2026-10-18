@@ -16,16 +16,19 @@ import giis.demo.model.horarios.HorarioPeriodico;
 
 public class HorarioPeriodicoJdbc{
 
+	//inserta el nuevo horario periodico
 	private static final String QUERY_INSERT_HORARIO = 
-			"INSERT INTO horario_periodico (dni_empleado, dia_semana, hora_inicio, hora_fin) VALUES (?, ?, ?, ?)";
-			
-	private static final String QUERY_GET_HORARIOS = 
-			"SELECT id_horario, dni_empleado, dia_semana, hora_inicio, hora_fin FROM horario_periodico WHERE dni_empleado = ?";
+			"INSERT INTO HorarioPeriodico (dni_empleado, dia_semana, hora_inicio, hora_fin) VALUES (?, ?, ?, ?)";
 	
-	private static final String GET_NO_DEPORTIVOS = "SELECT be.dni, be.nombre, be.apellido, be.salario, be.fecha_nacimiento, be.numero_de_telefono, end.posicion " +
-												    "FROM EmpleadoNoDeportivo end " +
-												    "JOIN BaseEmpleado be ON end.dni = be.dni";
+	//consulta los horarios de un empleado no deportivo en especifico
+	private static final String QUERY_GET_HORARIOS = 
+			"SELECT id_horario, dni_empleado, dia_semana, hora_inicio, hora_fin FROM HorarioPeriodico WHERE dni_empleado = ?";
+	
+	
 
+	/*
+	 * inserta un nuevo horario periodico a la bd
+	 */
 	public static void añadirHorario(Connection con, HorarioPeriodico horario) throws SQLException {
 		try (PreparedStatement ps = con.prepareStatement(QUERY_INSERT_HORARIO)) {
 
@@ -37,6 +40,9 @@ public class HorarioPeriodicoJdbc{
 		}
 	}
 
+	/*
+	 * devuelve una lista de horariosperiodicos asignados al empleado
+	 */
 	public static List<HorarioPeriodico> getHorariosEmpleado(Connection con, String idEmpleado) throws SQLException {
 		List<HorarioPeriodico> horarios = new ArrayList<>();
 		try (PreparedStatement ps = con.prepareStatement(QUERY_GET_HORARIOS)) {
@@ -54,25 +60,5 @@ public class HorarioPeriodicoJdbc{
 		return horarios;
 	}
 	
-	public static List<EmpleadoNoDeportivo> getEmpleadosNoDeportivos(Connection con) throws SQLException {
-        List<EmpleadoNoDeportivo> empleados = new ArrayList<>();
-        
-                     
-        try (PreparedStatement pst = con.prepareStatement(GET_NO_DEPORTIVOS);
-             ResultSet rs = pst.executeQuery()) {
-            while (rs.next()) {
-                EmpleadoNoDeportivo emp = new EmpleadoNoDeportivo(
-                    rs.getString("dni"),
-                    rs.getString("nombre"),
-                    rs.getString("apellido"),
-                    new BigDecimal(rs.getString("salario")),
-                    LocalDate.parse(rs.getString("fecha_nacimiento")),
-                    rs.getString("numero_de_telefono"),
-                    Posicion.valueOf(rs.getString("posicion"))
-                );
-                empleados.add(emp);
-            }
-        }
-        return empleados;
-    }
+	
 }

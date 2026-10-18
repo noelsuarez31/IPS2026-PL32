@@ -51,5 +51,3 @@ public class EmpleadoDeportivo extends BaseEmpleado{
 		return this.idEquipo;
 	}
 }
-
-

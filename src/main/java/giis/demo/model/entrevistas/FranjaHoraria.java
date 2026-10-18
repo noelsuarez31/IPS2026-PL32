@@ -40,4 +40,10 @@ public class FranjaHoraria {
 	public int getIdFranja() {
 		return this.idFranja;
 	}
+	
+	@Override
+	public String toString() {
+		return String.format("Franja: Fecha=%s ; Hora de inicio=%s ; Hora de fin=%s", 
+				getFecha(), getHoraInicio(), getHoraFin());
+	}
 }
