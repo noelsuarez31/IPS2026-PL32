@@ -33,7 +33,7 @@ public class FranjaJdbc {
 	private final static String QUERY_GET_TRAINING_SESSIONS_OF_TEAM_FOR_DATE = "SELECT * FROM Entrenamiento "
 			+ "WHERE id_equipo=? AND fecha=?";
 	private final static String QUERY_GET_TEAM_ID = 
-			"SELECT ed.id_equipo FROM Entrenador e, EmpleadoDeportivo ed WHERE e.dni=?";
+			"SELECT ed.id_equipo FROM EmpleadoDeportivo ed WHERE ed.dni=?";
 	private final static String QUERY_SLOT_ALREADY_EXISTS = 
 			"SELECT * FROM FranjaHoraria WHERE dni_jugador=? AND fecha=?";
 	
