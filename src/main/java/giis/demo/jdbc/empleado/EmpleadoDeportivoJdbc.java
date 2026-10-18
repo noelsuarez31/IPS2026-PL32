@@ -21,8 +21,11 @@ public class EmpleadoDeportivoJdbc {
 	private final static String QUERY_GET_COMPLETE_PLAYERS = "SELECT * FROM BaseEmpleado be, EmpleadoDeportivo ed "
 			+ "WHERE be.dni=ed.dni AND ed.dni=?";
 	
-	private final static String QUERY_INSERT_DEPORTIVO = 
-	        "INSERT INTO EmpleadoDeportivo (dni, posicion, id_equipo) VALUES (?, ?, ?)";
+	private final static String QUERY_INSERT_DEPORTIVO = "INSERT INTO EmpleadoDeportivo (dni, posicion, id_equipo) VALUES (?, ?, NULL)";
+	
+	private final static String QUERY_GET_MANAGERS = "SELECT * FROM EmpleadoDeportivo WHERE posicion=? AND id_equipo IS NULL";
+	private final static String QUERY_GET_COMPLETE_MANAGERS = "SELECT * FROM BaseEmpleado be, EmpleadoDeportivo ed "
+			+ "WHERE be.dni=ed.dni AND ed.dni=?";
 	
 	/**
 	 * Devuelve una lista de los empleados deportivos que no tienen asignado 
@@ -100,15 +103,50 @@ public class EmpleadoDeportivoJdbc {
 		return jugadoresFiltradosPorCategoria;
 	}
 	
+	/**
+	 * Devuelve una lista de empleados deportivos con posicion ENTRENADOR
+	 * que no tienen asignado ningun equipo
+	 * @param con
+	 * @return
+	 * @throws SQLException
+	 */
+	public static List<EmpleadoDeportivo> obtenerEntrenadoresDisponibles(Connection con) throws SQLException {
+		List<EmpleadoDeportivo> cuerpoTecnico = new ArrayList<EmpleadoDeportivo>();
+		
+		try(PreparedStatement pst = con.prepareStatement(QUERY_GET_MANAGERS)){
+			pst.setString(1, Posicion.ENTRENADOR.name());
+			ResultSet rsEntrenador = pst.executeQuery();
+			while(rsEntrenador.next()) {
+				String dniEntrenador = rsEntrenador.getString(1);
+				
+				try(PreparedStatement pst2 = con.prepareStatement(QUERY_GET_COMPLETE_MANAGERS);){
+					pst2.setString(1, dniEntrenador);
+					ResultSet rsEntrenadorCompleto = pst2.executeQuery();
+					while(rsEntrenadorCompleto.next()) {
+						EmpleadoDeportivo entrenador = new EmpleadoDeportivo(dniEntrenador, rsEntrenadorCompleto.getString(2), rsEntrenadorCompleto.getString(3),
+								rsEntrenadorCompleto.getBigDecimal(4), LocalDate.parse(rsEntrenadorCompleto.getString(5)) ,rsEntrenadorCompleto.getString(6), Posicion.JUGADOR);
+						cuerpoTecnico.add(entrenador);
+					}
+				}
+			}
+		}
+		
+		return cuerpoTecnico;
+	}
+
+	/**
+	 * Inserta un empleado deportivo recien dado de alta (sin equipo asignado).
+	 * Los datos comunes se insertan antes con BaseEmpleadoJdbc
+	 * @param con
+	 * @param emp
+	 * @throws SQLException
+	 */
 	public static void insertarEmpleadoDeportivo(Connection con, EmpleadoDeportivo emp) throws SQLException {
-        try (PreparedStatement pst = con.prepareStatement(QUERY_INSERT_DEPORTIVO)) {
-            pst.setString(1, emp.getDni());
-            pst.setString(2, emp.getPosicion().name());
-            // Si al darlo de alta no tiene equipo se inserta null
-            pst.setNull(3, java.sql.Types.INTEGER); 
-            
-            pst.executeUpdate();
-        }
-    }
+		try (PreparedStatement pst = con.prepareStatement(QUERY_INSERT_DEPORTIVO)) {
+			pst.setString(1, emp.getDni());
+			pst.setString(2, emp.getPosicion().name());
+			pst.executeUpdate();
+		}
+	}
 
 }

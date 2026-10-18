@@ -15,7 +15,8 @@ public class EmpleadoDeportivo extends BaseEmpleado{
 			LocalDate fechaDeNacimiento, String numeroTelefono, Posicion posicion) {
 		super(dni, nombre, apellido, salario, fechaDeNacimiento, numeroTelefono);
 		
-		if(posicion == null || (posicion != Posicion.JUGADOR && posicion != Posicion.ENTRENADOR && posicion != Posicion.TECNICO_ADICIONAL)) {
+		if(posicion == null || (posicion != Posicion.JUGADOR && posicion != Posicion.ENTRENADOR
+				&& posicion != Posicion.TECNICO_ADICIONAL)) {
 			throw new EmployeeException("Posicion invalida");
 		}
 		
@@ -40,6 +41,11 @@ public class EmpleadoDeportivo extends BaseEmpleado{
 	public void setIdEquipo(int idEquipo) {
 		this.idEquipo = idEquipo;
 	}
+	
+	public boolean esMismoEntrenador(EmpleadoDeportivo other) {
+		return (this.getDni().equals(other.getDni()));
+	}
+	
 	
 	public int getIdEquipo() {
 		return this.idEquipo;

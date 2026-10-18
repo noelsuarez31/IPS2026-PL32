@@ -14,14 +14,21 @@ drop table if exists CategoriaEquipo;
 drop table if exists Equipo;
 
 drop table if exists HorarioPeriodico;
+drop table if exists HorarioEspecifico;
 
+drop table if exists Entrenamiento2;
 drop table if exists Partido2;
+
 drop table if exists Entrenamiento;
 drop table if exists FranjaHoraria;
 drop table if exists Entrevista;
 
 drop table if exists LineaVenta;
 drop table if exists Producto;
+
+drop table if exists Reserva;
+drop table if exists Instalacion;
+drop table if exists Usuario;
 
 CREATE TABLE IF NOT EXISTS "butaca" (
 	"id_butaca"	INTEGER,
@@ -44,16 +51,7 @@ CREATE TABLE IF NOT EXISTS "entrada" (
 	FOREIGN KEY("id_partido") REFERENCES "partido"("id_partido"),
 	FOREIGN KEY("id_venta") REFERENCES "venta"("id_venta")
 );
-CREATE TABLE IF NOT EXISTS "partido" (
-	"id_partido"	INTEGER,
-	"fecha"	DATE NOT NULL,
-	"id_local"	INTEGER NOT NULL,
-	"id_visitante"	INTEGER NOT NULL,
-	PRIMARY KEY("id_partido"),
-	FOREIGN KEY("id_local") REFERENCES "equipo"("id_equipo"),
-	FOREIGN KEY("id_visitante") REFERENCES "equipo"("id_equipo"),
-	CHECK("id_local" <> "id_visitante")
-);
+
 CREATE TABLE IF NOT EXISTS "venta" (
 	"id_venta"	INTEGER,
 	"fecha"	TEXT NOT NULL,
@@ -106,15 +104,26 @@ CREATE TABLE IF NOT EXISTS "Equipo" (
     FOREIGN KEY("id_categoria") REFERENCES "CategoriaEquipo"("id_categoria") ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS "horario_periodico" (
+CREATE TABLE IF NOT EXISTS "HorarioPeriodico" (
 	"id_horario"	INTEGER PRIMARY KEY AUTOINCREMENT,
-	"id_empleado"	INTEGER NOT NULL,
+	"dni_empleado"	TEXT NOT NULL,
 	"dia_semana"	INTEGER NOT NULL CHECK("dia_semana" BETWEEN 1 AND 7),
 	"hora_inicio"	TEXT NOT NULL,
-	"hora_fin"		TEXT NOT NULL
+	"hora_fin"		TEXT NOT NULL,
+	FOREIGN KEY("dni_empleado") REFERENCES "EmpleadoNoDeportivo"("dni") ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS "Partido2" (
+CREATE TABLE IF NOT EXISTS "HorarioEspecifico" (
+	"id_horario"	INTEGER PRIMARY KEY AUTOINCREMENT,
+	"dni_empleado"	TEXT NOT NULL,
+	"fecha"			DATE NOT NULL,
+	"hora_inicio"	TEXT NOT NULL,
+	"hora_fin"		TEXT NOT NULL,
+	FOREIGN KEY("dni_empleado") REFERENCES "EmpleadoNoDeportivo"("dni") ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+
+CREATE TABLE IF NOT EXISTS "Partido" (
 	"id_partido" INTEGER PRIMARY KEY AUTOINCREMENT,
 	"fecha"	DATE NOT NULL,
 	"hora_inicio" TIME NOT NULL,
@@ -147,6 +156,7 @@ CREATE TABLE IF NOT EXISTS "FranjaHoraria" (
 CREATE TABLE IF NOT EXISTS "Entrevista" (
 	"id_entrevista" INTEGER PRIMARY KEY AUTOINCREMENT,
 	"id_franja" NOT NULL,
+	"nombre_medio" NOT NULL,
 	FOREIGN KEY ("id_franja") REFERENCES "FranjaHoraria"("id_franja")
 );
 
@@ -158,11 +168,63 @@ CREATE TABLE IF NOT EXISTS "Producto" (
 );
 
 CREATE TABLE IF NOT EXISTS "LineaVenta" (
-	"id_venta" INTEGER,
-    "id_producto" INTEGER,
-    "cantidad" INTEGER NOT NULL DEFAULT 1,
-    "precio_unitario" REAL NOT NULL,
-    PRIMARY KEY("id_venta", "id_producto"),
-    FOREIGN KEY("id_venta") REFERENCES "venta"("id_venta") ON DELETE CASCADE,
-    FOREIGN KEY("id_producto") REFERENCES "Producto"("id_producto")
+	"id_venta" INTEGER NOT NULL,
+	"id_producto" INTEGER NOT NULL,
+	"unidades" INTEGER NOT NULL,
+	"precio_unitario" REAL NOT NULL,
+	PRIMARY KEY("id_venta", "id_producto"),
+	FOREIGN KEY("id_venta") REFERENCES "venta"("id_venta") ON DELETE CASCADE,
+	FOREIGN KEY("id_producto") REFERENCES "Producto"("id_producto") ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS "Partido2" (
+	"id_partido" INTEGER PRIMARY KEY AUTOINCREMENT,
+	"fecha"	DATE NOT NULL,
+	"hora_inicio" TIME NOT NULL,
+	"hora_fin" TIME NOT NULL,
+	"id_local"	INTEGER NOT NULL,
+	"id_visitante"	INTEGER NOT NULL,
+	"id_instalacion" INTEGER NOT NULL,
+	FOREIGN KEY("id_local") REFERENCES "Equipo"("id_equipo"),
+	FOREIGN KEY("id_visitante") REFERENCES "Equipo"("id_equipo"),
+	FOREIGN KEY("id_instalacion") REFERENCES "Instalacion"("id_instalacion"),
+	CHECK("id_local" <> "id_visitante")
+);
+
+CREATE TABLE IF NOT EXISTS "Entrenamiento2" (
+	"id_entrenamiento" INTEGER PRIMARY KEY AUTOINCREMENT,
+	"fecha" DATE NOT NULL,
+	"hora_inicio" TIME NOT NULL,
+	"hora_fin" TIME NOT NULL,
+	"id_equipo" INTEGER NOT NULL,
+	"id_instalacion" INTEGER NOT NULL,
+	FOREIGN KEY ("id_equipo") REFERENCES "Equipo"("id_equipo"),
+	FOREIGN KEY("id_instalacion") REFERENCES "Instalacion"("id_instalacion")
+);
+
+CREATE TABLE IF NOT EXISTS "Reserva" (
+	"id_reserva" INTEGER PRIMARY KEY AUTOINCREMENT,
+	"fecha" TEXT NOT NULL,
+	"hora_inicio" TEXT NOT NULL,
+	"hora_fin" TEXT NOT NULL,
+	"importe" REAL NOT NULL CHECK("importe" > 0),
+	"fecha_registro" TEXT NOT NULL,
+	"id_usuario" INTEGER NOT NULL,
+	"id_instalacion" INTEGER NOT NULL,
+	FOREIGN KEY("id_usuario") REFERENCES "Usuario"("id_usuario"),
+	FOREIGN KEY("id_instalacion") REFERENCES "Instalacion"("id_instalacion"),
+	CHECK("hora_inicio" >= '08:00'),
+	CHECK("hora_fin" <= '22:00'),
+	CHECK("hora_inicio" < "hora_fin")
+);
+
+CREATE TABLE IF NOT EXISTS "Usuario" (
+	"id_usuario" INTEGER PRIMARY KEY AUTOINCREMENT,
+	"nombre" TEXT NOT NULL,
+	"tarjeta_bancaria" TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS "Instalacion" (
+	"id_instalacion" INTEGER PRIMARY KEY,
+	"nombre" TEXT NOT NULL UNIQUE
 );

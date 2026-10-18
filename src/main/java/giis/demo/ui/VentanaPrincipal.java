@@ -6,14 +6,21 @@ import javax.swing.border.EmptyBorder;
 
 import giis.demo.ui.tienda.VentanaTienda;
 import giis.demo.model.contrataciones.GestorEmpleados;
+import giis.demo.model.entrevistas.CrearEntrevistaService;
 import giis.demo.model.entrevistas.CrearFranjaService;
 import giis.demo.model.equipo.AñadirEquipoService;
+import giis.demo.model.horarios.GestionHorarioSemanal;
+import giis.demo.model.horarios.GestionHorariosEspecificos;
 import giis.demo.model.horarios.GestionHorariosPeriodicos;
 import giis.demo.model.tienda.VentaMerchandising;
 import giis.demo.ui.contrataciones.VentanaAltaEmpleado;
 import giis.demo.ui.entradas.VentanaVentaEntradas;
 import giis.demo.ui.equipo.VentanaAñadirEquipo;
+import giis.demo.ui.horarios.VentanaHorarioEspecifico;
 import giis.demo.ui.horarios.VentanaHorarioPeriodico;
+import giis.demo.ui.horarios.VentanaHorarioSemanal;
+import giis.demo.ui.reserva.VentanaReserva;
+import giis.demo.ui.entrevistas.VentanaCrearEntrevistas;
 import giis.demo.ui.entrevistas.VentanaCrearFranjas;
 
 import java.awt.Color;
@@ -31,7 +38,10 @@ public class VentanaPrincipal extends JFrame {
 	private GestionaTienda gestionaTienda = new GestionaTienda();
 	private AñadirEquipoService añadirEquipo = new AñadirEquipoService();
 	private GestionHorariosPeriodicos ghp = new GestionHorariosPeriodicos();
+	private GestionHorariosEspecificos ghe = new GestionHorariosEspecificos();
+	private GestionHorarioSemanal ghs = new GestionHorarioSemanal();
 	private CrearFranjaService cfs = new CrearFranjaService();
+	private CrearEntrevistaService ces = new CrearEntrevistaService();
 	private GestorEmpleados gestorEmpleados = new GestorEmpleados();
 
 	private static final long serialVersionUID = 1L;
@@ -40,7 +50,6 @@ public class VentanaPrincipal extends JFrame {
 	private JMenu mnDirector;
 	private JMenu mnEmpleado;
 	private JMenu mnEncargado;
-	private JMenuItem mntmVentaMerchandising;
 	private JMenu mnEntrenador;
 	private JMenu mnGerente;
 	private JMenu mnVendedorDeEntradas;
@@ -48,9 +57,14 @@ public class VentanaPrincipal extends JFrame {
 	private JMenu mnTienda;
 	private JMenuItem mntmVerTienda;
 	private JMenuItem mntmAñadirEquipo;
-	private JMenuItem mntmAñadirHorarioPeriodico;
-	private JMenuItem mntmCrearFranjas;
 	private JMenuItem mntmAltaEmpleado;
+	private JMenuItem mntmAñadirHorarioPeriodico;
+	private JMenuItem mntmAñadirHorarioEspecifico;
+	private JMenuItem mntmVisualizarHorarioSemanal;
+	private JMenu mnGestorDeInstalaciones;
+	private JMenuItem mntmCrearFranjas;
+	private JMenu mnDirectorDeComunicaciones;
+	private JMenuItem mntmAsignarEntrevistas;
 
 	/**
 	 * Create the frame.
@@ -59,7 +73,7 @@ public class VentanaPrincipal extends JFrame {
 		setTitle("Ventana Inicial");
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 600, 420);
+		setBounds(100, 100, 848, 420);
 		setJMenuBar(getMenuBar_1());
 		contentPane = new JPanel();
 		contentPane.setBackground(new Color(240, 240, 240));
@@ -69,7 +83,7 @@ public class VentanaPrincipal extends JFrame {
 		
 		JLabel lbInicio = new JLabel("¡Bienvenido!");
 		lbInicio.setBackground(new Color(240, 240, 240));
-		lbInicio.setBounds(256, 159, 90, 20);
+		lbInicio.setBounds(314, 154, 90, 20);
 		contentPane.add(lbInicio);
 		
 		this.setLocationRelativeTo(null);
@@ -98,6 +112,8 @@ public class VentanaPrincipal extends JFrame {
 			menuBar.add(getMnGerente());
 			menuBar.add(getMnVendedorDeEntradas());
 			menuBar.add(getMnTienda());
+			menuBar.add(getMnGestorDeInstalaciones());
+			menuBar.add(getMnDirectorDeComunicaciones());
 		}
 		return menuBar;
 	}
@@ -112,6 +128,7 @@ public class VentanaPrincipal extends JFrame {
 		if (mnEmpleado == null) {
 			mnEmpleado = new JMenu("Empleado");
 			mnEmpleado.setMnemonic('P');
+			mnEmpleado.add(getMntmVisualizarHorarioSemanal());
 		}
 		return mnEmpleado;
 	}
@@ -119,15 +136,8 @@ public class VentanaPrincipal extends JFrame {
 		if (mnEncargado == null) {
 			mnEncargado = new JMenu("Encargado");
 			mnEncargado.setMnemonic('N');
-			mnEncargado.add(getMntmVentaMerchandising());
 		}
 		return mnEncargado;
-	}
-	private JMenuItem getMntmVentaMerchandising() {
-		if (mntmVentaMerchandising == null) {
-			mntmVentaMerchandising = new JMenuItem("Venta merchandising");
-		}
-		return mntmVentaMerchandising;
 	}
 	private JMenu getMnEntrenador() {
 		if (mnEntrenador == null) {
@@ -138,40 +148,38 @@ public class VentanaPrincipal extends JFrame {
 		return mnEntrenador;
 	}
 	private JMenu getMnGerente() {
-	    if (mnGerente == null) {
-	        mnGerente = new JMenu("Gerente");
-	        mnGerente.setMnemonic('G');
-	        mnGerente.add(getMntmAñadirEquipo());
-	        mnGerente.add(getMntmAñadirHorarioPeriodico());
-	        mnGerente.add(getMntmAltaEmpleado());
-	    }
-	    return mnGerente;
+		if (mnGerente == null) {
+			mnGerente = new JMenu("Gerente");
+			mnGerente.setMnemonic('G');
+			mnGerente.add(getMntmAñadirEquipo());
+			mnGerente.add(getMntmAñadirHorarioPeriodico());
+			mnGerente.add(getMntmAñadirHorarioEspecifico());
+			mnGerente.add(getMntmAltaEmpleado());
+		}
+		return mnGerente;
 	}
 	private JMenuItem getMntmAltaEmpleado() {
-	    if (mntmAltaEmpleado == null) {
-	        mntmAltaEmpleado = new JMenuItem("Alta de empleado");
-	        mntmAltaEmpleado.addActionListener(new ActionListener() {
-	            public void actionPerformed(ActionEvent e) {
-	                abrirVentanaAltaEmpleado();
-	            }
-	        });
-	    }
-	    return mntmAltaEmpleado;
+		if (mntmAltaEmpleado == null) {
+			mntmAltaEmpleado = new JMenuItem("Alta de empleado");
+			mntmAltaEmpleado.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					abrirVentanaAltaEmpleado();
+				}
+			});
+		}
+		return mntmAltaEmpleado;
 	}
-
+	
 	private void abrirVentanaAltaEmpleado() {
-	    VentanaAltaEmpleado vAltaEmpleado = new VentanaAltaEmpleado(this.gestorEmpleados);
-	    
-	    // Mostrar ventana principal al cerrar
-	    vAltaEmpleado.addWindowListener(new java.awt.event.WindowAdapter() {
-	        @Override
-	        public void windowClosed(java.awt.event.WindowEvent windowEvent) {
-	            VentanaPrincipal.this.setVisible(true);
-	        }
-	    });
-	    
-	    this.setVisible(false); 
-	    vAltaEmpleado.setVisible(true);
+		VentanaAltaEmpleado ventana = new VentanaAltaEmpleado(gestorEmpleados);
+		this.setVisible(false);
+		ventana.addWindowListener(new java.awt.event.WindowAdapter() {
+			@Override
+			public void windowClosed(java.awt.event.WindowEvent e) {
+				VentanaPrincipal.this.setVisible(true);
+			}
+		});
+		ventana.setVisible(true);
 	}
 	private JMenu getMnVendedorDeEntradas() {
 		if (mnVendedorDeEntradas == null) {
@@ -202,6 +210,11 @@ public class VentanaPrincipal extends JFrame {
 		return mniVender;
 	}
 	
+	/**
+	 * Abre la ventana para vender las entradas
+	 * 
+	 * @throws SQLException
+	 */
 	private void abrirVentanaVentaEntradas() throws SQLException {
 		
 		VentanaVentaEntradas vve = new VentanaVentaEntradas(this);
@@ -291,6 +304,53 @@ public class VentanaPrincipal extends JFrame {
 		vHorarioPeriodico.setVisible(true);
 		
 	}
+	
+	private JMenuItem getMntmAñadirHorarioEspecifico() {
+		if (mntmAñadirHorarioEspecifico == null) {
+			mntmAñadirHorarioEspecifico = new JMenuItem("Añadir horario específico");
+			mntmAñadirHorarioEspecifico.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					abrirVentanaAñadirHorarioEspecifico();
+				}
+			});
+			mntmAñadirHorarioEspecifico.setHorizontalAlignment(SwingConstants.CENTER);
+		}
+		return mntmAñadirHorarioEspecifico;
+	}
+
+	private void abrirVentanaAñadirHorarioEspecifico() {
+		VentanaHorarioEspecifico vHorarioEspecifico = new VentanaHorarioEspecifico(this);
+		this.setVisible(false);
+		vHorarioEspecifico.setVisible(true);
+	}
+
+	public GestionHorariosEspecificos getGestionHorariosEspecificos() {
+		
+		return this.ghe;
+	}
+	
+	
+	private JMenu getMnGestorDeInstalaciones() {
+		if (mnGestorDeInstalaciones == null) {
+			mnGestorDeInstalaciones = new JMenu("Gestor de Instalaciones");
+			mnGestorDeInstalaciones.setMnemonic('S');
+			
+			JMenuItem mntmReservaDeInstalaciones = new JMenuItem("Reserva de Instalaciones");
+			mntmReservaDeInstalaciones.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					try {
+						abrirVentanaReserva();
+					} catch (SQLException e1) {
+						
+						System.err.print("Se ha producido un error al intentar abrir la ventana de reserva");
+						e1.printStackTrace();
+					}
+				}
+			});
+			mnGestorDeInstalaciones.add(mntmReservaDeInstalaciones);
+		}
+		return mnGestorDeInstalaciones;
+	}
 	private JMenuItem getMntmCrearFranjas() {
 		if (mntmCrearFranjas == null) {
 			mntmCrearFranjas = new JMenuItem("Crear franjas");
@@ -311,5 +371,67 @@ public class VentanaPrincipal extends JFrame {
 	
 	public CrearFranjaService getCrearFranjaService() {
 		return this.cfs;
+	}
+	
+	/**
+	 * Abre la ventana para realizar la ventana de la reserva
+	 * 
+	 * @throws SQLException
+	 */
+	private void abrirVentanaReserva() throws SQLException {
+		
+		VentanaReserva vr = new VentanaReserva(this);
+		this.setVisible(false);
+		vr.setVisible(true);
+	}
+	private JMenu getMnDirectorDeComunicaciones() {
+		if (mnDirectorDeComunicaciones == null) {
+			mnDirectorDeComunicaciones = new JMenu("Director de comunicaciones");
+			mnDirectorDeComunicaciones.add(getMntmAsignarEntrevistas());
+		}
+		return mnDirectorDeComunicaciones;
+	}
+	private JMenuItem getMntmAsignarEntrevistas() {
+		if (mntmAsignarEntrevistas == null) {
+			mntmAsignarEntrevistas = new JMenuItem("Asignar entrevistas");
+			mntmAsignarEntrevistas.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					abrirVentanaCrearEntrevistas();
+				}
+			});
+		}
+		return mntmAsignarEntrevistas;
+	}
+	
+	private void abrirVentanaCrearEntrevistas() {
+		VentanaCrearEntrevistas vCrearEntrev = new VentanaCrearEntrevistas(this);
+		this.setVisible(false);
+		vCrearEntrev.setVisible(true);
+	}
+
+	public CrearEntrevistaService getCrearEntrevistaService() {
+		return this.ces;
+	}
+	
+	private JMenuItem getMntmVisualizarHorarioSemanal() {
+		if (mntmVisualizarHorarioSemanal == null) {
+			mntmVisualizarHorarioSemanal = new JMenuItem("Consultar horarios semanales");
+			mntmVisualizarHorarioSemanal.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					abrirVentanaHorarioSemanal();
+				}
+			});
+		}
+		return mntmVisualizarHorarioSemanal;
+	}
+
+	private void abrirVentanaHorarioSemanal() {
+		VentanaHorarioSemanal vHorarioSemanal = new VentanaHorarioSemanal(this);
+		this.setVisible(false);
+		vHorarioSemanal.setVisible(true);
+	}
+
+	public GestionHorarioSemanal getGestionHorarioSemanal() {
+		return this.ghs;
 	}
 }

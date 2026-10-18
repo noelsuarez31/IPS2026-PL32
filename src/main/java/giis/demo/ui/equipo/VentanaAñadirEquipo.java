@@ -29,7 +29,6 @@ import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 
 import giis.demo.model.empleado.EmpleadoDeportivo;
-import giis.demo.model.empleado.Entrenador;
 import giis.demo.model.equipo.AñadirEquipoService;
 import giis.demo.model.equipo.CategoriaEquipo;
 import giis.demo.ui.VentanaPrincipal;
@@ -52,8 +51,8 @@ public class VentanaAñadirEquipo extends JFrame {
 	private JPanel pnCentro;
 	private JPanel pnCuerpoTecnico;
 	private JLabel lbPrimerEntrenador;
-	private JComboBox<Entrenador> cbPrimerEntrenador;
-	private JComboBox<Entrenador> cbSegundoEntrenador;
+	private JComboBox<EmpleadoDeportivo> cbPrimerEntrenador;
+	private JComboBox<EmpleadoDeportivo> cbSegundoEntrenador;
 	private JPanel pnPrimerYSegundoEntrenador;
 	private JLabel lbSegundoEntrenador;
 	private JPanel pnRestoDeTecnicos;
@@ -62,9 +61,12 @@ public class VentanaAñadirEquipo extends JFrame {
 	private JList<EmpleadoDeportivo> listRestoTecnicos;
 	private JScrollPane scrRestoTecnicos;
 	private JPanel pnJugadores;
-	private JScrollPane scrJugadores;
-	private DefaultListModel<EmpleadoDeportivo> modeloListaJugadores;
-	private JList<EmpleadoDeportivo> listJugadores;
+	private DefaultListModel<EmpleadoDeportivo> modeloJugadoresDisponibles;
+	private JList<EmpleadoDeportivo> listDisponibles;
+	private JScrollPane scrDisponibles;
+	private DefaultListModel<EmpleadoDeportivo> modeloJugadoresSeleccionados;
+	private JList<EmpleadoDeportivo> listSeleccionados;
+	private JScrollPane scrSeleccionados;
 	private JScrollPane scrPanelPrincipal;
 	private JPanel pnInferior;
 	private JButton btnAtras;
@@ -90,6 +92,9 @@ public class VentanaAñadirEquipo extends JFrame {
 		contentPane.add(getPnSuperior(), BorderLayout.NORTH);
 		contentPane.add(getScrPanelPrincipal(), BorderLayout.CENTER);
 		contentPane.add(getPnInferior(), BorderLayout.SOUTH);
+		
+		// Cargamos los jugadores segun los valores por defecto de los combo
+		cargarJugadoresInicialesPorDefecto();
 		
 		this.setLocationRelativeTo(null);
 	}
@@ -164,32 +169,33 @@ public class VentanaAñadirEquipo extends JFrame {
 	}
 	
 	private JComboBox<String> getCbCategoriaEquipo() {
-		if (cbCategoriaEquipo == null) {
-			cbCategoriaEquipo = new JComboBox<String>();
-			cbCategoriaEquipo.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-			        if(modeloListaJugadores == null) {
-			        	return;
-			        }
-					modeloListaJugadores.clear();
-			        
-			        String nombreCategoria = (String) getCbCategoriaEquipo().getSelectedItem();
-			        if (nombreCategoria != null) {
-			            CategoriaEquipo categoriaSeleccionada = club.obtenerObjetoCategoria(nombreCategoria);
-			            
-			            if (categoriaSeleccionada != null) {
-			                List<EmpleadoDeportivo> listaJugadoresDisponibles = club.obtenerJugadoresDisponibles(categoriaSeleccionada);
-			                
-			                for (EmpleadoDeportivo jugador : listaJugadoresDisponibles) {
-			                    modeloListaJugadores.addElement(jugador);
-			                }
-			            }
-			        }
-			    }
-			});
-			cbCategoriaEquipo.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		}
-		return cbCategoriaEquipo;
+	    if (cbCategoriaEquipo == null) {
+	        cbCategoriaEquipo = new JComboBox<String>();
+	        cbCategoriaEquipo.addActionListener(new ActionListener() {
+	            public void actionPerformed(ActionEvent e) {
+	                if(modeloJugadoresDisponibles == null || modeloJugadoresSeleccionados == null) {
+	                    return;
+	                }
+	                modeloJugadoresDisponibles.clear();
+	                modeloJugadoresSeleccionados.clear(); // Limpiamos seleccionados al cambiar de categoría
+	                
+	                String nombreCategoria = (String) getCbCategoriaEquipo().getSelectedItem();
+	                if (nombreCategoria != null) {
+	                    CategoriaEquipo categoriaSeleccionada = club.obtenerObjetoCategoria(nombreCategoria);
+	                    
+	                    if (categoriaSeleccionada != null) {
+	                        List<EmpleadoDeportivo> listaJugadoresDisponibles = club.obtenerJugadoresDisponibles(categoriaSeleccionada);
+	                        
+	                        for (EmpleadoDeportivo jugador : listaJugadoresDisponibles) {
+	                            modeloJugadoresDisponibles.addElement(jugador);
+	                        }
+	                    }
+	                }
+	            }
+	        });
+	        cbCategoriaEquipo.setFont(new Font("Tahoma", Font.PLAIN, 14));
+	    }
+	    return cbCategoriaEquipo;
 	}
 	
 	private JScrollPane getScrPanelPrincipal() {
@@ -241,12 +247,12 @@ public class VentanaAñadirEquipo extends JFrame {
 		return lbPrimerEntrenador;
 	}
 	
-	private JComboBox<Entrenador> getCbPrimerEntrenador() {
+	private JComboBox<EmpleadoDeportivo> getCbPrimerEntrenador() {
 		if (cbPrimerEntrenador == null) {
-			cbPrimerEntrenador = new JComboBox<Entrenador>();
+			cbPrimerEntrenador = new JComboBox<EmpleadoDeportivo>();
 			cbPrimerEntrenador.setFont(new Font("Tahoma", Font.PLAIN, 15));
-			List<Entrenador> tecnicos = club.obtenerEntrenadoresDisponibles();
-			cbPrimerEntrenador.setModel(new DefaultComboBoxModel<Entrenador>(tecnicos.toArray(new Entrenador[0])));
+			List<EmpleadoDeportivo> tecnicos = club.obtenerEntrenadoresDisponibles();
+			cbPrimerEntrenador.setModel(new DefaultComboBoxModel<EmpleadoDeportivo>(tecnicos.toArray(new EmpleadoDeportivo[0])));
 		}
 		return cbPrimerEntrenador;
 	}
@@ -259,12 +265,12 @@ public class VentanaAñadirEquipo extends JFrame {
 		return lbSegundoEntrenador;
 	}
 	
-	private JComboBox<Entrenador> getCbSegundoEntrenador() {
+	private JComboBox<EmpleadoDeportivo> getCbSegundoEntrenador() {
 		if (cbSegundoEntrenador == null) {
-			cbSegundoEntrenador = new JComboBox<Entrenador>();
+			cbSegundoEntrenador = new JComboBox<EmpleadoDeportivo>();
 			cbSegundoEntrenador.setFont(new Font("Tahoma", Font.PLAIN, 15));
-			List<Entrenador> tecnicos = club.obtenerEntrenadoresDisponibles();
-			cbSegundoEntrenador.setModel(new DefaultComboBoxModel<Entrenador>(tecnicos.toArray(new Entrenador[0])));
+			List<EmpleadoDeportivo> tecnicos = club.obtenerEntrenadoresDisponibles();
+			cbSegundoEntrenador.setModel(new DefaultComboBoxModel<EmpleadoDeportivo>(tecnicos.toArray(new EmpleadoDeportivo[0])));
 			gestionNoSonIguales(tecnicos);
 		}
 		return cbSegundoEntrenador;
@@ -310,38 +316,79 @@ public class VentanaAñadirEquipo extends JFrame {
 	}
 	
 	private JPanel getPnJugadores() {
-		if (pnJugadores == null) {
-			pnJugadores = new JPanel();
-			pnJugadores.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, new Color(255, 255, 255), new Color(160, 160, 160)), "Seleccion de jugadores (Min.7)", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
-			pnJugadores.setLayout(new BorderLayout(0, 0));
-			pnJugadores.add(getScrJugadores(), BorderLayout.CENTER);
-		}
-		return pnJugadores;
-	}
-	
-	private JScrollPane getScrJugadores() {
-	    if (scrJugadores == null) {
-	        scrJugadores = new JScrollPane(getListJugadores());
-	        scrJugadores.setPreferredSize(new Dimension(0, 120)); // Ajusta la altura si lo consideras necesario
+	    if (pnJugadores == null) {
+	        pnJugadores = new JPanel();
+	        pnJugadores.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, new Color(255, 255, 255), new Color(160, 160, 160)), "Seleccion de jugadores (Min.7)", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
+	        // Cambiamos a GridLayout de 1 fila y 2 columnas para poner las dos listas juntas
+	        pnJugadores.setLayout(new GridLayout(1, 2, 10, 0));
+	        
+	        // Panel izquierdo: Disponibles
+	        JPanel pnIzq = new JPanel(new BorderLayout());
+	        pnIzq.add(new JLabel("Disponibles:", JLabel.CENTER), BorderLayout.NORTH);
+	        pnIzq.add(getScrDisponibles(), BorderLayout.CENTER);
+	        pnJugadores.add(pnIzq);
+	        
+	        // Panel derecho: Seleccionados
+	        JPanel pnDer = new JPanel(new BorderLayout());
+	        pnDer.add(new JLabel("Seleccionados:", JLabel.CENTER), BorderLayout.NORTH);
+	        pnDer.add(getScrSeleccionados(), BorderLayout.CENTER);
+	        pnJugadores.add(pnDer);
 	    }
-	    return scrJugadores;
+	    return pnJugadores;
 	}
-	
-	private JList<EmpleadoDeportivo> getListJugadores() {
-	    if (listJugadores == null) {
-	        modeloListaJugadores = new DefaultListModel<>();
-	        CategoriaEquipo categoriaSeleccionada = club.obtenerObjetoCategoria((String) getCbCategoriaEquipo().getSelectedItem());
-	        if (categoriaSeleccionada != null) {
-	            List<EmpleadoDeportivo> listaJugadoresDisponibles = club.obtenerJugadoresDisponibles(categoriaSeleccionada);
-	            for (EmpleadoDeportivo jugador : listaJugadoresDisponibles) {
-	                modeloListaJugadores.addElement(jugador);
+
+	private JScrollPane getScrDisponibles() {
+	    if (scrDisponibles == null) {
+	        scrDisponibles = new JScrollPane(getListDisponibles());
+	        scrDisponibles.setPreferredSize(new Dimension(0, 120));
+	    }
+	    return scrDisponibles;
+	}
+
+	private JList<EmpleadoDeportivo> getListDisponibles() {
+	    if (listDisponibles == null) {
+	        modeloJugadoresDisponibles = new DefaultListModel<>();
+	        listDisponibles = new JList<EmpleadoDeportivo>(modeloJugadoresDisponibles);
+	        listDisponibles.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+	        listDisponibles.setFont(new Font("Tahoma", Font.PLAIN, 14));
+	        
+	        // Evento de doble clic para pasar a seleccionados
+	        listDisponibles.addMouseListener(new java.awt.event.MouseAdapter() {
+	            public void mouseClicked(java.awt.event.MouseEvent evt) {
+	                if (evt.getClickCount() == 2) {
+	                    pasarASeleccionados();
+	                }
 	            }
-	        }
-	        listJugadores = new JList<EmpleadoDeportivo>(modeloListaJugadores);
-	        listJugadores.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-	        listJugadores.setFont(new Font("Tahoma", Font.PLAIN, 14));
+	        });
 	    }
-	    return listJugadores;
+	    return listDisponibles;
+	}
+
+	private JScrollPane getScrSeleccionados() {
+	    if (scrSeleccionados == null) {
+	        scrSeleccionados = new JScrollPane(getListSeleccionados());
+	        scrSeleccionados.setPreferredSize(new Dimension(0, 120));
+	    }
+	    return scrSeleccionados;
+	}
+
+	private JList<EmpleadoDeportivo> getListSeleccionados() {
+	    if (listSeleccionados == null) {
+	        modeloJugadoresSeleccionados = new DefaultListModel<>();
+	        listSeleccionados = new JList<EmpleadoDeportivo>(modeloJugadoresSeleccionados);
+	        listSeleccionados.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+	        listSeleccionados.setFont(new Font("Tahoma", Font.PLAIN, 14));
+	        
+	        // Evento de doble clic para devolver a disponibles
+	        listSeleccionados.addMouseListener(new java.awt.event.MouseAdapter() {
+	            public void mouseClicked(java.awt.event.MouseEvent evt) {
+	                if (evt.getClickCount() == 2) {
+	                    devolverADisponibles();
+	                }
+	            }
+	        });
+	    }
+	    return listSeleccionados;
 	}
 	
 	private JPanel getPnInferior() {
@@ -409,12 +456,16 @@ public class VentanaAñadirEquipo extends JFrame {
 	}
 	
 	private void crearEquipo() {
-		List<EmpleadoDeportivo> jugadoresSeleccionados = getListJugadores().getSelectedValuesList();
-        List<Entrenador> entrenadoresSeleccionados = new ArrayList<>();
+		List<EmpleadoDeportivo> jugadoresSeleccionados = new ArrayList<>();
+	    for (int i = 0; i < modeloJugadoresSeleccionados.getSize(); i++) {
+	        jugadoresSeleccionados.add(modeloJugadoresSeleccionados.getElementAt(i));
+	    }
+	    
+        List<EmpleadoDeportivo> entrenadoresSeleccionados = new ArrayList<>();
         List<EmpleadoDeportivo> restoTecnicosSeleccionados = new ArrayList<>();
         
-        Entrenador primerEntrenador = (Entrenador) getCbPrimerEntrenador().getSelectedItem();
-        Entrenador segundoEntrenador = (Entrenador) getCbSegundoEntrenador().getSelectedItem();
+        EmpleadoDeportivo primerEntrenador = (EmpleadoDeportivo) getCbPrimerEntrenador().getSelectedItem();
+        EmpleadoDeportivo segundoEntrenador = (EmpleadoDeportivo) getCbSegundoEntrenador().getSelectedItem();
         
         if (primerEntrenador != null) {
         	entrenadoresSeleccionados.add(primerEntrenador);
@@ -456,13 +507,44 @@ public class VentanaAñadirEquipo extends JFrame {
         }
 	}
 	
-	private void gestionNoSonIguales(List<Entrenador> tecnicos) {
-	    if (tecnicos != null && tecnicos.size() > 1) {
-	        String dniPrimerEntrenador = ((Entrenador) getCbPrimerEntrenador().getSelectedItem()).getDni();
-	        String dniSegundoEntrenador = ((Entrenador) getCbSegundoEntrenador().getSelectedItem()).getDni();
-	        if(dniPrimerEntrenador.equals(dniSegundoEntrenador)) {
-	        	getCbSegundoEntrenador().setSelectedItem(tecnicos.get(1));
-	        }
-	    }
+	private void gestionNoSonIguales(List<EmpleadoDeportivo> tecnicos) {
+		if (tecnicos != null && tecnicos.size() > 1) {
+			String dniPrimerEntrenador = ((EmpleadoDeportivo) getCbPrimerEntrenador().getSelectedItem()).getDni();
+			String dniSegundoEntrenador = ((EmpleadoDeportivo) getCbSegundoEntrenador().getSelectedItem()).getDni();
+			if (dniPrimerEntrenador.equals(dniSegundoEntrenador)) {
+				getCbSegundoEntrenador().setSelectedItem(tecnicos.get(1));
+			}
+		}
 	}
+    
+    private void pasarASeleccionados() {
+        EmpleadoDeportivo seleccionado = listDisponibles.getSelectedValue();
+        if (seleccionado != null) {
+            modeloJugadoresDisponibles.removeElement(seleccionado);
+            modeloJugadoresSeleccionados.addElement(seleccionado);
+        }
+    }
+
+    private void devolverADisponibles() {
+        EmpleadoDeportivo seleccionado = listSeleccionados.getSelectedValue();
+        if (seleccionado != null) {
+            modeloJugadoresSeleccionados.removeElement(seleccionado);
+            modeloJugadoresDisponibles.addElement(seleccionado);
+        }
+    }
+    
+    private void cargarJugadoresInicialesPorDefecto() {
+        String nombreCategoria = (String) getCbCategoriaEquipo().getSelectedItem();
+        if (nombreCategoria != null && modeloJugadoresDisponibles != null) {
+            modeloJugadoresDisponibles.clear();
+            CategoriaEquipo categoriaSeleccionada = club.obtenerObjetoCategoria(nombreCategoria);
+            
+            if (categoriaSeleccionada != null) {
+                List<EmpleadoDeportivo> listaJugadoresDisponibles = club.obtenerJugadoresDisponibles(categoriaSeleccionada);
+                for (EmpleadoDeportivo jugador : listaJugadoresDisponibles) {
+                    modeloJugadoresDisponibles.addElement(jugador);
+                }
+            }
+        }
+    }
 }

@@ -1,90 +1,60 @@
 package giis.demo.model.contrataciones;
 
 import java.math.BigDecimal;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.Period;
 
+import giis.demo.exceptions.EmployeeException;
 import giis.demo.jdbc.JDBC;
-import giis.demo.jdbc.empleado.BaseEmpleadoJdbc;
-import giis.demo.jdbc.empleado.EmpleadoDeportivoJdbc;
-import giis.demo.jdbc.empleado.EmpleadoNoDeportivoJdbc;
-import giis.demo.jdbc.empleado.EntrenadorJdbc;
+import giis.demo.model.empleado.BaseEmpleado;
 import giis.demo.model.empleado.EmpleadoDeportivo;
 import giis.demo.model.empleado.EmpleadoNoDeportivo;
-import giis.demo.model.empleado.Entrenador;
 import giis.demo.model.empleado.Posicion;
-import giis.demo.model.empleado.TipoEntrenador;
 
 public class GestorEmpleados {
 
-	private JDBC jdbc;
+	private static final int EDAD_MAYORIA = 18;
 
-	public GestorEmpleados() {
-		this.jdbc = new JDBC();
+	private JDBC jdbc = new JDBC();
+
+	/**
+	 * Da de alta un nuevo empleado. Los menores de edad solo pueden ser jugadores.
+	 * @throws EmployeeException si algun dato incumple las reglas de negocio o si
+	 * el dni o el telefono ya estan registrados, o si falla el acceso a la BBDD
+	 */
+	public void registrarNuevoEmpleado(String dni, String nombre, String apellido, BigDecimal salario,
+			LocalDate fechaNacimiento, String telefono, boolean esDeportivo, Posicion posicion) {
+
+		BaseEmpleado empleado = crearEmpleado(dni, nombre, apellido, salario, fechaNacimiento, telefono, esDeportivo,
+				posicion);
+
+		try {
+			if (jdbc.existeDniEmpleado(empleado.getDni())) {
+				throw new EmployeeException("Ya existe un empleado con el DNI " + empleado.getDni());
+			}
+			if (jdbc.existeTelefonoEmpleado(empleado.getNumeroTelefono())) {
+				throw new EmployeeException("El numero de telefono ya esta registrado en el sistema");
+			}
+			jdbc.almacenarEmpleado(empleado);
+		} catch (SQLException e) {
+			throw new EmployeeException("Error al guardar el empleado en la BBDD: " + e.getMessage());
+		}
 	}
 
-	public void registrarNuevoEmpleado(String dni, String nombre, String apellido, BigDecimal salario,
-			LocalDate fechaNacimiento, String telefono, boolean esDeportivo, Posicion posicion, String tipoEntrenador)
-			throws Exception {
+	private BaseEmpleado crearEmpleado(String dni, String nombre, String apellido, BigDecimal salario,
+			LocalDate fechaNacimiento, String telefono, boolean esDeportivo, Posicion posicion) {
 
-		// Regla de menores de edad
-	    int edad = Period.between(fechaNacimiento, LocalDate.now()).getYears();
-	    if (edad < 18 && posicion != Posicion.JUGADOR) {
-	        throw new Exception("Regla de negocio: Solo los jugadores pueden ser menores de edad.");
-	    }
+		if (fechaNacimiento != null && posicion != Posicion.JUGADOR
+				&& Period.between(fechaNacimiento, LocalDate.now()).getYears() < EDAD_MAYORIA) {
+			throw new EmployeeException("Solo los jugadores pueden ser menores de edad");
+		}
 
-	    // Obtener conexión
-	    Connection con = jdbc.getCon();
-
-	    try {
-	        con.setAutoCommit(false); 
-	        
-	        if (BaseEmpleadoJdbc.existeTelefono(con, telefono)) {
-	            throw new IllegalArgumentException("El número de teléfono introducido ya está registrado en el sistema.");
-	        }
-	        
-	        if (!esDeportivo) {
-	            // No deportivo
-	            EmpleadoNoDeportivo empleado = new EmpleadoNoDeportivo(dni, nombre, apellido, salario, fechaNacimiento, telefono, posicion);
-	            BaseEmpleadoJdbc.insertarBaseEmpleado(con, empleado);
-	            EmpleadoNoDeportivoJdbc.insertarEmpleadoNoDeportivo(con, empleado);
-	            
-	        } else if (posicion == Posicion.ENTRENADOR) {
-	            // Es Deportivo Y es Entrenador
-	            TipoEntrenador tipo = TipoEntrenador.valueOf(tipoEntrenador); 
-	            Entrenador entrenador = new Entrenador(dni, nombre, apellido, salario, fechaNacimiento, telefono, tipo);
-	            
-	            BaseEmpleadoJdbc.insertarBaseEmpleado(con, entrenador);
-	            EmpleadoDeportivoJdbc.insertarEmpleadoDeportivo(con, entrenador);
-	            
-	            EntrenadorJdbc entrenadorJdbc = new EntrenadorJdbc();
-	            entrenadorJdbc.insertarEntrenador(entrenador, con); 
-	            
-	        } else {
-	            // Es Deportivo pero no es Entrenador
-	            EmpleadoDeportivo empleado = new EmpleadoDeportivo(dni, nombre, apellido, salario, fechaNacimiento, telefono, posicion);
-	            BaseEmpleadoJdbc.insertarBaseEmpleado(con, empleado);
-	            EmpleadoDeportivoJdbc.insertarEmpleadoDeportivo(con, empleado);
-	        }
-
-	        con.commit();
-
-	    } catch (SQLException e) {
-	        if (con != null) {
-	            try {
-	                con.rollback();
-	            } catch (SQLException ex) { }
-	        }
-	        throw new Exception("Error al guardar en la base de datos: " + e.getMessage());
-	    } finally {
-	        if (con != null) {
-	            try {
-	                con.setAutoCommit(true);
-	            } catch (SQLException ex) { }
-	        }
-	    }
+		// Los constructores validan el resto de datos y que la posicion sea del tipo correcto
+		if (esDeportivo) {
+			return new EmpleadoDeportivo(dni, nombre, apellido, salario, fechaNacimiento, telefono, posicion);
+		}
+		return new EmpleadoNoDeportivo(dni, nombre, apellido, salario, fechaNacimiento, telefono, posicion);
 	}
 
 	public void close() throws SQLException {

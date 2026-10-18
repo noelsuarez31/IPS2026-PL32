@@ -8,27 +8,30 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
 
+import giis.demo.exceptions.EmployeeException;
 import giis.demo.model.contrataciones.GestorEmpleados;
 import giis.demo.model.empleado.Posicion;
 
 public class VentanaAltaEmpleado extends JFrame {
 	private static final long serialVersionUID = 1L;
+	private static final DateTimeFormatter FORMATO_FECHA = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 	private JPanel contentPane;
 	private JPanel pnNorte;
 	private JLabel lblTitulo;
@@ -49,8 +52,6 @@ public class VentanaAltaEmpleado extends JFrame {
 	private JRadioButton rbDeportivo, rbNoDeportivo;
 	private final ButtonGroup grTipoEmpleado = new ButtonGroup();
 	private JComboBox<Posicion> cbPosicion;
-	private JComboBox<String> cbTipoEntrenador;
-	private JLabel lblTipoEntrenador;
 
 	private GestorEmpleados gestor;
 
@@ -69,16 +70,6 @@ public class VentanaAltaEmpleado extends JFrame {
 		contentPane.add(getPnCentro(), BorderLayout.CENTER);
 		contentPane.add(getPnSur(), BorderLayout.SOUTH);
 		
-		cbTipoEntrenador = new JComboBox<>(new String[]{"Primer Entrenador", "Segundo Entrenador", "Preparador Físico"});
-		lblTipoEntrenador = new JLabel("Tipo de Entrenador:");
-		lblTipoEntrenador.setVisible(false);
-		cbTipoEntrenador.setVisible(false);
-		cbPosicion.addActionListener(e -> {
-		    boolean esEntrenador = "ENTRENADOR".equals(cbPosicion.getSelectedItem().toString());
-		    lblTipoEntrenador.setVisible(esEntrenador);
-		    cbTipoEntrenador.setVisible(esEntrenador);
-		});
-
 		actualizarModeloPosicion();
 	}
 
@@ -192,8 +183,26 @@ public class VentanaAltaEmpleado extends JFrame {
 		if (cbPosicion == null) {
 			cbPosicion = new JComboBox<Posicion>();
 			cbPosicion.setFont(new Font("Arial", Font.PLAIN, 14));
+			cbPosicion.setRenderer(new DefaultListCellRenderer() {
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				public java.awt.Component getListCellRendererComponent(JList<?> list, Object value, int index,
+						boolean isSelected, boolean cellHasFocus) {
+					return super.getListCellRendererComponent(list, formatearPosicion(value), index, isSelected,
+							cellHasFocus);
+				}
+			});
 		}
 		return cbPosicion;
+	}
+
+	private static String formatearPosicion(Object posicion) {
+		if (posicion == null) {
+			return "";
+		}
+		String texto = posicion.toString().replace('_', ' ').toLowerCase();
+		return Character.toUpperCase(texto.charAt(0)) + texto.substring(1);
 	}
 
 	private void actualizarModeloPosicion() {
@@ -253,46 +262,30 @@ public class VentanaAltaEmpleado extends JFrame {
 		return btCancelar;
 	}
 
+	/**
+	 * Valida solo el formato de los campos. Las reglas de negocio (menores de edad,
+	 * dni/telefono duplicados...) las valida GestorEmpleados
+	 */
 	private boolean validarFormulario() {
-		// 1. Validar campos vacíos (mismo patrón que isVacio() de McDonald's)
 		if (txNombre.getText().isBlank() || txApellido.getText().isBlank() || txDni.getText().isBlank()
 				|| txTelefono.getText().isBlank() || txFechaNac.getText().isBlank() || txSalario.getText().isBlank()) {
-			JOptionPane.showMessageDialog(this, "Error: Todos los campos son obligatorios", "Error",
-					JOptionPane.ERROR_MESSAGE);
+			mostrarError("Todos los campos son obligatorios");
 			return false;
 		}
 
-		// 2. Validar formato de Salario
-		BigDecimal salarioParsed;
 		try {
-			salarioParsed = new BigDecimal(txSalario.getText());
-			if (salarioParsed.compareTo(BigDecimal.ZERO) < 0) {
+			if (new BigDecimal(txSalario.getText().trim()).compareTo(BigDecimal.ZERO) <= 0) {
 				throw new NumberFormatException();
 			}
 		} catch (NumberFormatException e) {
-			JOptionPane.showMessageDialog(this, "Error: El salario debe ser un número positivo válido", "Error",
-					JOptionPane.ERROR_MESSAGE);
+			mostrarError("El salario debe ser un número mayor que cero");
 			return false;
 		}
 
-		// 3. Validar Fecha y Regla de Negocio (Menores de edad solo Jugadores)
 		try {
-			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-			LocalDate fechaNacimiento = LocalDate.parse(txFechaNac.getText(), formatter);
-
-			int edad = Period.between(fechaNacimiento, LocalDate.now()).getYears();
-			Posicion posSeleccionada = (Posicion) getCbPosicion().getSelectedItem();
-
-			// Lógica core de la HU: Si es menor de edad y NO es jugador, bloqueamos.
-			if (edad < 18 && posSeleccionada != Posicion.JUGADOR) {
-				JOptionPane.showMessageDialog(this, "Error: Solo los jugadores pueden ser menores de edad.",
-						"Violación de Regla", JOptionPane.ERROR_MESSAGE);
-				return false;
-			}
-
+			LocalDate.parse(txFechaNac.getText().trim(), FORMATO_FECHA);
 		} catch (DateTimeParseException e) {
-			JOptionPane.showMessageDialog(this, "Error: Formato de fecha incorrecto. Use dd/MM/yyyy", "Error",
-					JOptionPane.ERROR_MESSAGE);
+			mostrarError("Formato de fecha incorrecto. Use dd/MM/yyyy");
 			return false;
 		}
 
@@ -300,45 +293,26 @@ public class VentanaAltaEmpleado extends JFrame {
 	}
 
 	private void crearYGuardarEmpleado() {
-
 		try {
-			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-	        LocalDate fechaNac = LocalDate.parse(txFechaNac.getText(), formatter);
-	        BigDecimal salario = new BigDecimal(txSalario.getText());
-	        boolean esDeportivo = getRbDeportivo().isSelected();
-	        Posicion posicion = (Posicion) getCbPosicion().getSelectedItem();
-	        
-	        // Obtener el tipo de entrenador
-	        String tipoEntrenador = null;
-	        if (posicion == Posicion.ENTRENADOR) {
-	            tipoEntrenador = (String) cbTipoEntrenador.getSelectedItem();
-	            
-	            if ("Primer Entrenador".equals(tipoEntrenador)) {
-	                tipoEntrenador = "PRIMER_ENTRENADOR";
-	            } else if ("Segundo Entrenador".equals(tipoEntrenador)) {
-	                tipoEntrenador = "SEGUNDO_ENTRENADOR";
-	            } else if ("Preparador Físico".equals(tipoEntrenador)) {
-	                tipoEntrenador = "PREPARADOR_FISICO";
-	            }
-	        }
+			LocalDate fechaNac = LocalDate.parse(txFechaNac.getText().trim(), FORMATO_FECHA);
+			BigDecimal salario = new BigDecimal(txSalario.getText().trim());
+			boolean esDeportivo = getRbDeportivo().isSelected();
+			Posicion posicion = (Posicion) getCbPosicion().getSelectedItem();
 
-	        gestor.registrarNuevoEmpleado(txDni.getText(), txNombre.getText(), txApellido.getText(), salario, fechaNac,
-	                txTelefono.getText(), esDeportivo, posicion, tipoEntrenador);
+			gestor.registrarNuevoEmpleado(txDni.getText().trim(), txNombre.getText().trim(),
+					txApellido.getText().trim(), salario, fechaNac, txTelefono.getText().trim(), esDeportivo,
+					posicion);
 
-	        JOptionPane.showMessageDialog(this, "Empleado registrado con éxito en la base de datos", "Éxito",
-	                JOptionPane.INFORMATION_MESSAGE);
-	        limpiarTextos();
-
-		} catch (DateTimeParseException e) {
-			JOptionPane.showMessageDialog(this, "Formato de fecha incorrecto (dd/MM/yyyy)", "Error",
-					JOptionPane.ERROR_MESSAGE);
-		} catch (NumberFormatException e) {
-			JOptionPane.showMessageDialog(this, "Formato de salario incorrecto", "Error", JOptionPane.ERROR_MESSAGE);
-		} catch (IllegalArgumentException ex) {
-		    JOptionPane.showMessageDialog(this, ex.getMessage(), "Teléfono duplicado", JOptionPane.WARNING_MESSAGE);
-		} catch (Exception e) {
-			JOptionPane.showMessageDialog(this, e.getMessage(), "Error al guardar", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(this, "Empleado registrado con éxito", "Éxito",
+					JOptionPane.INFORMATION_MESSAGE);
+			limpiarTextos();
+		} catch (EmployeeException e) {
+			mostrarError(e.getMessage());
 		}
+	}
+
+	private void mostrarError(String mensaje) {
+		JOptionPane.showMessageDialog(this, mensaje, "Error", JOptionPane.ERROR_MESSAGE);
 	}
 
 	private void limpiarTextos() {

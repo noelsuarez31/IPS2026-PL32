@@ -11,6 +11,8 @@ import giis.demo.util.ApplicationException;
 
 public class GestionHorariosPeriodicos {
 	private JDBC jdbc = new JDBC();
+	
+	
 	/**
 	 * Valida que el nuevo horario cumpla con las restricciones de negocio (máximo 8 horas diarias, 
 	 * máximo 40 horas semanales y sin solapamientos) y lo añade a la base de datos si es correcto.
@@ -20,11 +22,18 @@ public class GestionHorariosPeriodicos {
 	 */
 	public void validarYAnadirHorario(HorarioPeriodico nuevoHorario) throws SQLException {
 		
+		
+		
 		// Pedimos a la BD todos los turnos que ya tiene el empleado
-		List<HorarioPeriodico> horariosExistentes = jdbc.getHorariosEmpleado(nuevoHorario.getDni_empleado());
+		List<HorarioPeriodico> horariosExistentes = jdbc.getHorariosPeriodicosEmpleado(nuevoHorario.getDni_empleado());
 		
 		// Calculamos los minutos exactos del turno que se intenta crear
 		long minutosNuevos = calcularMinutos(nuevoHorario.getHora_inicio(), nuevoHorario.getHora_fin());
+		
+		
+		if (minutosNuevos == 0) {
+			throw new ApplicationException("Error: Los turnos deben durar al menos 1 minuto");
+		}
 		
 		long minutosTotalesDia = minutosNuevos;
 		long minutosTotalesSemana = minutosNuevos;
@@ -64,7 +73,7 @@ public class GestionHorariosPeriodicos {
 		}
 		
 		// Si nada lanza excepción, el horario es perfecto: a la Base de Datos.
-		jdbc.añadirHorario(nuevoHorario);
+		jdbc.añadirHorarioPeriodico(nuevoHorario);
 	}
 
 	/**
@@ -90,6 +99,20 @@ public class GestionHorariosPeriodicos {
 	}
 
 	public List<HorarioPeriodico> obtenerHorariosDeEmpleado(String dni) throws SQLException {
-		return jdbc.getHorariosEmpleado(dni);
+		return jdbc.getHorariosPeriodicosEmpleado(dni);
+	}
+	
+	/**
+	 * Calcula los minutos semanales totales que suman todos los horarios periódicos de un empleado.
+	 * @param dni dni del empleado
+	 * @return minutos totales de la semana
+	 * @throws SQLException si falla el acceso a la base de datos
+	 */
+	public long calcularMinutosSemanales(String dni) throws SQLException {
+		long minutos = 0;
+		for (HorarioPeriodico h : jdbc.getHorariosPeriodicosEmpleado(dni)) {
+			minutos += calcularMinutos(h.getHora_inicio(), h.getHora_fin());
+		}
+		return minutos;
 	}
 }

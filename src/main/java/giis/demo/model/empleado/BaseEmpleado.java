@@ -27,8 +27,8 @@ public abstract class BaseEmpleado {
 			throw new EmployeeException("apellido no puede ser null ni blanco");
 		}
 		
-		if(salario.compareTo(BigDecimal.ZERO) < 0) {
-			throw new EmployeeException("salario no puede ser negativo");
+		if(salario == null || salario.compareTo(BigDecimal.ZERO) <= 0) {
+			throw new EmployeeException("salario debe ser mayor que cero");
 		}
 		
 		if(fechaDeNacimiento == null || fechaDeNacimiento.isAfter(LocalDate.now())) {

@@ -43,11 +43,4 @@ public class VentaMerchandising {
 		}
 		return null;
 	}
-	
-	public Producto getProductoPorNombre(String nombreProducto) {
-		for (Producto p : catalogo) {
-			if (p.getNombre().equals(nombreProducto)) return p;
-		}
-		return null;
-	}
 }

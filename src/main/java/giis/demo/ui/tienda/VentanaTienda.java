@@ -2,7 +2,6 @@ package giis.demo.ui.tienda;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -10,17 +9,15 @@ import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import javax.swing.BorderFactory;
-import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -45,6 +42,8 @@ public class VentanaTienda extends JFrame {
     private JTextField txPrecio;
     private JTable tablaPedido;
     private DefaultTableModel modeloTablaPedido;
+    // Producto de cada fila de la tabla (mismo orden), para eliminar por fila y no por nombre
+    private List<Producto> productosEnTabla = new ArrayList<>();
     
     private AccionBotonProducto accionBotonProducto = new AccionBotonProducto();
 
@@ -53,6 +52,12 @@ public class VentanaTienda extends JFrame {
         
         setTitle("Venta de Merchandising");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // Evita cerrar toda la app
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosed(java.awt.event.WindowEvent e) {
+                cerrarVenta(ventanaPrincipal);
+            }
+        });
         setBounds(100, 100, 900, 600);
         setLocationRelativeTo(ventanaPrincipal);
         
@@ -141,7 +146,6 @@ public class VentanaTienda extends JFrame {
             JButton btnProducto = new JButton(String.format("<html><center><b>%s</b><br>%.2f €</center></html>", 
                                               p.getNombre(), p.getPrecio()));
             
-            // Usamos el ID de BBDD pasado a String
             btnProducto.setActionCommand(String.valueOf(p.getId_producto())); 
             btnProducto.addActionListener(accionBotonProducto);
             
@@ -184,26 +188,23 @@ public class VentanaTienda extends JFrame {
     private void eliminarProductoSeleccionado() {
         int fila = tablaPedido.getSelectedRow();
         if (fila != -1) {
-            String nombreProducto = (String) modeloTablaPedido.getValueAt(fila, 0);
-            Producto p = controladorVenta.getProductoPorNombre(nombreProducto);
-            
-            if (p != null) {
-                controladorVenta.getCesta().eliminarProducto(p);
-                actualizarVistaCesta();
-            }
+            controladorVenta.getCesta().eliminarProducto(productosEnTabla.get(fila));
+            actualizarVistaCesta();
         } else {
             JOptionPane.showMessageDialog(this, "Seleccione un producto de la tabla para eliminarlo.", "Aviso", JOptionPane.WARNING_MESSAGE);
         }
     }
 
     private void actualizarVistaCesta() {
-        modeloTablaPedido.setRowCount(0); 
+        modeloTablaPedido.setRowCount(0);
+        productosEnTabla.clear();
         
         for (Map.Entry<Producto, Integer> linea : controladorVenta.getCesta().getLineas().entrySet()) {
             Producto p = linea.getKey();
             int unidades = linea.getValue();
             double subtotal = p.getPrecio() * unidades;
             
+            productosEnTabla.add(p);
             modeloTablaPedido.addRow(new Object[]{
                 p.getNombre(), 
                 unidades, 
@@ -245,6 +246,18 @@ public class VentanaTienda extends JFrame {
                 "Error Crítico", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Libera la conexion de la venta y devuelve el control a la ventana principal
+     */
+    private void cerrarVenta(VentanaPrincipal ventanaPrincipal) {
+        try {
+            controladorVenta.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        ventanaPrincipal.setVisible(true);
     }
 
     class AccionBotonProducto implements ActionListener {
