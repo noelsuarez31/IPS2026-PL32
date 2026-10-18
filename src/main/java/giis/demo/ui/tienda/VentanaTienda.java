@@ -226,14 +226,7 @@ public class VentanaTienda extends JFrame {
             controladorVenta.almacenarVenta();
             
             // Mostrar mensaje 
-            String resumen = String.format("Resumen de compra:\n\n" +
-                                           "Líneas de producto: %d\n" +
-                                           "Unidades totales: %d\n" +
-                                           "Precio total a cobrar: %.2f €", 
-                                           controladorVenta.getCesta().getNumProductosDistintos(),
-                                           controladorVenta.getCesta().getTotalUnidades(),
-                                           controladorVenta.getCesta().getTotal());
-            
+            String resumen = construirResumenCompra();
             JOptionPane.showMessageDialog(this, resumen, "Compra Finalizada", JOptionPane.INFORMATION_MESSAGE);
 
             // Limpiar la vista
@@ -246,6 +239,19 @@ public class VentanaTienda extends JFrame {
                 "Error Crítico", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         }
+    }
+    
+    private String construirResumenCompra() {
+        StringBuilder sb = new StringBuilder("Resumen de compra:\n\n");
+        for (Map.Entry<Producto, Integer> linea : controladorVenta.getCesta().getLineas().entrySet()) {
+            Producto p = linea.getKey();
+            int unidades = linea.getValue();
+            sb.append(String.format("- %s: %d x %.2f € = %.2f €\n", p.getNombre(), unidades, p.getPrecio(),
+                    p.getPrecio() * unidades));
+        }
+        sb.append(String.format("\nUnidades totales: %d\nPrecio total a cobrar: %.2f €",
+                controladorVenta.getCesta().getTotalUnidades(), controladorVenta.getCesta().getTotal()));
+        return sb.toString();
     }
 
     /**
