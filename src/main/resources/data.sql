@@ -313,8 +313,8 @@ insert into Equipo (nombre, es_propio, tipo_equipo, id_categoria) values ('Levan
 insert into Equipo (nombre, es_propio, tipo_equipo, id_categoria) values ('Alavés', 0, 'Profesional', (select id_categoria from CategoriaEquipo where nombre = 'Primer equipo'));
 
 INSERT INTO "FranjaHoraria" ("dni_jugador", "fecha", "hora_inicio", "hora_fin") VALUES 
-('11111111A', '2026-10-15', '10:00:00', '11:00:00'),
-('11111111A', '2026-10-16', '12:00:00', '13:00:00');
+('11111111A', '2026-10-23', '10:00:00', '11:00:00'),
+('11111111A', '2026-10-24', '12:00:00', '13:00:00');
 
 INSERT INTO "Entrevista" ("id_franja","nombre_medio") VALUES 
 (1, "Mundo Deportivo"),
