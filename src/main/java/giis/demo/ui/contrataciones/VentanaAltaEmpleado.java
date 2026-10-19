@@ -266,7 +266,7 @@ public class VentanaAltaEmpleado extends JFrame {
 	 * Valida solo el formato de los campos. Las reglas de negocio (menores de edad,
 	 * dni/telefono duplicados...) las valida GestorEmpleados
 	 */
-	private boolean validarFormulario() {
+	 private boolean validarFormulario() {
 		if (txNombre.getText().isBlank() || txApellido.getText().isBlank() || txDni.getText().isBlank()
 				|| txTelefono.getText().isBlank() || txFechaNac.getText().isBlank() || txSalario.getText().isBlank()) {
 			mostrarError("Todos los campos son obligatorios");
@@ -282,10 +282,21 @@ public class VentanaAltaEmpleado extends JFrame {
 			return false;
 		}
 
+		// Validación de la fecha y que el año sea mayor a 1950
 		try {
-			LocalDate.parse(txFechaNac.getText().trim(), FORMATO_FECHA);
+			LocalDate fechaNac = LocalDate.parse(txFechaNac.getText().trim(), FORMATO_FECHA);
+			if (fechaNac.getYear() <= 1950) {
+				mostrarError("El año de nacimiento debe ser mayor a 1950");
+				return false;
+			}
 		} catch (DateTimeParseException e) {
 			mostrarError("Formato de fecha incorrecto. Use dd/MM/yyyy");
+			return false;
+		}
+
+		// Validación de que el teléfono sean exactamente 9 dígitos numéricos
+		if (!txTelefono.getText().trim().matches("\\d{9}")) {
+			mostrarError("El teléfono debe ser un número de 9 dígitos");
 			return false;
 		}
 
