@@ -93,7 +93,6 @@ public class VentanaVentaEntradas extends JFrame {
 	 * @throws SQLException
 	 */
 	public VentanaVentaEntradas(VentanaPrincipal vp) throws SQLException {
-		setResizable(false);
 
 		this.ma = new MostrarAsientos();
 		this.cv = new CerrarVentana();

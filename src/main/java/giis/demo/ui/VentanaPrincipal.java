@@ -50,9 +50,7 @@ public class VentanaPrincipal extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	private JMenuBar menuBar;
-	private JMenu mnDirector;
 	private JMenu mnEmpleado;
-	private JMenu mnEncargado;
 	private JMenu mnEntrenador;
 	private JMenu mnGerente;
 	private JMenu mnVendedorDeEntradas;
@@ -78,7 +76,7 @@ public class VentanaPrincipal extends JFrame {
 		setTitle("Ventana Inicial");
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 848, 420);
+		setBounds(100, 100, 772, 420);
 		setJMenuBar(getMenuBar_1());
 		contentPane = new JPanel();
 		contentPane.setBackground(new Color(240, 240, 240));
@@ -88,7 +86,7 @@ public class VentanaPrincipal extends JFrame {
 
 		JLabel lbInicio = new JLabel("¡Bienvenido!");
 		lbInicio.setBackground(new Color(240, 240, 240));
-		lbInicio.setBounds(314, 154, 90, 20);
+		lbInicio.setBounds(329, 155, 90, 20);
 		contentPane.add(lbInicio);
 
 		this.setLocationRelativeTo(null);
@@ -110,25 +108,15 @@ public class VentanaPrincipal extends JFrame {
 	private JMenuBar getMenuBar_1() {
 		if (menuBar == null) {
 			menuBar = new JMenuBar();
-			menuBar.add(getMnDirector());
+			menuBar.add(getMnDirectorDeComunicaciones());
 			menuBar.add(getMnEmpleado());
-			menuBar.add(getMnEncargado());
 			menuBar.add(getMnEntrenador());
 			menuBar.add(getMnGerente());
-			menuBar.add(getMnVendedorDeEntradas());
-			menuBar.add(getMnTienda());
 			menuBar.add(getMnGestorDeInstalaciones());
-			menuBar.add(getMnDirectorDeComunicaciones());
+			menuBar.add(getMnTienda());
+			menuBar.add(getMnVendedorDeEntradas());
 		}
 		return menuBar;
-	}
-
-	private JMenu getMnDirector() {
-		if (mnDirector == null) {
-			mnDirector = new JMenu("Director");
-			mnDirector.setMnemonic('C');
-		}
-		return mnDirector;
 	}
 
 	private JMenu getMnEmpleado() {
@@ -138,14 +126,6 @@ public class VentanaPrincipal extends JFrame {
 			mnEmpleado.add(getMntmVisualizarHorarioSemanal());
 		}
 		return mnEmpleado;
-	}
-
-	private JMenu getMnEncargado() {
-		if (mnEncargado == null) {
-			mnEncargado = new JMenu("Encargado");
-			mnEncargado.setMnemonic('N');
-		}
-		return mnEncargado;
 	}
 
 	private JMenu getMnEntrenador() {
