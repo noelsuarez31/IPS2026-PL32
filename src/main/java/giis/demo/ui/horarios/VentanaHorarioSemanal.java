@@ -75,6 +75,8 @@ public class VentanaHorarioSemanal extends JFrame {
 		getContentPane().add(getLblHorasSemana());
 		getContentPane().add(getBtnAtras());
 
+		setLocationRelativeTo(null);
+
 		inicializarTablasYEventos();
 	}
 

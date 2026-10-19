@@ -88,6 +88,7 @@ public class VentanaCrearEntrevistas extends JFrame {
 		contentPane.add(getLbTitulo(), BorderLayout.NORTH);
 		contentPane.add(getPnCentro(), BorderLayout.CENTER);
 		contentPane.add(getPnInferior(), BorderLayout.SOUTH);
+		setLocationRelativeTo(null);
 	}
 
 	private JLabel getLbTitulo() {

@@ -74,6 +74,8 @@ public class VentanaHistorialVentas extends JFrame {
 		contentPane.add(crearPanelFiltro(), BorderLayout.NORTH);
 		contentPane.add(crearPanelCentral(), BorderLayout.CENTER);
 
+		setLocationRelativeTo(null);
+
 		inicializarRangoPorDefecto();
 	}
 

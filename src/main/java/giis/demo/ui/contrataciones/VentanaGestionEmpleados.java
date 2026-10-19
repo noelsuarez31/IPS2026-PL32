@@ -61,6 +61,8 @@ public class VentanaGestionEmpleados extends JFrame {
 	public VentanaGestionEmpleados(VentanaPrincipal ventanaPrincipal, GestorEmpleados gestor) {
 		this.gestor = gestor;
 
+		setLocationRelativeTo(null);
+
 		setTitle("Gestión de Club - Modificar y eliminar empleados");
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 1000, 560);

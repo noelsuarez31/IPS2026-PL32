@@ -93,6 +93,8 @@ public class VentanaAñadirEquipo extends JFrame {
 		contentPane.add(getScrPanelPrincipal(), BorderLayout.CENTER);
 		contentPane.add(getPnInferior(), BorderLayout.SOUTH);
 		
+		setLocationRelativeTo(null);
+
 		// Cargamos los jugadores segun los valores por defecto de los combo
 		cargarJugadoresInicialesPorDefecto();
 		

@@ -96,6 +96,8 @@ public class VentanaHorarioEspecifico extends JFrame {
 		getContentPane().add(getLblHorariosEspecificos());
 		getContentPane().add(getScrollPaneHorarioEspecifico());
 		
+		setLocationRelativeTo(null);
+
 		inicializarTablasYEventos();
 	}
 	public JSpinner getSpHoraInicio() {

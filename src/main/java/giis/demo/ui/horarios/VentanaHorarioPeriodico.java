@@ -88,6 +88,8 @@ public class VentanaHorarioPeriodico extends JFrame {
 		getContentPane().add(getLblHorasSemanaTexto());
 		getContentPane().add(getLblHorasSemana());
 		
+		setLocationRelativeTo(null);
+
 		inicializarTablasYEventos();
 	}
 	public JComboBox getCbDia() {
