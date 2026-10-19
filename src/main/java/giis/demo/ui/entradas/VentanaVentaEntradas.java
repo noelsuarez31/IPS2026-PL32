@@ -100,7 +100,7 @@ public class VentanaVentaEntradas extends JFrame {
 
 		this.addWindowListener(cv);
 
-		this.setTitle("Compra de entradas");
+		this.setTitle("Venta de entradas");
 
 		this.vp = vp;
 		this.venta = new VentaDeEntradas();

@@ -477,14 +477,13 @@ public class VentanaReserva extends JFrame {
 			//correcta al usuario
 
 			modeloTablaHorarios.setRowCount(0);
-
 			DateTimeFormatter formato = DateTimeFormatter.ofPattern("HH:mm");
-
+			
 			for (Intervalo intervalo : todos) {
 
 				String motivo = intervalo.getMotivo();
 				boolean isDisponible = "Disponible".equalsIgnoreCase(motivo);
-
+				
 				modeloTablaHorarios.addRow(new Object[] { intervalo.getHoraInicio().format(formato),
 						intervalo.getHoraFin().format(formato), isDisponible ? "Disponible" : "Ocupado",
 						isDisponible ? "-" : motivo });
@@ -571,7 +570,17 @@ public class VentanaReserva extends JFrame {
 		
 		LocalTime inicio = ((Date) spInicio.getValue()).toInstant().atZone(ZoneId.systemDefault()).toLocalTime();
 		LocalTime fin = ((Date) spFin.getValue()).toInstant().atZone(ZoneId.systemDefault()).toLocalTime();
+		LocalTime ahora = LocalTime.now().truncatedTo(java.time.temporal.ChronoUnit.HOURS);
 
+		if (fecha.equals(LocalDate.now()) && inicio.isBefore(ahora)) {
+			
+			JOptionPane.showMessageDialog(this,
+					"No se puede reservar la franja porque la hora de inicio es anterior a la actual.\n"
+							+ "Seleccione una hora de inicio posterior a la hora actual.",
+					"Hora no válida", JOptionPane.WARNING_MESSAGE);
+			return;
+		}
+		
 		try {
 			
 			boolean disponible = rr.comprobarDisponibilidad(instalacion.getInstalacionId(), fecha, inicio, fin);

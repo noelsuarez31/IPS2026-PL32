@@ -329,11 +329,11 @@ INSERT INTO "Entrevista" ("id_franja","nombre_medio") VALUES
 (1, "Mundo Deportivo"),
 (2, "Marca");
 INSERT INTO "Entrenamiento" ("fecha", "hora_inicio", "hora_fin", "id_equipo", "id_instalacion") VALUES 
-('2026-10-20', '16:00:00', '18:00:00', 1, 1),
-('2026-10-27', '17:00:00', '19:00:00', 9, 1);
+('2026-10-21', '16:00:00', '18:00:00', 1, 1),
+('2026-10-27', '17:00:00', '19:00:00', 1, 1);
 
 INSERT INTO "Partido" ("fecha", "hora_inicio", "hora_fin", "id_local", "id_visitante", "id_instalacion") VALUES 
-('2026-10-20', '21:00:00', '23:00:00', 1, 2, 1),
+('2026-10-21', '21:00:00', '23:00:00', 1, 2, 1),
 ('2026-10-27', '18:30:00', '20:30:00', 3, 4, 2),
 ('2026-10-29', '19:30:00', '22:30:00', 5, 6, 2),
 ('2026-11-03', '14:30:00', '16:30:00', 7, 9, 3);
@@ -348,9 +348,8 @@ insert into Usuario (nombre, tarjeta_bancaria) values ('Pablo Ríos', '222233334
 insert into Usuario (nombre, tarjeta_bancaria) values ('Lucía Torres', '3333444455556666');
 insert into Usuario (nombre, tarjeta_bancaria) values ('Club Deportivo Naranco', '4444555566667777');
 
-insert into Reserva (fecha, hora_inicio, hora_fin, importe, fecha_registro, id_usuario, id_instalacion) values ('2026-03-22', '14:00', '16:00', 100.0, '2026-10-05 12:41', (select id_usuario from Usuario where nombre = 'Marta Fernández'), (select id_instalacion from Instalacion where nombre = 'Campo de fútbol 1'));
-insert into Reserva (fecha, hora_inicio, hora_fin, importe, fecha_registro, id_usuario, id_instalacion) values ('2026-03-22', '18:00', '19:30', 75.0, '2026-10-06 09:15', (select id_usuario from Usuario where nombre = 'Pablo Ríos'), (select id_instalacion from Instalacion where nombre = 'Campo de fútbol 1'));
-insert into Reserva (fecha, hora_inicio, hora_fin, importe, fecha_registro, id_usuario, id_instalacion) values ('2026-03-31', '09:00', '11:00', 100.0, '2026-10-06 17:30', (select id_usuario from Usuario where nombre = 'Lucía Torres'), (select id_instalacion from Instalacion where nombre = 'Campo de fútbol 2'));
-insert into Reserva (fecha, hora_inicio, hora_fin, importe, fecha_registro, id_usuario, id_instalacion) values ('2026-03-27', '17:15', '18:45', 75.0, '2026-10-07 11:05', (select id_usuario from Usuario where nombre = 'Marta Fernández'), (select id_instalacion from Instalacion where nombre = 'Campo de fútbol 2'));
-insert into Reserva (fecha, hora_inicio, hora_fin, importe, fecha_registro, id_usuario, id_instalacion) values ('2026-03-23', '08:00', '10:00', 100.0, '2026-10-07 13:20', (select id_usuario from Usuario where nombre = 'Pablo Ríos'), (select id_instalacion from Instalacion where nombre = 'Campo de fútbol 3'));
-insert into Reserva (fecha, hora_inicio, hora_fin, importe, fecha_registro, id_usuario, id_instalacion) values ('2026-03-26', '20:00', '22:00', 100.0, '2026-10-08 10:00', (select id_usuario from Usuario where nombre = 'Club Deportivo Naranco'), (select id_instalacion from Instalacion where nombre = 'Campo de fútbol 3'));
+insert into Reserva (fecha, hora_inicio, hora_fin, importe, fecha_registro, id_usuario, id_instalacion) values ('2026-03-22', '14:00', '16:00', 100.0, '2026-10-21 12:41', (select id_usuario from Usuario where nombre = 'Marta Fernández'), (select id_instalacion from Instalacion where nombre = 'Campo de fútbol 1'));
+insert into Reserva (fecha, hora_inicio, hora_fin, importe, fecha_registro, id_usuario, id_instalacion) values ('2026-03-22', '18:00', '19:30', 75.0, '2026-10-20 09:15', (select id_usuario from Usuario where nombre = 'Pablo Ríos'), (select id_instalacion from Instalacion where nombre = 'Campo de fútbol 1'));
+insert into Reserva (fecha, hora_inicio, hora_fin, importe, fecha_registro, id_usuario, id_instalacion) values ('2026-03-31', '09:00', '11:00', 100.0, '2026-10-22 17:30', (select id_usuario from Usuario where nombre = 'Lucía Torres'), (select id_instalacion from Instalacion where nombre = 'Campo de fútbol 2'));
+insert into Reserva (fecha, hora_inicio, hora_fin, importe, fecha_registro, id_usuario, id_instalacion) values ('2026-03-23', '08:00', '10:00', 100.0, '2026-10-24 13:20', (select id_usuario from Usuario where nombre = 'Pablo Ríos'), (select id_instalacion from Instalacion where nombre = 'Campo de fútbol 3'));
+insert into Reserva (fecha, hora_inicio, hora_fin, importe, fecha_registro, id_usuario, id_instalacion) values ('2026-03-26', '20:00', '22:00', 100.0, '2026-10-31 10:00', (select id_usuario from Usuario where nombre = 'Club Deportivo Naranco'), (select id_instalacion from Instalacion where nombre = 'Campo de fútbol 3'));
