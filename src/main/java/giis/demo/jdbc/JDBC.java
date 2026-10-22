@@ -581,5 +581,12 @@ public class JDBC {
 			con.setAutoCommit(autoCommitOriginal);
 		}
 	}
+
+	public Equipo[] getEquiposLocales() throws SQLException {
+
+		List<Equipo> equipos = EquipoJdbc.getEquiposPropios(con);
+		
+		return equipos.toArray(new Equipo[0]);
+	}
 	
 }

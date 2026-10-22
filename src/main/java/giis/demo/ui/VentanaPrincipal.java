@@ -12,6 +12,7 @@ import giis.demo.model.historial.HistorialVentas;
 import giis.demo.model.horarios.GestionHorariosEspecificos;
 import giis.demo.model.horarios.GestionHorariosPeriodicos;
 import giis.demo.model.tienda.VentaMerchandising;
+import giis.demo.ui.abonos.VentaAbono;
 import giis.demo.ui.contrataciones.VentanaAltaEmpleado;
 import giis.demo.ui.contrataciones.VentanaGestionEmpleados;
 import giis.demo.ui.entradas.VentanaVentaEntradas;
@@ -68,6 +69,8 @@ public class VentanaPrincipal extends JFrame {
 	private JMenuItem mntmCrearFranjas;
 	private JMenu mnDirectorDeComunicaciones;
 	private JMenuItem mntmAsignarEntrevistas;
+	private JMenu mnAbonado;
+	private JMenuItem mntmComprarAbono;
 
 	/**
 	 * Create the frame.
@@ -108,6 +111,7 @@ public class VentanaPrincipal extends JFrame {
 	private JMenuBar getMenuBar_1() {
 		if (menuBar == null) {
 			menuBar = new JMenuBar();
+			menuBar.add(getMnAbonado());
 			menuBar.add(getMnDirectorDeComunicaciones());
 			menuBar.add(getMnEmpleado());
 			menuBar.add(getMnEntrenador());
@@ -467,5 +471,34 @@ public class VentanaPrincipal extends JFrame {
 
 	public GestionHorarioSemanal getGestionHorarioSemanal() {
 		return this.ghs;
+	}
+	private JMenu getMnAbonado() {
+		if (mnAbonado == null) {
+			mnAbonado = new JMenu("Abonado");
+			mnAbonado.setMnemonic('B');
+			mnAbonado.add(getMntmComprarAbono());
+		}
+		return mnAbonado;
+	}
+	private JMenuItem getMntmComprarAbono() {
+		if (mntmComprarAbono == null) {
+			mntmComprarAbono = new JMenuItem("Comprar abono");
+			mntmComprarAbono.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					
+					abrirVentaAbono();
+					
+				}
+			});
+		}
+		return mntmComprarAbono;
+	}
+	
+	private void abrirVentaAbono() {
+		
+		
+		VentaAbono va = new VentaAbono(this);
+		this.setVisible(false);
+		va.setVisible(true);
 	}
 }
