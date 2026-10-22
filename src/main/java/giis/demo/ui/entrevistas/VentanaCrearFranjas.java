@@ -9,6 +9,7 @@ import java.awt.event.ActionListener;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Date;
 import java.util.List;
 
@@ -347,8 +348,14 @@ public class VentanaCrearFranjas extends JFrame{
 				|| getTxHoraFin().getText() == null || getTxHoraFin().getText().isBlank()) {
 			throw new NoAvailableSlotException("Los campos de las horas no pueden estar vacio");
 		}
-	    LocalTime horaInicio = LocalTime.parse(getTxHoraInicio().getText().trim(), formatoHora);
-	    LocalTime horaFin = LocalTime.parse(getTxHoraFin().getText().trim(), formatoHora);
+	    LocalTime horaInicio;
+	    LocalTime horaFin;
+	    try {
+	        horaInicio = LocalTime.parse(getTxHoraInicio().getText().trim(), formatoHora);
+	        horaFin = LocalTime.parse(getTxHoraFin().getText().trim(), formatoHora);
+	    } catch (DateTimeParseException dtpe) {
+	        throw new NoAvailableSlotException("El formato de las horas debe ser HH:mm válido (entre 00:00 y 23:59).");
+	    }
 	    
 	    crearFranjaService.crearFranjaHoraria(fechaFranja, horaInicio, horaFin);
 	    

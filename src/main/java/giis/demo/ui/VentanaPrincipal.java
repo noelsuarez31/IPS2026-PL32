@@ -327,7 +327,6 @@ public class VentanaPrincipal extends JFrame {
 					abrirVentanaAñadirHorarioPeriodico();
 				}
 			});
-			mntmAñadirHorarioPeriodico.setHorizontalAlignment(SwingConstants.CENTER);
 		}
 		return mntmAñadirHorarioPeriodico;
 	}
@@ -347,7 +346,6 @@ public class VentanaPrincipal extends JFrame {
 					abrirVentanaAñadirHorarioEspecifico();
 				}
 			});
-			mntmAñadirHorarioEspecifico.setHorizontalAlignment(SwingConstants.CENTER);
 		}
 		return mntmAñadirHorarioEspecifico;
 	}
