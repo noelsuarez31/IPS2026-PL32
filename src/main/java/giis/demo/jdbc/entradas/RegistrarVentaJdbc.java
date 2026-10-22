@@ -5,7 +5,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import giis.demo.model.entradas.Butaca;
@@ -16,6 +17,7 @@ public class RegistrarVentaJdbc {
 	
 	private static final String QUERY_INSERTVENTAS = "INSERT INTO Venta(fecha, concepto, tipo, total) VALUES (?,?,?,?) ";
 	private static final String QUERY_INSERTENTRADA = "INSERT INTO Entrada(id_partido, id_venta, id_butaca, precio) VALUES (?,?,?,?) ";
+	private static final DateTimeFormatter FORMATO_REGISTRO = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
 	
 	/**
@@ -55,7 +57,7 @@ public class RegistrarVentaJdbc {
 		
 		try (PreparedStatement ps = con.prepareStatement(QUERY_INSERTVENTAS, Statement.RETURN_GENERATED_KEYS)) {
 			
-			ps.setString(1, LocalDate.now().toString());
+			ps.setString(1, LocalDateTime.now().format(FORMATO_REGISTRO));
 			ps.setString(2, "ENTRADAS PARA EL PARTIDO " + idPartido);
 			ps.setString(3, "ENTRADAS");
 			ps.setDouble(4, total);

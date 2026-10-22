@@ -3,6 +3,7 @@ package giis.demo.jdbc.reservas;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.time.format.DateTimeFormatter;
 
 import giis.demo.model.reserva.Reserva;
 
@@ -11,6 +12,7 @@ public class ReservaJdbc {
 	private static String QUERY_INSERT_BOOK = "INSERT INTO Reserva(fecha, hora_inicio, hora_fin, importe, fecha_registro,"
 			+ "id_usuario, id_instalacion) VALUES (?,?,?,?,?,?,?)";
 
+	private static final DateTimeFormatter FORMATO_REGISTRO = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 	/**
 	 * Añade la reserva a la BBDD
 	 * 
@@ -29,7 +31,7 @@ public class ReservaJdbc {
 			ps.setString(3, reserva.getHoraFin().toString());
 
 			ps.setDouble(4, reserva.getImporte());
-			ps.setString(5, reserva.getFechaRegistro().toString());
+			ps.setString(5, reserva.getFechaRegistro().format(FORMATO_REGISTRO));
 			ps.setInt(6, reserva.getUserId());
 			ps.setInt(7, reserva.getInstalacionId());
 

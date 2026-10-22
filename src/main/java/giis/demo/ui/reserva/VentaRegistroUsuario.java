@@ -21,6 +21,7 @@ import java.awt.event.ActionListener;
 import java.sql.SQLException;
 import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.Date;
@@ -320,7 +321,7 @@ public class VentaRegistroUsuario extends JDialog {
 		}
 
 		this.vr.getRealizarReserva().guardarUsuario(user);
-		Reserva reserva = new Reserva(fecha, horaInicio, horaFin, 0, LocalDate.now(), user.getUsuarioId(),
+		Reserva reserva = new Reserva(fecha, horaInicio, horaFin, 0, LocalDateTime.now(), user.getUsuarioId(),
 				idInstalacion);
 
 		boolean registrada = vr.getRealizarReserva().registrarNuevaReserva(reserva);

@@ -1,6 +1,7 @@
 package giis.demo.model.reserva;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 public class Reserva {
@@ -11,7 +12,7 @@ public class Reserva {
 	private LocalTime horaInicio;
 	private LocalTime horaFin;
 	private double importe;
-	private LocalDate fechaRegistro;
+	private LocalDateTime fechaRegistro;
 	private int userId;
 	private int instalacionId;
 
@@ -28,7 +29,7 @@ public class Reserva {
 	 * @param instalacionId
 	 */
 	public Reserva(LocalDate fechaReserva, LocalTime horaInicio, LocalTime horaFin, double importe,
-			LocalDate fechaRegistro, int userId, int instalacionId) {
+			LocalDateTime fechaRegistro, int userId, int instalacionId) {
 
 		this.fechaReserva = fechaReserva;
 		this.horaInicio = horaInicio;
@@ -83,7 +84,7 @@ public class Reserva {
 	 * 
 	 * @return fecha en la que se realizó la reserva
 	 */
-	public LocalDate getFechaRegistro() {
+	public LocalDateTime getFechaRegistro() {
 		return fechaRegistro;
 	}
 

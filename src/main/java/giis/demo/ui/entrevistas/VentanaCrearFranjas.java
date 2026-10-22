@@ -78,6 +78,8 @@ public class VentanaCrearFranjas extends JFrame{
 		getContentPane().add(getPnCentral(), BorderLayout.CENTER);
 		getContentPane().add(getPnInferior(), BorderLayout.SOUTH);
 		
+		setLocationRelativeTo(null);
+
 		habilitarFormularioFranja(false);
 		cargarEntrenadoresEnCombo();
 	}
