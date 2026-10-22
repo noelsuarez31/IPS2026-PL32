@@ -17,6 +17,7 @@ public class RegistrarVentaJdbc {
 	
 	private static final String QUERY_INSERTVENTAS = "INSERT INTO Venta(fecha, concepto, tipo, total) VALUES (?,?,?,?) ";
 	private static final String QUERY_INSERTENTRADA = "INSERT INTO Entrada(id_partido, id_venta, id_butaca, precio) VALUES (?,?,?,?) ";
+	
 	private static final DateTimeFormatter FORMATO_REGISTRO = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
 	
