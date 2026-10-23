@@ -55,7 +55,7 @@ public class VentaDeAbonos extends Venta{
 			throw new IllegalArgumentException("La fecha de nacimiento no puede ser nula ni posterior a la fecha actual");
 		}
 		
-		int edad = fechaActual.getYear() - fechaNacimiento.getYear();
+		int edad = java.time.Period.between(fechaNacimiento, fechaActual).getYears();
 		
 		return getCategoria(edad);
 		

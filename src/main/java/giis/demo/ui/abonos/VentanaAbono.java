@@ -41,6 +41,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.awt.event.ActionEvent;
 import javax.swing.SpinnerNumberModel;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 /**
  * Create the frame.
@@ -102,6 +104,8 @@ public class VentanaAbono extends JFrame {
 	private JButton btCancelar;
 	
 	private CambiarTabla ct;
+	private int filaSeleccionada=-1;
+	private int asientoSeleccionado=-1;
 	
 	public VentanaAbono(VentanaPrincipal vp) {
 		
@@ -120,6 +124,7 @@ public class VentanaAbono extends JFrame {
 		getContentPane().add(getPanelEleccion(), BorderLayout.SOUTH);
 		
 		setLocationRelativeTo(null);
+		
 	}
 
 	private JPanel getPanelUsuario() {
@@ -501,6 +506,41 @@ public class VentanaAbono extends JFrame {
 	    if (tablaAsientos == null) {
 	    	
 	        tablaAsientos = new JTable(10, 15);
+	        tablaAsientos.setEnabled(false);
+	        tablaAsientos.addMouseListener(new MouseAdapter() {
+	        	@Override
+	        	public void mouseClicked(MouseEvent e) {
+	        		
+	        		if(!getTablaAsientos().isEnabled()) {
+	        			return;
+	        		}
+	        		
+	        		int fila = tablaAsientos.rowAtPoint(e.getPoint());
+	        		int columna = tablaAsientos.columnAtPoint(e.getPoint());
+	        		
+	        		if(!checksFilaColumna(fila, columna)) {
+	        			
+	        			return;
+	        		}
+	        		
+	        		if(asientosSeleccionados[fila][columna]) {
+	        			
+	        			JOptionPane.showMessageDialog(null, "Este asiento ya está ocupado. Seleccione otro por favor.",
+	        					"Asiento no disponible", JOptionPane.WARNING_MESSAGE);
+	        			return;
+	        		}
+	        		
+	        		filaSeleccionada = fila;
+	        		asientoSeleccionado = columna;
+	        		
+	        		spFila.setValue(fila + 1);
+	                spAsiento.setValue(columna + 1);
+	                
+	                tablaAsientos.repaint();
+	        		
+	        	}
+	        	
+	        });
 	        tablaAsientos.setTableHeader(null);
 	        tablaAsientos.setRowHeight(22);
 	        tablaAsientos.setShowGrid(true);
@@ -520,7 +560,21 @@ public class VentanaAbono extends JFrame {
 	            public Component getTableCellRendererComponent(JTable table, Object value,
 	                    boolean isSelected, boolean hasFocus, int row, int column) {
 	                Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-	                c.setBackground(asientosSeleccionados[row][column] ? Color.RED : Color.GREEN);
+
+	                if(asientosSeleccionados[row][column]) {
+	                	
+	                	c.setBackground(Color.RED);
+	                	
+	                } else if(row==filaSeleccionada && column == asientoSeleccionado) {
+	                	
+	                	c.setBackground(Color.BLUE);
+	                	
+	                } else {
+	                	
+	                	c.setBackground(Color.GREEN);
+	                	
+	                }
+	                
 	                c.setForeground(Color.BLACK);
 	                setHorizontalAlignment(CENTER);
 	                return c;
@@ -528,6 +582,12 @@ public class VentanaAbono extends JFrame {
 	        });
 	    }
 	    return tablaAsientos;
+	}
+	
+	private boolean checksFilaColumna(int fila, int columna) {
+		
+		return (fila>0 || columna>0 || fila<=10 || columna<=15);
+		
 	}
 	
 	private void actualizarTablaAsientos() {
@@ -559,6 +619,8 @@ public class VentanaAbono extends JFrame {
 			}
 			
 		}
+		
+		getTablaAsientos().repaint();
 	}
 	
 	private JButton getBtConsultar() {
@@ -625,6 +687,8 @@ public class VentanaAbono extends JFrame {
 		getCbSeccion().setEnabled(habilitar);
 		getSpFila().setEnabled(habilitar);
 		getSpAsiento().setEnabled(habilitar);
+		getTablaAsientos().setEnabled(habilitar);
+		
 		
 		getBtFinalizar().setEnabled(habilitar);
 		getBtCancelar().setEnabled(habilitar);
@@ -688,7 +752,11 @@ public class VentanaAbono extends JFrame {
 		getTfApellidos().setText("");
 		getTfDni().setText("");
 		getTfEmail().setText("");
-		getDcNacimiento().setDate(new Date());
+		
+		Calendar calendario = Calendar.getInstance();
+		calendario.add(Calendar.YEAR, -18);
+		
+		getDcNacimiento().setDate(calendario.getTime());
 		
 		getTfCategoria().setText("");
 		getTfPrecio().setText("");
