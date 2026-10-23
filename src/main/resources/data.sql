@@ -22,6 +22,9 @@ delete from Reserva;
 delete from Usuario;
 delete from Instalacion;
 
+delete from Abono;
+delete from Abonado;
+
 INSERT INTO "Producto" ("nombre", "tipo", "precio") VALUES 
 ('Sudadera', 'ParteArriba', 65.00),
 ('Camiseta', 'ParteArriba', 35.00),
@@ -353,3 +356,71 @@ insert into Reserva (fecha, hora_inicio, hora_fin, importe, fecha_registro, id_u
 insert into Reserva (fecha, hora_inicio, hora_fin, importe, fecha_registro, id_usuario, id_instalacion) values ('2026-03-31', '09:00', '11:00', 100.0, '2026-10-22 17:30', (select id_usuario from Usuario where nombre = 'Lucía Torres'), (select id_instalacion from Instalacion where nombre = 'Campo de fútbol 2'));
 insert into Reserva (fecha, hora_inicio, hora_fin, importe, fecha_registro, id_usuario, id_instalacion) values ('2026-03-23', '08:00', '10:00', 100.0, '2026-10-24 13:20', (select id_usuario from Usuario where nombre = 'Pablo Ríos'), (select id_instalacion from Instalacion where nombre = 'Campo de fútbol 3'));
 insert into Reserva (fecha, hora_inicio, hora_fin, importe, fecha_registro, id_usuario, id_instalacion) values ('2026-03-26', '20:00', '22:00', 100.0, '2026-10-31 10:00', (select id_usuario from Usuario where nombre = 'Club Deportivo Naranco'), (select id_instalacion from Instalacion where nombre = 'Campo de fútbol 3'));
+
+
+INSERT INTO Abonado
+    (dni, nombre, apellidos, fecha_nacimiento, email)
+VALUES
+    ('12345678A', 'Lucía', 'Fernández García', '2010-05-12',
+     'lucia.fernandez@example.com'),
+
+    ('23456789B', 'Pablo', 'Martínez López', '2005-03-20',
+     'pablo.martinez@example.com'),
+
+    ('34567890C', 'Marta', 'Suárez González', '1990-11-08',
+     'marta.suarez@example.com'),
+
+    ('45678901D', 'Antonio', 'Pérez Rodríguez', '1958-02-15',
+     'antonio.perez@example.com');
+     
+     
+INSERT INTO Venta (fecha, concepto, tipo, total)
+VALUES
+    ('2026-10-23', 'Abono de temporada',
+     'ABONOS', 100.00),
+
+    ('2026-10-23', 'Abono de temporada',
+     'ABONOS', 200.00),
+
+    ('2026-10-23', 'Abono de temporada',
+     'ABONOS', 400.00),
+
+    ('2026-10-23', 'Abono de temporada',
+     'ABONOS', 250.00);
+     
+INSERT INTO Abono
+    (id_venta, id_abonado, id_equipo, id_butaca,
+     fecha_inicio, fecha_fin, categoria, precio)
+VALUES
+    (
+        (SELECT MAX(id_venta) - 3 FROM Venta),
+        (SELECT id_abonado FROM Abonado WHERE dni = '12345678A'),
+        (SELECT id_equipo FROM Equipo WHERE nombre = 'Real Oviedo' AND es_propio = 1 LIMIT 1),
+        (SELECT id_butaca FROM Butaca
+         WHERE tribuna = 'A' AND seccion = 'A' AND fila = 1 AND asiento = 1),
+        '2026-07-01', '2027-06-30', 'INFANTIL', 100.00
+    ),
+    (
+        (SELECT MAX(id_venta) - 2 FROM Venta),
+        (SELECT id_abonado FROM Abonado WHERE dni = '23456789B'),
+        (SELECT id_equipo FROM Equipo WHERE nombre = 'Real Oviedo' AND es_propio = 1 LIMIT 1),
+        (SELECT id_butaca FROM Butaca
+         WHERE tribuna = 'A' AND seccion = 'A' AND fila = 1 AND asiento = 2),
+        '2026-07-01', '2027-06-30', 'SUB-26', 200.00
+    ),
+    (
+        (SELECT MAX(id_venta) - 1 FROM Venta),
+        (SELECT id_abonado FROM Abonado WHERE dni = '34567890C'),
+        (SELECT id_equipo FROM Equipo WHERE nombre = 'Real Oviedo B' AND es_propio = 1 LIMIT 1),
+        (SELECT id_butaca FROM Butaca
+         WHERE tribuna = 'B' AND seccion = 'B' AND fila = 1 AND asiento = 1),
+        '2026-07-01', '2027-06-30', 'ADULTO', 400.00
+    ),
+    (
+        (SELECT MAX(id_venta) FROM Venta),
+        (SELECT id_abonado FROM Abonado WHERE dni = '45678901D'),
+        (SELECT id_equipo FROM Equipo WHERE nombre = 'Real Oviedo B' AND es_propio = 1 LIMIT 1),
+        (SELECT id_butaca FROM Butaca
+         WHERE tribuna = 'B' AND seccion = 'B' AND fila = 1 AND asiento = 2),
+        '2026-07-01', '2027-06-30', 'JUBILADO', 250.00
+    );

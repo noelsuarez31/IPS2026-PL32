@@ -8,6 +8,7 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 
+import giis.demo.jdbc.abonados.AbonadoJdbc;
 import giis.demo.jdbc.empleado.BaseEmpleadoJdbc;
 import giis.demo.jdbc.empleado.EmpleadoDeportivoJdbc;
 import giis.demo.jdbc.empleado.EmpleadoNoDeportivoJdbc;
@@ -588,5 +589,12 @@ public class JDBC {
 		
 		return equipos.toArray(new Equipo[0]);
 	}
+
+	public List<int[]> getAsientosOcupados(int idEquipo, String nameTribuna, String nameSeccion,LocalDate now) throws SQLException {
+
+		return AbonadoJdbc.getAsientosOcupados(con, idEquipo, nameTribuna, nameSeccion, now);
+	}
+	
+	
 	
 }

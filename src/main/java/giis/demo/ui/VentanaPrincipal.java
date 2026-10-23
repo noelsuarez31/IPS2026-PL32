@@ -12,7 +12,7 @@ import giis.demo.model.historial.HistorialVentas;
 import giis.demo.model.horarios.GestionHorariosEspecificos;
 import giis.demo.model.horarios.GestionHorariosPeriodicos;
 import giis.demo.model.tienda.VentaMerchandising;
-import giis.demo.ui.abonos.VentaAbono;
+import giis.demo.ui.abonos.VentanaAbono;
 import giis.demo.ui.contrataciones.VentanaAltaEmpleado;
 import giis.demo.ui.contrataciones.VentanaGestionEmpleados;
 import giis.demo.ui.entradas.VentanaVentaEntradas;
@@ -497,7 +497,7 @@ public class VentanaPrincipal extends JFrame {
 	private void abrirVentaAbono() {
 		
 		
-		VentaAbono va = new VentaAbono(this);
+		VentanaAbono va = new VentanaAbono(this);
 		this.setVisible(false);
 		va.setVisible(true);
 	}

@@ -4,7 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.EventQueue;
 import java.awt.GridLayout;
 
 import javax.swing.DefaultComboBoxModel;
@@ -12,6 +11,7 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.JTable;
@@ -21,19 +21,31 @@ import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 
+import com.toedter.calendar.JDateChooser;
+
 import giis.demo.model.entradas.enumerados.TipoSeccion;
 import giis.demo.model.entradas.enumerados.TipoTribuna;
 import giis.demo.model.equipo.Equipo;
 import giis.demo.ui.VentanaPrincipal;
 import giis.demo.model.abonos.VentaDeAbonos;
+import giis.demo.model.abonos.VentaDeAbonos.Categoria;
+
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.awt.event.ActionEvent;
+import javax.swing.SpinnerNumberModel;
 
 /**
  * Create the frame.
  */
-public class VentaAbono extends JFrame {
+public class VentanaAbono extends JFrame {
 
 	
 	private static final long serialVersionUID = 1L;
@@ -48,7 +60,7 @@ public class VentaAbono extends JFrame {
 	private JTextField tfApellidos;
 	private JTextField tfDni;
 	private JTextField tfEmail;
-	private JSpinner spNacimiento;
+	private JDateChooser dcNacimiento;
 	private JPanel panelSeleccion;
 	private JPanel panelVisualización;
 	private JPanel panelEleccion;
@@ -60,19 +72,19 @@ public class VentaAbono extends JFrame {
 	private JComboBox<TipoSeccion> cbSeccion;
 	private JLabel lblFila;
 	private JLabel lblAsiento;
-	private JSpinner spNacimiento_1;
-	private JSpinner spNacimiento_1_1;
+	private JSpinner spFila;
+	private JSpinner spAsiento;
 	private JPanel panelTabla;
 	private JPanel panelLeyenda;
 	private JPanel panelPrecio;
 	private JLabel lbPrecio;
 	private JTextField tfPrecio;
 	private JPanel panelBotones;
-	private JButton btVolver;
-	private JButton btCancelar;
 	private JButton btFinalizar;
 	
 	private JTable tablaAsientos;
+	private boolean[][] asientosSeleccionados = new boolean[10][15];
+	
 	private VentaDeAbonos va;
 	
 	private JLabel lbColorLibre;
@@ -83,11 +95,19 @@ public class VentaAbono extends JFrame {
 	private JLabel lbSeleccion;
 	
 	private VentanaPrincipal vp;
+	private JButton btConsultar;
+	private JLabel lblCategora;
+	private JTextField tfCategoria;
+	private JButton btVolver;
+	private JButton btCancelar;
 	
-	public VentaAbono(VentanaPrincipal vp) {
+	private CambiarTabla ct;
+	
+	public VentanaAbono(VentanaPrincipal vp) {
 		
 		va = new VentaDeAbonos();
 		this.vp = vp;
+		ct = new CambiarTabla(this);
 		
 		setTitle("Venta de abonos : registo de usuario");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -119,7 +139,9 @@ public class VentaAbono extends JFrame {
 			panelUsuario.add(getTfApellidos());
 			panelUsuario.add(getTfDni());
 			panelUsuario.add(getTfEmail());
-			panelUsuario.add(getSpNacimiento());
+			panelUsuario.add(getDcNacimiento());
+			panelUsuario.add(getBtConsultar());
+			panelUsuario.add(getBtCancelar());
 		}
 		return panelUsuario;
 	}
@@ -169,7 +191,7 @@ public class VentaAbono extends JFrame {
 			lbNacimiento = new JLabel("Fecha de nacimiento:");
 			lbNacimiento.setBounds(11, 142, 150, 20);
 			lbNacimiento.setDisplayedMnemonic('F');
-			lbNacimiento.setLabelFor(getSpNacimiento());
+			lbNacimiento.setLabelFor(getDcNacimiento());
 		}
 		return lbNacimiento;
 	}
@@ -210,13 +232,24 @@ public class VentaAbono extends JFrame {
 		return tfEmail;
 	}
 
-	private JSpinner getSpNacimiento() {
-		if (spNacimiento == null) {
-			spNacimiento = new JSpinner();
-			spNacimiento.setBounds(176, 139, 53, 26);
-		}
-		return spNacimiento;
+	private JDateChooser getDcNacimiento() {
+		
+	    if (dcNacimiento == null) {
+	    	
+	        dcNacimiento = new JDateChooser();
+	        dcNacimiento.setDateFormatString("dd/MM/yyyy");
+	        
+	        dcNacimiento.setMaxSelectableDate(new Date());
+	        
+	        Calendar calendar = Calendar.getInstance();
+	        calendar.add(Calendar.YEAR, -18);
+	        
+	        dcNacimiento.setDate(calendar.getTime());
+	        dcNacimiento.setBounds(176, 139, 150, 26);
+	    }
+	    return dcNacimiento;
 	}
+	
 	private JPanel getPanelSeleccion() {
 		if (panelSeleccion == null) {
 			panelSeleccion = new JPanel();
@@ -230,8 +263,10 @@ public class VentaAbono extends JFrame {
 			panelSeleccion.add(getCbSeccion());
 			panelSeleccion.add(getLblFila());
 			panelSeleccion.add(getLblAsiento());
-			panelSeleccion.add(getSpNacimiento_1());
-			panelSeleccion.add(getSpNacimiento_1_1());
+			panelSeleccion.add(getSpFila());
+			panelSeleccion.add(getSpAsiento());
+			panelSeleccion.add(getLblCategora());
+			panelSeleccion.add(getTfCategoria());
 		}
 		return panelSeleccion;
 	}
@@ -265,10 +300,13 @@ public class VentaAbono extends JFrame {
 	private JComboBox<Equipo> getCbEquipo() {
 		if (cbEquipo == null) {
 			cbEquipo = new JComboBox<Equipo>();
+			cbEquipo.setEnabled(false);
+			cbEquipo.addItemListener(ct);
 			try {
 				cbEquipo.setModel(new DefaultComboBoxModel<Equipo>(va.getEquiposLocales()));
 			} catch (SQLException e) {
-				//JOptionPane()				
+				
+				JOptionPane.showMessageDialog(null, "Error al obtener los equipos locales de la base de datos", "Error", JOptionPane.ERROR_MESSAGE);		
 				e.printStackTrace();
 			}
 			cbEquipo.setBounds(93, 36, 298, 28);
@@ -286,7 +324,9 @@ public class VentaAbono extends JFrame {
 	private JComboBox<TipoTribuna> getCbTribuna() {
 		if (cbTribuna == null) {
 			cbTribuna = new JComboBox<TipoTribuna>(va.getTipoTribuna());
+			cbTribuna.setEnabled(false);
 			cbTribuna.setBounds(93, 80, 298, 28);
+			cbTribuna.addItemListener(ct);
 		}
 		return cbTribuna;
 	}
@@ -301,7 +341,9 @@ public class VentaAbono extends JFrame {
 	private JComboBox<TipoSeccion> getCbSeccion() {
 		if (cbSeccion == null) {
 			cbSeccion = new JComboBox<TipoSeccion>(va.getTipoSeccion());
+			cbSeccion.setEnabled(false);
 			cbSeccion.setBounds(93, 123, 298, 28);
+			cbSeccion.addItemListener(ct);
 		}
 		return cbSeccion;
 	}
@@ -321,19 +363,23 @@ public class VentaAbono extends JFrame {
 		}
 		return lblAsiento;
 	}
-	private JSpinner getSpNacimiento_1() {
-		if (spNacimiento_1 == null) {
-			spNacimiento_1 = new JSpinner();
-			spNacimiento_1.setBounds(480, 38, 53, 26);
+	private JSpinner getSpFila() {
+		if (spFila == null) {
+			spFila = new JSpinner();
+			spFila.setModel(new SpinnerNumberModel(1, 1, 10, 1));
+			spFila.setEnabled(false);
+			spFila.setBounds(480, 38, 53, 26);
 		}
-		return spNacimiento_1;
+		return spFila;
 	}
-	private JSpinner getSpNacimiento_1_1() {
-		if (spNacimiento_1_1 == null) {
-			spNacimiento_1_1 = new JSpinner();
-			spNacimiento_1_1.setBounds(480, 81, 53, 26);
+	private JSpinner getSpAsiento() {
+		if (spAsiento == null) {
+			spAsiento = new JSpinner();
+			spAsiento.setModel(new SpinnerNumberModel(1, 1, 15, 1));
+			spAsiento.setEnabled(false);
+			spAsiento.setBounds(480, 81, 53, 26);
 		}
-		return spNacimiento_1_1;
+		return spAsiento;
 	}
 	private JPanel getPanelTabla() {
 		if (panelTabla == null) {
@@ -428,30 +474,9 @@ public class VentaAbono extends JFrame {
 		if (panelBotones == null) {
 			panelBotones = new JPanel();
 			panelBotones.add(getBtVolver());
-			panelBotones.add(getBtCancelar());
 			panelBotones.add(getBtFinalizar());
 		}
 		return panelBotones;
-	}
-	private JButton getBtVolver() {
-		if (btVolver == null) {
-			btVolver = new JButton("Volver");
-			btVolver.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					
-					try {
-						volverAlMenu();
-					} catch (SQLException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-					
-				}
-			});
-			btVolver.setMnemonic('V');
-			btVolver.setToolTipText("Pulsa para volver al menú inicial");
-		}
-		return btVolver;
 	}
 	
 	private void volverAlMenu() throws SQLException {
@@ -461,31 +486,14 @@ public class VentaAbono extends JFrame {
 		vp.setVisible(true);
 		
 	}
-	
-	private JButton getBtCancelar() {
-		if (btCancelar == null) {
-			btCancelar = new JButton("Cancelar");
-			btCancelar.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					reiniciar();
-				}
-			});
-			btCancelar.setToolTipText("Cancelar la compra");
-			btCancelar.setMnemonic('C');
-		}
-		return btCancelar;
-	}
 	private JButton getBtFinalizar() {
 		if (btFinalizar == null) {
 			btFinalizar = new JButton("Finalizar");
+			btFinalizar.setEnabled(false);
 			btFinalizar.setToolTipText("Pulsa para finalizar la compra");
 			btFinalizar.setMnemonic('F');
 		}
 		return btFinalizar;
-	}
-	
-	private void reiniciar() {
-		//TODO;
 	}
 	
 	private JTable getTablaAsientos() {
@@ -512,7 +520,7 @@ public class VentaAbono extends JFrame {
 	            public Component getTableCellRendererComponent(JTable table, Object value,
 	                    boolean isSelected, boolean hasFocus, int row, int column) {
 	                Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-	                c.setBackground(Color.GREEN);
+	                c.setBackground(asientosSeleccionados[row][column] ? Color.RED : Color.GREEN);
 	                c.setForeground(Color.BLACK);
 	                setHorizontalAlignment(CENTER);
 	                return c;
@@ -520,5 +528,208 @@ public class VentaAbono extends JFrame {
 	        });
 	    }
 	    return tablaAsientos;
+	}
+	
+	private void actualizarTablaAsientos() {
+		
+		for(boolean[] fila : asientosSeleccionados) {
+			Arrays.fill(fila, false);
+		}
+		
+		Equipo equipoSeleccionado = (Equipo) getCbEquipo().getSelectedItem();
+		
+		if(equipoSeleccionado != null) {
+			
+			TipoTribuna tribunaSeleccionada = (TipoTribuna) getCbTribuna().getSelectedItem();
+			TipoSeccion seccionSeleccionada = (TipoSeccion) getCbSeccion().getSelectedItem();
+			
+			if(tribunaSeleccionada != null && seccionSeleccionada != null) {
+				
+				try {
+					
+					for(int[] asiento : va.getAsientosOcupados(equipoSeleccionado, tribunaSeleccionada, seccionSeleccionada)) {
+						asientosSeleccionados[asiento[0]-1][asiento[1]-1] = true;
+					}
+				} catch (SQLException e) {
+					
+					JOptionPane.showMessageDialog(null, "Error al obtener los asientos ocupados de la base de datos", "Error", JOptionPane.ERROR_MESSAGE);		
+					e.printStackTrace();
+				}
+				
+			}
+			
+		}
+	}
+	
+	private JButton getBtConsultar() {
+		if (btConsultar == null) {
+			btConsultar = new JButton("Consultar");
+			btConsultar.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					consultarAbonado();
+				}
+			});
+			btConsultar.setToolTipText("Pulsa para consultar");
+			btConsultar.setMnemonic('C');
+			btConsultar.setBounds(434, 29, 117, 29);
+		}
+		return btConsultar;
+	}
+	
+	/**
+	 * Consulta si el abonado existe en la base de datos y si tiene un abono activo, si es asi muestra un mensaje de error y no permite continuar
+	 */
+	private void consultarAbonado() {
+		
+		//Comprobar que el abonado no existe en la base de datos o no tiene un abono activo, si es asi mostrar mensaje de error y no permitir continuar
+		
+		if(checkCamposVacios()) {
+			
+			JOptionPane.showMessageDialog(null, "Todos los campos son obligatorios", "Error", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+		
+		LocalDate fechaNacimiento = getDcNacimiento().getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+		Categoria categoria = va.calcularCategoria(fechaNacimiento);
+		
+		getTfCategoria().setText(categoria.toString());
+		getTfPrecio().setText(va.getPrecio(categoria) + " €");
+		
+		habilitarCamposSeleccion(true);
+		actualizarTablaAsientos();
+	}
+	
+	private boolean checkCamposVacios() {
+		
+		return getTfNombre().getText().isEmpty() || getTfApellidos().getText().isEmpty() || getTfDni().getText().isEmpty() || getTfEmail().getText().isEmpty()|| getDcNacimiento().getDate() == null;
+	
+		
+	}
+	
+	/**
+	 * Habilita o deshabilita los campos de seleccion de asientos y el boton de finalizar
+	 * @param habilitar
+	 */
+	private void habilitarCamposSeleccion(boolean habilitar) {
+		
+		getBtConsultar().setEnabled(!habilitar);
+		getTfNombre().setEnabled(!habilitar);
+		getTfApellidos().setEnabled(!habilitar);
+		getTfDni().setEnabled(!habilitar);
+		getDcNacimiento().setEnabled(!habilitar);
+		getTfEmail().setEnabled(!habilitar);
+		
+		
+		getCbEquipo().setEnabled(habilitar);
+		getCbTribuna().setEnabled(habilitar);
+		getCbSeccion().setEnabled(habilitar);
+		getSpFila().setEnabled(habilitar);
+		getSpAsiento().setEnabled(habilitar);
+		
+		getBtFinalizar().setEnabled(habilitar);
+		getBtCancelar().setEnabled(habilitar);
+	}
+	
+	private JLabel getLblCategora() {
+		if (lblCategora == null) {
+			lblCategora = new JLabel("Categoría:");
+			lblCategora.setBounds(15, 237, 98, 20);
+		}
+		return lblCategora;
+	}
+	private JTextField getTfCategoria() {
+		if (tfCategoria == null) {
+			tfCategoria = new JTextField();
+			tfCategoria.setForeground(Color.RED);
+			tfCategoria.setEditable(false);
+			tfCategoria.setColumns(10);
+			tfCategoria.setBounds(92, 234, 146, 26);
+		}
+		return tfCategoria;
+	}
+	private JButton getBtVolver() {
+		if (btVolver == null) {
+			btVolver = new JButton("Volver");
+			btVolver.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					try {
+						volverAlMenu();
+					} catch (SQLException e1) {
+						JOptionPane.showMessageDialog(null, "Error al cerrar la conexion con la base de datos", "Error", JOptionPane.ERROR_MESSAGE);		
+						e1.printStackTrace();
+					}
+				}
+			});
+			btVolver.setToolTipText("Pulsa para volver al menú inicial");
+			btVolver.setMnemonic('V');
+		}
+		return btVolver;
+	}
+	private JButton getBtCancelar() {
+		if (btCancelar == null) {
+			btCancelar = new JButton("Cancelar");
+			btCancelar.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					
+					reiniciar();
+				}
+			});
+			btCancelar.setEnabled(false);
+			btCancelar.setToolTipText("Cancelar la compra");
+			btCancelar.setMnemonic('C');
+			btCancelar.setBounds(434, 66, 117, 29);
+		}
+		return btCancelar;
+	}
+	
+	private void reiniciar() {
+		
+		getTfNombre().setText("");
+		getTfApellidos().setText("");
+		getTfDni().setText("");
+		getTfEmail().setText("");
+		getDcNacimiento().setDate(new Date());
+		
+		getTfCategoria().setText("");
+		getTfPrecio().setText("");
+		
+		if (getCbEquipo().getItemCount() > 0) {
+			getCbEquipo().setSelectedIndex(0);
+		}
+		
+		if(getCbTribuna().getItemCount() > 0) {
+			getCbTribuna().setSelectedIndex(0);
+		}
+		
+		if(getCbSeccion().getItemCount() > 0) {
+			getCbSeccion().setSelectedIndex(0);
+		}
+		
+		getSpFila().setValue(1);
+		getSpAsiento().setValue(1);
+		
+		habilitarCamposSeleccion(false);
+		
+	}
+	
+	private class CambiarTabla implements ItemListener{
+
+		private VentanaAbono ventana;
+		
+		public CambiarTabla(VentanaAbono ventanaAbono) {
+			this.ventana = ventanaAbono;
+		}
+		
+		@Override
+		public void itemStateChanged(ItemEvent e) {
+			
+			if(e.getStateChange() == ItemEvent.SELECTED) {
+				
+				ventana.actualizarTablaAsientos();
+
+			}
+			
+		}
+		
 	}
 }
