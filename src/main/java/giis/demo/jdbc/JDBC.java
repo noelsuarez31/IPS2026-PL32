@@ -8,6 +8,7 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 
+import giis.demo.exceptions.AbonoNoPermitidoException;
 import giis.demo.jdbc.abonados.AbonadoJdbc;
 import giis.demo.jdbc.abonados.AbonoJdbc;
 import giis.demo.jdbc.empleado.BaseEmpleadoJdbc;
@@ -29,6 +30,7 @@ import giis.demo.jdbc.reservas.ReservaJdbc;
 import giis.demo.jdbc.reservas.UsuarioJdbc;
 import giis.demo.jdbc.tienda.ProductoJdbc;
 import giis.demo.jdbc.tienda.RegistrarVentaMerchandising;
+import giis.demo.model.abonos.Abonado;
 import giis.demo.model.abonos.Abono;
 import giis.demo.model.empleado.BaseEmpleado;
 import giis.demo.model.empleado.EmpleadoDeportivo;
@@ -632,6 +634,12 @@ public class JDBC {
 		}
 	}
 
+	/**
+	 * Obtiene todos los equipos locales disponibles
+	 * 
+	 * @return una lista con los equipos loclaes
+	 * @throws SQLException
+	 */
 	public Equipo[] getEquiposLocales() throws SQLException {
 
 		List<Equipo> equipos = EquipoJdbc.getEquiposPropios(con);
@@ -639,22 +647,75 @@ public class JDBC {
 		return equipos.toArray(new Equipo[0]);
 	}
 
+	/**
+	 * Obtiene los asientos ocupados
+	 * 
+	 * @param idEquipo
+	 * @param nameTribuna
+	 * @param nameSeccion
+	 * @param now
+	 * @return uan lista con los asientos ocupados
+	 * @throws SQLException
+	 */
 	public List<int[]> getAsientosOcupados(int idEquipo, String nameTribuna, String nameSeccion, LocalDate now)
 			throws SQLException {
 
 		return AbonoJdbc.getAsientosOcupados(con, idEquipo, nameTribuna, nameSeccion, now);
 	}
 
+	/**
+	 * Obtiene la informacion del abono segun dni y una fecha
+	 * 
+	 * @param dni
+	 * @param fechaInicio
+	 * @return el Abono si existe
+	 * @throws SQLException
+	 */
 	public Abono getInfoAbono(String dni, LocalDate fechaInicio) throws SQLException {
 
 		return AbonoJdbc.getInfoAbono(con, dni, fechaInicio);
 
 	}
 
+	/**
+	 * Comprueba si un dni tiene un abono para la temporada indicada
+	 * 
+	 * @param dni
+	 * @param fechaInicio
+	 * @return true si tiene, false en caso contrario
+	 * @throws SQLException
+	 */
 	public boolean tieneAbonoEstaTemporada(String dni, LocalDate fechaInicio) throws SQLException {
 
 		return AbonadoJdbc.tieneAbonoTemporada(con, dni, fechaInicio);
-
+	}
+	
+	/**
+	 * Inserta el abonado en la BBDD
+	 * 
+	 * @param abonado
+	 * @param abono
+	 * @throws SQLException
+	 */
+	public void insertarAbonado(Abonado abonado, Abono abono) throws SQLException {
+		
+		AbonadoJdbc.insertarAbonado(con, abonado);
+		
+	}
+	
+	/**
+	 * Inserta el abono en la BBDD
+	 * 
+	 * @param abonado
+	 * @param abono
+	 * @param idEquipo
+	 * @throws SQLException
+	 * @throws AbonoNoPermitidoException
+	 */
+	public void venderAbono(Abonado abonado, Abono abono, int idEquipo) throws SQLException, AbonoNoPermitidoException {
+		
+		AbonoJdbc.venderAbono(con, abonado, abono, idEquipo);
+		
 	}
 
 }

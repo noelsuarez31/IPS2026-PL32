@@ -4,6 +4,7 @@ import java.time.LocalDate;
 
 public class Abonado {
 	
+	private int id_abonado;
 	private String dni;
 	private String nombre;
 	private String apellidos;
@@ -36,6 +37,16 @@ public class Abonado {
 
 	public String getEmail() {
 		return email;
+	}
+	
+	public int getIdAbonado() {
+		
+		return id_abonado;
+	}
+
+	public void setIdAbonado(int idAbonado) {
+
+		this.id_abonado = idAbonado;
 	}
 	
 }

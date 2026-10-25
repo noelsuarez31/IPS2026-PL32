@@ -222,7 +222,7 @@ CREATE TABLE IF NOT EXISTS "Abono" (
 	"fecha_inicio" TEXT NOT NULL,
 	"fecha_fin" TEXT NOT NULL,
 	"fecha_registro" TEXT NOT NULL,
-	"categoria" TEXT NOT NULL CHECK("categoria" IN ('INFANTIL', 'SUB-26', 'ADULTO', 'JUBILADO')),
+	"categoria" TEXT NOT NULL CHECK("categoria" IN ('INFANTIL', 'SUB_26', 'ADULTO', 'JUBILADO')),
 	"precio" REAL NOT NULL,
 	UNIQUE("id_abonado", "fecha_inicio"),
 	UNIQUE("id_butaca", "fecha_inicio"),

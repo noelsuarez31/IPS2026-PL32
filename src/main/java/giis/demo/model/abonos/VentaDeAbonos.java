@@ -4,14 +4,14 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 
+import giis.demo.exceptions.AbonoNoPermitidoException;
 import giis.demo.jdbc.JDBC;
+import giis.demo.model.abonos.Abono.Categoria;
 import giis.demo.model.entradas.enumerados.TipoSeccion;
 import giis.demo.model.entradas.enumerados.TipoTribuna;
 import giis.demo.model.equipo.Equipo;
 
 public class VentaDeAbonos extends Venta{
-
-	public enum Categoria { INFANTIL, SUB_26, ADULTO, JUBILADO }
 	
 	private static final int EDAD_MAX_INFANTIL = 17;
 	private static final int EDAD_MAX_SUB26 = 25;
@@ -19,6 +19,9 @@ public class VentaDeAbonos extends Venta{
 
 	private JDBC jdbc;
 
+	/**
+	 * Constructor de la clase por defecto
+	 */
 	public VentaDeAbonos(){
 		
 		jdbc = new JDBC();
@@ -26,6 +29,12 @@ public class VentaDeAbonos extends Venta{
 		
 	}
 	
+	/**
+	 * Devuelve el precio según una categoría
+	 * 
+	 * @param categoria
+	 * @return el precio
+	 */
 	public double getPrecio(Categoria categoria) {
 		
 		switch (categoria) {
@@ -80,12 +89,27 @@ public class VentaDeAbonos extends Venta{
 		
 	}
 	
+	/**
+	 * Obtiene los asientos ocupados para un equipo, una tribuna y seccion dadas
+	 * 
+	 * @param equipo
+	 * @param tribuna
+	 * @param tipoSeccion
+	 * @return una lista con los asientos ocupados
+	 * @throws SQLException
+	 */
 	public List<int[]> getAsientosOcupados(Equipo equipo, TipoTribuna tribuna, TipoSeccion tipoSeccion) throws SQLException {
 		
 		return jdbc.getAsientosOcupados(equipo.getIdEquipo(), tribuna.name(), tipoSeccion.name(), LocalDate.now());
 		
 	}
 	
+	/**
+	 * Devuelve los equipos locales
+	 * 
+	 * @return una lista con los equipos locales
+	 * @throws SQLException
+	 */
 	public Equipo[] getEquiposLocales() throws SQLException {
 
 		return jdbc.getEquiposLocales();
@@ -128,6 +152,13 @@ public class VentaDeAbonos extends Venta{
 		
 	}
 	
+	/**
+	 * Obtiene la informacion de los abonos
+	 * 
+	 * @param dni
+	 * @return el abono
+	 * @throws SQLException
+	 */
 	public Abono getInfoAbono(String dni) throws SQLException {
 		
 		LocalDate fechaInicio = inicioTemporada(LocalDate.now());
@@ -136,6 +167,38 @@ public class VentaDeAbonos extends Venta{
 		
 	}
 	
+	/**
+	 * Inserta el abonado en la BBDD
+	 * 
+	 * @param abonado
+	 * @param abono
+	 * @throws SQLException
+	 */
+	public void insertarAbonado(Abonado abonado, Abono abono) throws SQLException {
+		
+		jdbc.insertarAbonado(abonado, abono);
+		
+	}
+	
+	/**
+	 * Inserta el abono en la BBDD
+	 * 
+	 * @param abonado
+	 * @param abono
+	 * @param idEquipo
+	 * @throws SQLException
+	 * @throws AbonoNoPermitidoException
+	 */
+	public void venderAbono(Abonado abonado, Abono abono, int idEquipo) throws SQLException, AbonoNoPermitidoException {
+		
+		jdbc.venderAbono(abonado, abono, idEquipo);
+		
+	}
+	
+	/**
+	 * Cierra la conexión con la BBDD
+	 * @throws SQLException
+	 */
 	public void close() throws SQLException {
 		
 		jdbc.close();

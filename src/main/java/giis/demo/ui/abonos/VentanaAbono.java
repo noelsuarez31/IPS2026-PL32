@@ -29,15 +29,18 @@ import giis.demo.model.entradas.enumerados.TipoSeccion;
 import giis.demo.model.entradas.enumerados.TipoTribuna;
 import giis.demo.model.equipo.Equipo;
 import giis.demo.ui.VentanaPrincipal;
+import giis.demo.exceptions.AbonoNoPermitidoException;
+import giis.demo.model.abonos.Abonado;
 import giis.demo.model.abonos.Abono;
 import giis.demo.model.abonos.VentaDeAbonos;
-import giis.demo.model.abonos.VentaDeAbonos.Categoria;
+import giis.demo.model.abonos.Abono.Categoria;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -54,9 +57,8 @@ import java.awt.event.WindowEvent;
  */
 public class VentanaAbono extends JFrame {
 
-	
 	private static final long serialVersionUID = 1L;
-	
+
 	private JPanel panelUsuario;
 	private JLabel lbNombre;
 	private JLabel lblApellidos;
@@ -88,42 +90,42 @@ public class VentanaAbono extends JFrame {
 	private JTextField tfPrecio;
 	private JPanel panelBotones;
 	private JButton btFinalizar;
-	
+
 	private JTable tablaAsientos;
 	private boolean[][] asientosSeleccionados = new boolean[10][15];
-	
+
 	private VentaDeAbonos va;
-	
+
 	private JLabel lbColorLibre;
 	private JLabel lbLibre;
 	private JLabel lbColorNoDisponible;
 	private JLabel lbNoDisponible;
 	private JLabel lbColorSeleccion;
 	private JLabel lbSeleccion;
-	
+
 	private VentanaPrincipal vp;
 	private JButton btConsultar;
 	private JLabel lblCategora;
 	private JTextField tfCategoria;
 	private JButton btVolver;
 	private JButton btCancelar;
-	
+
 	private CambiarTabla ct;
-	private int filaSeleccionada=-1;
-	private int asientoSeleccionado=-1;
-	
+	private int filaSeleccionada = -1;
+	private int asientoSeleccionado = -1;
+
 	private CambiarSpinner cs;
 	private CerrarVentana cv;
-	
+
 	public VentanaAbono(VentanaPrincipal vp) {
-		
+
 		this.vp = vp;
 
 		va = new VentaDeAbonos();
 		ct = new CambiarTabla(this);
 		cs = new CambiarSpinner();
 		cv = new CerrarVentana();
-		
+
 		setTitle("Venta de abonos");
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		setBounds(100, 100, 1007, 639);
@@ -133,14 +135,14 @@ public class VentanaAbono extends JFrame {
 		getContentPane().add(getPanelSeleccion(), BorderLayout.CENTER);
 		getContentPane().add(getPanelVisualización(), BorderLayout.EAST);
 		getContentPane().add(getPanelEleccion(), BorderLayout.SOUTH);
-		
+
 		setLocationRelativeTo(null);
 		addWindowListener(cv);
-		
+
 	}
 
 	private JPanel getPanelUsuario() {
-		
+
 		if (panelUsuario == null) {
 			panelUsuario = new JPanel();
 			panelUsuario.setPreferredSize(new Dimension(0, 240));
@@ -250,27 +252,29 @@ public class VentanaAbono extends JFrame {
 	}
 
 	private JDateChooser getDcNacimiento() {
-		
-	    if (dcNacimiento == null) {
-	    	
-	        dcNacimiento = new JDateChooser();
-	        dcNacimiento.setDateFormatString("dd/MM/yyyy");
-	        
-	        dcNacimiento.setMaxSelectableDate(new Date());
-	        
-	        Calendar calendar = Calendar.getInstance();
-	        calendar.add(Calendar.YEAR, -18);
-	        
-	        dcNacimiento.setDate(calendar.getTime());
-	        dcNacimiento.setBounds(176, 139, 150, 26);
-	    }
-	    return dcNacimiento;
+
+		if (dcNacimiento == null) {
+
+			dcNacimiento = new JDateChooser();
+			dcNacimiento.setDateFormatString("dd/MM/yyyy");
+
+			dcNacimiento.setMaxSelectableDate(new Date());
+
+			Calendar calendar = Calendar.getInstance();
+			calendar.add(Calendar.YEAR, -18);
+
+			dcNacimiento.setDate(calendar.getTime());
+			dcNacimiento.setBounds(176, 139, 150, 26);
+		}
+		return dcNacimiento;
 	}
-	
+
 	private JPanel getPanelSeleccion() {
 		if (panelSeleccion == null) {
 			panelSeleccion = new JPanel();
-			panelSeleccion.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, new Color(255, 255, 255), new Color(160, 160, 160)), "Selecci\u00F3n de asientos", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
+			panelSeleccion.setBorder(new TitledBorder(
+					new EtchedBorder(EtchedBorder.LOWERED, new Color(255, 255, 255), new Color(160, 160, 160)),
+					"Selecci\u00F3n de asientos", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
 			panelSeleccion.setLayout(null);
 			panelSeleccion.add(getLbEquipo());
 			panelSeleccion.add(getCbEquipo());
@@ -287,6 +291,7 @@ public class VentanaAbono extends JFrame {
 		}
 		return panelSeleccion;
 	}
+
 	private JPanel getPanelVisualización() {
 		if (panelVisualización == null) {
 			panelVisualización = new JPanel();
@@ -297,6 +302,7 @@ public class VentanaAbono extends JFrame {
 		}
 		return panelVisualización;
 	}
+
 	private JPanel getPanelEleccion() {
 		if (panelEleccion == null) {
 			panelEleccion = new JPanel();
@@ -306,6 +312,7 @@ public class VentanaAbono extends JFrame {
 		}
 		return panelEleccion;
 	}
+
 	private JLabel getLbEquipo() {
 		if (lbEquipo == null) {
 			lbEquipo = new JLabel("Equipo:");
@@ -314,6 +321,7 @@ public class VentanaAbono extends JFrame {
 		}
 		return lbEquipo;
 	}
+
 	private JComboBox<Equipo> getCbEquipo() {
 		if (cbEquipo == null) {
 			cbEquipo = new JComboBox<Equipo>();
@@ -322,14 +330,16 @@ public class VentanaAbono extends JFrame {
 			try {
 				cbEquipo.setModel(new DefaultComboBoxModel<Equipo>(va.getEquiposLocales()));
 			} catch (SQLException e) {
-				
-				JOptionPane.showMessageDialog(null, "Error al obtener los equipos locales de la base de datos", "Error", JOptionPane.ERROR_MESSAGE);		
+
+				JOptionPane.showMessageDialog(null, "Error al obtener los equipos locales de la base de datos", "Error",
+						JOptionPane.ERROR_MESSAGE);
 				e.printStackTrace();
 			}
 			cbEquipo.setBounds(93, 36, 298, 28);
 		}
 		return cbEquipo;
 	}
+
 	private JLabel getLblTribuna() {
 		if (lblTribuna == null) {
 			lblTribuna = new JLabel("Tribuna:");
@@ -338,6 +348,7 @@ public class VentanaAbono extends JFrame {
 		}
 		return lblTribuna;
 	}
+
 	private JComboBox<TipoTribuna> getCbTribuna() {
 		if (cbTribuna == null) {
 			cbTribuna = new JComboBox<TipoTribuna>(va.getTipoTribuna());
@@ -347,6 +358,7 @@ public class VentanaAbono extends JFrame {
 		}
 		return cbTribuna;
 	}
+
 	private JLabel getLblSeccion() {
 		if (lblSeccion == null) {
 			lblSeccion = new JLabel("Seccion:");
@@ -355,6 +367,7 @@ public class VentanaAbono extends JFrame {
 		}
 		return lblSeccion;
 	}
+
 	private JComboBox<TipoSeccion> getCbSeccion() {
 		if (cbSeccion == null) {
 			cbSeccion = new JComboBox<TipoSeccion>(va.getTipoSeccion());
@@ -364,6 +377,7 @@ public class VentanaAbono extends JFrame {
 		}
 		return cbSeccion;
 	}
+
 	private JLabel getLblFila() {
 		if (lblFila == null) {
 			lblFila = new JLabel("Fila:");
@@ -372,6 +386,7 @@ public class VentanaAbono extends JFrame {
 		}
 		return lblFila;
 	}
+
 	private JLabel getLblAsiento() {
 		if (lblAsiento == null) {
 			lblAsiento = new JLabel("Asiento:");
@@ -380,6 +395,7 @@ public class VentanaAbono extends JFrame {
 		}
 		return lblAsiento;
 	}
+
 	private JSpinner getSpFila() {
 		if (spFila == null) {
 			spFila = new JSpinner();
@@ -390,10 +406,11 @@ public class VentanaAbono extends JFrame {
 		}
 		return spFila;
 	}
+
 	private JSpinner getSpAsiento() {
-		
+
 		if (spAsiento == null) {
-			
+
 			spAsiento = new JSpinner();
 			spAsiento.setModel(new SpinnerNumberModel(1, 1, 15, 1));
 			spAsiento.setEnabled(false);
@@ -402,18 +419,21 @@ public class VentanaAbono extends JFrame {
 		}
 		return spAsiento;
 	}
+
 	private JPanel getPanelTabla() {
 		if (panelTabla == null) {
 			panelTabla = new JPanel();
-			panelTabla.setLayout(new BorderLayout(0,0));
+			panelTabla.setLayout(new BorderLayout(0, 0));
 			panelTabla.add(getTablaAsientos(), BorderLayout.CENTER);
 		}
 		return panelTabla;
 	}
+
 	private JPanel getPanelLeyenda() {
 		if (panelLeyenda == null) {
 			panelLeyenda = new JPanel();
-			panelLeyenda.setBorder(new TitledBorder(null, "Leyenda", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+			panelLeyenda
+					.setBorder(new TitledBorder(null, "Leyenda", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 			panelLeyenda.setLayout(new GridLayout(3, 2, 5, 5));
 			panelLeyenda.add(getLbColorLibre());
 			panelLeyenda.add(getLbLibre());
@@ -424,7 +444,7 @@ public class VentanaAbono extends JFrame {
 		}
 		return panelLeyenda;
 	}
-	
+
 	private JLabel getLbColorLibre() {
 		if (lbColorLibre == null) {
 			lbColorLibre = new JLabel();
@@ -433,12 +453,14 @@ public class VentanaAbono extends JFrame {
 		}
 		return lbColorLibre;
 	}
+
 	private JLabel getLbLibre() {
 		if (lbLibre == null) {
 			lbLibre = new JLabel("Libre");
 		}
 		return lbLibre;
 	}
+
 	private JLabel getLbColorNoDisponible() {
 		if (lbColorNoDisponible == null) {
 			lbColorNoDisponible = new JLabel();
@@ -447,12 +469,14 @@ public class VentanaAbono extends JFrame {
 		}
 		return lbColorNoDisponible;
 	}
+
 	private JLabel getLbNoDisponible() {
 		if (lbNoDisponible == null) {
 			lbNoDisponible = new JLabel("No disponible");
 		}
 		return lbNoDisponible;
 	}
+
 	private JLabel getLbColorSeleccion() {
 		if (lbColorSeleccion == null) {
 			lbColorSeleccion = new JLabel();
@@ -461,13 +485,14 @@ public class VentanaAbono extends JFrame {
 		}
 		return lbColorSeleccion;
 	}
+
 	private JLabel getLbSeleccion() {
 		if (lbSeleccion == null) {
 			lbSeleccion = new JLabel("Tu asiento");
 		}
 		return lbSeleccion;
 	}
-	
+
 	private JPanel getPanelPrecio() {
 		if (panelPrecio == null) {
 			panelPrecio = new JPanel();
@@ -476,12 +501,14 @@ public class VentanaAbono extends JFrame {
 		}
 		return panelPrecio;
 	}
+
 	private JLabel getLbPrecio() {
 		if (lbPrecio == null) {
 			lbPrecio = new JLabel("Precio:");
 		}
 		return lbPrecio;
 	}
+
 	private JTextField getTfPrecio() {
 		if (tfPrecio == null) {
 			tfPrecio = new JTextField();
@@ -491,6 +518,7 @@ public class VentanaAbono extends JFrame {
 		}
 		return tfPrecio;
 	}
+
 	private JPanel getPanelBotones() {
 		if (panelBotones == null) {
 			panelBotones = new JPanel();
@@ -499,182 +527,300 @@ public class VentanaAbono extends JFrame {
 		}
 		return panelBotones;
 	}
-	
-	private void volverAlMenu(){
-		
+
+	private void volverAlMenu() {
+
 		try {
 			va.close();
 		} catch (SQLException e) {
-			JOptionPane.showMessageDialog(this, "Error al cerrar la conexion con la base de datos",
-					"Error", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(this, "Error al cerrar la conexion con la base de datos", "Error",
+					JOptionPane.ERROR_MESSAGE);
 			e.printStackTrace();
 		}
-		
+
 		this.dispose();
 		vp.setVisible(true);
-		
+
 	}
+
 	private JButton getBtFinalizar() {
 		if (btFinalizar == null) {
 			btFinalizar = new JButton("Finalizar");
+			btFinalizar.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+
+					finalizar();
+
+				}
+			});
 			btFinalizar.setEnabled(false);
 			btFinalizar.setToolTipText("Pulsa para finalizar la compra");
 			btFinalizar.setMnemonic('Z');
 		}
 		return btFinalizar;
 	}
-	
-	private JTable getTablaAsientos() {
+
+	private void finalizar() {
+
+		Equipo equipo = (Equipo) getCbEquipo().getSelectedItem();
+
+		if (equipo == null) {
+
+			JOptionPane.showMessageDialog(null, "Seleccione un equipo", "Error", JOptionPane.ERROR_MESSAGE);
+			return;
+
+		}
+
+		if (filaSeleccionada<0 || asientoSeleccionado<0) {
+
+			JOptionPane.showMessageDialog(null, "Seleccione un asiento anyes de finalizar la compra", 
+					"Asiento no seleccionado", JOptionPane.WARNING_MESSAGE);
+			return;
+
+		}
 		
-	    if (tablaAsientos == null) {
-	    	
-	        tablaAsientos = new JTable(10, 15);
-	        tablaAsientos.setEnabled(false);
-	        
-	        //Para evitar que el usario pueda editar las celdas
-	        
-	        tablaAsientos.setDefaultEditor(Object.class, null);
-	        
-	        //Pintar las celdas
-	        
-	        tablaAsientos.addMouseListener(new MouseAdapter() {
-	        	@Override
-	        	public void mouseClicked(MouseEvent e) {
-	        		
-	        		if(!getTablaAsientos().isEnabled()) {
-	        			return;
-	        		}
-	        		
-	        		int fila = tablaAsientos.rowAtPoint(e.getPoint());
-	        		int columna = tablaAsientos.columnAtPoint(e.getPoint());
-	        		
-	        		if(!checksFilaColumna(fila, columna)) {
-	        			
-	        			return;
-	        		}
-	        		
-	        		if(asientosSeleccionados[fila][columna]) {
-	        			
-	        			JOptionPane.showMessageDialog(null, "Este asiento ya está ocupado. Seleccione otro por favor.",
-	        					"Asiento no disponible", JOptionPane.WARNING_MESSAGE);
-	        			return;
-	        		}
-	        		
-	        		filaSeleccionada = fila;
-	        		asientoSeleccionado = columna;
-	        		
-	        		spFila.setValue(fila + 1);
-	                spAsiento.setValue(columna + 1);
-	                
-	                tablaAsientos.repaint();
-	        		
-	        	}
-	        	
-	        });
-	        tablaAsientos.setTableHeader(null);
-	        tablaAsientos.setRowHeight(22);
-	        tablaAsientos.setShowGrid(true);
-	        tablaAsientos.setGridColor(Color.BLACK);
+		if (asientosSeleccionados[filaSeleccionada][asientoSeleccionado]) {
+			
+	        JOptionPane.showMessageDialog(null,"El asiento seleccionado ya no está disponible.",
+	                "Asiento no disponible",JOptionPane.WARNING_MESSAGE);
 
-	        for (int i = 0; i < 15; i++) {
-	            tablaAsientos.getColumnModel().getColumn(i).setPreferredWidth(25);
-	        }
-	        for (int fila = 0; fila < 10; fila++) {
-	            for (int asiento = 0; asiento < 15; asiento++) {
-	                tablaAsientos.setValueAt(asiento + 1, fila, asiento);
-	            }
-	        }
-
-	        tablaAsientos.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
-	            @Override
-	            public Component getTableCellRendererComponent(JTable table, Object value,
-	                    boolean isSelected, boolean hasFocus, int row, int column) {
-	                Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-
-	                if(asientosSeleccionados[row][column]) {
-	                	
-	                	c.setBackground(Color.RED);
-	                	
-	                } else if(row==filaSeleccionada && column == asientoSeleccionado) {
-	                	
-	                	c.setBackground(Color.BLUE);
-	                	
-	                } else {
-	                	
-	                	c.setBackground(Color.GREEN);
-	                	
-	                }
-	                
-	                c.setForeground(Color.BLACK);
-	                setHorizontalAlignment(CENTER);
-	                return c;
-	            }
-	        });
+	        actualizarTablaAsientos();
+	        return;
 	    }
-	    return tablaAsientos;
+		
+		try {
+			
+			LocalDate fechaNacimiento = getDcNacimiento().getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+			Abonado abonado = obtenerDatosAbonado();
+			Abono abono = obtenerDatosAbono(equipo, fechaNacimiento);
+			 
+			va.venderAbono(abonado, abono, equipo.getIdEquipo());
+			
+			JOptionPane.showMessageDialog(null, "Abono vendido correctamente.\n"
+	                + "Abonado: " + abonado.getNombre() + " " + abonado.getApellidos()
+	                + "\nDNI: " + abonado.getDni()
+	                + "\nCategoría: " + abono.getCategoria()
+	                + "\nAsiento: fila " + abono.getFila() + ", asiento " + abono.getAsiento()
+	                + "\nPrecio: " + abono.getPrecio() + " €",
+	                "Venta realizada",
+	                JOptionPane.INFORMATION_MESSAGE);
+			
+			actualizarTablaAsientos();
+			reiniciar();
+			
+		} catch (SQLException | AbonoNoPermitidoException ex) {
+			
+			JOptionPane.showMessageDialog(null, ex.getMessage(), "Error el vender el abono", JOptionPane.ERROR_MESSAGE);
+		
+			actualizarTablaAsientos();
+			
+		}
+		
 	}
 	
+	private Abonado obtenerDatosAbonado() {
+		
+		String dni = getTfDni().getText().trim().toUpperCase();
+		String name = getTfNombre().getText().trim();
+		String apellidos = getTfApellidos().getText().trim();
+		String email = getTfEmail().getText().trim();
+		
+		LocalDate fechaNacimiento = getDcNacimiento().getDate().toInstant().
+				atZone(ZoneId.systemDefault()).toLocalDate();
+		
+		return new Abonado(dni, name, apellidos, fechaNacimiento, email);
+	}
+
+	private Abono obtenerDatosAbono(Equipo equipo, LocalDate fechaNacimiento) {
+
+		
+		Categoria categoria = va.calcularCategoria(fechaNacimiento);
+		double precio = va.getPrecio(categoria);
+		
+		LocalDate hoy = LocalDate.now();
+		LocalDate fechaInicio;
+		LocalDate fechaFin;
+		
+		 if (hoy.getMonthValue() >= 7) {
+			 
+		        fechaInicio = LocalDate.of(hoy.getYear(), 7, 1);
+		        fechaFin = LocalDate.of(hoy.getYear() + 1, 6, 30);
+		        
+		    } else {
+		    	
+		        fechaInicio = LocalDate.of(hoy.getYear() - 1, 7, 1);
+		        fechaFin = LocalDate.of(hoy.getYear(), 6, 30);
+		        
+		    }
+		 
+		 TipoTribuna tribuna = (TipoTribuna) getCbTribuna().getSelectedItem();
+		 TipoSeccion seccion = (TipoSeccion) getCbSeccion().getSelectedItem();
+		 
+		 int fila = filaSeleccionada+1;
+		 int asiento = asientoSeleccionado+1;
+		 
+		 return new Abono(equipo.getNombre(), tribuna.name(), seccion.name(),
+				 fila, asiento, fechaInicio, fechaFin, LocalDateTime.now(),categoria , precio);
+	}
+
+	private JTable getTablaAsientos() {
+
+		if (tablaAsientos == null) {
+
+			tablaAsientos = new JTable(10, 15);
+			tablaAsientos.setEnabled(false);
+
+			// Para evitar que el usario pueda editar las celdas
+
+			tablaAsientos.setDefaultEditor(Object.class, null);
+
+			// Pintar las celdas
+
+			tablaAsientos.addMouseListener(new MouseAdapter() {
+				@Override
+				public void mouseClicked(MouseEvent e) {
+
+					if (!getTablaAsientos().isEnabled()) {
+						return;
+					}
+
+					int fila = tablaAsientos.rowAtPoint(e.getPoint());
+					int columna = tablaAsientos.columnAtPoint(e.getPoint());
+
+					if (!checksFilaColumna(fila, columna)) {
+
+						return;
+					}
+
+					if (asientosSeleccionados[fila][columna]) {
+
+						JOptionPane.showMessageDialog(null, "Este asiento ya está ocupado. Seleccione otro por favor.",
+								"Asiento no disponible", JOptionPane.WARNING_MESSAGE);
+						return;
+					}
+
+					filaSeleccionada = fila;
+					asientoSeleccionado = columna;
+
+					spFila.setValue(fila + 1);
+					spAsiento.setValue(columna + 1);
+
+					tablaAsientos.repaint();
+
+				}
+
+			});
+			tablaAsientos.setTableHeader(null);
+			tablaAsientos.setRowHeight(22);
+			tablaAsientos.setShowGrid(true);
+			tablaAsientos.setGridColor(Color.BLACK);
+
+			for (int i = 0; i < 15; i++) {
+				tablaAsientos.getColumnModel().getColumn(i).setPreferredWidth(25);
+			}
+			for (int fila = 0; fila < 10; fila++) {
+				for (int asiento = 0; asiento < 15; asiento++) {
+					tablaAsientos.setValueAt(asiento + 1, fila, asiento);
+				}
+			}
+
+			tablaAsientos.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+				@Override
+				public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
+						boolean hasFocus, int row, int column) {
+					Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+
+					if (asientosSeleccionados[row][column]) {
+
+						c.setBackground(Color.RED);
+
+					} else if (row == filaSeleccionada && column == asientoSeleccionado) {
+
+						c.setBackground(Color.BLUE);
+
+					} else {
+
+						c.setBackground(Color.GREEN);
+
+					}
+
+					c.setForeground(Color.BLACK);
+					setHorizontalAlignment(CENTER);
+					return c;
+				}
+			});
+		}
+		return tablaAsientos;
+	}
+
 	private boolean checksFilaColumna(int fila, int columna) {
-		
-		return fila>=0  && columna>=0 && fila<10 && columna<15;
-		
+
+		return fila >= 0 && columna >= 0 && fila < 10 && columna < 15;
+
 	}
-	
+
 	private void actualizarTablaAsientos() {
-		
-		for(boolean[] fila : asientosSeleccionados) {
+
+		for (boolean[] fila : asientosSeleccionados) {
+			
 			Arrays.fill(fila, false);
 		}
 		
+		filaSeleccionada = -1;
+		asientoSeleccionado = -1;
+
 		Equipo equipoSeleccionado = (Equipo) getCbEquipo().getSelectedItem();
-		
-		if(equipoSeleccionado != null) {
-			
+
+		if (equipoSeleccionado != null) {
+
 			TipoTribuna tribunaSeleccionada = (TipoTribuna) getCbTribuna().getSelectedItem();
 			TipoSeccion seccionSeleccionada = (TipoSeccion) getCbSeccion().getSelectedItem();
-			
-			if(tribunaSeleccionada != null && seccionSeleccionada != null) {
-				
+
+			if (tribunaSeleccionada != null && seccionSeleccionada != null) {
+
 				try {
-					
-					for(int[] asiento : va.getAsientosOcupados(equipoSeleccionado, tribunaSeleccionada, seccionSeleccionada)) {
-						asientosSeleccionados[asiento[0]-1][asiento[1]-1] = true;
+
+					for (int[] asiento : va.getAsientosOcupados(equipoSeleccionado, tribunaSeleccionada,
+							seccionSeleccionada)) {
+						asientosSeleccionados[asiento[0] - 1][asiento[1] - 1] = true;
 					}
 				} catch (SQLException e) {
-					
-					JOptionPane.showMessageDialog(null, "Error al obtener los asientos ocupados de la base de datos", "Error", JOptionPane.ERROR_MESSAGE);		
+
+					JOptionPane.showMessageDialog(null, "Error al obtener los asientos ocupados de la base de datos",
+							"Error", JOptionPane.ERROR_MESSAGE);
 					e.printStackTrace();
 				}
-				
+
 			}
-			
+
 		}
-		
+
 		sincronizarSeleccion();
 		getTablaAsientos().repaint();
 	}
-	
+
 	private void sincronizarSeleccion() {
-		
-		int fila = (int) getSpFila().getValue()-1;
-		int asiento = (int) getSpAsiento().getValue()-1;
-		
-		if(asientosSeleccionados[fila][asiento]) {
-			
+
+		int fila = (int) getSpFila().getValue() - 1;
+		int asiento = (int) getSpAsiento().getValue() - 1;
+
+		if (asientosSeleccionados[fila][asiento]) {
+
 			filaSeleccionada = -1;
 			asientoSeleccionado = -1;
-			
+
 		} else {
-			
+
 			filaSeleccionada = fila;
 			asientoSeleccionado = asiento;
-			
+
 		}
-		
+
 		getTablaAsientos().repaint();
-		
+
 	}
-	
+
 	private JButton getBtConsultar() {
 		if (btConsultar == null) {
 			btConsultar = new JButton("Consultar");
@@ -689,90 +835,91 @@ public class VentanaAbono extends JFrame {
 		}
 		return btConsultar;
 	}
-	
+
 	/**
-	 * Consulta si el abonado existe en la base de datos y si tiene un abono activo, si es asi muestra un mensaje de error y no permite continuar
+	 * Consulta si el abonado existe en la base de datos y si tiene un abono activo,
+	 * si es asi muestra un mensaje de error y no permite continuar
 	 */
 	private void consultarAbonado() {
-		
-		
-		
-		if(checkCamposVacios()) {
-			
-			JOptionPane.showMessageDialog(null, "Todos los campos son obligatorios", "Error", JOptionPane.ERROR_MESSAGE);
+
+		if (checkCamposVacios()) {
+
+			JOptionPane.showMessageDialog(null, "Todos los campos son obligatorios", "Error",
+					JOptionPane.ERROR_MESSAGE);
 			return;
 		}
-		
+
 		String dni = this.getTfDni().getText().trim().toUpperCase();
-		
-	
+
 		try {
-			
-			if(va.tieneAbonoEstaTemporada(dni)) {
-				
+
+			if (va.tieneAbonoEstaTemporada(dni)) {
+
 				Abono abono = va.getInfoAbono(dni);
-				
-				JOptionPane.showMessageDialog(null, "El dni " + dni + " ya tiene un abono para esta temporada: " + abono.toString(), "Abono existente", JOptionPane.WARNING_MESSAGE);
-				
+
+				JOptionPane.showMessageDialog(null,
+						"El dni " + dni + " ya tiene un abono para esta temporada: " + abono.toString(),
+						"Abono existente", JOptionPane.WARNING_MESSAGE);
+
 				reiniciar();
 				return;
 			}
-			
-		} catch (SQLException sqle) {
-			
-			sqle.printStackTrace();   // <- añade esto
 
-			JOptionPane.showMessageDialog(null, "Se ha producido un error al comprobar el abonado en la Base de datos, pongase en contacto con ayuda al cliente",
+		} catch (SQLException sqle) {
+
+			JOptionPane.showMessageDialog(null,
+					"Se ha producido un error al comprobar el abonado en la Base de datos, pongase en contacto con ayuda al cliente",
 					"Error", JOptionPane.ERROR_MESSAGE);
 			reiniciar();
 			return;
-			
+
 		}
-		
-		LocalDate fechaNacimiento = getDcNacimiento().getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+		LocalDate fechaNacimiento = getDcNacimiento().getDate().toInstant().atZone(ZoneId.systemDefault())
+				.toLocalDate();
 		Categoria categoria = va.calcularCategoria(fechaNacimiento);
-		
+
 		getTfCategoria().setText(categoria.toString());
 		getTfPrecio().setText(va.getPrecio(categoria) + " €");
-		
+
 		habilitarCamposSeleccion(true);
 		actualizarTablaAsientos();
 	}
-	
+
 	private boolean checkCamposVacios() {
-		
-		return getTfNombre().getText().trim().isEmpty() || getTfApellidos().getText().isEmpty() || getTfDni().getText().isEmpty() 
-				|| getTfEmail().getText().isEmpty()|| getDcNacimiento().getDate() == null;
-	
-		
+
+		return getTfNombre().getText().trim().isEmpty() || getTfApellidos().getText().isEmpty()
+				|| getTfDni().getText().isEmpty() || getTfEmail().getText().isEmpty()
+				|| getDcNacimiento().getDate() == null;
+
 	}
-	
+
 	/**
-	 * Habilita o deshabilita los campos de seleccion de asientos y el boton de finalizar
+	 * Habilita o deshabilita los campos de seleccion de asientos y el boton de
+	 * finalizar
+	 * 
 	 * @param habilitar
 	 */
 	private void habilitarCamposSeleccion(boolean habilitar) {
-		
+
 		getBtConsultar().setEnabled(!habilitar);
 		getTfNombre().setEnabled(!habilitar);
 		getTfApellidos().setEnabled(!habilitar);
 		getTfDni().setEnabled(!habilitar);
 		getDcNacimiento().setEnabled(!habilitar);
 		getTfEmail().setEnabled(!habilitar);
-		
-		
+
 		getCbEquipo().setEnabled(habilitar);
 		getCbTribuna().setEnabled(habilitar);
 		getCbSeccion().setEnabled(habilitar);
 		getSpFila().setEnabled(habilitar);
 		getSpAsiento().setEnabled(habilitar);
 		getTablaAsientos().setEnabled(habilitar);
-		
-		
+
 		getBtFinalizar().setEnabled(habilitar);
 		getBtCancelar().setEnabled(habilitar);
 	}
-	
+
 	private JLabel getLblCategora() {
 		if (lblCategora == null) {
 			lblCategora = new JLabel("Categoría:");
@@ -780,6 +927,7 @@ public class VentanaAbono extends JFrame {
 		}
 		return lblCategora;
 	}
+
 	private JTextField getTfCategoria() {
 		if (tfCategoria == null) {
 			tfCategoria = new JTextField();
@@ -790,6 +938,7 @@ public class VentanaAbono extends JFrame {
 		}
 		return tfCategoria;
 	}
+
 	private JButton getBtVolver() {
 		if (btVolver == null) {
 			btVolver = new JButton("Volver");
@@ -803,12 +952,13 @@ public class VentanaAbono extends JFrame {
 		}
 		return btVolver;
 	}
+
 	private JButton getBtCancelar() {
 		if (btCancelar == null) {
 			btCancelar = new JButton("Cancelar");
 			btCancelar.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					
+
 					reiniciar();
 				}
 			});
@@ -819,79 +969,78 @@ public class VentanaAbono extends JFrame {
 		}
 		return btCancelar;
 	}
-	
+
 	private void reiniciar() {
-		
+
 		getTfNombre().setText("");
 		getTfApellidos().setText("");
 		getTfDni().setText("");
 		getTfEmail().setText("");
-		
+
 		Calendar calendario = Calendar.getInstance();
 		calendario.add(Calendar.YEAR, -18);
-		
+
 		getDcNacimiento().setDate(calendario.getTime());
-		
+
 		getTfCategoria().setText("");
 		getTfPrecio().setText("");
-		
+
 		if (getCbEquipo().getItemCount() > 0) {
 			getCbEquipo().setSelectedIndex(0);
 		}
-		
-		if(getCbTribuna().getItemCount() > 0) {
+
+		if (getCbTribuna().getItemCount() > 0) {
 			getCbTribuna().setSelectedIndex(0);
 		}
-		
-		if(getCbSeccion().getItemCount() > 0) {
+
+		if (getCbSeccion().getItemCount() > 0) {
 			getCbSeccion().setSelectedIndex(0);
 		}
-		
+
 		getSpFila().setValue(1);
 		getSpAsiento().setValue(1);
-		
+
 		habilitarCamposSeleccion(false);
-		
-		filaSeleccionada=-1;
+
+		filaSeleccionada = -1;
 		asientoSeleccionado = -1;
 		getTablaAsientos().repaint();
 	}
-	
-	private class CambiarTabla implements ItemListener{
+
+	private class CambiarTabla implements ItemListener {
 
 		private VentanaAbono ventana;
-		
+
 		public CambiarTabla(VentanaAbono ventanaAbono) {
 			this.ventana = ventanaAbono;
 		}
-		
+
 		@Override
 		public void itemStateChanged(ItemEvent e) {
-			
-			if(e.getStateChange() == ItemEvent.SELECTED) {
-				
+
+			if (e.getStateChange() == ItemEvent.SELECTED) {
+
 				ventana.actualizarTablaAsientos();
 
 			}
-			
+
 		}
-		
+
 	}
-	
-	private class CambiarSpinner implements ChangeListener{
+
+	private class CambiarSpinner implements ChangeListener {
 
 		@Override
 		public void stateChanged(ChangeEvent e) {
 
 			sincronizarSeleccion();
-			
+
 		}
-		
-		
+
 	}
-	
+
 	private class CerrarVentana extends WindowAdapter {
-		
+
 		@Override
 		public void windowClosing(WindowEvent e) {
 			volverAlMenu();

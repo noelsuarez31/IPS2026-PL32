@@ -5,6 +5,10 @@ import java.time.LocalDateTime;
 
 public class Abono {
 
+	public enum Categoria {
+		INFANTIL, SUB_26, ADULTO, JUBILADO
+	}
+	
 	private String nombreEquipo;
 	private String tribuna;
 	private String seccion;
@@ -16,7 +20,7 @@ public class Abono {
 	private LocalDate fechaFin;
 	private LocalDateTime fechaRegistro;
 	
-	private String categoria;
+	private Categoria categoria;
 	private double precio;
 	
 	/**
@@ -34,7 +38,7 @@ public class Abono {
 	 * @param precio
 	 */
 	public Abono(String nombreEquipo, String tribuna, String seccion, int fila, int asiento, LocalDate fechaIncio,
-			LocalDate fechaFin, LocalDateTime fechaRegistro, String categoria, double precio) {
+			LocalDate fechaFin, LocalDateTime fechaRegistro, Categoria categoria, double precio) {
 	
 		this.nombreEquipo = nombreEquipo;
 		this.tribuna = tribuna;
@@ -110,7 +114,7 @@ public class Abono {
 	/**
 	 * @return the categoria
 	 */
-	public String getCategoria() {
+	public Categoria getCategoria() {
 		return categoria;
 	}
 

@@ -406,7 +406,7 @@ VALUES
         (SELECT id_equipo FROM Equipo WHERE nombre = 'Real Oviedo' AND es_propio = 1 LIMIT 1),
         (SELECT id_butaca FROM Butaca
          WHERE tribuna = 'A' AND seccion = 'A' AND fila = 1 AND asiento = 2),
-        '2026-07-01', '2027-06-30', '2026-11-27 09:15', 'SUB-26', 200.00
+        '2026-07-01', '2027-06-30', '2026-11-27 09:15', 'SUB_26', 200.00
     ),
     (
         (SELECT MAX(id_venta) - 1 FROM Venta),
