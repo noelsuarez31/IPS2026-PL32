@@ -657,10 +657,10 @@ public class JDBC {
 	 * @return uan lista con los asientos ocupados
 	 * @throws SQLException
 	 */
-	public List<int[]> getAsientosOcupados(int idEquipo, String nameTribuna, String nameSeccion, LocalDate now)
+	public List<int[]> getAsientosOcupados(int idEquipo, String nameTribuna, String nameSeccion, LocalDate inicio, LocalDate fin)
 			throws SQLException {
 
-		return AbonoJdbc.getAsientosOcupados(con, idEquipo, nameTribuna, nameSeccion, now);
+		return AbonoJdbc.getAsientosOcupados(con, idEquipo, nameTribuna, nameSeccion, inicio, fin);
 	}
 
 	/**

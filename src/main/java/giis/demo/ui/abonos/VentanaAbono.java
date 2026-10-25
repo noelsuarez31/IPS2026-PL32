@@ -781,8 +781,25 @@ public class VentanaAbono extends JFrame {
 
 				try {
 
+					LocalDate hoy = LocalDate.now();
+					LocalDate fechaInicio;
+					LocalDate fechaFin;
+
+					if (hoy.getMonthValue() >= 7) {
+						
+					    fechaInicio = LocalDate.of(hoy.getYear(), 7, 1);
+					    fechaFin = LocalDate.of(hoy.getYear() + 1, 6, 30);
+					    
+					} else {
+						
+					    fechaInicio = LocalDate.of(hoy.getYear() - 1, 7, 1);
+					    fechaFin = LocalDate.of(hoy.getYear(), 6, 30);
+					    
+					}
+					
 					for (int[] asiento : va.getAsientosOcupados(equipoSeleccionado, tribunaSeleccionada,
-							seccionSeleccionada)) {
+							seccionSeleccionada, fechaInicio, fechaFin)) {
+						
 						asientosSeleccionados[asiento[0] - 1][asiento[1] - 1] = true;
 					}
 				} catch (SQLException e) {

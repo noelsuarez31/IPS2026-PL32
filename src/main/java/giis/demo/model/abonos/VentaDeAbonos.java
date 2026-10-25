@@ -98,9 +98,9 @@ public class VentaDeAbonos extends Venta{
 	 * @return una lista con los asientos ocupados
 	 * @throws SQLException
 	 */
-	public List<int[]> getAsientosOcupados(Equipo equipo, TipoTribuna tribuna, TipoSeccion tipoSeccion) throws SQLException {
+	public List<int[]> getAsientosOcupados(Equipo equipo, TipoTribuna tribuna, TipoSeccion tipoSeccion, LocalDate inicio, LocalDate fin) throws SQLException {
 		
-		return jdbc.getAsientosOcupados(equipo.getIdEquipo(), tribuna.name(), tipoSeccion.name(), LocalDate.now());
+		return jdbc.getAsientosOcupados(equipo.getIdEquipo(), tribuna.name(), tipoSeccion.name(), inicio, fin);
 		
 	}
 	
