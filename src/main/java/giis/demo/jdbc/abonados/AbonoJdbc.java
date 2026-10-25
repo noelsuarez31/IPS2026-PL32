@@ -20,7 +20,7 @@ public class AbonoJdbc {
 
 	public final static String QUERY_ASIENTOS_OCUPADOS = "SELECT b.fila, b.asiento "
 	        + "FROM Abono a JOIN Butaca b ON b.id_butaca = a.id_butaca "
-	        + "WHERE a.id_equipo = ? AND b.tribuna = ? AND b.seccion = ? "
+	        + "WHERE b.tribuna = ? AND b.seccion = ? "
 	        + "AND a.fecha_inicio <= ? AND a.fecha_fin >= ? "
 	        + "UNION "
 	        + "SELECT b.fila, b.asiento "
@@ -73,18 +73,19 @@ public class AbonoJdbc {
 
 		try (PreparedStatement pst = con.prepareStatement(QUERY_ASIENTOS_OCUPADOS)) {
 
-			pst.setInt(1, idEquipo);
-			pst.setString(2, tribuna);
-			pst.setString(3, seccion);
-			pst.setString(4, fin.toString());
-			pst.setString(5, inicio.toString());
+			LocalDate hoy = LocalDate.now();
+			
+			pst.setString(1, tribuna);
+			pst.setString(2, seccion);
+			pst.setString(3, fin.toString());
+			pst.setString(4, inicio.toString());
 
 
-			pst.setInt(6, idEquipo);
-			pst.setString(7, tribuna);
-			pst.setString(8, seccion);
-			pst.setString(9, inicio.toString());
-			pst.setString(10, fin.toString());
+			pst.setInt(5, idEquipo);
+			pst.setString(6, tribuna);
+			pst.setString(7, seccion);
+			pst.setString(8, hoy.toString());
+			pst.setString(9, fin.toString());
 
 			try (ResultSet rs = pst.executeQuery()) {
 
@@ -272,13 +273,15 @@ public class AbonoJdbc {
 		
 		try (PreparedStatement pst = con.prepareStatement(QUERY_BUTACA_NO_DISPONIBLE)) {
 			
+			LocalDate hoy = LocalDate.now();
+			
 			pst.setInt(1, idButaca);
 			pst.setString(2, fin.toString());
 			pst.setString(3, inicio.toString());
 			
 			pst.setInt(4, idEquipo);
 			pst.setInt(5, idButaca);
-			pst.setString(6, inicio.toString());
+			pst.setString(6, hoy.toString());
 			pst.setString(7, fin.toString());
 
 			try (ResultSet rs = pst.executeQuery()) {
