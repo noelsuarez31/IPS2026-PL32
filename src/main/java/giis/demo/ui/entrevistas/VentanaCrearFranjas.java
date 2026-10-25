@@ -12,7 +12,9 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Date;
 import java.util.List;
-
+import java.awt.Dimension;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
@@ -66,6 +68,11 @@ public class VentanaCrearFranjas extends JFrame{
 	private JButton btnFinalizar;
 	private JScrollPane scrLista;
 	private JCalendar calendarioFecha;
+	private JPanel pnOcupacionEquipo;
+	private JLabel lbOcupacionEquipo;
+	private JScrollPane scrOcupacionEquipo;
+	private JList<String> listOcupacionEquipo;
+	private DefaultListModel<String> modeloOcupacion;
 	
 	public VentanaCrearFranjas(VentanaPrincipal vPrincipal) {
 		this.vPrincipal = vPrincipal;
@@ -144,6 +151,7 @@ public class VentanaCrearFranjas extends JFrame{
 			pnFormularioFranja.setLayout(new BoxLayout(pnFormularioFranja, BoxLayout.Y_AXIS));
 			pnFormularioFranja.add(getLbFormularioFranja());
 			pnFormularioFranja.add(getPnFecha());
+			pnFormularioFranja.add(getPnOcupacionEquipo());
 			pnFormularioFranja.add(getPnHoraInicio());
 			pnFormularioFranja.add(getPnHoraFin());
 			pnFormularioFranja.add(getPnBotones());
@@ -182,6 +190,7 @@ public class VentanaCrearFranjas extends JFrame{
 						EmpleadoDeportivo jugadorSeleccionado = listJugadores.getSelectedValue();
 						crearFranjaService.setJugadorSeleccionado(jugadorSeleccionado);
 						habilitarFormularioFranja(true);
+						actualizarOcupacionEquipo(); 
 					}
 				}
 			});
@@ -190,6 +199,7 @@ public class VentanaCrearFranjas extends JFrame{
 		}
 		return listJugadores;
 	}
+	
 	private JLabel getLbFormularioFranja() {
 		if (lbFormularioFranja == null) {
 			lbFormularioFranja = new JLabel("Introduzca los datos de la franja:");
@@ -210,6 +220,17 @@ public class VentanaCrearFranjas extends JFrame{
 	private JCalendar getCalendarioFecha() {
 	    if (calendarioFecha == null) {
 	        calendarioFecha = new JCalendar();
+	        
+	        PropertyChangeListener listenerFecha = new PropertyChangeListener() {
+	            @Override
+	            public void propertyChange(PropertyChangeEvent evt) {
+	                actualizarOcupacionEquipo();
+	            }
+	        };
+	        
+	        calendarioFecha.getDayChooser().addPropertyChangeListener("day", listenerFecha);
+	        calendarioFecha.getDayChooser().addPropertyChangeListener("month", listenerFecha);
+	        calendarioFecha.getDayChooser().addPropertyChangeListener("year", listenerFecha);
 	    }
 	    return calendarioFecha;
 	}
@@ -299,6 +320,43 @@ public class VentanaCrearFranjas extends JFrame{
 		return btnFinalizar;
 	}
 	
+	private JPanel getPnOcupacionEquipo() {
+		if (pnOcupacionEquipo == null) {
+			pnOcupacionEquipo = new JPanel();
+			pnOcupacionEquipo.setLayout(new BorderLayout(0, 3));
+			pnOcupacionEquipo.add(getLbOcupacionEquipo(), BorderLayout.NORTH);
+			pnOcupacionEquipo.add(getScrOcupacionEquipo(), BorderLayout.CENTER);
+		}
+		return pnOcupacionEquipo;
+	}
+
+	private JLabel getLbOcupacionEquipo() {
+		if (lbOcupacionEquipo == null) {
+			lbOcupacionEquipo = new JLabel("Partidos y entrenamientos del equipo:");
+			lbOcupacionEquipo.setFont(new Font("Tahoma", Font.BOLD, 13));
+			lbOcupacionEquipo.setHorizontalAlignment(SwingConstants.CENTER);
+		}
+		return lbOcupacionEquipo;
+	}
+
+	private JScrollPane getScrOcupacionEquipo() {
+		if (scrOcupacionEquipo == null) {
+			scrOcupacionEquipo = new JScrollPane(getListOcupacionEquipo());
+			scrOcupacionEquipo.setPreferredSize(new Dimension(0, 75));
+		}
+		return scrOcupacionEquipo;
+	}
+
+	private JList<String> getListOcupacionEquipo() {
+		if (listOcupacionEquipo == null) {
+			modeloOcupacion = new DefaultListModel<>();
+			listOcupacionEquipo = new JList<String>(modeloOcupacion);
+			listOcupacionEquipo.setFont(new Font("Tahoma", Font.PLAIN, 12));
+			listOcupacionEquipo.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		}
+		return listOcupacionEquipo;
+	}
+	
 	// METODOS AUXILIARES
 	private void cargarEntrenadoresEnCombo() {
 		List<String> dnis = crearFranjaService.obtenerDnisEntrenadoresDeEquiposProfesionales();
@@ -326,12 +384,16 @@ public class VentanaCrearFranjas extends JFrame{
 	
 	private void habilitarFormularioFranja(boolean flag) {
 	    getCalendarioFecha().setEnabled(flag);
+	    getListOcupacionEquipo().setEnabled(flag);
 	    getTxHoraInicio().setEnabled(flag);
 	    getTxHoraFin().setEnabled(flag);
 	    getBtnCrearFranja().setEnabled(flag);
 	    
 	    getTxHoraInicio().setText("");
 	    getTxHoraFin().setText("");
+	    if (!flag && modeloOcupacion != null) {
+	        modeloOcupacion.clear();
+	    }
 	}
 	
 	private void crearFranja() throws NoAvailableSlotException {
@@ -360,6 +422,39 @@ public class VentanaCrearFranjas extends JFrame{
 	    crearFranjaService.crearFranjaHoraria(fechaFranja, horaInicio, horaFin);
 	    
 	    habilitarFormularioFranja(false);
+	}
+	
+	private void actualizarOcupacionEquipo() {
+		EmpleadoDeportivo jugador = crearFranjaService.getJugadorSeleccionado();
+		if (jugador == null) {
+			if (modeloOcupacion != null) {
+				modeloOcupacion.clear();
+			}
+			return;
+		}
+		Date fechaUtil = getCalendarioFecha().getDate();
+		if (fechaUtil == null) {
+			return;
+		}
+		LocalDate fecha = fechaUtil.toInstant()
+				.atZone(ZoneId.systemDefault())
+				.toLocalDate();
+		int idEquipo = jugador.getIdEquipo();
+		if (idEquipo == 0 && getCbDniEntrenadores().getSelectedItem() != null) {
+			idEquipo = crearFranjaService.getIdEquipo((String) getCbDniEntrenadores().getSelectedItem());
+		}
+		getLbOcupacionEquipo().setText("Partidos y entrenamientos (" + fecha.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + "):");
+		List<String> eventos = crearFranjaService.obtenerPartidosYEntrenamientos(idEquipo, fecha);
+		if (modeloOcupacion != null) {
+			modeloOcupacion.clear();
+			if (eventos == null || eventos.isEmpty()) {
+				modeloOcupacion.addElement("Sin partidos ni entrenamientos este día (horas libres)");
+			} else {
+				for (String ev : eventos) {
+					modeloOcupacion.addElement(ev);
+				}
+			}
+		}
 	}
 
 }

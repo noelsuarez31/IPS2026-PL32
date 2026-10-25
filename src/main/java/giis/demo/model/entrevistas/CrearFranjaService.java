@@ -154,4 +154,18 @@ public class CrearFranjaService {
 			throw new SlotException(sqle.getMessage());
 		}
 	}
+	
+	/**
+	 * Devuelve la lista de partidos y entrenamientos del equipo en una fecha
+	 * @param idEquipo
+	 * @param fecha
+	 * @return List<String>
+	 */
+	public List<String> obtenerPartidosYEntrenamientos(int idEquipo, LocalDate fecha) {
+		try {
+			return jdbc.obtenerPartidosYEntrenamientos(idEquipo, fecha);
+		} catch (SQLException sqle) {
+			throw new SlotException(sqle.getMessage());
+		}
+	}
 }

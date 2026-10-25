@@ -633,6 +633,7 @@ public class JDBC {
 			con.setAutoCommit(autoCommitOriginal);
 		}
 	}
+	
 
 	/**
 	 * Obtiene todos los equipos locales disponibles
@@ -718,4 +719,15 @@ public class JDBC {
 		
 	}
 
+	/**
+	 * Devuelve la lista de entrenamientos y partidos que tiene el equipo,
+	 * de id el pasado por parametro, asociados
+	 * @param idEquipo
+	 * @param fecha
+	 * @return
+	 * @throws SQLException
+	 */
+	public List<String> obtenerPartidosYEntrenamientos(int idEquipo, LocalDate fecha) throws SQLException {
+		return FranjaJdbc.obtenerPartidosYEntrenamientos(con, idEquipo, fecha);
+	}
 }
