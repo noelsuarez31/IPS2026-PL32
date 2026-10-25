@@ -37,6 +37,21 @@ public class FranjaJdbc {
 	private final static String QUERY_SLOT_ALREADY_EXISTS = 
 			"SELECT * FROM FranjaHoraria WHERE dni_jugador=? AND fecha=?";
 	
+	private final static String QUERY_GET_MATCHES_FOR_TEAM = "SELECT p.hora_inicio, p.hora_fin, "
+			+ "el.nombre AS local, ev.nombre AS visitante, i.nombre AS instalacion "
+			+ "FROM Partido p "
+			+ "LEFT JOIN Equipo el ON p.id_local = el.id_equipo "
+			+ "LEFT JOIN Equipo ev ON p.id_visitante = ev.id_equipo "
+			+ "LEFT JOIN Instalacion i ON p.id_instalacion = i.id_instalacion "
+			+ "WHERE (p.id_local = ? OR p.id_visitante = ?) AND p.fecha = ? "
+			+ "ORDER BY p.hora_inicio";
+	
+	private final static String QUERY_GET_TRAINING_SESIONS_FOR_TEAM = "SELECT e.hora_inicio, e.hora_fin, i.nombre AS instalacion "
+			+ "FROM Entrenamiento e "
+			+ "LEFT JOIN Instalacion i ON e.id_instalacion = i.id_instalacion "
+			+ "WHERE e.id_equipo = ? AND e.fecha = ? "
+			+ "ORDER BY e.hora_inicio";
+	
 	/**
 	 * Devuelve una lista de EmpleadoDeportivo con los jugadores que pertenecen al equipo 
 	 * profesional cuyo id se pasa por parametro
@@ -258,6 +273,77 @@ public class FranjaJdbc {
 		}
 		
 		return false;
+	}
+	
+	/**
+	 * Devuelve la lista descriptiva de partidos y entrenamientos del equipo en una fecha
+	 * @param con
+	 * @param idEquipo
+	 * @param fecha
+	 * @return List<String>
+	 * @throws SQLException
+	 */
+	public static List<String> obtenerPartidosYEntrenamientos(Connection con, int idEquipo, LocalDate fecha) throws SQLException {
+		List<String> eventos = new ArrayList<>();
+		DateTimeFormatter formatoHora = DateTimeFormatter.ofPattern("HH:mm");
+		
+		// Partidos
+		try (PreparedStatement pst = con.prepareStatement(QUERY_GET_MATCHES_FOR_TEAM)) {
+			pst.setInt(1, idEquipo);
+			pst.setInt(2, idEquipo);
+			pst.setString(3, fecha.toString());
+			try (ResultSet rs = pst.executeQuery()) {
+				while (rs.next()) {
+					String hIniStr = rs.getString("hora_inicio");
+					String hFinStr = rs.getString("hora_fin");
+					String local = rs.getString("local");
+					String visitante = rs.getString("visitante");
+					String instalacion = rs.getString("instalacion");
+					
+					LocalTime hIni = LocalTime.parse(hIniStr, DateTimeFormatter.ofPattern(hIniStr.length() == 5 ? "HH:mm" : "HH:mm:ss"));
+					LocalTime hFin = LocalTime.parse(hFinStr, DateTimeFormatter.ofPattern(hFinStr.length() == 5 ? "HH:mm" : "HH:mm:ss"));
+					
+					StringBuilder desc = new StringBuilder("Partido: ")
+							.append(hIni.format(formatoHora))
+							.append(" a ")
+							.append(hFin.format(formatoHora));
+					if (local != null && visitante != null) {
+						desc.append(" (").append(local).append(" vs ").append(visitante).append(")");
+					}
+					if (instalacion != null) {
+						desc.append(" - ").append(instalacion);
+					}
+					eventos.add(desc.toString());
+				}
+			}
+		}
+		
+		// Entrenamientos
+		try (PreparedStatement pst = con.prepareStatement(QUERY_GET_TRAINING_SESIONS_FOR_TEAM)) {
+			pst.setInt(1, idEquipo);
+			pst.setString(2, fecha.toString());
+			try (ResultSet rs = pst.executeQuery()) {
+				while (rs.next()) {
+					String hIniStr = rs.getString("hora_inicio");
+					String hFinStr = rs.getString("hora_fin");
+					String instalacion = rs.getString("instalacion");
+					
+					LocalTime hIni = LocalTime.parse(hIniStr, DateTimeFormatter.ofPattern(hIniStr.length() == 5 ? "HH:mm" : "HH:mm:ss"));
+					LocalTime hFin = LocalTime.parse(hFinStr, DateTimeFormatter.ofPattern(hFinStr.length() == 5 ? "HH:mm" : "HH:mm:ss"));
+					
+					StringBuilder desc = new StringBuilder("Entrenamiento: ")
+							.append(hIni.format(formatoHora))
+							.append(" a ")
+							.append(hFin.format(formatoHora));
+					if (instalacion != null) {
+						desc.append(" (").append(instalacion).append(")");
+					}
+					eventos.add(desc.toString());
+				}
+			}
+		}
+		
+		return eventos;
 	}
 	
 }

@@ -6,6 +6,7 @@ import java.util.List;
 
 import giis.demo.exceptions.InterviewException;
 import giis.demo.exceptions.RuntimeInterviewException;
+import giis.demo.exceptions.SlotException;
 import giis.demo.jdbc.JDBC;
 import giis.demo.model.empleado.EmpleadoDeportivo;
 
