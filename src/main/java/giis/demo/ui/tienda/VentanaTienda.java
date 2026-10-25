@@ -120,6 +120,11 @@ public class VentanaTienda extends JFrame {
 
 		String[] columnas = { "Producto", "Uds.", "Subtotal" };
 		modeloTablaPedido = new DefaultTableModel(columnas, 0) {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public boolean isCellEditable(int row, int column) {
 				return false;
