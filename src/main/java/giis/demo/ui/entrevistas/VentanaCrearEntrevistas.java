@@ -193,6 +193,7 @@ public class VentanaCrearEntrevistas extends JFrame {
 					if(!e.getValueIsAdjusting()) {
 						try {
 							gestionDestacarDiasCalendario();
+							gestionCombo();
 						} catch (InterviewException e1) {
 							JOptionPane.showMessageDialog(null, e1.getMessage());
 						}
