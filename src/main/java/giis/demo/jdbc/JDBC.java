@@ -17,6 +17,7 @@ import giis.demo.jdbc.entradas.RegistrarVentaJdbc;
 import giis.demo.jdbc.entrevistas.EntrevistaJdbc;
 import giis.demo.jdbc.entrevistas.FranjaJdbc;
 import giis.demo.jdbc.equipo.CategoriaEquipoJdbc;
+import giis.demo.jdbc.equipo.EntrenamientoJdbc;
 import giis.demo.jdbc.equipo.EquipoJdbc;
 import giis.demo.jdbc.historial.HistorialJdbc;
 import giis.demo.jdbc.horarios.HorarioEspecificoJdbc;
@@ -592,5 +593,61 @@ public class JDBC {
 	 */
 	public List<String> obtenerPartidosYEntrenamientos(int idEquipo, LocalDate fecha) throws SQLException {
 		return FranjaJdbc.obtenerPartidosYEntrenamientos(con, idEquipo, fecha);
+	}
+	
+	/**
+	 * Devuelve lista de dnis de los entrenadores con equipo
+	 * @return
+	 * @throws SQLException
+	 */
+	public List<String> obtenerDnisEntrenadoresConEquipo() throws SQLException {
+		return EntrenamientoJdbc.obtenerDnisEntrenadoresConEquipo(con);
+	}
+
+	/**
+	 * Devuelve el nombre del equipo que entrena el entrenador con nif
+	 * pasado por parametro
+	 * @param dniEntrenador
+	 * @return
+	 * @throws SQLException
+	 */
+	public String obtenerNombreEquipoPorDniEntrenador(String dniEntrenador) throws SQLException {
+		return EntrenamientoJdbc.obtenerNombreEquipoPorDniEntrenador(con, dniEntrenador);
+	}
+
+	/**
+	 * Devuelve el id del equipo que entrena el entrenador con dni
+	 * pasado por parametros
+	 * @param dniEntrenador
+	 * @return
+	 * @throws SQLException
+	 */
+	public int obtenerIdEquipoPorDniEntrenador(String dniEntrenador) throws SQLException {
+		return EntrenamientoJdbc.obtenerIdEquipoPorDniEntrenador(con, dniEntrenador);
+	}
+
+	/**
+	 * Devuelve una lista con las entrevistas que tienen asignadas los jugadores
+	 * del equipo en esa fecha
+	 * @param idEquipo
+	 * @param fecha
+	 * @return
+	 * @throws SQLException
+	 */
+	public List<String> obtenerEntrevistasJugadoresEquipo(int idEquipo, LocalDate fecha) throws SQLException {
+		return EntrenamientoJdbc.obtenerEntrevistasJugadoresEquipo(con, idEquipo, fecha);
+	}
+
+	/**
+	 * Guarda el entrenamiento en la BBDD
+	 * @param fecha
+	 * @param horaInicio
+	 * @param horaFin
+	 * @param idEquipo
+	 * @param idInstalacion
+	 * @throws SQLException
+	 */
+	public void guardarEntrenamiento(LocalDate fecha, LocalTime horaInicio, LocalTime horaFin, int idEquipo, int idInstalacion) throws SQLException {
+		EntrenamientoJdbc.guardarEntrenamiento(con, fecha, horaInicio, horaFin, idEquipo, idInstalacion);
 	}
 }

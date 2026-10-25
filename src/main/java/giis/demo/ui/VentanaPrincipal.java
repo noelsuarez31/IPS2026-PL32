@@ -1,40 +1,41 @@
 package giis.demo.ui;
 
+import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.sql.SQLException;
+
 import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
-import giis.demo.ui.tienda.VentanaTienda;
 import giis.demo.model.contrataciones.GestorEmpleados;
+import giis.demo.model.entrevistas.CrearEntrevistaService;
 import giis.demo.model.entrevistas.CrearFranjaService;
 import giis.demo.model.equipo.AñadirEquipoService;
+import giis.demo.model.equipo.CrearEntrenamientoService;
 import giis.demo.model.historial.HistorialVentas;
+import giis.demo.model.horarios.GestionHorarioSemanal;
 import giis.demo.model.horarios.GestionHorariosEspecificos;
 import giis.demo.model.horarios.GestionHorariosPeriodicos;
 import giis.demo.model.tienda.VentaMerchandising;
 import giis.demo.ui.contrataciones.VentanaAltaEmpleado;
 import giis.demo.ui.contrataciones.VentanaGestionEmpleados;
 import giis.demo.ui.entradas.VentanaVentaEntradas;
-import giis.demo.ui.equipo.VentanaAñadirEquipo;
-import giis.demo.ui.historial.VentanaHistorialVentas;
-import giis.demo.ui.horarios.VentanaHorarioPeriodico;
-import giis.demo.ui.horarios.VentanaHorarioEspecifico;
-import giis.demo.ui.reserva.VentanaReserva;
-import giis.demo.model.entrevistas.CrearEntrevistaService;
 import giis.demo.ui.entrevistas.VentanaCrearEntrevistas;
 import giis.demo.ui.entrevistas.VentanaCrearFranjas;
-import giis.demo.model.horarios.GestionHorarioSemanal;
+import giis.demo.ui.equipo.VentanaAñadirEquipo;
+import giis.demo.ui.equipo.VentanaCrearEntrenamiento;
+import giis.demo.ui.historial.VentanaHistorialVentas;
+import giis.demo.ui.horarios.VentanaHorarioEspecifico;
+import giis.demo.ui.horarios.VentanaHorarioPeriodico;
 import giis.demo.ui.horarios.VentanaHorarioSemanal;
-
-import java.awt.Color;
-import javax.swing.JMenuBar;
-import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import java.awt.event.ActionListener;
-import java.sql.SQLException;
-import java.awt.event.ActionEvent;
-import javax.swing.SwingConstants;
+import giis.demo.ui.reserva.VentanaReserva;
+import giis.demo.ui.tienda.VentanaTienda;
 
 public class VentanaPrincipal extends JFrame {
 
@@ -46,6 +47,7 @@ public class VentanaPrincipal extends JFrame {
 	private CrearFranjaService cfs = new CrearFranjaService();
 	private CrearEntrevistaService ces = new CrearEntrevistaService();
 	private GestorEmpleados gestorEmpleados = new GestorEmpleados();
+	private CrearEntrenamientoService crearEntrenamientoService = new CrearEntrenamientoService();
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
@@ -68,6 +70,7 @@ public class VentanaPrincipal extends JFrame {
 	private JMenuItem mntmCrearFranjas;
 	private JMenu mnDirectorDeComunicaciones;
 	private JMenuItem mntmAsignarEntrevistas;
+	private JMenuItem mntmRegistrarEntrenamientos;
 
 	/**
 	 * Create the frame.
@@ -133,6 +136,7 @@ public class VentanaPrincipal extends JFrame {
 			mnEntrenador = new JMenu("Entrenador");
 			mnEntrenador.setMnemonic('T');
 			mnEntrenador.add(getMntmCrearFranjas());
+			mnEntrenador.add(getMntmRegistrarEntrenamientos());
 		}
 		return mnEntrenador;
 	}
@@ -467,5 +471,26 @@ public class VentanaPrincipal extends JFrame {
 
 	public GestionHorarioSemanal getGestionHorarioSemanal() {
 		return this.ghs;
+	}
+	private JMenuItem getMntmRegistrarEntrenamientos() {
+		if (mntmRegistrarEntrenamientos == null) {
+			mntmRegistrarEntrenamientos = new JMenuItem("Registrar entrenamiento");
+			mntmRegistrarEntrenamientos.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					crearVentanaEntrenamiento();
+				}
+			});
+		}
+		return mntmRegistrarEntrenamientos;
+	}
+
+	private void crearVentanaEntrenamiento() {
+		VentanaCrearEntrenamiento vCrearEntrenamiento = new VentanaCrearEntrenamiento(this);
+		this.setVisible(false);
+		vCrearEntrenamiento.setVisible(true);
+	}
+	
+	public CrearEntrenamientoService getCrearEntrenamientoService() {
+		return this.crearEntrenamientoService;
 	}
 }
