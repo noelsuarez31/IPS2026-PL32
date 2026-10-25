@@ -91,6 +91,50 @@ public class VentaDeAbonos extends Venta{
 		return jdbc.getEquiposLocales();
 		
 	}
+
+	/**
+	 * Calcula la fecha de inicio del bono de temporada
+	 * en función de cuando se compre
+	 * @param hoy
+	 * @return
+	 */
+	private LocalDate inicioTemporada(LocalDate hoy) {
+		
+		int anio;
+		
+		if(hoy.getMonthValue()>=7) {
+			
+			anio = hoy.getYear();
+		} else {
+			
+			anio = hoy.getYear()-1;
+		}
+		
+		return LocalDate.of(anio, 7, 1);
+		
+	}
+	
+	/**
+	 * Comprueba si un usuario ya tiene comprado un aboo esta temporada
+	 * @param dni
+	 * @return true si lo tiene comprado, false en caso contrario
+	 * @throws SQLException
+	 */
+	public boolean tieneAbonoEstaTemporada(String dni) throws SQLException {
+		
+		LocalDate fechaInicio = inicioTemporada(LocalDate.now());
+		
+		return jdbc.tieneAbonoEstaTemporada(dni, fechaInicio);
+		
+	}
+	
+	public Abono getInfoAbono(String dni) throws SQLException {
+		
+		LocalDate fechaInicio = inicioTemporada(LocalDate.now());
+
+		return jdbc.getInfoAbono(dni, fechaInicio);
+		
+	}
 	
 	public void close() throws SQLException {
 		

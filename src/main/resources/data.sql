@@ -390,7 +390,7 @@ VALUES
      
 INSERT INTO Abono
     (id_venta, id_abonado, id_equipo, id_butaca,
-     fecha_inicio, fecha_fin, categoria, precio)
+     fecha_inicio, fecha_fin, fecha_registro, categoria, precio)
 VALUES
     (
         (SELECT MAX(id_venta) - 3 FROM Venta),
@@ -398,7 +398,7 @@ VALUES
         (SELECT id_equipo FROM Equipo WHERE nombre = 'Real Oviedo' AND es_propio = 1 LIMIT 1),
         (SELECT id_butaca FROM Butaca
          WHERE tribuna = 'A' AND seccion = 'A' AND fila = 1 AND asiento = 1),
-        '2026-07-01', '2027-06-30', 'INFANTIL', 100.00
+        '2026-07-01', '2027-06-30', '2026-10-25 12:27', 'INFANTIL', 100.00
     ),
     (
         (SELECT MAX(id_venta) - 2 FROM Venta),
@@ -406,7 +406,7 @@ VALUES
         (SELECT id_equipo FROM Equipo WHERE nombre = 'Real Oviedo' AND es_propio = 1 LIMIT 1),
         (SELECT id_butaca FROM Butaca
          WHERE tribuna = 'A' AND seccion = 'A' AND fila = 1 AND asiento = 2),
-        '2026-07-01', '2027-06-30', 'SUB-26', 200.00
+        '2026-07-01', '2027-06-30', '2026-11-27 09:15', 'SUB-26', 200.00
     ),
     (
         (SELECT MAX(id_venta) - 1 FROM Venta),
@@ -414,7 +414,7 @@ VALUES
         (SELECT id_equipo FROM Equipo WHERE nombre = 'Real Oviedo B' AND es_propio = 1 LIMIT 1),
         (SELECT id_butaca FROM Butaca
          WHERE tribuna = 'B' AND seccion = 'B' AND fila = 1 AND asiento = 1),
-        '2026-07-01', '2027-06-30', 'ADULTO', 400.00
+        '2026-07-01', '2027-06-30', '2026-10-27 11:15', 'ADULTO', 400.00
     ),
     (
         (SELECT MAX(id_venta) FROM Venta),
@@ -422,5 +422,5 @@ VALUES
         (SELECT id_equipo FROM Equipo WHERE nombre = 'Real Oviedo B' AND es_propio = 1 LIMIT 1),
         (SELECT id_butaca FROM Butaca
          WHERE tribuna = 'B' AND seccion = 'B' AND fila = 1 AND asiento = 2),
-        '2026-07-01', '2027-06-30', 'JUBILADO', 250.00
+        '2026-07-01', '2027-06-30','2026-10-25 09:15', 'JUBILADO', 250.00
     );

@@ -19,6 +19,8 @@ import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.table.DefaultTableCellRenderer;
 
 import com.toedter.calendar.JDateChooser;
@@ -27,6 +29,7 @@ import giis.demo.model.entradas.enumerados.TipoSeccion;
 import giis.demo.model.entradas.enumerados.TipoTribuna;
 import giis.demo.model.equipo.Equipo;
 import giis.demo.ui.VentanaPrincipal;
+import giis.demo.model.abonos.Abono;
 import giis.demo.model.abonos.VentaDeAbonos;
 import giis.demo.model.abonos.VentaDeAbonos.Categoria;
 
@@ -43,6 +46,8 @@ import java.awt.event.ActionEvent;
 import javax.swing.SpinnerNumberModel;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 /**
  * Create the frame.
@@ -107,14 +112,20 @@ public class VentanaAbono extends JFrame {
 	private int filaSeleccionada=-1;
 	private int asientoSeleccionado=-1;
 	
+	private CambiarSpinner cs;
+	private CerrarVentana cv;
+	
 	public VentanaAbono(VentanaPrincipal vp) {
 		
-		va = new VentaDeAbonos();
 		this.vp = vp;
+
+		va = new VentaDeAbonos();
 		ct = new CambiarTabla(this);
+		cs = new CambiarSpinner();
+		cv = new CerrarVentana();
 		
-		setTitle("Venta de abonos : registo de usuario");
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setTitle("Venta de abonos");
+		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		setBounds(100, 100, 1007, 639);
 		((JPanel) getContentPane()).setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().setLayout(new BorderLayout(0, 0));
@@ -124,6 +135,7 @@ public class VentanaAbono extends JFrame {
 		getContentPane().add(getPanelEleccion(), BorderLayout.SOUTH);
 		
 		setLocationRelativeTo(null);
+		addWindowListener(cv);
 		
 	}
 
@@ -155,7 +167,7 @@ public class VentanaAbono extends JFrame {
 		if (lbNombre == null) {
 			lbNombre = new JLabel("Nombre:");
 			lbNombre.setBounds(11, 30, 63, 20);
-			lbNombre.setDisplayedMnemonic('R');
+			lbNombre.setDisplayedMnemonic('N');
 			lbNombre.setLabelFor(getTfNombre());
 		}
 		return lbNombre;
@@ -175,7 +187,7 @@ public class VentanaAbono extends JFrame {
 		if (lblDni == null) {
 			lblDni = new JLabel("Dni:");
 			lblDni.setBounds(11, 102, 30, 20);
-			lblDni.setDisplayedMnemonic('N');
+			lblDni.setDisplayedMnemonic('D');
 			lblDni.setLabelFor(getTfDni());
 		}
 		return lblDni;
@@ -297,7 +309,7 @@ public class VentanaAbono extends JFrame {
 	private JLabel getLbEquipo() {
 		if (lbEquipo == null) {
 			lbEquipo = new JLabel("Equipo:");
-			lbEquipo.setDisplayedMnemonic('R');
+			lbEquipo.setDisplayedMnemonic('Q');
 			lbEquipo.setBounds(15, 40, 63, 20);
 		}
 		return lbEquipo;
@@ -321,7 +333,7 @@ public class VentanaAbono extends JFrame {
 	private JLabel getLblTribuna() {
 		if (lblTribuna == null) {
 			lblTribuna = new JLabel("Tribuna:");
-			lblTribuna.setDisplayedMnemonic('R');
+			lblTribuna.setDisplayedMnemonic('T');
 			lblTribuna.setBounds(15, 84, 63, 20);
 		}
 		return lblTribuna;
@@ -338,7 +350,7 @@ public class VentanaAbono extends JFrame {
 	private JLabel getLblSeccion() {
 		if (lblSeccion == null) {
 			lblSeccion = new JLabel("Seccion:");
-			lblSeccion.setDisplayedMnemonic('R');
+			lblSeccion.setDisplayedMnemonic('S');
 			lblSeccion.setBounds(15, 127, 63, 20);
 		}
 		return lblSeccion;
@@ -355,7 +367,7 @@ public class VentanaAbono extends JFrame {
 	private JLabel getLblFila() {
 		if (lblFila == null) {
 			lblFila = new JLabel("Fila:");
-			lblFila.setDisplayedMnemonic('R');
+			lblFila.setDisplayedMnemonic('L');
 			lblFila.setBounds(406, 40, 63, 20);
 		}
 		return lblFila;
@@ -363,7 +375,7 @@ public class VentanaAbono extends JFrame {
 	private JLabel getLblAsiento() {
 		if (lblAsiento == null) {
 			lblAsiento = new JLabel("Asiento:");
-			lblAsiento.setDisplayedMnemonic('R');
+			lblAsiento.setDisplayedMnemonic('A');
 			lblAsiento.setBounds(406, 84, 63, 20);
 		}
 		return lblAsiento;
@@ -374,15 +386,19 @@ public class VentanaAbono extends JFrame {
 			spFila.setModel(new SpinnerNumberModel(1, 1, 10, 1));
 			spFila.setEnabled(false);
 			spFila.setBounds(480, 38, 53, 26);
+			spFila.addChangeListener(cs);
 		}
 		return spFila;
 	}
 	private JSpinner getSpAsiento() {
+		
 		if (spAsiento == null) {
+			
 			spAsiento = new JSpinner();
 			spAsiento.setModel(new SpinnerNumberModel(1, 1, 15, 1));
 			spAsiento.setEnabled(false);
 			spAsiento.setBounds(480, 81, 53, 26);
+			spAsiento.addChangeListener(cs);
 		}
 		return spAsiento;
 	}
@@ -484,10 +500,17 @@ public class VentanaAbono extends JFrame {
 		return panelBotones;
 	}
 	
-	private void volverAlMenu() throws SQLException {
+	private void volverAlMenu(){
+		
+		try {
+			va.close();
+		} catch (SQLException e) {
+			JOptionPane.showMessageDialog(this, "Error al cerrar la conexion con la base de datos",
+					"Error", JOptionPane.ERROR_MESSAGE);
+			e.printStackTrace();
+		}
 		
 		this.dispose();
-		va.close();
 		vp.setVisible(true);
 		
 	}
@@ -496,7 +519,7 @@ public class VentanaAbono extends JFrame {
 			btFinalizar = new JButton("Finalizar");
 			btFinalizar.setEnabled(false);
 			btFinalizar.setToolTipText("Pulsa para finalizar la compra");
-			btFinalizar.setMnemonic('F');
+			btFinalizar.setMnemonic('Z');
 		}
 		return btFinalizar;
 	}
@@ -507,6 +530,13 @@ public class VentanaAbono extends JFrame {
 	    	
 	        tablaAsientos = new JTable(10, 15);
 	        tablaAsientos.setEnabled(false);
+	        
+	        //Para evitar que el usario pueda editar las celdas
+	        
+	        tablaAsientos.setDefaultEditor(Object.class, null);
+	        
+	        //Pintar las celdas
+	        
 	        tablaAsientos.addMouseListener(new MouseAdapter() {
 	        	@Override
 	        	public void mouseClicked(MouseEvent e) {
@@ -586,7 +616,7 @@ public class VentanaAbono extends JFrame {
 	
 	private boolean checksFilaColumna(int fila, int columna) {
 		
-		return (fila>0 || columna>0 || fila<=10 || columna<=15);
+		return fila>=0  && columna>=0 && fila<10 && columna<15;
 		
 	}
 	
@@ -620,7 +650,29 @@ public class VentanaAbono extends JFrame {
 			
 		}
 		
+		sincronizarSeleccion();
 		getTablaAsientos().repaint();
+	}
+	
+	private void sincronizarSeleccion() {
+		
+		int fila = (int) getSpFila().getValue()-1;
+		int asiento = (int) getSpAsiento().getValue()-1;
+		
+		if(asientosSeleccionados[fila][asiento]) {
+			
+			filaSeleccionada = -1;
+			asientoSeleccionado = -1;
+			
+		} else {
+			
+			filaSeleccionada = fila;
+			asientoSeleccionado = asiento;
+			
+		}
+		
+		getTablaAsientos().repaint();
+		
 	}
 	
 	private JButton getBtConsultar() {
@@ -632,7 +684,7 @@ public class VentanaAbono extends JFrame {
 				}
 			});
 			btConsultar.setToolTipText("Pulsa para consultar");
-			btConsultar.setMnemonic('C');
+			btConsultar.setMnemonic('O');
 			btConsultar.setBounds(434, 29, 117, 29);
 		}
 		return btConsultar;
@@ -643,12 +695,38 @@ public class VentanaAbono extends JFrame {
 	 */
 	private void consultarAbonado() {
 		
-		//Comprobar que el abonado no existe en la base de datos o no tiene un abono activo, si es asi mostrar mensaje de error y no permitir continuar
+		
 		
 		if(checkCamposVacios()) {
 			
 			JOptionPane.showMessageDialog(null, "Todos los campos son obligatorios", "Error", JOptionPane.ERROR_MESSAGE);
 			return;
+		}
+		
+		String dni = this.getTfDni().getText().trim().toUpperCase();
+		
+	
+		try {
+			
+			if(va.tieneAbonoEstaTemporada(dni)) {
+				
+				Abono abono = va.getInfoAbono(dni);
+				
+				JOptionPane.showMessageDialog(null, "El dni " + dni + " ya tiene un abono para esta temporada: " + abono.toString(), "Abono existente", JOptionPane.WARNING_MESSAGE);
+				
+				reiniciar();
+				return;
+			}
+			
+		} catch (SQLException sqle) {
+			
+			sqle.printStackTrace();   // <- añade esto
+
+			JOptionPane.showMessageDialog(null, "Se ha producido un error al comprobar el abonado en la Base de datos, pongase en contacto con ayuda al cliente",
+					"Error", JOptionPane.ERROR_MESSAGE);
+			reiniciar();
+			return;
+			
 		}
 		
 		LocalDate fechaNacimiento = getDcNacimiento().getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
@@ -663,7 +741,8 @@ public class VentanaAbono extends JFrame {
 	
 	private boolean checkCamposVacios() {
 		
-		return getTfNombre().getText().isEmpty() || getTfApellidos().getText().isEmpty() || getTfDni().getText().isEmpty() || getTfEmail().getText().isEmpty()|| getDcNacimiento().getDate() == null;
+		return getTfNombre().getText().trim().isEmpty() || getTfApellidos().getText().isEmpty() || getTfDni().getText().isEmpty() 
+				|| getTfEmail().getText().isEmpty()|| getDcNacimiento().getDate() == null;
 	
 		
 	}
@@ -716,12 +795,7 @@ public class VentanaAbono extends JFrame {
 			btVolver = new JButton("Volver");
 			btVolver.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					try {
-						volverAlMenu();
-					} catch (SQLException e1) {
-						JOptionPane.showMessageDialog(null, "Error al cerrar la conexion con la base de datos", "Error", JOptionPane.ERROR_MESSAGE);		
-						e1.printStackTrace();
-					}
+					volverAlMenu();
 				}
 			});
 			btVolver.setToolTipText("Pulsa para volver al menú inicial");
@@ -778,6 +852,9 @@ public class VentanaAbono extends JFrame {
 		
 		habilitarCamposSeleccion(false);
 		
+		filaSeleccionada=-1;
+		asientoSeleccionado = -1;
+		getTablaAsientos().repaint();
 	}
 	
 	private class CambiarTabla implements ItemListener{
@@ -800,4 +877,25 @@ public class VentanaAbono extends JFrame {
 		}
 		
 	}
+	
+	private class CambiarSpinner implements ChangeListener{
+
+		@Override
+		public void stateChanged(ChangeEvent e) {
+
+			sincronizarSeleccion();
+			
+		}
+		
+		
+	}
+	
+	private class CerrarVentana extends WindowAdapter {
+		
+		@Override
+		public void windowClosing(WindowEvent e) {
+			volverAlMenu();
+		}
+	}
+
 }
