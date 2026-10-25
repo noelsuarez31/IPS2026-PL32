@@ -57,9 +57,13 @@ public class VentanaAñadirEquipo extends JFrame {
 	private JLabel lbSegundoEntrenador;
 	private JPanel pnRestoDeTecnicos;
 	private JLabel lbRestoTecnicosTitulo;
-	private DefaultListModel<EmpleadoDeportivo> modeloListaRestoTecnicos;
-	private JList<EmpleadoDeportivo> listRestoTecnicos;
-	private JScrollPane scrRestoTecnicos;
+	private JPanel pnListasTecnicos;
+	private DefaultListModel<EmpleadoDeportivo> modeloTecnicosDisponibles;
+	private JList<EmpleadoDeportivo> listTecnicosDisponibles;
+	private JScrollPane scrTecnicosDisponibles;
+	private DefaultListModel<EmpleadoDeportivo> modeloTecnicosSeleccionados;
+	private JList<EmpleadoDeportivo> listTecnicosSeleccionados;
+	private JScrollPane scrTecnicosSeleccionados;
 	private JPanel pnJugadores;
 	private DefaultListModel<EmpleadoDeportivo> modeloJugadoresDisponibles;
 	private JList<EmpleadoDeportivo> listDisponibles;
@@ -282,40 +286,95 @@ public class VentanaAñadirEquipo extends JFrame {
 		if (pnRestoDeTecnicos == null) {
 			pnRestoDeTecnicos = new JPanel(new BorderLayout(0, 3));
 			pnRestoDeTecnicos.add(getLbRestoTecnicosTitulo(), BorderLayout.NORTH);
-			pnRestoDeTecnicos.add(getScrRestoTecnicos(), BorderLayout.CENTER);
+			pnRestoDeTecnicos.add(getPnListasTecnicos(), BorderLayout.CENTER);
 		}
 		return pnRestoDeTecnicos;
 	}
 	
 	private JLabel getLbRestoTecnicosTitulo() {
 		if (lbRestoTecnicosTitulo == null) {
-			lbRestoTecnicosTitulo = new JLabel("Si quieres añadir técnicos adicionales, seleccionalos:");
+			lbRestoTecnicosTitulo = new JLabel("Si quieres añadir técnicos adicionales, selecciónalos:");
 			lbRestoTecnicosTitulo.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		}
 		return lbRestoTecnicosTitulo;
 	}
 	
-	private JScrollPane getScrRestoTecnicos() {
-		if (scrRestoTecnicos == null) {
-			scrRestoTecnicos = new JScrollPane(getListRestoTecnicos());
-			scrRestoTecnicos.setPreferredSize(new Dimension(0, 90));
+	private JPanel getPnListasTecnicos() {
+		if (pnListasTecnicos == null) {
+			pnListasTecnicos = new JPanel();
+			pnListasTecnicos.setLayout(new GridLayout(1, 2, 10, 0));
+			
+			// Panel izquierdo: Disponibles
+			JPanel pnIzq = new JPanel(new BorderLayout());
+			pnIzq.add(new JLabel("Disponibles:", JLabel.CENTER), BorderLayout.NORTH);
+			pnIzq.add(getScrTecnicosDisponibles(), BorderLayout.CENTER);
+			pnListasTecnicos.add(pnIzq);
+			
+			// Panel derecho: Seleccionados
+			JPanel pnDer = new JPanel(new BorderLayout());
+			pnDer.add(new JLabel("Seleccionados:", JLabel.CENTER), BorderLayout.NORTH);
+			pnDer.add(getScrTecnicosSeleccionados(), BorderLayout.CENTER);
+			pnListasTecnicos.add(pnDer);
 		}
-		return scrRestoTecnicos;
+		return pnListasTecnicos;
 	}
 	
-	private JList<EmpleadoDeportivo> getListRestoTecnicos() {
-		if (listRestoTecnicos == null) {
-			modeloListaRestoTecnicos = new DefaultListModel<>();
+	private JScrollPane getScrTecnicosDisponibles() {
+		if (scrTecnicosDisponibles == null) {
+			scrTecnicosDisponibles = new JScrollPane(getListTecnicosDisponibles());
+			scrTecnicosDisponibles.setPreferredSize(new Dimension(0, 90));
+		}
+		return scrTecnicosDisponibles;
+	}
+	private JList<EmpleadoDeportivo> getListTecnicosDisponibles() {
+		if (listTecnicosDisponibles == null) {
+			modeloTecnicosDisponibles = new DefaultListModel<>();
 			List<EmpleadoDeportivo> listaRestoTecnicosDatos = club.obtenerRestoTecnicos();
 			for (EmpleadoDeportivo tecnico : listaRestoTecnicosDatos) {
-			    modeloListaRestoTecnicos.addElement(tecnico);
+				modeloTecnicosDisponibles.addElement(tecnico);
 			}
-			listRestoTecnicos = new JList<EmpleadoDeportivo>(modeloListaRestoTecnicos);
-			listRestoTecnicos.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-			listRestoTecnicos.setFont(new Font("Tahoma", Font.PLAIN, 14));
+			listTecnicosDisponibles = new JList<EmpleadoDeportivo>(modeloTecnicosDisponibles);
+			listTecnicosDisponibles.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+			listTecnicosDisponibles.setFont(new Font("Tahoma", Font.PLAIN, 14));
+			
+			// Evento de doble clic para pasar a seleccionados
+			listTecnicosDisponibles.addMouseListener(new java.awt.event.MouseAdapter() {
+				public void mouseClicked(java.awt.event.MouseEvent evt) {
+					if (evt.getClickCount() == 2) {
+						pasarTecnicoASeleccionados();
+					}
+				}
+			});
 		}
-		return listRestoTecnicos;
+		return listTecnicosDisponibles;
 	}
+	private JScrollPane getScrTecnicosSeleccionados() {
+		if (scrTecnicosSeleccionados == null) {
+			scrTecnicosSeleccionados = new JScrollPane(getListTecnicosSeleccionados());
+			scrTecnicosSeleccionados.setPreferredSize(new Dimension(0, 90));
+		}
+		return scrTecnicosSeleccionados;
+	}
+	private JList<EmpleadoDeportivo> getListTecnicosSeleccionados() {
+		if (listTecnicosSeleccionados == null) {
+			modeloTecnicosSeleccionados = new DefaultListModel<>();
+			listTecnicosSeleccionados = new JList<EmpleadoDeportivo>(modeloTecnicosSeleccionados);
+			listTecnicosSeleccionados.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+			listTecnicosSeleccionados.setFont(new Font("Tahoma", Font.PLAIN, 14));
+			
+			// Evento de doble clic para devolver a disponibles
+			listTecnicosSeleccionados.addMouseListener(new java.awt.event.MouseAdapter() {
+				public void mouseClicked(java.awt.event.MouseEvent evt) {
+					if (evt.getClickCount() == 2) {
+						devolverTecnicoADisponibles();
+					}
+				}
+			});
+		}
+		return listTecnicosSeleccionados;
+	}
+
+  
 	
 	private JPanel getPnJugadores() {
 	    if (pnJugadores == null) {
@@ -483,10 +542,9 @@ public class VentanaAñadirEquipo extends JFrame {
         	
         }
 
-        List<EmpleadoDeportivo> restoTecnicosSeleccionadosLista = getListRestoTecnicos().getSelectedValuesList();
-        for (EmpleadoDeportivo otroTecnicoMarcado : restoTecnicosSeleccionadosLista) {
-            if (!restoTecnicosSeleccionados.contains(otroTecnicoMarcado)) {
-                restoTecnicosSeleccionados.add(otroTecnicoMarcado);
+        if (modeloTecnicosSeleccionados != null) {
+            for (int i = 0; i < modeloTecnicosSeleccionados.getSize(); i++) {
+                restoTecnicosSeleccionados.add(modeloTecnicosSeleccionados.getElementAt(i));
             }
         }
 
@@ -549,4 +607,20 @@ public class VentanaAñadirEquipo extends JFrame {
             }
         }
     }
+    
+	private void pasarTecnicoASeleccionados() {
+		EmpleadoDeportivo seleccionado = listTecnicosDisponibles.getSelectedValue();
+		if (seleccionado != null) {
+			modeloTecnicosDisponibles.removeElement(seleccionado);
+			modeloTecnicosSeleccionados.addElement(seleccionado);
+		}
+	}
+
+	private void devolverTecnicoADisponibles() {
+		EmpleadoDeportivo seleccionado = listTecnicosSeleccionados.getSelectedValue();
+		if (seleccionado != null) {
+			modeloTecnicosSeleccionados.removeElement(seleccionado);
+			modeloTecnicosDisponibles.addElement(seleccionado);
+		}
+	}
 }
