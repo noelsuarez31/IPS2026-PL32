@@ -669,6 +669,7 @@ public class VentanaAbono extends JFrame {
 		if (tablaAsientos == null) {
 
 			tablaAsientos = new JTable(10, 15);
+			tablaAsientos.setBackground(new Color(240, 240, 240));
 			tablaAsientos.setEnabled(false);
 
 			// Para evitar que el usario pueda editar las celdas
