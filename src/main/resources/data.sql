@@ -27,11 +27,14 @@ delete from Abonado;
 
 INSERT INTO "Producto" ("nombre", "tipo", "precio") VALUES 
 ('Sudadera', 'ParteArriba', 65.00),
-('Camiseta', 'ParteArriba', 35.00),
+('Camiseta local', 'ParteArriba', 35.00),
 ('Pantalon', 'ParteAbajo', 35.00),
 ('Taza', 'Accesorios', 12.00),
 ('Gorra', 'Accesorios', 16.00),
-('Mochila', 'Accesorios', 19.00);
+('Mochila', 'Accesorios', 19.00),
+('Bufanda', 'Accesorios', 15.00),
+('Pantalon de chandal', 'ParteAbajo',38.00),
+('Camiseta visitante', 'ParteArriba', 35.00);
 
 with recursive tri(c) as (values ('A'),('B'),('C'),('D')), sec(c) as (values ('A'),('B'),('C'),('D'),('E'),('F')), num(x) as (select 1 union all select x + 1 from num where x < 15) insert into Butaca (tribuna, seccion, fila, asiento) select tri.c, sec.c, f.x, a.x from tri, sec, num f, num a where f.x <= 10 order by tri.c, sec.c, f.x, a.x;
 
@@ -169,7 +172,7 @@ INSERT INTO "venta" VALUES (28,'2026-10-09 10:15','Abono de temporada','ABONOS',
 INSERT INTO "venta" VALUES (29,'2026-10-12 16:40','Campaña de accionistas','CAMPANAS_ACCIONISTAS',1200.0);
 INSERT INTO "venta" VALUES (30,'2026-10-23 17:45','Venta Merchandising','MERCHANDISING',97.0);
 INSERT INTO "LineaVenta" ("id_venta", "id_producto", "unidades", "precio_unitario") VALUES
-(12, (SELECT id_producto FROM Producto WHERE nombre='Camiseta'), 1, 35.0),
+(12, (SELECT id_producto FROM Producto WHERE nombre='Camiseta local'), 1, 35.0),
 (12, (SELECT id_producto FROM Producto WHERE nombre='Pantalon'), 1, 35.0),
 (12, (SELECT id_producto FROM Producto WHERE nombre='Taza'), 1, 12.0),
 (30, (SELECT id_producto FROM Producto WHERE nombre='Sudadera'), 1, 65.0),
