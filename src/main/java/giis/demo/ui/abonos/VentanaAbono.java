@@ -449,7 +449,7 @@ public class VentanaAbono extends JFrame {
 		if (lbColorLibre == null) {
 			lbColorLibre = new JLabel();
 			lbColorLibre.setOpaque(true);
-			lbColorLibre.setBackground(Color.GREEN);
+			lbColorLibre.setBackground(new Color(128, 255, 128));
 		}
 		return lbColorLibre;
 	}
@@ -465,7 +465,7 @@ public class VentanaAbono extends JFrame {
 		if (lbColorNoDisponible == null) {
 			lbColorNoDisponible = new JLabel();
 			lbColorNoDisponible.setOpaque(true);
-			lbColorNoDisponible.setBackground(Color.RED);
+			lbColorNoDisponible.setBackground(new Color(255, 128, 128));
 		}
 		return lbColorNoDisponible;
 	}
@@ -481,7 +481,7 @@ public class VentanaAbono extends JFrame {
 		if (lbColorSeleccion == null) {
 			lbColorSeleccion = new JLabel();
 			lbColorSeleccion.setOpaque(true);
-			lbColorSeleccion.setBackground(Color.BLUE);
+			lbColorSeleccion.setBackground(new Color(0, 128, 255));
 		}
 		return lbColorSeleccion;
 	}
@@ -546,6 +546,7 @@ public class VentanaAbono extends JFrame {
 	private JButton getBtFinalizar() {
 		if (btFinalizar == null) {
 			btFinalizar = new JButton("Finalizar");
+			btFinalizar.setBackground(new Color(128, 255, 128));
 			btFinalizar.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 
@@ -571,97 +572,95 @@ public class VentanaAbono extends JFrame {
 
 		}
 
-		if (filaSeleccionada<0 || asientoSeleccionado<0) {
+		if (filaSeleccionada < 0 || asientoSeleccionado < 0) {
 
-			JOptionPane.showMessageDialog(null, "Seleccione un asiento anyes de finalizar la compra", 
+			JOptionPane.showMessageDialog(null, "Seleccione un asiento anyes de finalizar la compra",
 					"Asiento no seleccionado", JOptionPane.WARNING_MESSAGE);
 			return;
 
 		}
-		
-		if (asientosSeleccionados[filaSeleccionada][asientoSeleccionado]) {
-			
-	        JOptionPane.showMessageDialog(null,"El asiento seleccionado ya no está disponible.",
-	                "Asiento no disponible",JOptionPane.WARNING_MESSAGE);
 
-	        actualizarTablaAsientos();
-	        return;
-	    }
-		
+		if (asientosSeleccionados[filaSeleccionada][asientoSeleccionado]) {
+
+			JOptionPane.showMessageDialog(null, "El asiento seleccionado ya no está disponible.",
+					"Asiento no disponible", JOptionPane.WARNING_MESSAGE);
+
+			actualizarTablaAsientos();
+			return;
+		}
+
 		try {
-			
-			LocalDate fechaNacimiento = getDcNacimiento().getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+			LocalDate fechaNacimiento = getDcNacimiento().getDate().toInstant().atZone(ZoneId.systemDefault())
+					.toLocalDate();
 
 			Abonado abonado = obtenerDatosAbonado();
 			Abono abono = obtenerDatosAbono(equipo, fechaNacimiento);
-			 
+
 			va.venderAbono(abonado, abono, equipo.getIdEquipo());
-			
-			JOptionPane.showMessageDialog(null, "Abono vendido correctamente.\n"
-	                + "Abonado: " + abonado.getNombre() + " " + abonado.getApellidos()
-	                + "\nDNI: " + abonado.getDni()
-	                + "\nCategoría: " + abono.getCategoria()
-	                + "\nAsiento: fila " + abono.getFila() + ", asiento " + abono.getAsiento()
-	                + "\nPrecio: " + abono.getPrecio() + " €",
-	                "Venta realizada",
-	                JOptionPane.INFORMATION_MESSAGE);
-			
+
+			JOptionPane.showMessageDialog(null,
+					"Abono vendido correctamente.\n" + "Abonado: " + abonado.getNombre() + " " + abonado.getApellidos()
+							+ "\nDNI: " + abonado.getDni() + "\nCategoría: " + abono.getCategoria() + "\nAsiento: fila "
+							+ abono.getFila() + ", asiento " + abono.getAsiento() + "\nPrecio: " + abono.getPrecio()
+							+ " €",
+					"Venta realizada", JOptionPane.INFORMATION_MESSAGE);
+
 			actualizarTablaAsientos();
 			reiniciar();
-			
+
 		} catch (SQLException | AbonoNoPermitidoException ex) {
-			
+
 			JOptionPane.showMessageDialog(null, ex.getMessage(), "Error el vender el abono", JOptionPane.ERROR_MESSAGE);
-		
+
 			actualizarTablaAsientos();
-			
+
 		}
-		
+
 	}
-	
+
 	private Abonado obtenerDatosAbonado() {
-		
+
 		String dni = getTfDni().getText().trim().toUpperCase();
 		String name = getTfNombre().getText().trim();
 		String apellidos = getTfApellidos().getText().trim();
 		String email = getTfEmail().getText().trim();
-		
-		LocalDate fechaNacimiento = getDcNacimiento().getDate().toInstant().
-				atZone(ZoneId.systemDefault()).toLocalDate();
-		
+
+		LocalDate fechaNacimiento = getDcNacimiento().getDate().toInstant().atZone(ZoneId.systemDefault())
+				.toLocalDate();
+
 		return new Abonado(dni, name, apellidos, fechaNacimiento, email);
 	}
 
 	private Abono obtenerDatosAbono(Equipo equipo, LocalDate fechaNacimiento) {
 
-		
 		Categoria categoria = va.calcularCategoria(fechaNacimiento);
 		double precio = va.getPrecio(categoria);
-		
+
 		LocalDate hoy = LocalDate.now();
 		LocalDate fechaInicio;
 		LocalDate fechaFin;
-		
-		 if (hoy.getMonthValue() >= 7) {
-			 
-		        fechaInicio = LocalDate.of(hoy.getYear(), 7, 1);
-		        fechaFin = LocalDate.of(hoy.getYear() + 1, 6, 30);
-		        
-		    } else {
-		    	
-		        fechaInicio = LocalDate.of(hoy.getYear() - 1, 7, 1);
-		        fechaFin = LocalDate.of(hoy.getYear(), 6, 30);
-		        
-		    }
-		 
-		 TipoTribuna tribuna = (TipoTribuna) getCbTribuna().getSelectedItem();
-		 TipoSeccion seccion = (TipoSeccion) getCbSeccion().getSelectedItem();
-		 
-		 int fila = filaSeleccionada+1;
-		 int asiento = asientoSeleccionado+1;
-		 
-		 return new Abono(equipo.getNombre(), tribuna.name(), seccion.name(),
-				 fila, asiento, fechaInicio, fechaFin, LocalDateTime.now(),categoria , precio);
+
+		if (hoy.getMonthValue() >= 7) {
+
+			fechaInicio = LocalDate.of(hoy.getYear(), 7, 1);
+			fechaFin = LocalDate.of(hoy.getYear() + 1, 6, 30);
+
+		} else {
+
+			fechaInicio = LocalDate.of(hoy.getYear() - 1, 7, 1);
+			fechaFin = LocalDate.of(hoy.getYear(), 6, 30);
+
+		}
+
+		TipoTribuna tribuna = (TipoTribuna) getCbTribuna().getSelectedItem();
+		TipoSeccion seccion = (TipoSeccion) getCbSeccion().getSelectedItem();
+
+		int fila = filaSeleccionada + 1;
+		int asiento = asientoSeleccionado + 1;
+
+		return new Abono(equipo.getNombre(), tribuna.name(), seccion.name(), fila, asiento, fechaInicio, fechaFin,
+				LocalDateTime.now(), categoria, precio);
 	}
 
 	private JTable getTablaAsientos() {
@@ -733,15 +732,15 @@ public class VentanaAbono extends JFrame {
 
 					if (asientosSeleccionados[row][column]) {
 
-						c.setBackground(Color.RED);
+						c.setBackground(new Color(255, 128, 128));
 
 					} else if (row == filaSeleccionada && column == asientoSeleccionado) {
 
-						c.setBackground(Color.BLUE);
+						c.setBackground(new Color(0, 128, 255));
 
 					} else {
 
-						c.setBackground(Color.GREEN);
+						c.setBackground(new Color(128, 255, 128));
 
 					}
 
@@ -763,10 +762,10 @@ public class VentanaAbono extends JFrame {
 	private void actualizarTablaAsientos() {
 
 		for (boolean[] fila : asientosSeleccionados) {
-			
+
 			Arrays.fill(fila, false);
 		}
-		
+
 		filaSeleccionada = -1;
 		asientoSeleccionado = -1;
 
@@ -786,20 +785,20 @@ public class VentanaAbono extends JFrame {
 					LocalDate fechaFin;
 
 					if (hoy.getMonthValue() >= 7) {
-						
-					    fechaInicio = LocalDate.of(hoy.getYear(), 7, 1);
-					    fechaFin = LocalDate.of(hoy.getYear() + 1, 6, 30);
-					    
+
+						fechaInicio = LocalDate.of(hoy.getYear(), 7, 1);
+						fechaFin = LocalDate.of(hoy.getYear() + 1, 6, 30);
+
 					} else {
-						
-					    fechaInicio = LocalDate.of(hoy.getYear() - 1, 7, 1);
-					    fechaFin = LocalDate.of(hoy.getYear(), 6, 30);
-					    
+
+						fechaInicio = LocalDate.of(hoy.getYear() - 1, 7, 1);
+						fechaFin = LocalDate.of(hoy.getYear(), 6, 30);
+
 					}
-					
+
 					for (int[] asiento : va.getAsientosOcupados(equipoSeleccionado, tribunaSeleccionada,
 							seccionSeleccionada, fechaInicio, fechaFin)) {
-						
+
 						asientosSeleccionados[asiento[0] - 1][asiento[1] - 1] = true;
 					}
 				} catch (SQLException e) {
@@ -841,6 +840,7 @@ public class VentanaAbono extends JFrame {
 	private JButton getBtConsultar() {
 		if (btConsultar == null) {
 			btConsultar = new JButton("Consultar");
+			btConsultar.setBackground(new Color(128, 255, 128));
 			btConsultar.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					consultarAbonado();
@@ -863,6 +863,10 @@ public class VentanaAbono extends JFrame {
 
 			JOptionPane.showMessageDialog(null, "Todos los campos son obligatorios", "Error",
 					JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+		
+		if(!comprobarValidez()) {
 			return;
 		}
 
@@ -909,6 +913,28 @@ public class VentanaAbono extends JFrame {
 				|| getTfDni().getText().isEmpty() || getTfEmail().getText().isEmpty()
 				|| getDcNacimiento().getDate() == null;
 
+	}
+
+	private boolean comprobarValidez() {
+
+		String dni = getTfDni().getText();
+
+		if (!dni.matches("\\d{8}[A-Za-z]")) {
+
+			JOptionPane.showMessageDialog(null, "El DNI debe tener 8 números y una letra.");
+			return false;
+		}
+
+		String correo = getTfEmail().getText();
+
+		if (!correo.matches("[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}")) {
+			
+			JOptionPane.showMessageDialog(null, "El formato del email debe ser xxxx@xx.xxx");
+			return false;
+		}
+		
+		return true;
+		
 	}
 
 	/**
@@ -959,6 +985,7 @@ public class VentanaAbono extends JFrame {
 	private JButton getBtVolver() {
 		if (btVolver == null) {
 			btVolver = new JButton("Volver");
+			btVolver.setBackground(new Color(255, 128, 128));
 			btVolver.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					volverAlMenu();
@@ -973,6 +1000,7 @@ public class VentanaAbono extends JFrame {
 	private JButton getBtCancelar() {
 		if (btCancelar == null) {
 			btCancelar = new JButton("Cancelar");
+			btCancelar.setBackground(new Color(255, 128, 128));
 			btCancelar.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 
@@ -1037,6 +1065,11 @@ public class VentanaAbono extends JFrame {
 
 			if (e.getStateChange() == ItemEvent.SELECTED) {
 
+				filaSeleccionada=-1;
+				asientoSeleccionado=-1;
+				
+				sincronizarSeleccion();
+				
 				ventana.actualizarTablaAsientos();
 
 			}
