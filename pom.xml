@@ -103,14 +103,6 @@
 			<artifactId>jackson-databind</artifactId>
 			<version>2.22.3</version>
 		</dependency>
-				
-		
-		<!--JCalendar-->
-		<dependency>
-    		<groupId>com.toedter</groupId>
-    		<artifactId>jcalendar</artifactId>
-    		<version>1.4</version>
-		</dependency>
 	</dependencies>
 
 	<build>
