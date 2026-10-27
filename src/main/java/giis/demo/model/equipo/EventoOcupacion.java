@@ -5,6 +5,8 @@ import java.time.format.DateTimeFormatter;
 
 public class EventoOcupacion {
 
+	private int idReferencia;
+	private String origen; // "RESERVA", "JARDINERIA_ESPECIFICO", "JARDINERIA_PERIODICO", "OTRO"
 	private LocalTime horaInicio;
 	private LocalTime horaFin;
 	private String tipo;
@@ -13,12 +15,26 @@ public class EventoOcupacion {
 
 	private static final DateTimeFormatter FORMATO_HORA = DateTimeFormatter.ofPattern("HH:mm");
 
-	public EventoOcupacion(LocalTime horaInicio, LocalTime horaFin, String tipo, String detalle, boolean sobreescribible) {
+	public EventoOcupacion(int idReferencia, String origen, LocalTime horaInicio, LocalTime horaFin, String tipo, String detalle, boolean sobreescribible) {
+		this.idReferencia = idReferencia;
+		this.origen = origen;
 		this.horaInicio = horaInicio;
 		this.horaFin = horaFin;
 		this.tipo = tipo;
 		this.detalle = detalle;
 		this.sobreescribible = sobreescribible;
+	}
+
+	public EventoOcupacion(LocalTime horaInicio, LocalTime horaFin, String tipo, String detalle, boolean sobreescribible) {
+		this(0, "OTRO", horaInicio, horaFin, tipo, detalle, sobreescribible);
+	}
+
+	public int getIdReferencia() {
+		return idReferencia;
+	}
+
+	public String getOrigen() {
+		return origen;
 	}
 
 	public LocalTime getHoraInicio() {

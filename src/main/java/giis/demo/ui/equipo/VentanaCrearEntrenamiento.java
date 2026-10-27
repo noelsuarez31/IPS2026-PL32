@@ -28,9 +28,10 @@ import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
 import javax.swing.JTable;
-import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
@@ -43,6 +44,7 @@ import com.toedter.calendar.JCalendar;
 
 import giis.demo.exceptions.TrainingException;
 import giis.demo.model.equipo.CrearEntrenamientoService;
+import giis.demo.model.equipo.EventoOcupacion;
 import giis.demo.model.reserva.Instalacion;
 import giis.demo.ui.VentanaPrincipal;
 
@@ -52,7 +54,7 @@ public class VentanaCrearEntrenamiento extends JFrame {
 
 	private VentanaPrincipal vPrincipal;
 	private CrearEntrenamientoService service;
-	
+
 	private JPanel contentPane;
 	private JPanel pnSuperior;
 	private JPanel pnCentro;
@@ -60,7 +62,7 @@ public class VentanaCrearEntrenamiento extends JFrame {
 	private JLabel lbDniEntrenador;
 	private JComboBox<String> cbDniEntrenador;
 	private JLabel lbEquipo;
-	private JTextField txEquipo;
+	private JLabel lbNombreEquipo;
 	private JPanel pnIzquierda;
 	private JPanel pnInstalaciones;
 	private JScrollPane scrInstalaciones;
@@ -76,10 +78,14 @@ public class VentanaCrearEntrenamiento extends JFrame {
 	private JPanel pnFormularioHoras;
 	private JPanel pnHoraInicio;
 	private JLabel lbHoraInicio;
-	private JTextField txHoraInicio;
+	private JSpinner spHoraInicio;
+	private JLabel lbSeparadorInicio;
+	private JSpinner spMinInicio;
 	private JPanel pnHoraFin;
 	private JLabel lbHoraFin;
-	private JTextField txHoraFin;
+	private JSpinner spHoraFin;
+	private JLabel lbSeparadorFin;
+	private JSpinner spMinFin;
 	private JPanel pnBotonCrear;
 	private JButton btnCrearEntrenamiento;
 	private JButton btnAtras;
@@ -90,7 +96,7 @@ public class VentanaCrearEntrenamiento extends JFrame {
 
 		setTitle("Planificar Entrenamiento");
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setBounds(100, 100, 960, 620);
+		setBounds(100, 100, 1160, 650);
 		setLocationRelativeTo(null);
 
 		contentPane = new JPanel();
@@ -116,7 +122,7 @@ public class VentanaCrearEntrenamiento extends JFrame {
 			pnSuperior.add(getLbDniEntrenador());
 			pnSuperior.add(getCbDniEntrenador());
 			pnSuperior.add(getLbEquipo());
-			pnSuperior.add(getTxEquipo());
+			pnSuperior.add(getLbNombreEquipo());
 		}
 		return pnSuperior;
 	}
@@ -152,23 +158,20 @@ public class VentanaCrearEntrenamiento extends JFrame {
 		return lbEquipo;
 	}
 
-	private JTextField getTxEquipo() {
-		if (txEquipo == null) {
-			txEquipo = new JTextField();
-			txEquipo.setFont(new Font("Tahoma", Font.BOLD, 14));
-			txEquipo.setEditable(false);
-			txEquipo.setColumns(18);
-			txEquipo.setBackground(new Color(245, 245, 245));
+	private JLabel getLbNombreEquipo() {
+		if (lbNombreEquipo == null) {
+			lbNombreEquipo = new JLabel("Sin equipo");
+			lbNombreEquipo.setFont(new Font("Tahoma", Font.BOLD, 14));
+			lbNombreEquipo.setForeground(new Color(0, 70, 140));
 		}
-		return txEquipo;
+		return lbNombreEquipo;
 	}
 
 	private JPanel getPnCentro() {
 		if (pnCentro == null) {
-			pnCentro = new JPanel();
-			pnCentro.setLayout(new GridLayout(1, 2, 12, 0));
-			pnCentro.add(getPnIzquierda());
-			pnCentro.add(getPnDerecha());
+			pnCentro = new JPanel(new BorderLayout(15, 0));
+			pnCentro.add(getPnIzquierda(), BorderLayout.WEST);
+			pnCentro.add(getPnDerecha(), BorderLayout.CENTER);
 		}
 		return pnCentro;
 	}
@@ -176,6 +179,7 @@ public class VentanaCrearEntrenamiento extends JFrame {
 	private JPanel getPnIzquierda() {
 		if (pnIzquierda == null) {
 			pnIzquierda = new JPanel(new BorderLayout(0, 10));
+			pnIzquierda.setPreferredSize(new Dimension(360, 0));
 			pnIzquierda.add(getPnInstalaciones(), BorderLayout.NORTH);
 			pnIzquierda.add(getPnFecha(), BorderLayout.CENTER);
 		}
@@ -235,14 +239,12 @@ public class VentanaCrearEntrenamiento extends JFrame {
 	private JCalendar getCalendarioFecha() {
 		if (calendarioFecha == null) {
 			calendarioFecha = new JCalendar();
-
 			PropertyChangeListener listenerFecha = new PropertyChangeListener() {
 				@Override
 				public void propertyChange(PropertyChangeEvent evt) {
 					actualizarEventosYOcupacion();
 				}
 			};
-
 			calendarioFecha.getDayChooser().addPropertyChangeListener("day", listenerFecha);
 			calendarioFecha.getDayChooser().addPropertyChangeListener("month", listenerFecha);
 			calendarioFecha.getDayChooser().addPropertyChangeListener("year", listenerFecha);
@@ -284,6 +286,7 @@ public class VentanaCrearEntrenamiento extends JFrame {
 		if (tablaOcupacion == null) {
 			String[] columnas = { "Inicio", "Fin", "Evento", "Detalle", "¿Sobreescribible?" };
 			modeloTablaOcupacion = new DefaultTableModel(columnas, 0) {
+				private static final long serialVersionUID = 1L;
 				@Override
 				public boolean isCellEditable(int row, int column) {
 					return false;
@@ -296,15 +299,18 @@ public class VentanaCrearEntrenamiento extends JFrame {
 			tablaOcupacion.setFont(new Font("Tahoma", Font.PLAIN, 12));
 			tablaOcupacion.getTableHeader().setFont(new Font("Tahoma", Font.BOLD, 12));
 
-			// Ajuste de anchos relativos de columna
+			// Ajuste de anchos generosos para ver todo el texto completo sin "..."
 			tablaOcupacion.getColumnModel().getColumn(0).setPreferredWidth(55);
+			tablaOcupacion.getColumnModel().getColumn(0).setMaxWidth(70);
 			tablaOcupacion.getColumnModel().getColumn(1).setPreferredWidth(55);
-			tablaOcupacion.getColumnModel().getColumn(2).setPreferredWidth(100);
-			tablaOcupacion.getColumnModel().getColumn(3).setPreferredWidth(160);
-			tablaOcupacion.getColumnModel().getColumn(4).setPreferredWidth(130);
+			tablaOcupacion.getColumnModel().getColumn(1).setMaxWidth(70);
+			tablaOcupacion.getColumnModel().getColumn(2).setPreferredWidth(125);
+			tablaOcupacion.getColumnModel().getColumn(3).setPreferredWidth(320);
+			tablaOcupacion.getColumnModel().getColumn(4).setPreferredWidth(145);
 
-			// Renderizador con colores para distinguir sobreescribibles de colisiones
+			// Renderizador con colores suaves para distinguir sobreescribibles de colisiones
 			tablaOcupacion.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+				private static final long serialVersionUID = 1L;
 				@Override
 				public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
 						boolean hasFocus, int row, int column) {
@@ -316,7 +322,7 @@ public class VentanaCrearEntrenamiento extends JFrame {
 						} else if (sobre.startsWith("No")) {
 							c.setBackground(new Color(255, 232, 232)); // rojo suave para colisiones no sobreescribibles
 						} else {
-							c.setBackground(Color.WHITE); // blanco neutro para la fila informativa "Libre"
+							c.setBackground(Color.WHITE); // blanco neutro para fila informativa
 						}
 					}
 					return c;
@@ -342,54 +348,96 @@ public class VentanaCrearEntrenamiento extends JFrame {
 
 	private JPanel getPnHoraInicio() {
 		if (pnHoraInicio == null) {
-			pnHoraInicio = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));
+			pnHoraInicio = new JPanel(new FlowLayout(FlowLayout.CENTER, 8, 5));
 			pnHoraInicio.add(getLbHoraInicio());
-			pnHoraInicio.add(getTxHoraInicio());
+			pnHoraInicio.add(getSpHoraInicio());
+			pnHoraInicio.add(getLbSeparadorInicio());
+			pnHoraInicio.add(getSpMinInicio());
 		}
 		return pnHoraInicio;
 	}
 
 	private JLabel getLbHoraInicio() {
 		if (lbHoraInicio == null) {
-			lbHoraInicio = new JLabel("Hora inicio (ej:HH:mm):");
+			lbHoraInicio = new JLabel("Hora inicio: ");
 			lbHoraInicio.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		}
 		return lbHoraInicio;
 	}
 
-	private JTextField getTxHoraInicio() {
-		if (txHoraInicio == null) {
-			txHoraInicio = new JTextField();
-			txHoraInicio.setFont(new Font("Tahoma", Font.PLAIN, 14));
-			txHoraInicio.setColumns(8);
+	private JSpinner getSpHoraInicio() {
+		if (spHoraInicio == null) {
+			spHoraInicio = new JSpinner(new SpinnerNumberModel(8, 0, 23, 1));
+			spHoraInicio.setFont(new Font("Tahoma", Font.PLAIN, 14));
+			spHoraInicio.setPreferredSize(new Dimension(50, 26));
+			spHoraInicio.setEditor(new JSpinner.NumberEditor(spHoraInicio, "00"));
 		}
-		return txHoraInicio;
+		return spHoraInicio;
+	}
+
+	private JLabel getLbSeparadorInicio() {
+		if (lbSeparadorInicio == null) {
+			lbSeparadorInicio = new JLabel(":");
+			lbSeparadorInicio.setFont(new Font("Tahoma", Font.BOLD, 14));
+		}
+		return lbSeparadorInicio;
+	}
+
+	private JSpinner getSpMinInicio() {
+		if (spMinInicio == null) {
+			spMinInicio = new JSpinner(new SpinnerNumberModel(0, 0, 59, 1));
+			spMinInicio.setFont(new Font("Tahoma", Font.PLAIN, 14));
+			spMinInicio.setPreferredSize(new Dimension(50, 26));
+			spMinInicio.setEditor(new JSpinner.NumberEditor(spMinInicio, "00"));
+		}
+		return spMinInicio;
 	}
 
 	private JPanel getPnHoraFin() {
 		if (pnHoraFin == null) {
-			pnHoraFin = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));
+			pnHoraFin = new JPanel(new FlowLayout(FlowLayout.CENTER, 8, 5));
 			pnHoraFin.add(getLbHoraFin());
-			pnHoraFin.add(getTxHoraFin());
+			pnHoraFin.add(getSpHoraFin());
+			pnHoraFin.add(getLbSeparadorFin());
+			pnHoraFin.add(getSpMinFin());
 		}
 		return pnHoraFin;
 	}
 
 	private JLabel getLbHoraFin() {
 		if (lbHoraFin == null) {
-			lbHoraFin = new JLabel("Hora fin (ej:HH:mm):   ");
+			lbHoraFin = new JLabel("Hora fin:     ");
 			lbHoraFin.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		}
 		return lbHoraFin;
 	}
 
-	private JTextField getTxHoraFin() {
-		if (txHoraFin == null) {
-			txHoraFin = new JTextField();
-			txHoraFin.setFont(new Font("Tahoma", Font.PLAIN, 14));
-			txHoraFin.setColumns(8);
+	private JSpinner getSpHoraFin() {
+		if (spHoraFin == null) {
+			spHoraFin = new JSpinner(new SpinnerNumberModel(10, 0, 23, 1));
+			spHoraFin.setFont(new Font("Tahoma", Font.PLAIN, 14));
+			spHoraFin.setPreferredSize(new Dimension(50, 26));
+			spHoraFin.setEditor(new JSpinner.NumberEditor(spHoraFin, "00"));
 		}
-		return txHoraFin;
+		return spHoraFin;
+	}
+
+	private JLabel getLbSeparadorFin() {
+		if (lbSeparadorFin == null) {
+			lbSeparadorFin = new JLabel(":");
+			lbSeparadorFin.setFont(new Font("Tahoma", Font.BOLD, 14));
+		}
+		return lbSeparadorFin;
+	}
+
+	private JSpinner getSpMinFin() {
+		if (spMinFin == null) {
+			spMinFin = new JSpinner(new SpinnerNumberModel(0, 0, 59, 1));
+			spMinFin.setFont(new Font("Tahoma", Font.PLAIN, 14));
+			spMinFin.setPreferredSize(new Dimension(50, 26));
+			spMinFin.setEditor(new JSpinner.NumberEditor(spMinFin, "00"));
+		}
+		return spMinFin;
 	}
 
 	private JPanel getPnBotonCrear() {
@@ -454,7 +502,7 @@ public class VentanaCrearEntrenamiento extends JFrame {
 	private void actualizarEquipoEntrenador() {
 		String dni = (String) getCbDniEntrenador().getSelectedItem();
 		String nombreEquipo = service.obtenerNombreEquipoDeEntrenador(dni);
-		getTxEquipo().setText(nombreEquipo);
+		getLbNombreEquipo().setText(nombreEquipo);
 	}
 
 	private void actualizarEventosYOcupacion() {
@@ -480,7 +528,7 @@ public class VentanaCrearEntrenamiento extends JFrame {
 		List<Object[]> filas = service.obtenerFilasOcupacion(idEquipo, idInstalacion, fecha);
 
 		if (filas.isEmpty()) {
-			modelo.addRow(new Object[] { "--:--", "--:--", "Libre", "Instalación libre", "-" });
+			modelo.addRow(new Object[] { "--:--", "--:--", "Libre", "Instalación libre sin eventos ni ocupación", "-" });
 		} else {
 			for (Object[] fila : filas) {
 				modelo.addRow(fila);
@@ -490,19 +538,19 @@ public class VentanaCrearEntrenamiento extends JFrame {
 
 	private void accionCrearEntrenamiento() {
 		try {
-			String hIniStr = getTxHoraInicio().getText().trim();
-			String hFinStr = getTxHoraFin().getText().trim();
-			DateTimeFormatter formatoHora = DateTimeFormatter.ofPattern("HH:mm");
+			int hIniNum = (Integer) getSpHoraInicio().getValue();
+			int mIniNum = (Integer) getSpMinInicio().getValue();
+			LocalTime hIni = LocalTime.of(hIniNum, mIniNum);
 
-			if (hIniStr.isEmpty() || hFinStr.isEmpty()) {
-				JOptionPane.showMessageDialog(this, "Debe introducir las horas en formato HH:mm.", "Validación", JOptionPane.WARNING_MESSAGE);
-				return;
-			}
-
-			LocalTime hIni = LocalTime.parse(hIniStr, formatoHora);
-			LocalTime hFin = LocalTime.parse(hFinStr, formatoHora);
+			int hFinNum = (Integer) getSpHoraFin().getValue();
+			int mFinNum = (Integer) getSpMinFin().getValue();
+			LocalTime hFin = LocalTime.of(hFinNum, mFinNum);
 
 			Date fechaUtil = getCalendarioFecha().getDate();
+			if (fechaUtil == null) {
+				JOptionPane.showMessageDialog(this, "Debe seleccionar una fecha en el calendario.", "Validación", JOptionPane.WARNING_MESSAGE);
+				return;
+			}
 			LocalDate fecha = fechaUtil.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 
 			Instalacion inst = getListInstalaciones().getSelectedValue();
@@ -513,12 +561,34 @@ public class VentanaCrearEntrenamiento extends JFrame {
 
 			String dni = (String) getCbDniEntrenador().getSelectedItem();
 			int idEquipo = service.obtenerIdEquipoDeEntrenador(dni);
+			DateTimeFormatter formatoHora = DateTimeFormatter.ofPattern("HH:mm");
 
-			service.crearEntrenamiento(fecha, hIni, hFin, idEquipo, inst.getInstalacionId());
+			// 1. Comprobar colisiones no sobreescribibles y obtener sobreescribibles coincidentes
+			List<EventoOcupacion> sobreescribibles = service.obtenerSobreescribiblesCoincidentes(fecha, hIni, hFin, idEquipo, inst.getInstalacionId());
+
+			// 2. Si hay reservas, jardinería o franjas/entrevistas coincidentes, pedir confirmación al entrenador
+			if (!sobreescribibles.isEmpty()) {
+				StringBuilder sb = new StringBuilder();
+				sb.append("El entrenamiento coincide con las siguientes tareas/reservas/franjas con menor prioridad:\n\n");
+				for (EventoOcupacion e : sobreescribibles) {
+					sb.append(" • ").append(e.getTipo()).append(": ").append(e.getDetalle()).append(" (")
+							.append(e.getHoraInicio().format(formatoHora)).append(" - ")
+							.append(e.getHoraFin().format(formatoHora)).append(")\n");
+				}
+				sb.append("\nAl tener prioridad el entrenamiento, estas serán canceladas y se eliminarán del sistema.\n");
+				sb.append("¿Desea continuar y crear el entrenamiento?");
+				int confirm = JOptionPane.showConfirmDialog(this, sb.toString(),
+						"Confirmar cancelación de eventos coincidentes", JOptionPane.YES_NO_OPTION,
+						JOptionPane.WARNING_MESSAGE);
+				if (confirm != JOptionPane.YES_OPTION) {
+					return; // El entrenador cancela la operación
+				}
+			}
+
+			// 3. Crear el entrenamiento y cancelar en base de datos los coincidentes
+			service.crearEntrenamiento(fecha, hIni, hFin, idEquipo, inst.getInstalacionId(), sobreescribibles);
 
 			JOptionPane.showMessageDialog(this, "¡Entrenamiento planificado con éxito!", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-			getTxHoraInicio().setText("");
-			getTxHoraFin().setText("");
 			actualizarEventosYOcupacion();
 
 		} catch (TrainingException ex) {

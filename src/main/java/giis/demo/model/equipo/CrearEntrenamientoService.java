@@ -88,18 +88,21 @@ public class CrearEntrenamientoService {
 			throw new RuntimeException("Error al consultar la ocupación de la instalación: " + e.getMessage());
 		}
 	}
-	public void crearEntrenamiento(LocalDate fecha, LocalTime horaInicio, LocalTime horaFin, int idEquipo, int idInstalacion) 
-			throws TrainingException {
+	
+	/**
+	 * Crea el entrenamiento y cancela las tareas o reservas externas coincidentes en la base de datos.
+	 */
+	public void crearEntrenamiento(LocalDate fecha, LocalTime horaInicio, LocalTime horaFin, int idEquipo,
+			int idInstalacion, List<EventoOcupacion> cancelables) throws TrainingException {
 		validarDatosEntrenamiento(fecha, horaInicio, horaFin, idEquipo, idInstalacion);
 		try {
 			jdbc.comprobarColisionesEntrenamiento(fecha, horaInicio, horaFin, idEquipo, idInstalacion);
-			jdbc.guardarEntrenamiento(fecha, horaInicio, horaFin, idEquipo, idInstalacion);
-		} catch (SQLException e) {
-			throw new RuntimeException("Error al almacenar el entrenamiento: " + e.getMessage());
-		} catch (PersistenceException e) {
+			jdbc.guardarEntrenamientoCancelandoCoincidentes(fecha, horaInicio, horaFin, idEquipo, idInstalacion, cancelables);
+		} catch (PersistenceException | SQLException e) {
 			throw new TrainingException(e.getMessage());
 		}
 	}
+	
 	private void validarDatosEntrenamiento(LocalDate fecha, LocalTime horaInicio, LocalTime horaFin, int idEquipo, int idInstalacion) {
 		if (idEquipo <= 0) {
 			throw new IllegalArgumentException("El entrenador seleccionado debe tener un equipo asignado.");
@@ -121,6 +124,21 @@ public class CrearEntrenamientoService {
 		}
 		if (horaInicio.isBefore(LocalTime.of(8, 0)) || horaFin.isAfter(LocalTime.of(22, 0))) {
 			throw new IllegalArgumentException("El horario del club es de 08:00 a 22:00. Las horas deben estar dentro de este rango.");
+		}
+	}
+	
+	/**
+	 * Devuelve los eventos sobreescribibles (reservas, jardinería) que coinciden con el horario propuesto.
+	 * Lanza TrainingException si colisiona con un evento no sobreescribible (partidos, entrevistas, etc.).
+	 */
+	public List<EventoOcupacion> obtenerSobreescribiblesCoincidentes(LocalDate fecha, LocalTime horaInicio,
+			LocalTime horaFin, int idEquipo, int idInstalacion) throws TrainingException {
+		validarDatosEntrenamiento(fecha, horaInicio, horaFin, idEquipo, idInstalacion);
+		try {
+			jdbc.comprobarColisionesEntrenamiento(fecha, horaInicio, horaFin, idEquipo, idInstalacion);
+			return jdbc.obtenerEventosSobreescribiblesSolapados(idEquipo, idInstalacion, fecha, horaInicio, horaFin);
+		} catch (PersistenceException | SQLException e) {
+			throw new TrainingException(e.getMessage());
 		}
 	}
 }

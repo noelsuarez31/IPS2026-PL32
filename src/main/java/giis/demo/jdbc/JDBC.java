@@ -656,16 +656,13 @@ public class JDBC {
 		EntrenamientoJdbc.comprobarColisiones(con, fecha, horaInicio, horaFin, idEquipo, idInstalacion);
 	}
 	
-	/**
-	 * Guarda el entrenamiento en la BBDD
-	 * @param fecha
-	 * @param horaInicio
-	 * @param horaFin
-	 * @param idEquipo
-	 * @param idInstalacion
-	 * @throws SQLException
-	 */
-	public void guardarEntrenamiento(LocalDate fecha, LocalTime horaInicio, LocalTime horaFin, int idEquipo, int idInstalacion) throws SQLException {
-		EntrenamientoJdbc.guardarEntrenamiento(con, fecha, horaInicio, horaFin, idEquipo, idInstalacion);
+	public List<EventoOcupacion> obtenerEventosSobreescribiblesSolapados(int idEquipo, int idInstalacion,
+			LocalDate fecha, LocalTime horaInicio, LocalTime horaFin) throws SQLException {
+		return EntrenamientoJdbc.obtenerEventosSobreescribiblesSolapados(con, idEquipo, idInstalacion, fecha, horaInicio, horaFin);
+	}
+
+	public void guardarEntrenamientoCancelandoCoincidentes(LocalDate fecha, LocalTime horaInicio, LocalTime horaFin,
+			int idEquipo, int idInstalacion, List<EventoOcupacion> eventosACancelar) throws SQLException {
+		EntrenamientoJdbc.guardarEntrenamientoCancelandoCoincidentes(con, fecha, horaInicio, horaFin, idEquipo, idInstalacion, eventosACancelar);
 	}
 }
