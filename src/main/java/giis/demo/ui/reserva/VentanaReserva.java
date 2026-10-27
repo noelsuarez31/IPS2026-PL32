@@ -330,7 +330,12 @@ public class VentanaReserva extends JFrame {
 			String[] columnas = { "Hora de inicio", "Hora de fin", "Estado", "Motivo" };
 			modeloTablaHorarios = new DefaultTableModel(columnas, 0) {
 
-				@Override
+				/**
+                 * 
+                 */
+                private static final long serialVersionUID = 1L;
+
+                @Override
 				public boolean isCellEditable(int fila, int columna) {
 					return false;
 				}

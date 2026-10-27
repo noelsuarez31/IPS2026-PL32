@@ -1,7 +1,12 @@
 package giis.demo.exceptions;
 
 public class RuntimeInterviewException extends RuntimeException {
-	public RuntimeInterviewException(String msg) {
+	/**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+
+    public RuntimeInterviewException(String msg) {
 		super(msg);
 	}
 }

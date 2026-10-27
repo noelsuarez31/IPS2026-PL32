@@ -45,6 +45,7 @@ public class VentanaTienda extends JFrame {
 	private JPanel pnArticulos;
 	private JComboBox<FiltroProducto> cbFiltro;
 	private JTextField txPrecio;
+	private JTextField txEmailCliente;
 	private JTable tablaPedido;
 	private DefaultTableModel modeloTablaPedido;
 	// Producto de cada fila de la tabla (mismo orden), para eliminar por fila y no
@@ -150,25 +151,45 @@ public class VentanaTienda extends JFrame {
 	}
 
 	private JPanel crearPanelSur() {
-		JPanel pnSur = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-
-		txPrecio = new JTextField("Total: 0.00 €");
-		txPrecio.setEditable(false);
-		txPrecio.setFont(new Font("Arial", Font.BOLD, 16));
-		txPrecio.setBackground(Color.ORANGE);
-		txPrecio.setColumns(12);
-		txPrecio.setHorizontalAlignment(JTextField.RIGHT);
-
-		JButton btnFinalizar = new JButton("Finalizar Compra");
-		btnFinalizar.setFont(new Font("Arial", Font.BOLD, 14));
-		btnFinalizar.setBackground(new Color(0, 128, 0));
-		btnFinalizar.setForeground(Color.WHITE);
-		btnFinalizar.addActionListener(e -> finalizarCompra());
-
-		pnSur.add(txPrecio);
-		pnSur.add(btnFinalizar);
-
-		return pnSur;
+		JPanel pnSur = new JPanel(new BorderLayout());
+	    pnSur.add(crearPanelEmail(), BorderLayout.WEST);
+	    
+	    JPanel pnTotal = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+	    
+	    txPrecio = new JTextField("Total: 0.00 €");
+	    txPrecio.setEditable(false);
+	    txPrecio.setFont(new Font("Arial", Font.BOLD, 16));
+	    txPrecio.setBackground(Color.ORANGE);
+	    txPrecio.setColumns(12);
+	    txPrecio.setHorizontalAlignment(JTextField.RIGHT);
+	    
+	    JButton btnFinalizar = new JButton("Finalizar Compra");
+	    btnFinalizar.setFont(new Font("Arial", Font.BOLD, 14));
+	    btnFinalizar.setBackground(new Color(0, 128, 0));
+	    btnFinalizar.setForeground(Color.WHITE);
+	    btnFinalizar.addActionListener(e -> finalizarCompra());
+	    
+	    pnTotal.add(txPrecio);
+	    pnTotal.add(btnFinalizar);
+	    pnSur.add(pnTotal, BorderLayout.EAST);
+	    
+	    return pnSur;
+	}
+	
+	private JPanel crearPanelEmail() {
+	    JPanel pnEmail = new JPanel(new FlowLayout(FlowLayout.LEFT));
+	    
+	    JLabel lbEmail = new JLabel("Email del cliente:");
+	    lbEmail.setFont(new Font("Arial", Font.BOLD, 14));
+	    
+	    txEmailCliente = new JTextField(22);
+	    txEmailCliente.setFont(new Font("Arial", Font.PLAIN, 14));
+	    txEmailCliente.setToolTipText("Obligatorio. Ejemplo: nombre@uniovi.es");
+	    lbEmail.setLabelFor(txEmailCliente);
+	    
+	    pnEmail.add(lbEmail);
+	    pnEmail.add(txEmailCliente);
+	    return pnEmail;
 	}
 
 	private void generarBotonesCatalogo() {

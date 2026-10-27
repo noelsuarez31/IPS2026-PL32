@@ -2,7 +2,12 @@ package giis.demo.exceptions;
 
 // SE COMPRUEBA
 public class NoAvailableSlotException extends Exception{
-	public NoAvailableSlotException(String msg) {
+	/**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+
+    public NoAvailableSlotException(String msg) {
 		super(msg);
 	}
 }

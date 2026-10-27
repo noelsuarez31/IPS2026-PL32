@@ -1,10 +1,5 @@
 package giis.demo.ui.horarios;
 
-import javax.swing.JTextField;
-import javax.swing.JComboBox;
-import javax.swing.JFrame;
-import javax.swing.JSpinner;
-
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -13,8 +8,13 @@ import java.util.List;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
+import javax.swing.JTable;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.table.DefaultTableModel;
 
@@ -24,8 +24,6 @@ import giis.demo.model.horarios.HorarioPeriodico;
 import giis.demo.ui.VentanaPrincipal;
 import giis.demo.util.SwingUtil;
 import giis.demo.util.UnexpectedException;
-import javax.swing.JTable;
-import javax.swing.JScrollPane;
 
 public class VentanaHorarioPeriodico extends JFrame {
 	

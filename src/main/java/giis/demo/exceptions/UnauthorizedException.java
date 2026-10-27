@@ -1,7 +1,12 @@
 package giis.demo.exceptions;
 
 public class UnauthorizedException extends RuntimeException {
-	public UnauthorizedException(String msg) {
+	/**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+
+    public UnauthorizedException(String msg) {
 		super(msg);
 	}
 }
