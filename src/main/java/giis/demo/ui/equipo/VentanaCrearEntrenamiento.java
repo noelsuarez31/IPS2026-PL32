@@ -2,6 +2,7 @@ package giis.demo.ui.equipo;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -27,7 +28,7 @@ import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
+import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
@@ -35,9 +36,12 @@ import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
 
 import com.toedter.calendar.JCalendar;
 
+import giis.demo.exceptions.TrainingException;
 import giis.demo.model.equipo.CrearEntrenamientoService;
 import giis.demo.model.reserva.Instalacion;
 import giis.demo.ui.VentanaPrincipal;
@@ -66,7 +70,9 @@ public class VentanaCrearEntrenamiento extends JFrame {
 	private JCalendar calendarioFecha;
 	private JPanel pnDerecha;
 	private JPanel pnOcupacion;
-	private JTextArea txOcupacion;
+	private JScrollPane scrOcupacion;
+	private JTable tablaOcupacion;
+	private DefaultTableModel modeloTablaOcupacion;
 	private JPanel pnFormularioHoras;
 	private JPanel pnHoraInicio;
 	private JLabel lbHoraInicio;
@@ -84,7 +90,7 @@ public class VentanaCrearEntrenamiento extends JFrame {
 
 		setTitle("Planificar Entrenamiento");
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setBounds(100, 100, 940, 620);
+		setBounds(100, 100, 960, 620);
 		setLocationRelativeTo(null);
 
 		contentPane = new JPanel();
@@ -100,7 +106,6 @@ public class VentanaCrearEntrenamiento extends JFrame {
 		actualizarEventosYOcupacion();
 	}
 
-	
 	private JPanel getPnSuperior() {
 		if (pnSuperior == null) {
 			pnSuperior = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 8));
@@ -262,22 +267,63 @@ public class VentanaCrearEntrenamiento extends JFrame {
 					"3. Ocupaci\u00F3n y Eventos (D\u00EDa e Instalaci\u00F3n)",
 					TitledBorder.LEADING, TitledBorder.TOP,
 					new Font("Tahoma", Font.BOLD, 13), null));
-			pnOcupacion.add(getTxOcupacion(), BorderLayout.CENTER);
+			pnOcupacion.add(getScrOcupacion(), BorderLayout.CENTER);
 		}
 		return pnOcupacion;
 	}
 
-	private JTextArea getTxOcupacion() {
-		if (txOcupacion == null) {
-			txOcupacion = new JTextArea();
-			txOcupacion.setEditable(false);
-			txOcupacion.setLineWrap(true);           // Salto de línea automático
-			txOcupacion.setWrapStyleWord(true);       // No corta palabras al saltar
-			txOcupacion.setFont(new Font("Tahoma", Font.PLAIN, 13));
-			txOcupacion.setBackground(new Color(250, 250, 250));
-			txOcupacion.setBorder(new EmptyBorder(5, 5, 5, 5));
+	private JScrollPane getScrOcupacion() {
+		if (scrOcupacion == null) {
+			scrOcupacion = new JScrollPane();
+			scrOcupacion.setViewportView(getTablaOcupacion());
 		}
-		return txOcupacion;
+		return scrOcupacion;
+	}
+
+	private JTable getTablaOcupacion() {
+		if (tablaOcupacion == null) {
+			String[] columnas = { "Inicio", "Fin", "Evento", "Detalle", "¿Sobreescribible?" };
+			modeloTablaOcupacion = new DefaultTableModel(columnas, 0) {
+				@Override
+				public boolean isCellEditable(int row, int column) {
+					return false;
+				}
+			};
+			tablaOcupacion = new JTable(modeloTablaOcupacion);
+			tablaOcupacion.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+			tablaOcupacion.setRowHeight(24);
+			tablaOcupacion.getTableHeader().setReorderingAllowed(false);
+			tablaOcupacion.setFont(new Font("Tahoma", Font.PLAIN, 12));
+			tablaOcupacion.getTableHeader().setFont(new Font("Tahoma", Font.BOLD, 12));
+
+			// Ajuste de anchos relativos de columna
+			tablaOcupacion.getColumnModel().getColumn(0).setPreferredWidth(55);
+			tablaOcupacion.getColumnModel().getColumn(1).setPreferredWidth(55);
+			tablaOcupacion.getColumnModel().getColumn(2).setPreferredWidth(100);
+			tablaOcupacion.getColumnModel().getColumn(3).setPreferredWidth(160);
+			tablaOcupacion.getColumnModel().getColumn(4).setPreferredWidth(130);
+
+			// Renderizador con colores para distinguir sobreescribibles de colisiones
+			tablaOcupacion.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+				@Override
+				public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
+						boolean hasFocus, int row, int column) {
+					Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+					if (!isSelected) {
+						String sobre = String.valueOf(table.getValueAt(row, 4));
+						if (sobre.startsWith("Sí")) {
+							c.setBackground(new Color(230, 248, 230)); // verde suave para sobreescribibles
+						} else if (sobre.startsWith("No")) {
+							c.setBackground(new Color(255, 232, 232)); // rojo suave para colisiones no sobreescribibles
+						} else {
+							c.setBackground(Color.WHITE); // blanco neutro para la fila informativa "Libre"
+						}
+					}
+					return c;
+				}
+			});
+		}
+		return tablaOcupacion;
 	}
 
 	private JPanel getPnFormularioHoras() {
@@ -391,7 +437,6 @@ public class VentanaCrearEntrenamiento extends JFrame {
 		return btnAtras;
 	}
 
-	// Metodos auxiliares
 	private void cargarDatosIniciales() {
 		List<String> dnis = service.obtenerDnisEntrenadores();
 		getCbDniEntrenador().setModel(new DefaultComboBoxModel<>(dnis.toArray(new String[0])));
@@ -419,6 +464,7 @@ public class VentanaCrearEntrenamiento extends JFrame {
 		}
 		LocalDate fecha = fechaUtil.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 		Instalacion instalacionSel = getListInstalaciones().getSelectedValue();
+		int idInstalacion = (instalacionSel != null) ? instalacionSel.getInstalacionId() : 0;
 		String nombreInstalacion = (instalacionSel != null) ? instalacionSel.getName() : "Instalación";
 		String dni = (String) getCbDniEntrenador().getSelectedItem();
 		int idEquipo = service.obtenerIdEquipoDeEntrenador(dni);
@@ -429,19 +475,17 @@ public class VentanaCrearEntrenamiento extends JFrame {
 				TitledBorder.LEADING, TitledBorder.TOP,
 				new Font("Tahoma", Font.BOLD, 13), null));
 
-		StringBuilder sb = new StringBuilder();
-		List<String> entrevistas = service.obtenerEntrevistasJugadores(idEquipo, fecha);
+		DefaultTableModel modelo = (DefaultTableModel) getTablaOcupacion().getModel();
+		modelo.setRowCount(0);
+		List<Object[]> filas = service.obtenerFilasOcupacion(idEquipo, idInstalacion, fecha);
 
-		if (entrevistas.isEmpty()) {
-			sb.append("• [LIBRE] Ningún jugador del equipo tiene entrevistas asignadas este día.\n");
+		if (filas.isEmpty()) {
+			modelo.addRow(new Object[] { "--:--", "--:--", "Libre", "Instalación libre", "-" });
 		} else {
-			for (String ent : entrevistas) {
-				sb.append(ent).append("\n\n");
+			for (Object[] fila : filas) {
+				modelo.addRow(fila);
 			}
 		}
-
-		getTxOcupacion().setText(sb.toString());
-		getTxOcupacion().setCaretPosition(0);
 	}
 
 	private void accionCrearEntrenamiento() {
@@ -475,7 +519,12 @@ public class VentanaCrearEntrenamiento extends JFrame {
 			JOptionPane.showMessageDialog(this, "¡Entrenamiento planificado con éxito!", "Éxito", JOptionPane.INFORMATION_MESSAGE);
 			getTxHoraInicio().setText("");
 			getTxHoraFin().setText("");
+			actualizarEventosYOcupacion();
 
+		} catch (TrainingException ex) {
+			JOptionPane.showMessageDialog(this, ex.getMessage(), "Colisión detectada", JOptionPane.WARNING_MESSAGE);
+		} catch (IllegalArgumentException ex) {
+			JOptionPane.showMessageDialog(this, ex.getMessage(), "Validación", JOptionPane.WARNING_MESSAGE);
 		} catch (Exception ex) {
 			JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 		}

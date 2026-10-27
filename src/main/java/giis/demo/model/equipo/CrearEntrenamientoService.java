@@ -3,8 +3,11 @@ package giis.demo.model.equipo;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 
+import giis.demo.exceptions.PersistenceException;
+import giis.demo.exceptions.TrainingException;
 import giis.demo.jdbc.JDBC;
 import giis.demo.model.reserva.Instalacion;
 
@@ -68,40 +71,35 @@ public class CrearEntrenamientoService {
 	}
 
 	/**
-	 * Devuelve una lista con las entrevistas que tienen asignadas los
-	 * jugadores del equipo
-	 * @param idEquipo
-	 * @param fecha
-	 * @return
+	 * Devuelve la lista de filas listas para añadir directamente al DefaultTableModel de la JTable.
 	 */
-	public List<String> obtenerEntrevistasJugadores(int idEquipo, LocalDate fecha) {
-		if (idEquipo <= 0 || fecha == null) {
+	public List<Object[]> obtenerFilasOcupacion(int idEquipo, int idInstalacion, LocalDate fecha) {
+		if (idInstalacion <= 0 || fecha == null) {
 			return List.of();
 		}
 		try {
-			return jdbc.obtenerEntrevistasJugadoresEquipo(idEquipo, fecha);
+			List<EventoOcupacion> eventos = jdbc.obtenerEventosOcupacion(idEquipo, idInstalacion, fecha);
+			List<Object[]> filas = new ArrayList<>();
+			for (EventoOcupacion e : eventos) {
+				filas.add(e.toRow());
+			}
+			return filas;
 		} catch (SQLException e) {
-			throw new RuntimeException("Error al consultar las entrevistas del equipo: " + e.getMessage());
+			throw new RuntimeException("Error al consultar la ocupación de la instalación: " + e.getMessage());
 		}
 	}
-
-	/**
-	 * Crea el entrenamiento y lo guarda en la BBDD
-	 * @param fecha
-	 * @param horaInicio
-	 * @param horaFin
-	 * @param idEquipo
-	 * @param idInstalacion
-	 */
-	public void crearEntrenamiento(LocalDate fecha, LocalTime horaInicio, LocalTime horaFin, int idEquipo, int idInstalacion) {
+	public void crearEntrenamiento(LocalDate fecha, LocalTime horaInicio, LocalTime horaFin, int idEquipo, int idInstalacion) 
+			throws TrainingException {
 		validarDatosEntrenamiento(fecha, horaInicio, horaFin, idEquipo, idInstalacion);
 		try {
+			jdbc.comprobarColisionesEntrenamiento(fecha, horaInicio, horaFin, idEquipo, idInstalacion);
 			jdbc.guardarEntrenamiento(fecha, horaInicio, horaFin, idEquipo, idInstalacion);
 		} catch (SQLException e) {
 			throw new RuntimeException("Error al almacenar el entrenamiento: " + e.getMessage());
+		} catch (PersistenceException e) {
+			throw new TrainingException(e.getMessage());
 		}
 	}
-
 	private void validarDatosEntrenamiento(LocalDate fecha, LocalTime horaInicio, LocalTime horaFin, int idEquipo, int idInstalacion) {
 		if (idEquipo <= 0) {
 			throw new IllegalArgumentException("El entrenador seleccionado debe tener un equipo asignado.");
@@ -120,6 +118,9 @@ public class CrearEntrenamientoService {
 		}
 		if (!horaFin.isAfter(horaInicio)) {
 			throw new IllegalArgumentException("La hora de fin debe ser posterior a la de inicio.");
+		}
+		if (horaInicio.isBefore(LocalTime.of(8, 0)) || horaFin.isAfter(LocalTime.of(22, 0))) {
+			throw new IllegalArgumentException("El horario del club es de 08:00 a 22:00. Las horas deben estar dentro de este rango.");
 		}
 	}
 }

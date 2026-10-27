@@ -8,6 +8,7 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 
+import giis.demo.exceptions.PersistenceException;
 import giis.demo.jdbc.empleado.BaseEmpleadoJdbc;
 import giis.demo.jdbc.empleado.EmpleadoDeportivoJdbc;
 import giis.demo.jdbc.empleado.EmpleadoNoDeportivoJdbc;
@@ -38,6 +39,7 @@ import giis.demo.model.entradas.enumerados.TipoTribuna;
 import giis.demo.model.entrevistas.FranjaHoraria;
 import giis.demo.model.equipo.CategoriaEquipo;
 import giis.demo.model.equipo.Equipo;
+import giis.demo.model.equipo.EventoOcupacion;
 import giis.demo.model.historial.Ingreso;
 import giis.demo.model.historial.LineaDetalle;
 import giis.demo.model.horarios.HorarioEspecifico;
@@ -596,17 +598,16 @@ public class JDBC {
 	}
 	
 	/**
-	 * Devuelve lista de dnis de los entrenadores con equipo
+	 * Devuelve una lista de dnis de entrenadores con equipos asociados
 	 * @return
 	 * @throws SQLException
 	 */
 	public List<String> obtenerDnisEntrenadoresConEquipo() throws SQLException {
 		return EntrenamientoJdbc.obtenerDnisEntrenadoresConEquipo(con);
 	}
-
+	
 	/**
-	 * Devuelve el nombre del equipo que entrena el entrenador con nif
-	 * pasado por parametro
+	 * Devuelve un string que es el nombre del equipo al que esta asociado el entrenador
 	 * @param dniEntrenador
 	 * @return
 	 * @throws SQLException
@@ -614,10 +615,9 @@ public class JDBC {
 	public String obtenerNombreEquipoPorDniEntrenador(String dniEntrenador) throws SQLException {
 		return EntrenamientoJdbc.obtenerNombreEquipoPorDniEntrenador(con, dniEntrenador);
 	}
-
+	
 	/**
-	 * Devuelve el id del equipo que entrena el entrenador con dni
-	 * pasado por parametros
+	 * Devuelve el id del equipo por el dni del entrenador
 	 * @param dniEntrenador
 	 * @return
 	 * @throws SQLException
@@ -625,19 +625,37 @@ public class JDBC {
 	public int obtenerIdEquipoPorDniEntrenador(String dniEntrenador) throws SQLException {
 		return EntrenamientoJdbc.obtenerIdEquipoPorDniEntrenador(con, dniEntrenador);
 	}
-
+	
 	/**
-	 * Devuelve una lista con las entrevistas que tienen asignadas los jugadores
-	 * del equipo en esa fecha
+	 * Devuelve una lista de eventos que ocupan las instalaciones. Incluye:
+	 * Tareas de jardineria, reservas externas, entrenamientos/partidos de 
+	 * otros equipos o del equipo que entrena el entrenador y entrevistas
+	 * de los jugadores pertenecientes al equipo
 	 * @param idEquipo
+	 * @param idInstalacion
 	 * @param fecha
 	 * @return
 	 * @throws SQLException
 	 */
-	public List<String> obtenerEntrevistasJugadoresEquipo(int idEquipo, LocalDate fecha) throws SQLException {
-		return EntrenamientoJdbc.obtenerEntrevistasJugadoresEquipo(con, idEquipo, fecha);
+	public List<EventoOcupacion> obtenerEventosOcupacion(int idEquipo, int idInstalacion, LocalDate fecha) throws SQLException {
+		return EntrenamientoJdbc.obtenerEventosOcupacion(con, idEquipo, idInstalacion, fecha);
 	}
-
+	
+	/**
+	 * Comprueba las colisiones del entrenamiento a crear con la ocupacion de las instalaciones
+	 * @param fecha
+	 * @param horaInicio
+	 * @param horaFin
+	 * @param idEquipo
+	 * @param idInstalacion
+	 * @throws SQLException
+	 * @throws PersistenceException 
+	 */
+	public void comprobarColisionesEntrenamiento(LocalDate fecha, LocalTime horaInicio, LocalTime horaFin,
+			int idEquipo, int idInstalacion) throws SQLException, PersistenceException {
+		EntrenamientoJdbc.comprobarColisiones(con, fecha, horaInicio, horaFin, idEquipo, idInstalacion);
+	}
+	
 	/**
 	 * Guarda el entrenamiento en la BBDD
 	 * @param fecha
