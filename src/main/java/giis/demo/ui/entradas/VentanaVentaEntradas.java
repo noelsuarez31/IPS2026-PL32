@@ -39,6 +39,8 @@ import java.awt.GridLayout;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.border.TitledBorder;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class VentanaVentaEntradas extends JFrame {
 
@@ -164,7 +166,7 @@ public class VentanaVentaEntradas extends JFrame {
 		JPanel panelNumAsientos = new JPanel();
 		panelNumAsientos.setBorder(new TitledBorder(null, "", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 
-		panelNumAsientos.setBackground(new Color(240,240,240));
+		panelNumAsientos.setBackground(new Color(240, 240, 240));
 		panelNumAsientos.setLayout(null);
 
 		panelNumAsientos.add(getLbNumEntradas());
@@ -186,7 +188,7 @@ public class VentanaVentaEntradas extends JFrame {
 		JPanel panelInformacion = new JPanel();
 		panelInformacion.setBorder(new TitledBorder(null, "", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 
-		panelInformacion.setBackground(new Color(240,240,240));
+		panelInformacion.setBackground(new Color(240, 240, 240));
 		panelInformacion.setLayout(new BorderLayout(0, 0));
 		panelInformacion.add(getPanelBotones(), BorderLayout.EAST);
 		panelInformacion.add(getPanelInfo(), BorderLayout.WEST);
@@ -302,7 +304,7 @@ public class VentanaVentaEntradas extends JFrame {
 
 						seleccionarAsientos();
 						getTablaAsientos().repaint();
-						
+
 					} catch (SQLException e1) {
 
 						JOptionPane.showMessageDialog(null,
@@ -327,7 +329,6 @@ public class VentanaVentaEntradas extends JFrame {
 		return btBuscarAsientos;
 	}
 
-
 	private JTextField getTfNoAsientosDisponibles() {
 
 		if (tfNoAsientosDisponibles == null) {
@@ -344,6 +345,9 @@ public class VentanaVentaEntradas extends JFrame {
 		return tfNoAsientosDisponibles;
 	}
 
+	/**
+	 * Se encaraga de la seleccion de los asientos
+	 */
 	private void seleccionarAsientos() throws SQLException, SinDisponibilidadException {
 
 		tfNoAsientosDisponibles.setText("");
@@ -355,7 +359,16 @@ public class VentanaVentaEntradas extends JFrame {
 
 		List<Butaca> butacasReservadas = venta.seleccionar(partido, tribuna, seccion, numEntradas);
 
-		// Mostrar los asientos reservados
+		mostrarAsientos(numEntradas, butacasReservadas);
+	}
+
+	/**
+	 * Muestra de forma gráfica los asientos disponibles y ocupadas
+	 * 
+	 * @param numEntradas
+	 * @param butacasReservadas
+	 */
+	private void mostrarAsientos(int numEntradas, List<Butaca> butacasReservadas) {
 
 		Butaca primera = butacasReservadas.get(0);
 		Butaca ultima = butacasReservadas.get(butacasReservadas.size() - 1);
@@ -381,6 +394,47 @@ public class VentanaVentaEntradas extends JFrame {
 		this.btCancelar.setEnabled(true);
 		this.btConfirma.setEnabled(true);
 		this.btVolver.setEnabled(false);
+
+		getTablaAsientos().repaint();
+	}
+
+	/**
+	 * Permite selecionar los asientos de manera manual
+	 * 
+	 * @param fila
+	 * @param asiento
+	 */
+	private void seleccionarAsientoManual(int fila, int asiento) {
+
+		if (fila < 1 || asiento < 1 || !btBuscarAsientos.isEnabled()) {
+
+			return;
+
+		}
+
+		if ((int) spNumEntradas.getValue() != 1) {
+
+			tfNoAsientosDisponibles.setText("Para elegir el asiento en el mapa, selecciona 1 entrada.");
+
+		}
+
+		Partido partido = (Partido) cbPartido.getSelectedItem();
+		TipoTribuna tribuna = (TipoTribuna) cbTribuna.getSelectedItem();
+		TipoSeccion seccion = (TipoSeccion) cbSeccion.getSelectedItem();
+
+		try {
+
+			tfNoAsientosDisponibles.setText("");
+
+			venta.seleccionarAsientoManual(partido, tribuna, seccion, fila, asiento);
+			mostrarAsientos(1, venta.getButacasSeleccionadas());
+
+		} catch (SinDisponibilidadException e) {
+
+			JOptionPane.showMessageDialog(this, "Este asiento ya está ocupado. Seleccione otro por favor.",
+					"Asiento no disponible", JOptionPane.WARNING_MESSAGE);
+		}
+
 	}
 
 	private JButton getBtCancelar() {
@@ -427,7 +481,7 @@ public class VentanaVentaEntradas extends JFrame {
 		this.cbTribuna.setSelectedIndex(0);
 		this.cbSeccion.setSelectedIndex(0);
 		this.spNumEntradas.setValue(1);
-				
+
 		this.tfAsientosObtenidos.setText("");
 		this.tfNoAsientosDisponibles.setText("");
 		this.tfPrecio.setText("");
@@ -436,7 +490,7 @@ public class VentanaVentaEntradas extends JFrame {
 		this.btCancelar.setEnabled(false);
 		this.btConfirma.setEnabled(false);
 		this.btVolver.setEnabled(true);
-		
+
 		venta.reiniciar();
 		obtenerInfoAsientos();
 		tablaAsientos.repaint();
@@ -483,6 +537,17 @@ public class VentanaVentaEntradas extends JFrame {
 		if (tablaAsientos == null) {
 
 			tablaAsientos = new JTable(10, 15);
+			tablaAsientos.addMouseListener(new MouseAdapter() {
+				@Override
+				public void mouseClicked(MouseEvent e) {
+
+					int fila = tablaAsientos.rowAtPoint(e.getPoint()) + 1;
+					int asiento = tablaAsientos.columnAtPoint(e.getPoint()) + 1;
+					
+					seleccionarAsientoManual(fila, asiento);
+
+				}
+			});
 			tablaAsientos.setBackground(new Color(240, 240, 240));
 			tablaAsientos.setEnabled(false);
 
@@ -491,7 +556,7 @@ public class VentanaVentaEntradas extends JFrame {
 
 			tablaAsientos.setShowGrid(true);
 			tablaAsientos.setGridColor(Color.BLACK);
-			
+
 			for (int i = 0; i < 15; i++) {
 				tablaAsientos.getColumnModel().getColumn(i).setPreferredWidth(25);
 			}
@@ -521,12 +586,12 @@ public class VentanaVentaEntradas extends JFrame {
 
 							c.setBackground(Color.RED);
 
-						} else if(venta.isBooked(((Partido) getCbPartido().getSelectedItem()).getId_partido(),
+						} else if (venta.isBooked(((Partido) getCbPartido().getSelectedItem()).getId_partido(),
 								((TipoTribuna) getCbTribuna().getSelectedItem()),
 								((TipoSeccion) getCbSeccion().getSelectedItem()), row + 1, column + 1)) {
-							
+
 							c.setBackground(Color.BLUE);
-							
+
 						}
 
 					} catch (Exception e) {
@@ -548,7 +613,8 @@ public class VentanaVentaEntradas extends JFrame {
 	private JPanel getPanelLeyenda() {
 		if (panelLeyenda == null) {
 			panelLeyenda = new JPanel();
-			panelLeyenda.setBorder(new TitledBorder(null, "Leyenda", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+			panelLeyenda
+					.setBorder(new TitledBorder(null, "Leyenda", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 			panelLeyenda.setBackground(new Color(240, 240, 240));
 			panelLeyenda.setLayout(new GridLayout(3, 2, 20, 20));
 			panelLeyenda.add(getBtVerde());
@@ -746,16 +812,17 @@ public class VentanaVentaEntradas extends JFrame {
 	}
 
 	/**
-	 * Método privado para actualizar la tabla de los asientos dependiendo si está ocupado, reservado o libre
+	 * Método privado para actualizar la tabla de los asientos dependiendo si está
+	 * ocupado, reservado o libre
 	 */
 	private void obtenerInfoAsientos() {
 
 		Partido partido = (Partido) cbPartido.getSelectedItem();
-		
+
 		if (partido == null) {
 			return;
 		}
-		
+
 		TipoTribuna tribuna = (TipoTribuna) cbTribuna.getSelectedItem();
 		TipoSeccion seccion = (TipoSeccion) cbSeccion.getSelectedItem();
 
@@ -782,11 +849,12 @@ public class VentanaVentaEntradas extends JFrame {
 			if (e.getStateChange() == ItemEvent.SELECTED) {
 
 				obtenerInfoAsientos();
-				
+
 			}
 
 		}
 	}
+
 	private JLabel getLbReservado() {
 		if (lbReservado == null) {
 			lbReservado = new JLabel("Reservado");
@@ -795,6 +863,7 @@ public class VentanaVentaEntradas extends JFrame {
 		}
 		return lbReservado;
 	}
+
 	private JButton getBtRojo() {
 		if (btRojo == null) {
 			btRojo = new JButton("");
@@ -802,6 +871,7 @@ public class VentanaVentaEntradas extends JFrame {
 		}
 		return btRojo;
 	}
+
 	private JButton getBtAzul() {
 		if (btAzul == null) {
 			btAzul = new JButton("");

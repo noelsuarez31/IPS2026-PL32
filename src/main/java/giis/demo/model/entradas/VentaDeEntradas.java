@@ -212,6 +212,7 @@ public class VentaDeEntradas extends Venta{
 
 	/**
 	 * Comprueba si el asiento está reservado
+	 * 
 	 * @param id_partido
 	 * @param tipoTribuna
 	 * @param tipoSeccion
@@ -224,6 +225,34 @@ public class VentaDeEntradas extends Venta{
 		Butaca butaca = new Butaca(id_partido, tipoTribuna, tipoSeccion, fila, asiento);
 
 		return butacasSeleccionadas.contains(butaca);
+
+	}
+	
+	/**
+	 * Dada una butaca seleccionada de forma manual, la añade a la lista
+	 * de bustacas seleccionadas
+	 * 
+	 * @param partido
+	 * @param tribuna
+	 * @param seccion
+	 * @param fila
+	 * @param asiento
+	 * 
+	 * @throws SinDisponibilidadException
+	 */
+	public void seleccionarAsientoManual(Partido partido, TipoTribuna tribuna, TipoSeccion seccion,
+	        int fila, int asiento) throws SinDisponibilidadException {
+
+	    this.idPartido = partido.getId_partido();
+
+	    Butaca butaca = new Butaca(idPartido, tribuna, seccion, fila, asiento);
+
+	    if (!butacasDisponibles.contains(butaca)) {
+	        throw new SinDisponibilidadException("El asiento seleccionado no está disponible");
+	    }
+
+	    butacasSeleccionadas = new ArrayList<Butaca>();
+	    butacasSeleccionadas.add(butaca);
 
 	}
 

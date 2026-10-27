@@ -421,6 +421,7 @@ public class VentanaAbono extends JFrame {
 	}
 
 	private JPanel getPanelTabla() {
+		
 		if (panelTabla == null) {
 			panelTabla = new JPanel();
 			panelTabla.setLayout(new BorderLayout(0, 0));
