@@ -375,6 +375,12 @@ public class VentanaVentaEntradas extends JFrame {
 	 */
 	private void mostrarAsientos(int numEntradas, List<Butaca> butacasReservadas) {
 
+		if (!mostrarPrecio(numEntradas)) {
+
+			reiniciar();
+			return;
+		}
+
 		Butaca primera = butacasReservadas.get(0);
 		Butaca ultima = butacasReservadas.get(butacasReservadas.size() - 1);
 
@@ -388,8 +394,6 @@ public class VentanaVentaEntradas extends JFrame {
 					+ ultima.getAsiento());
 		}
 
-		this.tfPrecio.setText("" + numEntradas * VentaDeEntradas.PRICE_ENTRADAS + "€");
-
 		this.cbPartido.setEnabled(false);
 		this.cbSeccion.setEnabled(false);
 		this.cbTribuna.setEnabled(false);
@@ -401,6 +405,33 @@ public class VentanaVentaEntradas extends JFrame {
 		this.btVolver.setEnabled(false);
 
 		getTablaAsientos().repaint();
+	}
+
+	/**
+	 * Mostrar el precio de las butcas compradas
+	 */
+	private boolean mostrarPrecio(int numEntradas) {
+
+		Partido partido = (Partido) cbPartido.getSelectedItem();
+		TipoSeccion seccion = (TipoSeccion) cbSeccion.getSelectedItem();
+
+		try {
+
+			double precio = venta.getPrecio(partido.getId_partido(), seccion.name());
+			tfPrecio.setText(String.format("%.2f€", numEntradas * precio));
+
+			return true;
+
+		} catch (SQLException e) {
+
+			JOptionPane.showMessageDialog(this, "No se ha podido obtener el precio de la entrada", "Error",
+					JOptionPane.ERROR_MESSAGE);
+
+			System.err.println("Error al obtener el precio: " + e.getMessage());
+
+			return false;
+		}
+
 	}
 
 	/**
@@ -826,7 +857,7 @@ public class VentanaVentaEntradas extends JFrame {
 			tfEmail = new JTextField();
 			tfEmail.setBounds(183, 132, 203, 26);
 			tfEmail.setColumns(20);
-			tfEmail.setToolTipText("Email del cliente (ej: cliente@correo.com)");
+			tfEmail.setToolTipText("Email del cliente (xxxx@xxx.xx)");
 		}
 
 		return tfEmail;

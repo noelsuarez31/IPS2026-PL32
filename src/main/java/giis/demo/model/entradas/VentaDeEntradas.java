@@ -255,5 +255,19 @@ public class VentaDeEntradas extends Venta{
 	    butacasSeleccionadas.add(butaca);
 
 	}
+	
+	/**
+	 * Calcula el precio de un asiento para una sección y partido dados
+	 * 
+	 * @param idPrecio
+	 * @param seccion
+	 * @return el precio obtenido
+	 * @throws SQLException
+	 */
+	public double getPrecio(int idPrecio, String seccion) throws SQLException {
+		
+		return jdbc.obtenerPrecio(idPrecio, seccion);
+		
+	}
 
 }
