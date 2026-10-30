@@ -88,6 +88,8 @@ public class VentanaVentaEntradas extends JFrame {
 	private JLabel lbReservado;
 	private JButton btRojo;
 	private JButton btAzul;
+	private JLabel lbEmail;
+	private JTextField tfEmail;
 
 	/**
 	 * Create the frame.
@@ -172,6 +174,9 @@ public class VentanaVentaEntradas extends JFrame {
 		panelNumAsientos.add(getLbNumEntradas());
 		panelNumAsientos.add(getSpNumEntradas());
 
+		panelNumAsientos.add(getLbEmail());
+		panelNumAsientos.add(getTfEmail());
+
 		panelNumAsientos.add(getBtBuscarAsientos());
 		panelNumAsientos.add(getBtCancelar());
 
@@ -248,9 +253,9 @@ public class VentanaVentaEntradas extends JFrame {
 		if (lbNumEntradas == null) {
 
 			lbNumEntradas = new JLabel("Número de asientos:");
-			lbNumEntradas.setBounds(22, 50, 152, 30);
 			lbNumEntradas.setLabelFor(getSpNumEntradas());
-			lbNumEntradas.setDisplayedMnemonic('N');
+			lbNumEntradas.setBounds(22, 50, 152, 30);
+			lbNumEntradas.setDisplayedMnemonic('E');
 		}
 
 		return lbNumEntradas;
@@ -415,7 +420,7 @@ public class VentanaVentaEntradas extends JFrame {
 		if ((int) spNumEntradas.getValue() != 1) {
 
 			tfNoAsientosDisponibles.setText("Para elegir el asiento en el mapa, selecciona 1 entrada.");
-
+			return;
 		}
 
 		Partido partido = (Partido) cbPartido.getSelectedItem();
@@ -485,6 +490,7 @@ public class VentanaVentaEntradas extends JFrame {
 		this.tfAsientosObtenidos.setText("");
 		this.tfNoAsientosDisponibles.setText("");
 		this.tfPrecio.setText("");
+		this.tfEmail.setText("");
 
 		this.btBuscarAsientos.setEnabled(cbPartido.getItemCount() > 0);
 		this.btCancelar.setEnabled(false);
@@ -543,13 +549,14 @@ public class VentanaVentaEntradas extends JFrame {
 
 					int fila = tablaAsientos.rowAtPoint(e.getPoint()) + 1;
 					int asiento = tablaAsientos.columnAtPoint(e.getPoint()) + 1;
-					
+
 					seleccionarAsientoManual(fila, asiento);
 
 				}
 			});
 			tablaAsientos.setBackground(new Color(240, 240, 240));
-			tablaAsientos.setEnabled(false);
+			tablaAsientos.setFocusable(false);
+			tablaAsientos.setRowSelectionAllowed(false);
 
 			tablaAsientos.setTableHeader(null);
 			tablaAsientos.setRowHeight(22);
@@ -767,6 +774,11 @@ public class VentanaVentaEntradas extends JFrame {
 			btConfirma.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 
+					if (!comprobarEmail()) {
+
+						return;
+					}
+
 					try {
 
 						mostrarConfirmacionReserva();
@@ -788,6 +800,36 @@ public class VentanaVentaEntradas extends JFrame {
 			btConfirma.setBackground(new Color(128, 255, 128));
 		}
 		return btConfirma;
+	}
+
+	private boolean comprobarEmail() {
+
+		String email = getTfEmail().getText().trim();
+
+		if (!email.matches("[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}")) {
+
+			JOptionPane.showMessageDialog(this, "El formato del email debe ser xxxx@xx.xxx", "Email no válido",
+					JOptionPane.WARNING_MESSAGE);
+
+			getTfEmail().requestFocus();
+
+			return false;
+		}
+
+		return true;
+	}
+
+	private JTextField getTfEmail() {
+
+		if (tfEmail == null) {
+
+			tfEmail = new JTextField();
+			tfEmail.setBounds(183, 132, 203, 26);
+			tfEmail.setColumns(20);
+			tfEmail.setToolTipText("Email del cliente (ej: cliente@correo.com)");
+		}
+
+		return tfEmail;
 	}
 
 	private class CerrarVentana extends WindowAdapter {
@@ -878,5 +920,14 @@ public class VentanaVentaEntradas extends JFrame {
 			btAzul.setBackground(Color.BLUE);
 		}
 		return btAzul;
+	}
+
+	private JLabel getLbEmail() {
+		if (lbEmail == null) {
+			lbEmail = new JLabel("Email:");
+			lbEmail.setDisplayedMnemonic('E');
+			lbEmail.setBounds(0, 0, 152, 30);
+		}
+		return lbEmail;
 	}
 }
