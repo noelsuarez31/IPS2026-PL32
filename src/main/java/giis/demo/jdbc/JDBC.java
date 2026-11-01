@@ -776,4 +776,16 @@ public class JDBC {
 		return TareaMantenimientoJdbc.getTareasInstalacionFecha(con, idInstalacion, fecha);
 	}
 	
+	/**
+	 * Obtiene los datos de un abonado dado un dni
+	 * 
+	 * @param dni
+	 * @return datos de un abonado
+	 * @throws SQLException
+	 */
+	public Abonado getObtenerDatosAbonado(String dni) throws SQLException {
+		
+		return AbonadoJdbc.obtenerDatosAbonado(con, dni);
+	}
+	
 }
