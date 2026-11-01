@@ -51,6 +51,8 @@ public class AbonoJdbc {
 	
 	public final static String QUERY_INSERT_ABONO = "INSERT INTO Abono (id_venta, id_abonado, id_equipo, id_butaca,"
 			+ "fecha_inicio, fecha_fin, fecha_registro, categoria, precio) VALUES (?,?,?,?,?,?,?,?,?)";
+	
+	public final static String QUERY_OBTENER_INFO_ABONO = "SELECT * FROM Abono a WHERE a.id_abonado = ?";
 
 
 	public static final DateTimeFormatter FORMATO_FECHA_HORA = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
@@ -319,4 +321,21 @@ public class AbonoJdbc {
 		throw new SQLException("No se pudo obtener el id de la venta");
 	}
 
+	private static Abono getInfoAbono(Connection con, int abonadoId) throws SQLException {
+
+		try (PreparedStatement pst = con.prepareStatement(QUERY_GET_ID_BUTACA)) {
+
+			pst.setInt(1, abonadoId);
+
+			try (ResultSet rs = pst.executeQuery()) {
+
+				if (rs.next()) {
+
+					return new Abono(rs.getString("nombreEquipo"), rs.getString(""))
+				}
+			}
+		}
+
+		throw new SQLException("No existe el abono con ese ");
+	}
 }
