@@ -17,6 +17,7 @@ import giis.demo.model.contrataciones.GestorEmpleados;
 import giis.demo.model.entrevistas.CrearEntrevistaService;
 import giis.demo.model.entrevistas.CrearFranjaService;
 import giis.demo.model.equipo.AñadirEquipoService;
+import giis.demo.model.equipo.CrearEntrenamientoService;
 import giis.demo.model.equipo.PlanificarPartidoService;
 import giis.demo.model.historial.HistorialVentas;
 import giis.demo.model.horarios.GestionHorarioSemanal;
@@ -24,12 +25,14 @@ import giis.demo.model.horarios.GestionHorariosEspecificos;
 import giis.demo.model.horarios.GestionHorariosPeriodicos;
 import giis.demo.model.tienda.VentaMerchandising;
 import giis.demo.ui.abonos.VentanaAbono;
+import giis.demo.ui.accion.VentanaPortalAccionista;
 import giis.demo.ui.contrataciones.VentanaAltaEmpleado;
 import giis.demo.ui.contrataciones.VentanaGestionEmpleados;
 import giis.demo.ui.entradas.VentanaVentaEntradas;
 import giis.demo.ui.entrevistas.VentanaCrearEntrevistas;
 import giis.demo.ui.entrevistas.VentanaCrearFranjas;
 import giis.demo.ui.equipo.VentanaAñadirEquipo;
+import giis.demo.ui.equipo.VentanaCrearEntrenamiento;
 import giis.demo.ui.equipo.VentanaPlanificarPartido;
 import giis.demo.ui.historial.VentanaHistorialVentas;
 import giis.demo.ui.horarios.VentanaHorarioEspecifico;
@@ -38,7 +41,6 @@ import giis.demo.ui.horarios.VentanaHorarioSemanal;
 import giis.demo.ui.mantenimiento.VentanaAsignarMantenimiento;
 import giis.demo.ui.reserva.VentanaReserva;
 import giis.demo.ui.tienda.VentanaTienda;
-
 
 public class VentanaPrincipal extends JFrame {
 
@@ -50,6 +52,7 @@ public class VentanaPrincipal extends JFrame {
 	private CrearFranjaService cfs = new CrearFranjaService();
 	private CrearEntrevistaService ces = new CrearEntrevistaService();
 	private GestorEmpleados gestorEmpleados = new GestorEmpleados();
+	private CrearEntrenamientoService crearEntrenoService = new CrearEntrenamientoService();
 	private PlanificarPartidoService pps = new PlanificarPartidoService();
 
 	private static final long serialVersionUID = 1L;
@@ -74,8 +77,11 @@ public class VentanaPrincipal extends JFrame {
 	private JMenu mnDirectorDeComunicaciones;
 	private JMenuItem mntmAsignarEntrevistas;
 	private JMenu mnAbonado;
+	private JMenu mnAccionista;
+	private JMenuItem mntmPortalAccionista;
 	private JMenuItem mntmComprarAbono;
 	private JMenuItem mntmAñadirMantenimiento;
+	private JMenuItem mntmRegistrarEntrenamiento;
 	private JMenuItem mntmAñadirPartido;
 
 	/**
@@ -118,6 +124,7 @@ public class VentanaPrincipal extends JFrame {
 		if (menuBar == null) {
 			menuBar = new JMenuBar();
 			menuBar.add(getMnAbonado());
+			menuBar.add(getMnAccionista());
 			menuBar.add(getMnDirectorDeComunicaciones());
 			menuBar.add(getMnEmpleado());
 			menuBar.add(getMnEntrenador());
@@ -143,6 +150,7 @@ public class VentanaPrincipal extends JFrame {
 			mnEntrenador = new JMenu("Entrenador");
 			mnEntrenador.setMnemonic('T');
 			mnEntrenador.add(getMntmCrearFranjas());
+			mnEntrenador.add(getMntmRegistrarEntrenamiento());
 		}
 		return mnEntrenador;
 	}
@@ -521,6 +529,7 @@ public class VentanaPrincipal extends JFrame {
 		this.setVisible(false);
 		va.setVisible(true);
 	}
+
 	private JMenuItem getMntmAñadirMantenimiento() {
 		if (mntmAñadirMantenimiento == null) {
 			mntmAñadirMantenimiento = new JMenuItem("Añadir servicio de mantenimiento");
@@ -563,5 +572,56 @@ public class VentanaPrincipal extends JFrame {
 	
 	public PlanificarPartidoService getPlanificarPartidoService() {
 		return this.pps;
+	}
+	
+	private JMenu getMnAccionista() {
+		if (mnAccionista == null) {
+			mnAccionista = new JMenu("Accionista");
+			mnAccionista.setMnemonic('C');
+			mnAccionista.add(getMntmPortalAccionista());
+		}
+		return mnAccionista;
+	}
+
+	private JMenuItem getMntmPortalAccionista() {
+		if (mntmPortalAccionista == null) {
+			mntmPortalAccionista = new JMenuItem("Portal del accionista");
+			mntmPortalAccionista.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					abrirVentanaPortalAccionista();
+				}
+			});
+		}
+		return mntmPortalAccionista;
+	}
+
+	private void abrirVentanaPortalAccionista() {
+		VentanaPortalAccionista vpa = new VentanaPortalAccionista(this);
+		this.setVisible(false);
+		vpa.setVisible(true);
+	}
+	
+	private JMenuItem getMntmRegistrarEntrenamiento() {
+		if (mntmRegistrarEntrenamiento == null) {
+			mntmRegistrarEntrenamiento = new JMenuItem("Registrar entrenamiento");
+			mntmRegistrarEntrenamiento.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					gestionRegistrarEntrenamiento();
+				}
+			});
+		}
+		return mntmRegistrarEntrenamiento;
+	}
+
+	protected void gestionRegistrarEntrenamiento() {
+		VentanaCrearEntrenamiento ces2 = new VentanaCrearEntrenamiento(this);
+		this.setVisible(false);
+		ces2.setVisible(true);
+	}
+	
+	public CrearEntrenamientoService getCrearEntrenamientoService() {
+		return this.crearEntrenoService;
 	}
 }
