@@ -12,11 +12,13 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 
+import giis.demo.exceptions.AbonoNoPermitidoException;
 import giis.demo.model.abonos.Abonado;
 import giis.demo.model.abonos.Abono;
 import giis.demo.model.entradas.Partido;
@@ -52,18 +54,18 @@ public class CompraEntradasAbonados extends JFrame {
 
 	private VentanaIdentificacion vi;
 	private VentaDeEntradas venta;
-	
+
 	/**
 	 * Create the frame.
 	 */
 	public CompraEntradasAbonados(VentanaIdentificacion vi) {
-		
-		this.vi=vi;
+
+		this.vi = vi;
 		this.venta = vi.getVentaDeEntradas();
-		
+
 		setTitle("Abonado : Compra Entrada");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 848, 400);
+		setBounds(100, 100, 882, 400);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -71,15 +73,18 @@ public class CompraEntradasAbonados extends JFrame {
 		contentPane.add(getPanelDatosAbonado(), BorderLayout.CENTER);
 		contentPane.add(getPanelElección(), BorderLayout.EAST);
 		contentPane.add(getPanel(), BorderLayout.SOUTH);
+		
+		this.setLocationRelativeTo(null);
 
 		rellenarDatos();
 	}
 
 	private JPanel getPanelDatosAbonado() {
-		
+
 		if (panelDatosAbonado == null) {
 			panelDatosAbonado = new JPanel();
-			panelDatosAbonado.setBorder(new TitledBorder(null, "Abonado", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+			panelDatosAbonado
+					.setBorder(new TitledBorder(null, "Abonado", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 			panelDatosAbonado.setLayout(null);
 			panelDatosAbonado.add(getLbNombre());
 			panelDatosAbonado.add(getLblDni());
@@ -94,6 +99,7 @@ public class CompraEntradasAbonados extends JFrame {
 		}
 		return panelDatosAbonado;
 	}
+
 	private JLabel getLbNombre() {
 		if (lbNombre == null) {
 			lbNombre = new JLabel("Nombre:");
@@ -101,84 +107,94 @@ public class CompraEntradasAbonados extends JFrame {
 		}
 		return lbNombre;
 	}
+
 	private JLabel getLblDni() {
 		if (lblDni == null) {
 			lblDni = new JLabel("Dni");
-			lblDni.setBounds(10, 86, 79, 14);
+			lblDni.setBounds(10, 94, 79, 14);
 		}
 		return lblDni;
 	}
+
 	private JLabel getLblTemporada() {
 		if (lblTemporada == null) {
 			lblTemporada = new JLabel("Temporada:");
-			lblTemporada.setBounds(10, 123, 79, 14);
+			lblTemporada.setBounds(10, 136, 79, 14);
 		}
 		return lblTemporada;
 	}
+
 	private JLabel getLblCategoria() {
 		if (lblCategoria == null) {
 			lblCategoria = new JLabel("Categoria");
-			lblCategoria.setBounds(10, 152, 79, 14);
+			lblCategoria.setBounds(10, 180, 79, 14);
 		}
 		return lblCategoria;
 	}
+
 	private JLabel getLblAsiento() {
 		if (lblAsiento == null) {
 			lblAsiento = new JLabel("Asiento:");
-			lblAsiento.setBounds(10, 182, 79, 14);
+			lblAsiento.setBounds(10, 223, 79, 14);
 		}
 		return lblAsiento;
 	}
+
 	private JTextField getTfName() {
 		if (tfName == null) {
 			tfName = new JTextField();
 			tfName.setEditable(false);
-			tfName.setBounds(83, 53, 260, 20);
+			tfName.setBounds(83, 42, 260, 31);
 			tfName.setColumns(10);
 		}
 		return tfName;
 	}
+
 	private JTextField getTfDni() {
 		if (tfDni == null) {
 			tfDni = new JTextField();
 			tfDni.setEditable(false);
 			tfDni.setColumns(10);
-			tfDni.setBounds(83, 86, 260, 20);
+			tfDni.setBounds(83, 86, 260, 31);
 		}
 		return tfDni;
 	}
+
 	private JTextField getTfSeason() {
 		if (tfSeason == null) {
 			tfSeason = new JTextField();
 			tfSeason.setEditable(false);
 			tfSeason.setColumns(10);
-			tfSeason.setBounds(83, 120, 260, 20);
+			tfSeason.setBounds(83, 128, 260, 30);
 		}
 		return tfSeason;
 	}
+
 	private JTextField getTfCategory() {
 		if (tfCategory == null) {
 			tfCategory = new JTextField();
 			tfCategory.setEditable(false);
 			tfCategory.setColumns(10);
-			tfCategory.setBounds(83, 152, 260, 20);
+			tfCategory.setBounds(83, 170, 260, 34);
 		}
 		return tfCategory;
 	}
+
 	private JTextField getTfChair() {
 		if (tfChair == null) {
 			tfChair = new JTextField();
 			tfChair.setEditable(false);
 			tfChair.setColumns(10);
-			tfChair.setBounds(83, 180, 260, 20);
+			tfChair.setBounds(83, 213, 260, 34);
 		}
 		return tfChair;
 	}
+
 	private JPanel getPanelElección() {
 		if (panelElección == null) {
 			panelElección = new JPanel();
 			panelElección.setLayout(null);
-			panelElección.setPreferredSize(new Dimension(300, 0));
+			panelElección.setPreferredSize(new Dimension(400, 0));
 			panelElección.add(getLbPartido());
 			panelElección.add(getCbPartido());
 			panelElección.add(getLbEmail());
@@ -186,6 +202,7 @@ public class CompraEntradasAbonados extends JFrame {
 		}
 		return panelElección;
 	}
+
 	private JPanel getPanel() {
 		if (panel == null) {
 			panel = new JPanel();
@@ -195,21 +212,24 @@ public class CompraEntradasAbonados extends JFrame {
 		}
 		return panel;
 	}
+
 	private JPanel getPanelPrecio() {
 		if (panelPrecio == null) {
 			panelPrecio = new JPanel();
 			panelPrecio.add(getLblPrecio());
-			panelPrecio.add(getTextField_5());
+			panelPrecio.add(getTfPrecio());
 		}
 		return panelPrecio;
 	}
+
 	private JLabel getLblPrecio() {
 		if (lblPrecio == null) {
 			lblPrecio = new JLabel("Precio:");
 		}
 		return lblPrecio;
 	}
-	private JTextField getTextField_5() {
+
+	private JTextField getTfPrecio() {
 		if (tfPrecio == null) {
 			tfPrecio = new JTextField();
 			tfPrecio.setForeground(new Color(255, 0, 0));
@@ -218,6 +238,7 @@ public class CompraEntradasAbonados extends JFrame {
 		}
 		return tfPrecio;
 	}
+
 	private JPanel getPanelBotones() {
 		if (panelBotones == null) {
 			panelBotones = new JPanel();
@@ -226,14 +247,15 @@ public class CompraEntradasAbonados extends JFrame {
 		}
 		return panelBotones;
 	}
+
 	private JButton getBtCancelar() {
 		if (btCancelar == null) {
 			btCancelar = new JButton("Cancelar");
 			btCancelar.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					
+
 					cancelar();
-					
+
 				}
 			});
 			btCancelar.setBackground(new Color(255, 128, 128));
@@ -241,23 +263,74 @@ public class CompraEntradasAbonados extends JFrame {
 		}
 		return btCancelar;
 	}
-	
+
+	/**
+	 * Cancela la operacion
+	 */
 	private void cancelar() {
-		
+
+		this.setVisible(false);
+
 		vi.reiniciar();
 		vi.setVisible(true);
 		this.dispose();
-		
+
 	}
-	
+
 	private JButton getBtFinalizar() {
 		if (btFinalizar == null) {
 			btFinalizar = new JButton("Finalizar");
+			btFinalizar.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					
+					try {
+						
+						finalizar();
+						
+					} catch (AbonoNoPermitidoException e1) {
+						
+						JOptionPane.showMessageDialog(null, "El abono no se puede volver a comprar.");
+						
+					}
+					
+				}
+			});
 			btFinalizar.setMnemonic('F');
 			btFinalizar.setBackground(new Color(128, 255, 128));
 		}
 		return btFinalizar;
 	}
+	
+	private void finalizar() throws AbonoNoPermitidoException {
+		
+
+		Partido partido = (Partido) getCbPartido().getSelectedItem();
+		if (partido == null) {
+			return;
+		}
+
+		String email = getTfEmail().getText().trim();
+		if (!email.matches("^[\\w.+-]+@[\\w-]+(\\.[\\w-]+)+$")) {
+			JOptionPane.showMessageDialog(this, "Introduce un email válido.");
+			return;
+		}
+
+		try {
+			
+			int idVenta = venta.venderEntradaAbonado(vi.getDni(), partido);
+
+			JOptionPane.showMessageDialog(this, "Entrada vendida correctamente.");
+			
+			cancelar();
+
+		} catch (SQLException e) {
+			
+			JOptionPane.showMessageDialog(this, "Error al registrar la compra: " + e.getMessage());
+		
+		}
+		
+	}
+
 	private JLabel getLbPartido() {
 		if (lbPartido == null) {
 			lbPartido = new JLabel("Partido:");
@@ -265,17 +338,34 @@ public class CompraEntradasAbonados extends JFrame {
 		}
 		return lbPartido;
 	}
+
 	private JComboBox<Partido> getCbPartido() {
-		
+
 		if (cbPartido == null) {
-			
+
 			cbPartido = new JComboBox<Partido>();
-			cbPartido.setModel(new DefaultComboBoxModel<Partido>(venta.getPartidosDelDiaDelClub()));
-			cbPartido.setBounds(56, 45, 194, 22);
 			
+			try {
+				
+				cbPartido.setModel(new DefaultComboBoxModel<Partido>(venta.getPartidosDelDiaDelClub(vi.getDni())));
+				
+			} catch (SQLException sqle) {
+				JOptionPane.showMessageDialog(null,
+						"Se ha producido un error al obtener los partidos declarados como día del club");
+			}
+			
+			cbPartido.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					cargarAbono();
+				}
+			});
+
+			cbPartido.setBounds(56, 45, 334, 22);
+
 		}
 		return cbPartido;
 	}
+
 	private JLabel getLbEmail() {
 		if (lbEmail == null) {
 			lbEmail = new JLabel("Email:");
@@ -283,27 +373,78 @@ public class CompraEntradasAbonados extends JFrame {
 		}
 		return lbEmail;
 	}
+
 	private JTextField getTfEmail() {
-		
+
 		if (tfEmail == null) {
 			tfEmail = new JTextField();
-			tfEmail.setBounds(56, 82, 194, 20);
+			tfEmail.setBounds(56, 82, 334, 27);
 			tfEmail.setColumns(10);
 		}
 		return tfEmail;
 	}
-	
-	private void rellenarDatos() throws SQLException {
+
+	private void rellenarDatos() {
+
+		String dni = vi.getDni();
+
+		Abonado abonado;
 		
-		String dni = getTfDni().getText();
-		
-		Abonado abonado = venta.getObtenerDatosAbonado(dni);
-		Abono abono = venta.getObtenerAbono(abonado.getIdAbonado());
-		
-		this.getTfName().setText(abonado.getNombre()+ " " + abonado.getApellidos());
+		try {
+			abonado = venta.getObtenerDatosAbonado(dni);
+		} catch (SQLException e) {
+			
+			JOptionPane.showMessageDialog(null, "Se ha producido un error al obtener los datos del abonado");
+			return;
+		}
+
+		this.getTfName().setText(abonado.getNombre() + " " + abonado.getApellidos());
 		this.getTfDni().setText(abonado.getDni());
-		this.getTfSeason().setText(abono.getFechaIncio() + " - " + abono.getFechaFin());
-		this.getTfCategory().setText(abono.getCategoria()+"");
-		this.getTextField_5().setText("Seccion: " + abono.getSeccion() + ", Tribuna: "+ abono.getTribuna() +", Fila: "+ abono.getFila() + ", Asiento: " + abono.getAsiento());
+
+		if (getCbPartido().getItemCount() == 0) {
+			getBtFinalizar().setEnabled(false);
+			JOptionPane.showMessageDialog(this, "No hay partidos del día del club para el equipo de este abonado.");
+			return;
+		}
+
+		cargarAbono();
 	}
+
+	private void cargarAbono() {
+
+		Partido partido = (Partido) getCbPartido().getSelectedItem();
+		if (partido == null) {
+			return;
+		}
+
+		try {
+			Abono abono = venta.getAbonoParaPartido(vi.getDni(), partido);
+
+			if (abono == null) {
+				limpiarAbono();
+				getBtFinalizar().setEnabled(false);
+				JOptionPane.showMessageDialog(this, "El cliente no es abonado de este equipo en esta temporada.");
+				return;
+			}
+
+			getTfSeason().setText(abono.getFechaIncio() + " - " + abono.getFechaFin());
+			getTfCategory().setText(abono.getCategoria().toString());
+			getTfChair().setText("Tribuna " + abono.getTribuna() + ", Sección " + abono.getSeccion() + ", Fila "
+					+ abono.getFila() + ", Asiento " + abono.getAsiento());
+			getTfPrecio().setText(partido.getPrecioAbonado() + " €");
+			getBtFinalizar().setEnabled(true);
+
+		} catch (SQLException ex) {
+			JOptionPane.showMessageDialog(this, ex.getMessage());
+		}
+	}
+
+	private void limpiarAbono() {
+
+		getTfSeason().setText("");
+		getTfCategory().setText("");
+		getTfChair().setText("");
+		getTfPrecio().setText("");
+	}
+
 }
