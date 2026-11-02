@@ -2,7 +2,6 @@ package giis.demo.ui.abonos.entradas;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
-import java.awt.HeadlessException;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -71,7 +70,14 @@ public class VentanaIdentificacion extends JDialog {
 				btVerificar.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						
-						continuar();
+						try {
+							
+							continuar();
+							
+						} catch (SQLException e1) {
+
+							JOptionPane.showMessageDialog(null, "Se ha producido un eror. No se peude continuar");
+						}
 						
 					}
 				});
@@ -80,27 +86,22 @@ public class VentanaIdentificacion extends JDialog {
 				btVerificar.setActionCommand("OK");
 				buttonPane.add(btVerificar);
 				getRootPane().setDefaultButton(btVerificar);
+				
+				this.setLocationRelativeTo(null);
 			}
 		}
 	}
 	
-	private void continuar() {
+	private void continuar() throws SQLException {
 		
 		if(!verificarDni()) {
 			return;
 		}
 		
-		try {
+		if(!venta.comprobarDni(getTfDni().getText())) {
 			
-			if(venta.comprobarDni(getTfDni().getText())) {
-				
-				JOptionPane.showMessageDialog(null, "El dni no pertenece a ningún abonado cpn este DNI");
-				return;
-			}
-		} catch (SQLException e) {
-			
-			JOptionPane.showMessageDialog(null, "Se ha producido un error al conectarse con la BBDD");
-
+			JOptionPane.showMessageDialog(null, "El dni no pertenece a ningún abonado.");
+			return;
 		}
 		
 		CompraEntradasAbonados cea = new CompraEntradasAbonados(this);
@@ -134,14 +135,14 @@ public class VentanaIdentificacion extends JDialog {
 			lbDni = new JLabel("Dni: ");
 			lbDni.setDisplayedMnemonic('D');
 			lbDni.setLabelFor(getTfDni());
-			lbDni.setBounds(10, 103, 46, 14);
+			lbDni.setBounds(10, 110, 46, 14);
 		}
 		return lbDni;
 	}
 	private JTextField getTfDni() {
 		if (tfDni == null) {
 			tfDni = new JTextField();
-			tfDni.setBounds(66, 100, 186, 20);
+			tfDni.setBounds(66, 100, 186, 35);
 			tfDni.setColumns(10);
 		}
 		return tfDni;

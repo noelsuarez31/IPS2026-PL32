@@ -5,12 +5,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import giis.demo.exceptions.AbonoNoPermitidoException;
+import giis.demo.exceptions.SinDisponibilidadException;
 import giis.demo.jdbc.JDBC;
 import giis.demo.model.abonos.Abonado;
+import giis.demo.model.abonos.Abono;
 import giis.demo.model.abonos.Venta;
 import giis.demo.model.entradas.enumerados.TipoSeccion;
 import giis.demo.model.entradas.enumerados.TipoTribuna;
-import giis.demo.exceptions.SinDisponibilidadException;
 
 public class VentaDeEntradas extends Venta {
 
@@ -32,7 +34,7 @@ public class VentaDeEntradas extends Venta {
 		random = new Random();
 		jdbc = new JDBC();
 		butacasSeleccionadas = new ArrayList<Butaca>();
-
+		butacasDisponibles = new ArrayList<Butaca>();
 	}
 
 	public void reiniciar() {
@@ -297,16 +299,54 @@ public class VentaDeEntradas extends Venta {
 	}
 	
 	/**
-	 * Comprueba que en la BBDD exista un abonado con ese dni
-	 * 
+	 * Obtiene el abono de un abonado para el equipo local de un partido,
+	 * vigente en la fecha del partido
+	 *
 	 * @param dni
-	 * @return true si exsite, false en caso contrario
+	 * @param partido
+	 * @return el abono, o null si no es abonado de ese equipo en esa temporada
 	 * @throws SQLException
 	 */
-	public boolean comprobarDni(String dni) throws SQLException{
-		
-		return jdbc.comprobarDniAbonado(dni);
-		
+	public Abono getAbonoParaPartido(String dni, Partido partido) throws SQLException {
+
+		return jdbc.getAbonoParaPartido(dni, partido.getId_local(), partido.getFecha());
+
+	}
+	
+	/**
+	 * Los partidos que se celebran el día del club
+	 *
+	 * @return los partidos del día del club
+	 * @throws SQLException
+	 */
+	public Partido[] getPartidosDelDiaDelClub(String nif) throws SQLException {
+
+		return jdbc.getPartidosDelDiaDelClub(nif).toArray(new Partido[0]);
+
 	}
 
+	/**
+	 * Comprueba el dni
+	 * 
+	 * @param text
+	 * @return
+	 * @throws SQLException
+	 */
+	public boolean comprobarDni(String text) throws SQLException {
+
+		return jdbc.comprobarDniAbonado(text);
+	}
+
+	/**
+	 * Registra en la BBDD la nueva venta
+	 * 
+	 * @param dni
+	 * @param partido
+	 * @return
+	 * @throws SQLException
+	 * @throws AbonoNoPermitidoException 
+	 */
+	public int venderEntradaAbonado(String dni, Partido partido) throws SQLException, AbonoNoPermitidoException {
+		return jdbc.registrarEntradaAbonado(dni, partido);
+	}
 }
