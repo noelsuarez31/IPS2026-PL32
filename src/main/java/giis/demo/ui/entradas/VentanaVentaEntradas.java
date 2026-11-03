@@ -28,7 +28,6 @@ import javax.swing.JSpinner;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
-import javax.swing.SwingWorker;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -94,7 +93,7 @@ public class VentanaVentaEntradas extends JFrame {
 	private JTextField tfEmail;
 
 	private ServicioEmail se;
-	
+
 	/**
 	 * Create the frame.
 	 * 
@@ -105,7 +104,7 @@ public class VentanaVentaEntradas extends JFrame {
 		this.ma = new MostrarAsientos();
 		this.cv = new CerrarVentana();
 		this.se = new ServicioEmail();
-		
+
 		this.addWindowListener(cv);
 
 		this.setTitle("Venta de entradas");
@@ -546,59 +545,27 @@ public class VentanaVentaEntradas extends JFrame {
 	private void mostrarConfirmacionReserva() throws SQLException {
 
 		final String email = getTfEmail().getText().trim();
-		final String cuerpo = construirCuerpoEmail();
-		
-		venta.almacenar(venta.getIdPartido(), venta.getButacasSeleccionadas());
 
-		enviarEmail(email, cuerpo);
+		venta.almacenar(venta.getIdPartido(), venta.getButacasSeleccionadas());
 		
+		try {
+
+			Partido partido = (Partido) getCbPartido().getSelectedItem();
+
+			se.enviar(email, "Compra de entradas abono : Día del club",
+					"Se ha comprado correctamente su entrada para el " + " dia del club para el partido "
+							+ partido.toString());
+
+		} catch (EmailException e) {
+
+			JOptionPane.showMessageDialog(this, "No se ha podido enviar el email al usuario");
+			e.printStackTrace();
+		}
+
 		VentanaVentaConfirmacion vvc = new VentanaVentaConfirmacion(this);
 		vvc.setVisible(true);
 	}
-	
-	private String construirCuerpoEmail() {
 
-		Partido partido = (Partido) cbPartido.getSelectedItem();
-		StringBuilder sb = new StringBuilder();
-
-		sb.append("Gracias por su compra.\n\n");
-		sb.append("Partido: ").append(partido).append("\n");
-		sb.append("Tribuna: ").append(cbTribuna.getSelectedItem()).append("\n");
-		sb.append("Sección: ").append(cbSeccion.getSelectedItem()).append("\n");
-
-		for (Butaca b : venta.getButacasSeleccionadas()) {
-			sb.append("Fila ").append(b.getFila()).append(", asiento ").append(b.getAsiento()).append("\n");
-		}
-
-		sb.append("\nTotal: ").append(tfPrecio.getText()).append("\n");
-
-		return sb.toString();
-	}
-	
-	private void enviarEmail(final String destinatario, final String cuerpo) {
-
-		new SwingWorker<Void, Void>() {
-
-			@Override
-			protected Void doInBackground() throws Exception {
-				//new ServicioEmail().enviar(destinatario, "Confirmación de compra de entradas", cuerpo);
-				return null;
-			}
-
-			@Override
-			protected void done() {
-				try {
-					get();
-				} catch (Exception e) {
-					JOptionPane.showMessageDialog(VentanaVentaEntradas.this,
-							"La compra se ha realizado, pero no se ha podido enviar el email de confirmación.",
-							"Aviso", JOptionPane.WARNING_MESSAGE);
-					System.err.println("Error al enviar el email: " + e.getMessage());
-				}
-			}
-		}.execute();
-	}
-	
 	/**
 	 * Método para volver al menú principal.
 	 * 
@@ -625,13 +592,13 @@ public class VentanaVentaEntradas extends JFrame {
 
 		if (tablaAsientos == null) {
 
-			tablaAsientos = new JTable(10, 15){
-			    @Override
-			    public boolean isCellEditable(int row, int column) {
-			        return false;
-			    }
+			tablaAsientos = new JTable(10, 15) {
+				@Override
+				public boolean isCellEditable(int row, int column) {
+					return false;
+				}
 			};
-		
+
 			tablaAsientos.addMouseListener(new MouseAdapter() {
 				@Override
 				public void mouseClicked(MouseEvent e) {
@@ -668,16 +635,16 @@ public class VentanaVentaEntradas extends JFrame {
 
 			tablaAsientos.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
 				/**
-                 * 
-                 */
-                private static final long serialVersionUID = 1L;
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
 
-                @Override
+				@Override
 				public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
 						boolean hasFocus, int row, int column) {
 
 					Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-					c.setBackground(new Color(128,255,128));
+					c.setBackground(new Color(128, 255, 128));
 
 					try {
 
@@ -685,13 +652,13 @@ public class VentanaVentaEntradas extends JFrame {
 								((TipoTribuna) getCbTribuna().getSelectedItem()),
 								((TipoSeccion) getCbSeccion().getSelectedItem()), row + 1, column + 1)) {
 
-							c.setBackground(new Color(255,128,128));
+							c.setBackground(new Color(255, 128, 128));
 
 						} else if (venta.isBooked(((Partido) getCbPartido().getSelectedItem()).getId_partido(),
 								((TipoTribuna) getCbTribuna().getSelectedItem()),
 								((TipoSeccion) getCbSeccion().getSelectedItem()), row + 1, column + 1)) {
 
-							c.setBackground(new Color(0,128,255));
+							c.setBackground(new Color(0, 128, 255));
 
 						}
 
@@ -707,7 +674,7 @@ public class VentanaVentaEntradas extends JFrame {
 			});
 
 		}
-	
+
 		return tablaAsientos;
 
 	}
@@ -732,7 +699,7 @@ public class VentanaVentaEntradas extends JFrame {
 	private JButton getBtVerde() {
 		if (btVerde == null) {
 			btVerde = new JButton("");
-			btVerde.setBackground(new Color(128,255,128));
+			btVerde.setBackground(new Color(128, 255, 128));
 		}
 		return btVerde;
 	}
@@ -870,26 +837,12 @@ public class VentanaVentaEntradas extends JFrame {
 				public void actionPerformed(ActionEvent e) {
 
 					if (!comprobarEmail()) {
-
 						return;
 					}
 
 					try {
 
 						mostrarConfirmacionReserva();
-						
-						Partido partido = (Partido)getCbPartido().getSelectedItem();
-						
-						try {
-							
-							se.enviar(getTfEmail().getText(), "Compra de entradas", "Compra de entradas para el partido: " + partido.toString());
-							
-						} catch (EmailException e1) {
-
-							JOptionPane.showMessageDialog(null, "No se ha podido enviar el email",
-									"Aviso", JOptionPane.WARNING_MESSAGE);
-							e1.printStackTrace();
-						}
 
 					} catch (SQLException e1) {
 
@@ -910,11 +863,9 @@ public class VentanaVentaEntradas extends JFrame {
 		return btConfirma;
 	}
 
-	
 	private boolean comprobarEmail() {
 
 		if (!ValidadorEmail.esValido(getTfEmail().getText())) {
-			
 
 			JOptionPane.showMessageDialog(this, "El formato del email debe ser xxxx@xx.xxx", "Email no válido",
 					JOptionPane.WARNING_MESSAGE);
@@ -1017,7 +968,7 @@ public class VentanaVentaEntradas extends JFrame {
 	private JButton getBtRojo() {
 		if (btRojo == null) {
 			btRojo = new JButton("");
-			btRojo.setBackground(new Color(255,128,128));
+			btRojo.setBackground(new Color(255, 128, 128));
 		}
 		return btRojo;
 	}
@@ -1025,7 +976,7 @@ public class VentanaVentaEntradas extends JFrame {
 	private JButton getBtAzul() {
 		if (btAzul == null) {
 			btAzul = new JButton("");
-			btAzul.setBackground(new Color(0,128,255));
+			btAzul.setBackground(new Color(0, 128, 255));
 		}
 		return btAzul;
 	}
