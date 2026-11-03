@@ -27,6 +27,9 @@ delete from Abonado;
 delete from PrecioSeccion;
 delete from TareaMantenimientoJardinero;
 delete from TareaMantenimiento;
+delete from Accion;
+delete from Campana;
+delete from Accionista;
 
 INSERT INTO "Producto" ("nombre", "tipo", "precio") VALUES 
 ('Sudadera', 'ParteArriba', 65.00),
@@ -880,3 +883,63 @@ VALUES
          WHERE tribuna = 'B' AND seccion = 'B' AND fila = 1 AND asiento = 2),
         '2026-07-01', '2027-06-30','2026-10-25 09:15', 'JUBILADO', 250.00
     );
+INSERT INTO "Accionista" ("dni", "nombre", "apellidos", "email") VALUES
+('71987654A', 'Lucas', 'Vega Fernández', 'lucas.vega@correo.es'),
+('71876543B', 'Lucía', 'Fernández González', 'lucia.fernandez@correo.es'),
+('71765432C', 'Carlos', 'Rodríguez Menéndez', 'carlos.rodriguez@correo.es'),
+('71654321D', 'Elena', 'García Suárez', 'elena.garcia@correo.es');
+
+INSERT INTO "Campana" ("id_campana", "nombre", "fase", "precio_emision") VALUES
+(1, 'Campaña 2024', 1, 10.00),
+(2, 'Campaña 2024', 2, 12.00),
+(3, 'Ampliación 2025', 1, 15.00);
+
+-- Acciones de prueba (para Lucas Vega Fernández - 71987654A, exactamente como en el prototipo)
+INSERT INTO "Accion" ("id_accion", "dni_propietario", "fecha_adquisicion", "precio_adquisicion", "en_venta", "precio_venta", "origen_tipo", "id_campana", "vendedor_previo") VALUES
+(1, '71987654A', '2024-01-10', 10.00, 1, 18.00, 'CAMPANA', 1, NULL),
+(2, '71987654A', '2024-01-11', 15.00, 1, NULL, 'COMPRA_ACCIONISTA', NULL, 'Lucía Fernández González'),
+(3, '71987654A', '2025-02-03', 12.00, 0, NULL, 'COMPRA_ACCIONISTA', NULL, 'Carlos Rodríguez Menéndez'),
+(4, '71987654A', '2025-03-15', 15.00, 0, NULL, 'CAMPANA', 3, NULL);
+
+-- Acciones de prueba para otros accionistas (para un total de 20 en el club)
+INSERT INTO "Accion" ("id_accion", "dni_propietario", "fecha_adquisicion", "precio_adquisicion", "en_venta", "precio_venta", "origen_tipo", "id_campana", "vendedor_previo") VALUES
+(5, '71876543B', '2024-01-10', 10.00, 0, NULL, 'CAMPANA', 1, NULL),
+(6, '71876543B', '2024-01-10', 10.00, 0, NULL, 'CAMPANA', 1, NULL),
+(7, '71876543B', '2024-06-01', 12.00, 1, 16.00, 'CAMPANA', 2, NULL),
+(8, '71876543B', '2024-06-01', 12.00, 0, NULL, 'CAMPANA', 2, NULL),
+(9, '71876543B', '2025-03-15', 15.00, 0, NULL, 'CAMPANA', 3, NULL),
+(10, '71765432C', '2024-01-10', 10.00, 1, 14.00, 'CAMPANA', 1, NULL),
+(11, '71765432C', '2024-01-10', 10.00, 0, NULL, 'CAMPANA', 1, NULL),
+(12, '71765432C', '2024-06-01', 12.00, 0, NULL, 'CAMPANA', 2, NULL),
+(13, '71765432C', '2024-06-01', 12.00, 1, 15.00, 'CAMPANA', 2, NULL),
+(14, '71765432C', '2025-03-15', 15.00, 0, NULL, 'CAMPANA', 3, NULL),
+(15, '71654321D', '2024-01-10', 10.00, 0, NULL, 'CAMPANA', 1, NULL),
+(16, '71654321D', '2024-01-10', 10.00, 0, NULL, 'CAMPANA', 1, NULL),
+(17, '71654321D', '2024-06-01', 12.00, 0, NULL, 'CAMPANA', 2, NULL),
+(18, '71654321D', '2024-06-01', 12.00, 0, NULL, 'CAMPANA', 2, NULL),
+(19, '71654321D', '2025-03-15', 15.00, 0, NULL, 'CAMPANA', 3, NULL),
+(20, '71654321D', '2025-03-15', 15.00, 0, NULL, 'CAMPANA', 3, NULL);
+
+
+-- 1. Reserva externa de socio (Marta Fernández: 10:00 a 11:30, Importe: 50.0) [Sobreescribible]
+INSERT INTO "Reserva" ("fecha", "hora_inicio", "hora_fin", "importe", "fecha_registro", "id_usuario", "id_instalacion") 
+VALUES ('2026-11-20', '10:00', '11:30', 50.0, '2026-10-27 10:00', 1, 1);
+-- 2. Franja con entrevista asignada a un medio (Carlos Martínez - Marca: 12:00 a 13:00) [Sobreescribible]
+INSERT INTO "FranjaHoraria" ("dni_jugador", "fecha", "hora_inicio", "hora_fin") 
+VALUES ('93000001A', '2026-11-20', '12:00', '13:00');
+INSERT INTO "Entrevista" ("id_franja", "nombre_medio") 
+VALUES ((SELECT last_insert_rowid()), 'Marca');
+-- 3. Franja libre de otro jugador del equipo (David Costas: 13:00 a 14:00) [Sobreescribible]
+INSERT INTO "FranjaHoraria" ("dni_jugador", "fecha", "hora_inicio", "hora_fin") 
+VALUES ('93000002B', '2026-11-20', '13:00', '14:00');
+-- 4. Entrenamiento de otro equipo en la misma instalación (Real Oviedo B: 16:00 a 17:30) [No sobreescribible - Bloqueante]
+INSERT INTO "Entrenamiento" ("fecha", "hora_inicio", "hora_fin", "id_equipo", "id_instalacion") 
+VALUES ('2026-11-20', '16:00', '17:30', 2, 1);
+-- 5. Partido oficial en la misma instalación (Real Oviedo A vs Real Oviedo B: 18:00 a 20:00) [No sobreescribible - Bloqueante]
+INSERT INTO "Partido" ("fecha", "hora_inicio", "hora_fin", "id_local", "id_visitante", "id_instalacion") 
+VALUES ('2026-11-20', '18:00', '20:00', 1, 2, 1);
+-- 6. Tarea de jardinería en la instalación (Corte de césped: 08:00 a 09:30) [Sobreescribible]
+INSERT INTO "TareaMantenimiento" ("id_instalacion", "fecha", "hora_inicio", "hora_fin", "descripcion") 
+VALUES (1, '2026-11-20', '08:00', '09:30', 'Corte de césped');
+INSERT INTO "TareaMantenimientoJardinero" ("id_tarea", "dni_jardinero") 
+VALUES ((SELECT last_insert_rowid()), '70707070F');

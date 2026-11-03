@@ -7,7 +7,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
-
+import giis.demo.exceptions.PersistenceException;
 import giis.demo.exceptions.AbonoNoPermitidoException;
 import giis.demo.jdbc.abonados.AbonadoJdbc;
 import giis.demo.jdbc.abonados.AbonoJdbc;
@@ -22,11 +22,15 @@ import giis.demo.jdbc.entradas.RegistrarVentaJdbc;
 import giis.demo.jdbc.entrevistas.EntrevistaJdbc;
 import giis.demo.jdbc.entrevistas.FranjaJdbc;
 import giis.demo.jdbc.equipo.CategoriaEquipoJdbc;
+import giis.demo.jdbc.equipo.EntrenamientoJdbc;
 import giis.demo.jdbc.equipo.EquipoJdbc;
 import giis.demo.jdbc.historial.HistorialJdbc;
 import giis.demo.jdbc.horarios.HorarioEspecificoJdbc;
 import giis.demo.jdbc.horarios.HorarioPeriodicoJdbc;
 import giis.demo.jdbc.mantenimiento.TareaMantenimientoJdbc;
+import giis.demo.jdbc.accion.AccionJdbc;
+import giis.demo.model.accion.Accion;
+import giis.demo.model.accion.Accionista;
 import giis.demo.jdbc.reservas.ComprobarDisponibilidadJdbc;
 import giis.demo.jdbc.reservas.InstalacionJdbc;
 import giis.demo.jdbc.reservas.ReservaJdbc;
@@ -45,6 +49,7 @@ import giis.demo.model.entradas.enumerados.TipoTribuna;
 import giis.demo.model.entrevistas.FranjaHoraria;
 import giis.demo.model.equipo.CategoriaEquipo;
 import giis.demo.model.equipo.Equipo;
+import giis.demo.model.equipo.EventoOcupacion;
 import giis.demo.model.historial.Ingreso;
 import giis.demo.model.historial.LineaDetalle;
 import giis.demo.model.horarios.HorarioEspecifico;
@@ -834,5 +839,101 @@ public class JDBC {
 	 */
 	public int registrarEntradaAbonado(String dni, Partido partido) throws SQLException, AbonoNoPermitidoException {
 		return EntradaAbonadoJdbc.registrar(con, dni, partido);
+	}
+	/**
+	 * Devuelve la lista completa de todos los accionistas registrados.
+	 */
+	public List<Accionista> getAccionistas() throws SQLException {
+		return AccionJdbc.getAccionistas(con);
+	}
+
+	/**
+	 * Busca un accionista por su DNI.
+	 */
+	public Accionista getAccionistaByDni(String dni) throws SQLException {
+		return AccionJdbc.getAccionistaByDni(con, dni);
+	}
+
+	/**
+	 * Devuelve el número total de acciones emitidas por el club.
+	 */
+	public int getTotalAccionesEmitidas() throws SQLException {
+		return AccionJdbc.getTotalAccionesClub(con);
+	}
+
+	/**
+	 * Devuelve las acciones pertenecientes a un accionista ordenadas por fecha de adquisición.
+	 */
+	public List<Accion> getAccionesPropietario(String dni) throws SQLException {
+		return AccionJdbc.getAccionesPropietario(con, dni);
+	}
+	
+	/**
+	 * Devuelve una lista de dnis de entrenadores con equipos asociados
+	 * @return
+	 * @throws SQLException
+	 */
+	public List<String> obtenerDnisEntrenadoresConEquipo() throws SQLException {
+		return EntrenamientoJdbc.obtenerDnisEntrenadoresConEquipo(con);
+	}
+	
+	/**
+	 * Devuelve un string que es el nombre del equipo al que esta asociado el entrenador
+	 * @param dniEntrenador
+	 * @return
+	 * @throws SQLException
+	 */
+	public String obtenerNombreEquipoPorDniEntrenador(String dniEntrenador) throws SQLException {
+		return EntrenamientoJdbc.obtenerNombreEquipoPorDniEntrenador(con, dniEntrenador);
+	}
+	
+	/**
+	 * Devuelve el id del equipo por el dni del entrenador
+	 * @param dniEntrenador
+	 * @return
+	 * @throws SQLException
+	 */
+	public int obtenerIdEquipoPorDniEntrenador(String dniEntrenador) throws SQLException {
+		return EntrenamientoJdbc.obtenerIdEquipoPorDniEntrenador(con, dniEntrenador);
+	}
+	
+	/**
+	 * Devuelve una lista de eventos que ocupan las instalaciones. Incluye:
+	 * Tareas de jardineria, reservas externas, entrenamientos/partidos de 
+	 * otros equipos o del equipo que entrena el entrenador y entrevistas
+	 * de los jugadores pertenecientes al equipo
+	 * @param idEquipo
+	 * @param idInstalacion
+	 * @param fecha
+	 * @return
+	 * @throws SQLException
+	 */
+	public List<EventoOcupacion> obtenerEventosOcupacion(int idEquipo, int idInstalacion, LocalDate fecha) throws SQLException {
+		return EntrenamientoJdbc.obtenerEventosOcupacion(con, idEquipo, idInstalacion, fecha);
+	}
+	
+	/**
+	 * Comprueba las colisiones del entrenamiento a crear con la ocupacion de las instalaciones
+	 * @param fecha
+	 * @param horaInicio
+	 * @param horaFin
+	 * @param idEquipo
+	 * @param idInstalacion
+	 * @throws SQLException
+	 * @throws PersistenceException 
+	 */
+	public void comprobarColisionesEntrenamiento(LocalDate fecha, LocalTime horaInicio, LocalTime horaFin,
+			int idEquipo, int idInstalacion) throws SQLException, PersistenceException {
+		EntrenamientoJdbc.comprobarColisiones(con, fecha, horaInicio, horaFin, idEquipo, idInstalacion);
+	}
+	
+	public List<EventoOcupacion> obtenerEventosSobreescribiblesSolapados(int idEquipo, int idInstalacion,
+			LocalDate fecha, LocalTime horaInicio, LocalTime horaFin) throws SQLException {
+		return EntrenamientoJdbc.obtenerEventosSobreescribiblesSolapados(con, idEquipo, idInstalacion, fecha, horaInicio, horaFin);
+	}
+
+	public void guardarEntrenamientoCancelandoCoincidentes(LocalDate fecha, LocalTime horaInicio, LocalTime horaFin,
+			int idEquipo, int idInstalacion, List<EventoOcupacion> eventosACancelar) throws SQLException {
+		EntrenamientoJdbc.guardarEntrenamientoCancelandoCoincidentes(con, fecha, horaInicio, horaFin, idEquipo, idInstalacion, eventosACancelar);
 	}
 }
