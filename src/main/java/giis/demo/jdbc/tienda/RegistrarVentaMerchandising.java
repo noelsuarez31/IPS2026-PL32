@@ -27,7 +27,7 @@ public class RegistrarVentaMerchandising {
 			int idVenta = insertarVenta(con, total);
 			insertarLineas(con, idVenta, lineasCesta);
 			con.commit();
-		} catch (SQLException e) {
+		} catch (SQLException | RuntimeException e) {
 			con.rollback();
 			throw e;
 		} finally {

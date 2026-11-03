@@ -4,13 +4,17 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
-import giis.demo.exceptions.PersistenceException;
+
 import giis.demo.exceptions.AbonoNoPermitidoException;
+import giis.demo.exceptions.PersistenceException;
 import giis.demo.jdbc.abonados.AbonadoJdbc;
 import giis.demo.jdbc.abonados.AbonoJdbc;
+import giis.demo.jdbc.accion.AccionJdbc;
+import giis.demo.jdbc.accion.CampanaJdbc;
 import giis.demo.jdbc.empleado.BaseEmpleadoJdbc;
 import giis.demo.jdbc.empleado.EmpleadoDeportivoJdbc;
 import giis.demo.jdbc.empleado.EmpleadoNoDeportivoJdbc;
@@ -27,9 +31,6 @@ import giis.demo.jdbc.historial.HistorialJdbc;
 import giis.demo.jdbc.horarios.HorarioEspecificoJdbc;
 import giis.demo.jdbc.horarios.HorarioPeriodicoJdbc;
 import giis.demo.jdbc.mantenimiento.TareaMantenimientoJdbc;
-import giis.demo.jdbc.accion.AccionJdbc;
-import giis.demo.model.accion.Accion;
-import giis.demo.model.accion.Accionista;
 import giis.demo.jdbc.reservas.ComprobarDisponibilidadJdbc;
 import giis.demo.jdbc.reservas.InstalacionJdbc;
 import giis.demo.jdbc.reservas.ReservaJdbc;
@@ -38,6 +39,9 @@ import giis.demo.jdbc.tienda.ProductoJdbc;
 import giis.demo.jdbc.tienda.RegistrarVentaMerchandising;
 import giis.demo.model.abonos.Abonado;
 import giis.demo.model.abonos.Abono;
+import giis.demo.model.accion.Accion;
+import giis.demo.model.accion.Accionista;
+import giis.demo.model.accion.Campana;
 import giis.demo.model.empleado.BaseEmpleado;
 import giis.demo.model.empleado.EmpleadoDeportivo;
 import giis.demo.model.empleado.EmpleadoNoDeportivo;
@@ -59,6 +63,8 @@ import giis.demo.model.reserva.Intervalo;
 import giis.demo.model.reserva.Reserva;
 import giis.demo.model.reserva.Usuario;
 import giis.demo.model.tienda.Producto;
+import giis.demo.util.ApplicationException;
+import giis.demo.util.UnexpectedException;
 
 public class JDBC {
 
@@ -77,8 +83,8 @@ public class JDBC {
 			con = DriverManager.getConnection(URL_GROUP2);
 
 		} catch (SQLException e) {
-
 			e.printStackTrace();
+			throw new UnexpectedException(e);
 		}
 
 	}
@@ -877,4 +883,52 @@ public class JDBC {
 			int idEquipo, int idInstalacion, List<EventoOcupacion> eventosACancelar) throws SQLException {
 		EntrenamientoJdbc.guardarEntrenamientoCancelandoCoincidentes(con, fecha, horaInicio, horaFin, idEquipo, idInstalacion, eventosACancelar);
 	}
+	
+	/**
+     * Devuelve la campaña de acciones activa o null si no hay ninguna.
+     */
+    public Campana getCampanaActiva() throws SQLException {
+        return CampanaJdbc.getCampanaActiva(con);
+    }
+
+    /**
+     * Lanza una campaña de acciones en una unica transaccion: la crea en la fase 1
+     * y guarda las acciones que posee cada accionista en este momento.
+     * 
+     * @throws ApplicationException si ya hay una campaña activa
+     */
+    public void lanzarCampana(double precio, int numAcciones) throws SQLException {
+        boolean autoCommitOriginal = con.getAutoCommit();
+        try {
+            con.setAutoCommit(false);
+            if (CampanaJdbc.getCampanaActiva(con) != null)
+                throw new ApplicationException("Ya hay una campaña activa.");
+            int idCampana = CampanaJdbc.insertarCampana(con, precio, numAcciones, LocalDateTime.now());
+            CampanaJdbc.insertarAccionesIniciales(con, idCampana);
+            con.commit();
+        } catch (SQLException | RuntimeException e) {
+            con.rollback();
+            throw e;
+        } finally {
+            con.setAutoCommit(autoCommitOriginal);
+        }
+    }
+    
+    /**
+     * Avanza la campaña a la fase siguiente.
+     * 
+     * @return false si la campaña ya no estaba en la fase indicada o no se puede avanzar
+     */
+    public boolean avanzarFaseCampana(int idCampana, int faseActual) throws SQLException {
+        return CampanaJdbc.avanzarFase(con, idCampana, faseActual);
+    }
+
+    /**
+     * Cierra la campaña (solo posible en la ultima fase).
+     * 
+     * @return false si la campaña ya no estaba activa o no estaba en la ultima fase
+     */
+    public boolean cerrarCampana(int idCampana) throws SQLException {
+        return CampanaJdbc.cerrarCampana(con, idCampana);
+    }
 }

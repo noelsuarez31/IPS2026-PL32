@@ -326,6 +326,7 @@ public class VentanaPrincipal extends JFrame {
 			vT.setVisible(true);
 
 		} catch (SQLException ex) {
+		    
 			javax.swing.JOptionPane.showMessageDialog(this,
 					"Error al conectar con la base de datos para cargar el catálogo:\n" + ex.getMessage(),
 					"Error Crítico", javax.swing.JOptionPane.ERROR_MESSAGE);

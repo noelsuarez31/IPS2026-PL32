@@ -15,6 +15,7 @@ import java.awt.Insets;
 import java.awt.RenderingHints;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.sql.SQLException;
 import java.util.Locale;
 
 import javax.swing.BorderFactory;
@@ -23,13 +24,17 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 
+import giis.demo.model.accion.Campana;
+import giis.demo.model.accion.GestionCampanas;
 import giis.demo.ui.VentanaPrincipal;
+import giis.demo.util.ApplicationException;
 
 /**
  * Ventana del gerente para lanzar campañas de venta de acciones y gestionar sus fases. De momento solo contiene la
@@ -46,6 +51,8 @@ public class VentanaCampanasAcciones extends JFrame {
     private static final Color COLOR_ACTUAL = new Color(198, 40, 40);
 
     private VentanaPrincipal vp;
+    private GestionCampanas gestion;
+    private Campana campanaMostrada; // campaña activa que se esta viendo (null si no hay)
 
     // Zona de lanzamiento
     private JPanel pnLanzar;
@@ -69,6 +76,7 @@ public class VentanaCampanasAcciones extends JFrame {
 
     public VentanaCampanasAcciones(VentanaPrincipal vp) {
         this.vp = vp;
+        this.gestion = new GestionCampanas();
         inicializarComponentes();
     }
 
@@ -96,9 +104,96 @@ public class VentanaCampanasAcciones extends JFrame {
             }
         });
 
-        mostrarSinCampana();
-        // Para probar
-        mostrarCampanaActiva(3, 15.0, 500, 120);
+        configurarEventos();
+        cargarEstado();
+    }
+    
+    // Eventos y acceso a la logica
+
+    private void configurarEventos() {
+        btnLanzar.addActionListener(e -> lanzarCampana());
+        btnAccionFase.addActionListener(e -> accionSobreFase());
+    }
+    
+    /** El boton cambia segun la fase: avanza de fase o, en la ultima, cierra la campaña. */
+    private void accionSobreFase() {
+        if (campanaMostrada == null)
+            return;
+        if (campanaMostrada.getFase() < Campana.ULTIMA_FASE)
+            avanzarFase();
+        else
+            cerrarCampana();
+    }
+
+    private void avanzarFase() {
+        int siguiente = campanaMostrada.getFase() + 1;
+        int respuesta = JOptionPane.showConfirmDialog(this,
+                "¿Avanzar a la fase " + siguiente + "?\nNo se podrá volver a la fase anterior.", "Avanzar de fase",
+                JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+        if (respuesta != JOptionPane.YES_OPTION)
+            return;
+        try {
+            gestion.avanzarFase(campanaMostrada);
+            cargarEstado();
+        } catch (ApplicationException e) {
+            JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            cargarEstado();
+        } catch (SQLException e) {
+            mostrarErrorBaseDatos(e);
+        }
+    }
+
+    private void cerrarCampana() {
+        int respuesta = JOptionPane.showConfirmDialog(this,
+                "¿Cerrar la campaña?\nQuedan " + campanaMostrada.getAccionesDisponibles()
+                        + " acciones sin vender\ny no se crearán.",
+                "Cerrar campaña", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+        if (respuesta != JOptionPane.YES_OPTION)
+            return;
+        try {
+            gestion.cerrarCampana(campanaMostrada);
+            cargarEstado();
+        } catch (ApplicationException e) {
+            JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            cargarEstado();
+        } catch (SQLException e) {
+            mostrarErrorBaseDatos(e);
+        }
+    }
+
+    /** Lee la campaña activa de la base de datos y muestra su estado. */
+    private void cargarEstado() {
+        try {
+            Campana campana = gestion.obtenerCampanaActiva();
+            campanaMostrada = campana;
+            if (campana == null)
+                mostrarSinCampana();
+            else
+                mostrarCampanaActiva(campana.getFase(), campana.getPrecio(), campana.getNumAcciones(),
+                        campana.getAccionesVendidas());
+        } catch (SQLException e) {
+            mostrarErrorBaseDatos(e);
+        }
+    }
+
+    private void lanzarCampana() {
+        try {
+            gestion.lanzarCampana(txNumAcciones.getText(), txPrecio.getText());
+            txNumAcciones.setText("");
+            txPrecio.setText("");
+            cargarEstado();
+        } catch (ApplicationException e) {
+            JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            cargarEstado();
+        } catch (SQLException e) {
+            mostrarErrorBaseDatos(e);
+        }
+    }
+
+    private void mostrarErrorBaseDatos(SQLException e) {
+        JOptionPane.showMessageDialog(this, "No se pudo acceder a la base de datos.\n" + e.getMessage(),
+                "Error Crítico", JOptionPane.ERROR_MESSAGE);
+        e.printStackTrace();
     }
 
     private JPanel crearPanelLanzar() {

@@ -22,8 +22,14 @@ public class ServicioEmail {
 
     public void enviar(String destinatario, String asunto, String cuerpo) throws EmailException {
         Properties cfg = cargarConfiguracion();
-        final String usuario = cfg.getProperty("email.usuario");
-        final String clave = cfg.getProperty("email.clave");
+        String usuario;
+        String clave;
+        try {
+            usuario = cfg.getProperty("email.usuario");
+            clave = cfg.getProperty("email.clave");
+        } catch (Exception e) {
+            throw new EmailException("Usuario o clave incorrectas.");
+        }
         if (usuario == null || usuario.isBlank() || clave == null || clave.isBlank())
             throw new EmailException("Faltan email.usuario o email.clave en " + FICHERO_CONFIGURACION);
 

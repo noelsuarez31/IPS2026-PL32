@@ -333,7 +333,7 @@ public class VentanaTienda extends JFrame {
         try {
             new ServicioEmail().enviar(destinatario, resumen.getAsunto(), resumen.getCuerpo());
             return true;
-        } catch (EmailException e) {
+        } catch (EmailException | RuntimeException e) {
             e.printStackTrace();
             return false;
         }
