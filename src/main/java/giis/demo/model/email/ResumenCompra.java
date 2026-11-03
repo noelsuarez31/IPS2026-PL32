@@ -36,6 +36,7 @@ public class ResumenCompra {
     }
 
     public String getCuerpo() {
+    	
         StringBuilder sb = new StringBuilder();
         sb.append("Gracias por su compra. Este es el resumen:\n\n");
         sb.append("Concepto: ").append(concepto).append("\n");

@@ -19,8 +19,11 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 
 import giis.demo.exceptions.AbonoNoPermitidoException;
+import giis.demo.exceptions.EmailException;
 import giis.demo.model.abonos.Abonado;
 import giis.demo.model.abonos.Abono;
+import giis.demo.model.email.ServicioEmail;
+import giis.demo.model.email.ValidadorEmail;
 import giis.demo.model.entradas.Partido;
 import giis.demo.model.entradas.VentaDeEntradas;
 
@@ -54,6 +57,7 @@ public class CompraEntradasAbonados extends JFrame {
 
 	private VentanaIdentificacion vi;
 	private VentaDeEntradas venta;
+	private ServicioEmail se;
 
 	/**
 	 * Create the frame.
@@ -62,6 +66,7 @@ public class CompraEntradasAbonados extends JFrame {
 
 		this.vi = vi;
 		this.venta = vi.getVentaDeEntradas();
+		this.se = new ServicioEmail();
 
 		setTitle("Abonado : Compra Entrada");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -73,7 +78,7 @@ public class CompraEntradasAbonados extends JFrame {
 		contentPane.add(getPanelDatosAbonado(), BorderLayout.CENTER);
 		contentPane.add(getPanelElección(), BorderLayout.EAST);
 		contentPane.add(getPanel(), BorderLayout.SOUTH);
-		
+
 		this.setLocationRelativeTo(null);
 
 		rellenarDatos();
@@ -282,17 +287,17 @@ public class CompraEntradasAbonados extends JFrame {
 			btFinalizar = new JButton("Finalizar");
 			btFinalizar.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					
+
 					try {
-						
+
 						finalizar();
-						
+
 					} catch (AbonoNoPermitidoException e1) {
-						
+
 						JOptionPane.showMessageDialog(null, "El abono no se puede volver a comprar.");
-						
+
 					}
-					
+
 				}
 			});
 			btFinalizar.setMnemonic('F');
@@ -300,9 +305,8 @@ public class CompraEntradasAbonados extends JFrame {
 		}
 		return btFinalizar;
 	}
-	
+
 	private void finalizar() throws AbonoNoPermitidoException {
-		
 
 		Partido partido = (Partido) getCbPartido().getSelectedItem();
 		if (partido == null) {
@@ -310,25 +314,26 @@ public class CompraEntradasAbonados extends JFrame {
 		}
 
 		String email = getTfEmail().getText().trim();
-		if (!email.matches("^[\\w.+-]+@[\\w-]+(\\.[\\w-]+)+$")) {
+		if (!ValidadorEmail.esValido(email)) {
 			JOptionPane.showMessageDialog(this, "Introduce un email válido.");
 			return;
 		}
-
+		
 		try {
 			
-			int idVenta = venta.venderEntradaAbonado(vi.getDni(), partido);
-
-			JOptionPane.showMessageDialog(this, "Entrada vendida correctamente.");
+			se.enviar(email, "Compra de entradas abono : Día del club", "Se ha comprado correctamente su entrada para el "
+					+ " dia del club para el partido " + partido.toString());
 			
-			cancelar();
-
-		} catch (SQLException e) {
+		} catch (EmailException e) {
 			
-			JOptionPane.showMessageDialog(this, "Error al registrar la compra: " + e.getMessage());
-		
+			JOptionPane.showMessageDialog(this, "No se ha podido enviar el email al usuario");
+			e.printStackTrace();
 		}
 		
+		JOptionPane.showMessageDialog(this, "Entrada vendida correctamente.");
+
+		cancelar();
+
 	}
 
 	private JLabel getLbPartido() {
@@ -344,16 +349,16 @@ public class CompraEntradasAbonados extends JFrame {
 		if (cbPartido == null) {
 
 			cbPartido = new JComboBox<Partido>();
-			
+
 			try {
-				
+
 				cbPartido.setModel(new DefaultComboBoxModel<Partido>(venta.getPartidosDelDiaDelClub(vi.getDni())));
-				
+
 			} catch (SQLException sqle) {
 				JOptionPane.showMessageDialog(null,
 						"Se ha producido un error al obtener los partidos declarados como día del club");
 			}
-			
+
 			cbPartido.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					cargarAbono();
@@ -389,11 +394,11 @@ public class CompraEntradasAbonados extends JFrame {
 		String dni = vi.getDni();
 
 		Abonado abonado;
-		
+
 		try {
 			abonado = venta.getObtenerDatosAbonado(dni);
 		} catch (SQLException e) {
-			
+
 			JOptionPane.showMessageDialog(null, "Se ha producido un error al obtener los datos del abonado");
 			return;
 		}
