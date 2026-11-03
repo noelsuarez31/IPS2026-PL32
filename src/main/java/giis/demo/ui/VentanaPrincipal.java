@@ -24,6 +24,8 @@ import giis.demo.model.horarios.GestionHorariosEspecificos;
 import giis.demo.model.horarios.GestionHorariosPeriodicos;
 import giis.demo.model.tienda.VentaMerchandising;
 import giis.demo.ui.abonos.VentanaAbono;
+import giis.demo.ui.accion.VentanaCampanasAcciones;
+import giis.demo.ui.accion.VentanaPortalAccionista;
 import giis.demo.ui.contrataciones.VentanaAltaEmpleado;
 import giis.demo.ui.contrataciones.VentanaGestionEmpleados;
 import giis.demo.ui.entradas.VentanaVentaEntradas;
@@ -36,7 +38,6 @@ import giis.demo.ui.horarios.VentanaHorarioEspecifico;
 import giis.demo.ui.horarios.VentanaHorarioPeriodico;
 import giis.demo.ui.horarios.VentanaHorarioSemanal;
 import giis.demo.ui.mantenimiento.VentanaAsignarMantenimiento;
-import giis.demo.ui.accion.VentanaPortalAccionista;
 import giis.demo.ui.reserva.VentanaReserva;
 import giis.demo.ui.tienda.VentanaTienda;
 
@@ -66,6 +67,7 @@ public class VentanaPrincipal extends JFrame {
 	private JMenuItem mntmAltaEmpleado;
 	private JMenuItem mntmGestionEmpleados;
 	private JMenuItem mntmHistorialVentas;
+	private JMenuItem mntmCampanasAcciones;
 	private JMenuItem mntmAñadirHorarioPeriodico;
 	private JMenuItem mntmAñadirHorarioEspecifico;
 	private JMenuItem mntmVisualizarHorarioSemanal;
@@ -162,8 +164,28 @@ public class VentanaPrincipal extends JFrame {
 			mnGerente.add(getMntmGestionEmpleados());
 			mnGerente.add(getMntmHistorialVentas());
 			mnGerente.add(getMntmAñadirMantenimiento());
+			mnGerente.add(getMntmCampanasAcciones());
 		}
 		return mnGerente;
+	}
+	
+	private JMenuItem getMntmCampanasAcciones() {
+	    if (mntmCampanasAcciones == null) {
+	        mntmCampanasAcciones = new JMenuItem("Campañas de acciones");
+	        mntmCampanasAcciones.addActionListener(new ActionListener() {
+	            @Override
+	            public void actionPerformed(ActionEvent e) {
+	                abrirVentanaCampanasAcciones();
+	            }
+	        });
+	    }
+	    return mntmCampanasAcciones;
+	}
+
+	private void abrirVentanaCampanasAcciones() {
+	    VentanaCampanasAcciones ventana = new VentanaCampanasAcciones(this);
+	    this.setVisible(false);
+	    ventana.setVisible(true);
 	}
 
 	private JMenuItem getMntmHistorialVentas() {
