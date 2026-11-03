@@ -98,7 +98,7 @@ public class VentanaCampanasAcciones extends JFrame {
 
         mostrarSinCampana();
         // Para probar
-        // mostrarCampanaActiva(3, 15.0, 500, 120);
+        mostrarCampanaActiva(3, 15.0, 500, 120);
     }
 
     private JPanel crearPanelLanzar() {
