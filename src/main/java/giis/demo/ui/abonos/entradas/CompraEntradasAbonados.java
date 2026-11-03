@@ -59,6 +59,7 @@ public class CompraEntradasAbonados extends JFrame {
 	private VentaDeEntradas venta;
 	private ServicioEmail se;
 
+
 	/**
 	 * Create the frame.
 	 */
