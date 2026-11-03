@@ -1,47 +1,48 @@
 package giis.demo.ui.entradas;
 
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
-
-import giis.demo.model.entradas.Butaca;
-import giis.demo.model.entradas.Partido;
-import giis.demo.model.entradas.VentaDeEntradas;
-import giis.demo.model.entradas.enumerados.TipoSeccion;
-import giis.demo.model.entradas.enumerados.TipoTribuna;
-import giis.demo.exceptions.SinDisponibilidadException;
-import giis.demo.ui.VentanaPrincipal;
-
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.Font;
-
-import javax.swing.JTextField;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JComboBox;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JSpinner;
-import javax.swing.SpinnerNumberModel;
-import javax.swing.SwingWorker;
-import javax.swing.JButton;
-
-import java.sql.SQLException;
-import java.util.List;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.awt.event.ActionEvent;
-import java.awt.GridLayout;
-import javax.swing.JTable;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.border.TitledBorder;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.sql.SQLException;
+import java.util.List;
+
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JSpinner;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.SpinnerNumberModel;
+import javax.swing.SwingWorker;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.TitledBorder;
+import javax.swing.table.DefaultTableCellRenderer;
+
+import giis.demo.exceptions.EmailException;
+import giis.demo.exceptions.SinDisponibilidadException;
+import giis.demo.model.email.ServicioEmail;
+import giis.demo.model.email.ValidadorEmail;
+import giis.demo.model.entradas.Butaca;
+import giis.demo.model.entradas.Partido;
+import giis.demo.model.entradas.VentaDeEntradas;
+import giis.demo.model.entradas.enumerados.TipoSeccion;
+import giis.demo.model.entradas.enumerados.TipoTribuna;
+import giis.demo.ui.VentanaPrincipal;
 
 public class VentanaVentaEntradas extends JFrame {
 
@@ -92,6 +93,8 @@ public class VentanaVentaEntradas extends JFrame {
 	private JLabel lbEmail;
 	private JTextField tfEmail;
 
+	private ServicioEmail se;
+	
 	/**
 	 * Create the frame.
 	 * 
@@ -101,7 +104,8 @@ public class VentanaVentaEntradas extends JFrame {
 
 		this.ma = new MostrarAsientos();
 		this.cv = new CerrarVentana();
-
+		this.se = new ServicioEmail();
+		
 		this.addWindowListener(cv);
 
 		this.setTitle("Venta de entradas");
@@ -873,6 +877,19 @@ public class VentanaVentaEntradas extends JFrame {
 					try {
 
 						mostrarConfirmacionReserva();
+						
+						Partido partido = (Partido)getCbPartido().getSelectedItem();
+						
+						try {
+							
+							se.enviar(getTfEmail().getText(), "Compra de entradas", "Compra de entradas para el partido: " + partido.toString());
+							
+						} catch (EmailException e1) {
+
+							JOptionPane.showMessageDialog(null, "No se ha podido enviar el email",
+									"Aviso", JOptionPane.WARNING_MESSAGE);
+							e1.printStackTrace();
+						}
 
 					} catch (SQLException e1) {
 
@@ -896,10 +913,8 @@ public class VentanaVentaEntradas extends JFrame {
 	
 	private boolean comprobarEmail() {
 
-		//if (!ValidadorEmail.esValido(getTfEmail().getText())) {
+		if (!ValidadorEmail.esValido(getTfEmail().getText())) {
 			
-			if (getTfEmail().getText().isEmpty()) {
-
 
 			JOptionPane.showMessageDialog(this, "El formato del email debe ser xxxx@xx.xxx", "Email no válido",
 					JOptionPane.WARNING_MESSAGE);
