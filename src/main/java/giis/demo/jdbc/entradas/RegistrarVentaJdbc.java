@@ -40,6 +40,8 @@ public class RegistrarVentaJdbc {
 			} catch (SQLException e) {
 				con.rollback();
 				throw e;
+			}  finally {
+				con.setAutoCommit(true);
 			}
 
 
