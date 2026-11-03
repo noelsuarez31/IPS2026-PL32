@@ -18,6 +18,8 @@ public class AbonadoJdbc {
 
 	public final static String QUERY_INSERT_ABONADO = "INSERT INTO Abonado (dni, nombre, apellidos, fecha_nacimiento, email) VALUES (?,?,?,?,?)";
 
+	public final static String QUERY_GET_ABONADO_INFO = "Select * FROM Abonado a WHERE a.dni = ?";
+
 	/**
 	 * Consulta a la BBDD si un cliente tiene ya un abono de temporada
 	 * 
@@ -45,6 +47,7 @@ public class AbonadoJdbc {
 
 	/**
 	 * Se inserta en la base de datos el abonado
+	 * 
 	 * @param con
 	 * @param abonado
 	 * @throws SQLException
@@ -77,6 +80,7 @@ public class AbonadoJdbc {
 
 	/**
 	 * Si existe el abonado devuelve el id del mismo
+	 * 
 	 * @param con
 	 * @param dni
 	 * @return el identificador del abonado
@@ -96,4 +100,44 @@ public class AbonadoJdbc {
 		}
 	}
 
+	/**
+	 * Obtiene los datos del abonado dados un dni
+	 * 
+	 * @param con
+	 * @param dni
+	 * @return datos del abonado
+	 * @throws SQLException
+	 */
+	public static Abonado obtenerDatosAbonado(Connection con, String dni) throws SQLException {
+
+		try (PreparedStatement pst = con.prepareStatement(QUERY_GET_ABONADO_INFO)) {
+
+			pst.setString(1, dni);
+
+			try (ResultSet rs = pst.executeQuery()) {
+
+				if (rs.next()) {
+					return new Abonado(rs.getInt("id_abonado"), rs.getString("dni"), rs.getString("nombre"),
+							rs.getString("apellidos"), LocalDate.parse(rs.getString("fecha_nacimiento")),
+							rs.getString("email"));
+				}
+			}
+
+		}
+		
+		return null;
+
+	}
+	
+	/**
+	 * Comprueba si existe un abonado con ese dni
+	 *
+	 * @param con
+	 * @param dni
+	 * @return true si existe, false en caso contrario
+	 * @throws SQLException
+	 */
+	public static boolean existeAbonado(Connection con, String dni) throws SQLException {
+		return getIdAbonado(con, dni) != -1;
+	}
 }

@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import giis.demo.model.empleado.EmpleadoDeportivo;
+import giis.demo.model.equipo.CategoriaEquipo;
 import giis.demo.model.equipo.Equipo;
 
     public class EquipoJdbc {
@@ -21,7 +22,10 @@ import giis.demo.model.equipo.Equipo;
         
         public final static String QUERY_CHECK_MEMBER_TEAM = "SELECT id_equipo FROM EmpleadoDeportivo WHERE dni=?";
         
-        public final static String QUERY_GET_LOCAL_TEAMS = "SELECT * FROM Equipo WHERE es_propio = 1 ORDER BY nombre";
+        public final static String QUERY_GET_LOCAL_TEAMS = "SELECT e.id_equipo, e.nombre, e.tipo_equipo, "
+        		+ "c.id_categoria, c.nombre AS nombre_categoria, c.edad_minima, c.edad_maxima, c.tipo_equipo AS tipo_categoria "
+        		+ "FROM Equipo e JOIN CategoriaEquipo c ON c.id_categoria = e.id_categoria "
+        		+ "WHERE e.es_propio = 1 ORDER BY e.nombre";
 
         
         /**
@@ -153,8 +157,12 @@ import giis.demo.model.equipo.Equipo;
                
             	while(rs.next()) {
             		
+            		CategoriaEquipo cat = new CategoriaEquipo(rs.getString("nombre_categoria"),
+            				rs.getInt("edad_minima"), rs.getInt("edad_maxima"), rs.getString("tipo_categoria"));
+            		cat.setIdCategoria(rs.getInt("id_categoria"));
+            		
             		Equipo eq = new Equipo(rs.getString("nombre"), 
-            				rs.getString("tipo_equipo"), null);
+            				rs.getString("tipo_equipo"), cat);
             		
             		eq.setIdEquipo(rs.getInt("id_equipo"));
             		eq.setIsPropio(true);

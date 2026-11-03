@@ -12,6 +12,17 @@ public class Abonado {
 	private String email;
 
 	public Abonado(String dni, String nombre, String apellidos, LocalDate fechaNacimiento, String email) {
+		
+		this.dni = dni;
+		this.nombre = nombre;
+		this.apellidos = apellidos;
+		this.fechaNacimiento = fechaNacimiento;
+		this.email = email;
+	}
+	
+	public Abonado(int id, String dni, String nombre, String apellidos, LocalDate fechaNacimiento, String email) {
+		
+		this.id_abonado=id;
 		this.dni = dni;
 		this.nombre = nombre;
 		this.apellidos = apellidos;

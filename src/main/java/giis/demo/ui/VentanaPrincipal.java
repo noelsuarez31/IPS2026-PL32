@@ -24,6 +24,8 @@ import giis.demo.model.horarios.GestionHorariosEspecificos;
 import giis.demo.model.horarios.GestionHorariosPeriodicos;
 import giis.demo.model.tienda.VentaMerchandising;
 import giis.demo.ui.abonos.VentanaAbono;
+import giis.demo.ui.abonos.entradas.VentanaIdentificacion;
+import giis.demo.ui.accion.VentanaPortalAccionista;
 import giis.demo.ui.contrataciones.VentanaAltaEmpleado;
 import giis.demo.ui.contrataciones.VentanaGestionEmpleados;
 import giis.demo.ui.entradas.VentanaVentaEntradas;
@@ -36,7 +38,6 @@ import giis.demo.ui.horarios.VentanaHorarioEspecifico;
 import giis.demo.ui.horarios.VentanaHorarioPeriodico;
 import giis.demo.ui.horarios.VentanaHorarioSemanal;
 import giis.demo.ui.mantenimiento.VentanaAsignarMantenimiento;
-import giis.demo.ui.accion.VentanaPortalAccionista;
 import giis.demo.ui.reserva.VentanaReserva;
 import giis.demo.ui.tienda.VentanaTienda;
 
@@ -78,6 +79,7 @@ public class VentanaPrincipal extends JFrame {
 	private JMenuItem mntmPortalAccionista;
 	private JMenuItem mntmComprarAbono;
 	private JMenuItem mntmAñadirMantenimiento;
+	private JMenuItem mniVenderAbonado;
 	private JMenuItem mntmRegistrarEntrenamiento;
 
 	/**
@@ -87,7 +89,7 @@ public class VentanaPrincipal extends JFrame {
 		setTitle("Ventana Inicial");
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 772, 420);
+		setBounds(100, 100, 820, 420);
 		setJMenuBar(getMenuBar_1());
 		contentPane = new JPanel();
 		contentPane.setBackground(new Color(240, 240, 240));
@@ -97,7 +99,7 @@ public class VentanaPrincipal extends JFrame {
 
 		JLabel lbInicio = new JLabel("¡Bienvenido!");
 		lbInicio.setBackground(new Color(240, 240, 240));
-		lbInicio.setBounds(329, 155, 90, 20);
+		lbInicio.setBounds(341, 154, 90, 20);
 		contentPane.add(lbInicio);
 
 		this.setLocationRelativeTo(null);
@@ -234,6 +236,7 @@ public class VentanaPrincipal extends JFrame {
 			mnVendedorDeEntradas = new JMenu("Vendedor de Entradas");
 			mnVendedorDeEntradas.setMnemonic('V');
 			mnVendedorDeEntradas.add(getMniVender());
+			mnVendedorDeEntradas.add(getMniVenderAbonado());
 		}
 		return mnVendedorDeEntradas;
 	}
@@ -544,6 +547,27 @@ public class VentanaPrincipal extends JFrame {
 		VentanaAsignarMantenimiento vAsignarMantenimiento = new VentanaAsignarMantenimiento(this);
 		this.setVisible(false);
 		vAsignarMantenimiento.setVisible(true);
+		
+	}
+	private JMenuItem getMniVenderAbonado() {
+		if (mniVenderAbonado == null) {
+			mniVenderAbonado = new JMenuItem("Venta de entradas abonados");
+			mniVenderAbonado.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					
+					abrirVentanaIdentificacion();
+				}
+			});
+		}
+		return mniVenderAbonado;
+	}
+	
+	private void abrirVentanaIdentificacion() {
+		
+		VentanaIdentificacion vi = new VentanaIdentificacion(this);
+		
+		this.setVisible(false);
+		vi.setVisible(true);
 		
 	}
 	

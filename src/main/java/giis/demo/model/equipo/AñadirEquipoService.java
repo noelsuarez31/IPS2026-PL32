@@ -29,7 +29,7 @@ public class AñadirEquipoService {
 		// pedirPermiso(Posicion.GERENTE);
 		
 		Equipo equipo = crearEquipo(jugadores, entrenadores, tecnicosAdicionales, tipo, categoria, nombreEquipo);
-		
+		equipo.setIsPropio(true);
 		try {
 			jdbc.almacenarEquipo(equipo, jugadores, entrenadores, tecnicosAdicionales);
 		} catch (SQLException sqle) {
