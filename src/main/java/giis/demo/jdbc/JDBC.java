@@ -12,6 +12,7 @@ import giis.demo.exceptions.AbonoNoPermitidoException;
 import giis.demo.exceptions.PersistenceException;
 import giis.demo.jdbc.abonados.AbonadoJdbc;
 import giis.demo.jdbc.abonados.AbonoJdbc;
+import giis.demo.jdbc.abonados.EntradaAbonadoJdbc;
 import giis.demo.jdbc.accion.AccionJdbc;
 import giis.demo.jdbc.empleado.BaseEmpleadoJdbc;
 import giis.demo.jdbc.empleado.EmpleadoDeportivoJdbc;
@@ -782,6 +783,65 @@ public class JDBC {
 	 */
 	public List<TareaMantenimiento> getTareasInstalacionFecha(int idInstalacion, String fecha) throws SQLException {
 		return TareaMantenimientoJdbc.getTareasInstalacionFecha(con, idInstalacion, fecha);
+	}
+	
+	/**
+	 * Obtiene los datos de un abonado dado un dni
+	 * 
+	 * @param dni
+	 * @return datos de un abonado
+	 * @throws SQLException
+	 */
+	public Abonado getObtenerDatosAbonado(String dni) throws SQLException {
+		
+		return AbonadoJdbc.obtenerDatosAbonado(con, dni);
+	}
+	
+	/**
+	 * Obtiene el abono disponible dado un dni, un equipo y una fecha
+	 * @param dni
+	 * @param idEquipo
+	 * @param fecha
+	 * @return
+	 * @throws SQLException
+	 */
+	public Abono getAbonoParaPartido(String dni, int idEquipo, LocalDate fecha) throws SQLException {
+		return AbonoJdbc.getAbonoParaPartido(con, dni, idEquipo, fecha);
+	}
+	
+	/**
+	 * Obtiene una lista con los partidos declarados como el dia del club
+	 * 
+	 * @return una lista con los partidos
+	 * @throws SQLException
+	 */
+	public List<Partido> getPartidosDelDiaDelClub(String dni) throws SQLException {
+		
+		return PartidoJdbc.getPartidosDelDiaDelClub(con, dni);
+		
+	}
+	
+	/**
+	 * Comprueba que exista un abonado con ese Dni
+	 * @param dni
+	 * @return
+	 * @throws SQLException
+	 */
+	public boolean comprobarDniAbonado(String dni) throws SQLException {
+		return AbonadoJdbc.existeAbonado(con, dni);
+	}
+	
+	/**
+	 * Registra la entrada en la BBDD
+	 * 
+	 * @param dni
+	 * @param partido
+	 * @return
+	 * @throws SQLException
+	 * @throws AbonoNoPermitidoException 
+	 */
+	public int registrarEntradaAbonado(String dni, Partido partido) throws SQLException, AbonoNoPermitidoException {
+		return EntradaAbonadoJdbc.registrar(con, dni, partido);
 	}
 	
 	/**

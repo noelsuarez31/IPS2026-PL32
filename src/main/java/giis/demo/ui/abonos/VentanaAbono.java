@@ -32,7 +32,6 @@ import javax.swing.JSpinner;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
-import javax.swing.SwingWorker;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
@@ -43,10 +42,13 @@ import javax.swing.table.DefaultTableCellRenderer;
 import com.toedter.calendar.JDateChooser;
 
 import giis.demo.exceptions.AbonoNoPermitidoException;
+import giis.demo.exceptions.EmailException;
 import giis.demo.model.abonos.Abonado;
 import giis.demo.model.abonos.Abono;
 import giis.demo.model.abonos.Abono.Categoria;
 import giis.demo.model.abonos.VentaDeAbonos;
+import giis.demo.model.email.ServicioEmail;
+import giis.demo.model.email.ValidadorEmail;
 import giis.demo.model.entradas.enumerados.TipoSeccion;
 import giis.demo.model.entradas.enumerados.TipoTribuna;
 import giis.demo.model.equipo.Equipo;
@@ -116,6 +118,7 @@ public class VentanaAbono extends JFrame {
 
 	private CambiarSpinner cs;
 	private CerrarVentana cv;
+	private ServicioEmail se;
 
 	public VentanaAbono(VentanaPrincipal vp) {
 
@@ -125,6 +128,7 @@ public class VentanaAbono extends JFrame {
 		ct = new CambiarTabla(this);
 		cs = new CambiarSpinner();
 		cv = new CerrarVentana();
+		se = new ServicioEmail();
 
 		setTitle("Venta de abonos");
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
@@ -421,7 +425,7 @@ public class VentanaAbono extends JFrame {
 	}
 
 	private JPanel getPanelTabla() {
-		
+
 		if (panelTabla == null) {
 			panelTabla = new JPanel();
 			panelTabla.setLayout(new BorderLayout(0, 0));
@@ -599,7 +603,18 @@ public class VentanaAbono extends JFrame {
 			Abono abono = obtenerDatosAbono(equipo, fechaNacimiento);
 
 			va.venderAbono(abonado, abono, equipo.getIdEquipo());
-			enviarEmail(getTfEmail().getText().trim(), construirCuerpoEmail(abonado, abono, equipo));
+			
+			try {
+				se.enviar(getTfEmail().getText(), "Compra de abono",
+						"Abono vendido correctamente.\n" + "Abonado: " + abonado.getNombre() + " " + abonado.getApellidos()
+								+ "\nDNI: " + abonado.getDni() + "\nCategoría: " + abono.getCategoria() + "\nAsiento: fila "
+								+ abono.getFila() + ", asiento " + abono.getAsiento() + "\nPrecio: " + abono.getPrecio()
+								+ " €");
+			} catch (EmailException e) {
+
+				JOptionPane.showMessageDialog(null,"No se ha podido enviar el email.","Error al enviar el email" ,JOptionPane.INFORMATION_MESSAGE);
+				e.printStackTrace();
+			}
 
 			JOptionPane.showMessageDialog(null,
 					"Abono vendido correctamente.\n" + "Abonado: " + abonado.getNombre() + " " + abonado.getApellidos()
@@ -619,46 +634,6 @@ public class VentanaAbono extends JFrame {
 
 		}
 
-	}
-	
-	private String construirCuerpoEmail(Abonado abonado, Abono abono, Equipo equipo) {
-
-		StringBuilder sb = new StringBuilder();
-
-		sb.append("Hola ").append(abonado.getNombre()).append(" ").append(abonado.getApellidos()).append(",\n\n");
-		sb.append("Gracias por abonarte. Estos son los datos de tu abono:\n\n");
-		sb.append("Equipo: ").append(equipo.getNombre()).append("\n");
-		sb.append("Tribuna: ").append(getCbTribuna().getSelectedItem()).append("\n");
-		sb.append("Sección: ").append(getCbSeccion().getSelectedItem()).append("\n");
-		sb.append("Fila ").append(abono.getFila()).append(", asiento ").append(abono.getAsiento()).append("\n");
-		sb.append("Categoría: ").append(abono.getCategoria()).append("\n");
-		sb.append("Precio: ").append(abono.getPrecio()).append(" €\n");
-
-		return sb.toString();
-	}
-
-	private void enviarEmail(final String destinatario, final String cuerpo) {
-
-		new SwingWorker<Void, Void>() {
-
-			@Override
-			protected Void doInBackground() throws Exception {
-				//new ServicioEmail().enviar(destinatario, "Confirmación de abono de temporada", cuerpo);
-				return null;
-			}
-
-			@Override
-			protected void done() {
-				try {
-					get();
-				} catch (Exception e) {
-					JOptionPane.showMessageDialog(VentanaAbono.this,
-							"El abono se ha vendido, pero no se ha podido enviar el email de confirmación.",
-							"Aviso", JOptionPane.WARNING_MESSAGE);
-					System.err.println("Error al enviar el email: " + e.getMessage());
-				}
-			}
-		}.execute();
 	}
 
 	private Abonado obtenerDatosAbonado() {
@@ -908,8 +883,8 @@ public class VentanaAbono extends JFrame {
 					JOptionPane.ERROR_MESSAGE);
 			return;
 		}
-		
-		if(!comprobarValidez()) {
+
+		if (!comprobarValidez()) {
 			return;
 		}
 
@@ -970,17 +945,15 @@ public class VentanaAbono extends JFrame {
 
 		String correo = getTfEmail().getText();
 
-		//if (!ValidadorEmail.esValido(correo)) {
-			
-		if(correo.isEmpty()) {
+		if (!ValidadorEmail.esValido(correo)) {
 			JOptionPane.showMessageDialog(null, "El formato del email debe ser xxxx@xx.xxx");
-			
+
 			getTfEmail().requestFocus();
 			return false;
 		}
-		
+
 		return true;
-		
+
 	}
 
 	/**
@@ -1111,11 +1084,11 @@ public class VentanaAbono extends JFrame {
 
 			if (e.getStateChange() == ItemEvent.SELECTED) {
 
-				filaSeleccionada=-1;
-				asientoSeleccionado=-1;
-				
+				filaSeleccionada = -1;
+				asientoSeleccionado = -1;
+
 				sincronizarSeleccion();
-				
+
 				ventana.actualizarTablaAsientos();
 
 			}

@@ -5,13 +5,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import giis.demo.exceptions.AbonoNoPermitidoException;
+import giis.demo.exceptions.SinDisponibilidadException;
 import giis.demo.jdbc.JDBC;
+import giis.demo.model.abonos.Abonado;
+import giis.demo.model.abonos.Abono;
 import giis.demo.model.abonos.Venta;
 import giis.demo.model.entradas.enumerados.TipoSeccion;
 import giis.demo.model.entradas.enumerados.TipoTribuna;
-import giis.demo.exceptions.SinDisponibilidadException;
 
-public class VentaDeEntradas extends Venta{
+public class VentaDeEntradas extends Venta {
 
 	public static final int MAX_ENTRADAS = 15;
 	public static final int PRICE_ENTRADAS = 30;
@@ -31,14 +34,14 @@ public class VentaDeEntradas extends Venta{
 		random = new Random();
 		jdbc = new JDBC();
 		butacasSeleccionadas = new ArrayList<Butaca>();
-
+		butacasDisponibles = new ArrayList<Butaca>();
 	}
-	
+
 	public void reiniciar() {
-		
+
 		butacasSeleccionadas.clear();
 		butacasDisponibles.clear();
-		
+
 	}
 
 	/**
@@ -218,7 +221,8 @@ public class VentaDeEntradas extends Venta{
 	 * @param tipoSeccion
 	 * @param fila
 	 * @param asiento
-	 * @return true si el asiento está reservado pero no ha sido comprado aún, false en caso contrario
+	 * @return true si el asiento está reservado pero no ha sido comprado aún, false
+	 *         en caso contrario
 	 */
 	public boolean isBooked(int id_partido, TipoTribuna tipoTribuna, TipoSeccion tipoSeccion, int fila, int asiento) {
 
@@ -227,10 +231,10 @@ public class VentaDeEntradas extends Venta{
 		return butacasSeleccionadas.contains(butaca);
 
 	}
-	
+
 	/**
-	 * Dada una butaca seleccionada de forma manual, la añade a la lista
-	 * de bustacas seleccionadas
+	 * Dada una butaca seleccionada de forma manual, la añade a la lista de bustacas
+	 * seleccionadas
 	 * 
 	 * @param partido
 	 * @param tribuna
@@ -240,34 +244,46 @@ public class VentaDeEntradas extends Venta{
 	 * 
 	 * @throws SinDisponibilidadException
 	 */
-	public void seleccionarAsientoManual(Partido partido, TipoTribuna tribuna, TipoSeccion seccion,
-	        int fila, int asiento) throws SinDisponibilidadException {
+	public void seleccionarAsientoManual(Partido partido, TipoTribuna tribuna, TipoSeccion seccion, int fila,
+			int asiento) throws SinDisponibilidadException {
 
-	    this.idPartido = partido.getId_partido();
-	    
-	    Butaca butacaSeleccionada = null;
-	    
-	    for(Butaca butaca : butacasDisponibles) {
-	    	
-	    	if(butaca.getFila() == fila && butaca.getAsiento()==asiento) {
-	    		
-	    		butacaSeleccionada = butaca;
-	    		break;
-	    		
-	    	}
-	    	
-	    }
-	    
-	    if (butacaSeleccionada == null) {
-	        throw new SinDisponibilidadException(
-	                "El asiento seleccionado no está disponible");
-	    }
+		this.idPartido = partido.getId_partido();
 
-	    butacasSeleccionadas = new ArrayList<>();
-	    butacasSeleccionadas.add(butacaSeleccionada);
-	    
+		Butaca butacaSeleccionada = null;
+
+		for (Butaca butaca : butacasDisponibles) {
+
+			if (butaca.getFila() == fila && butaca.getAsiento() == asiento) {
+
+				butacaSeleccionada = butaca;
+				break;
+
+			}
+
+		}
+
+		if (butacaSeleccionada == null) {
+			throw new SinDisponibilidadException("El asiento seleccionado no está disponible");
+		}
+
+		butacasSeleccionadas = new ArrayList<>();
+		butacasSeleccionadas.add(butacaSeleccionada);
+
 	}
-	
+
+	/**
+	 * Obtener los datos del abonado dado un dni
+	 * 
+	 * @param dni
+	 * @return abonado
+	 * @throws SQLException
+	 */
+	public Abonado getObtenerDatosAbonado(String dni) throws SQLException {
+
+		return jdbc.getObtenerDatosAbonado(dni);
+
+	}
+
 	/**
 	 * Calcula el precio de un asiento para una sección y partido dados
 	 * 
@@ -277,9 +293,60 @@ public class VentaDeEntradas extends Venta{
 	 * @throws SQLException
 	 */
 	public double getPrecio(int idPrecio, String seccion) throws SQLException {
-		
+
 		return jdbc.obtenerPrecio(idPrecio, seccion);
-		
+
+	}
+	
+	/**
+	 * Obtiene el abono de un abonado para el equipo local de un partido,
+	 * vigente en la fecha del partido
+	 *
+	 * @param dni
+	 * @param partido
+	 * @return el abono, o null si no es abonado de ese equipo en esa temporada
+	 * @throws SQLException
+	 */
+	public Abono getAbonoParaPartido(String dni, Partido partido) throws SQLException {
+
+		return jdbc.getAbonoParaPartido(dni, partido.getId_local(), partido.getFecha());
+
+	}
+	
+	/**
+	 * Los partidos que se celebran el día del club
+	 *
+	 * @return los partidos del día del club
+	 * @throws SQLException
+	 */
+	public Partido[] getPartidosDelDiaDelClub(String nif) throws SQLException {
+
+		return jdbc.getPartidosDelDiaDelClub(nif).toArray(new Partido[0]);
+
 	}
 
+	/**
+	 * Comprueba el dni
+	 * 
+	 * @param text
+	 * @return
+	 * @throws SQLException
+	 */
+	public boolean comprobarDni(String text) throws SQLException {
+
+		return jdbc.comprobarDniAbonado(text);
+	}
+
+	/**
+	 * Registra en la BBDD la nueva venta
+	 * 
+	 * @param dni
+	 * @param partido
+	 * @return
+	 * @throws SQLException
+	 * @throws AbonoNoPermitidoException 
+	 */
+	public int venderEntradaAbonado(String dni, Partido partido) throws SQLException, AbonoNoPermitidoException {
+		return jdbc.registrarEntradaAbonado(dni, partido);
+	}
 }

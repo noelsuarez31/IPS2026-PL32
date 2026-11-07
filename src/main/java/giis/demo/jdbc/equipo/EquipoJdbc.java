@@ -5,31 +5,36 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
+
+import giis.demo.model.empleado.EmpleadoDeportivo;
+import giis.demo.model.equipo.CategoriaEquipo;
+import giis.demo.model.equipo.Equipo;
+
+import java.util.Comparator;
+import java.util.Map;
 import java.sql.Types;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-
-import giis.demo.model.empleado.EmpleadoDeportivo;
 import giis.demo.model.entradas.enumerados.TipoSeccion;
-import giis.demo.model.equipo.Equipo;
 import giis.demo.model.equipo.EventoOcupacion;
 
 public class EquipoJdbc {
 
 	public final static String QUERY_GET_CATEGORY_ID = "SELECT id_categoria FROM CategoriaEquipo WHERE nombre=?";
-
-	public final static String QUERY_CREATE_TEAM = "INSERT INTO Equipo (nombre, es_propio, tipo_equipo, id_categoria) VALUES (?,?,?,?)";
-
-	public final static String QUERY_SAVE_TEAM_MEMBERS = "UPDATE EmpleadoDeportivo SET id_equipo=? WHERE dni=?";
-
-	public final static String QUERY_CHECK_MEMBER_TEAM = "SELECT id_equipo FROM EmpleadoDeportivo WHERE dni=?";
-
-	public final static String QUERY_GET_LOCAL_TEAMS = "SELECT * FROM Equipo WHERE es_propio = 1 ORDER BY nombre";
+    
+    public final static String QUERY_CREATE_TEAM = "INSERT INTO Equipo (nombre, es_propio, tipo_equipo, id_categoria) VALUES (?,?,?,?)";
+    
+    public final static String QUERY_SAVE_TEAM_MEMBERS = "UPDATE EmpleadoDeportivo SET id_equipo=? WHERE dni=?";
+    
+    public final static String QUERY_CHECK_MEMBER_TEAM = "SELECT id_equipo FROM EmpleadoDeportivo WHERE dni=?";
+    
+    public final static String QUERY_GET_LOCAL_TEAMS = "SELECT e.id_equipo, e.nombre, e.tipo_equipo, "
+    		+ "c.id_categoria, c.nombre AS nombre_categoria, c.edad_minima, c.edad_maxima, c.tipo_equipo AS tipo_categoria "
+    		+ "FROM Equipo e JOIN CategoriaEquipo c ON c.id_categoria = e.id_categoria "
+    		+ "WHERE e.es_propio = 1 ORDER BY e.nombre";
 
 	public final static String QUERY_GET_EXTERNAL_TEAMS = "SELECT id_equipo, nombre, tipo_equipo FROM Equipo WHERE es_propio = 0 ORDER BY nombre";
 
@@ -86,6 +91,8 @@ public class EquipoJdbc {
 	private static final String DELETE_ENTREVISTA_BY_FRANJA = "DELETE FROM Entrevista WHERE id_franja = ?";
 	
 	private static final String DELETE_FRANJA_BY_ID = "DELETE FROM FranjaHoraria WHERE id_franja = ?";
+	
+	public final static String QUERY_GET_ORGANIZATION_TEAMS = "SELECT * FROM Equipo WHERE es_propio = 1 ORDER BY nombre";
 	
 	/**
 	 * Almacena un equipo en la BBDD. Saca el id_equipo de la BBDD
@@ -194,7 +201,7 @@ public class EquipoJdbc {
 			}
 		}
 	}
-
+	
 	private static void validarMiembroSinEquipo(Connection con, String dni, String nombre, String rol)
 			throws SQLException {
 		try (PreparedStatement pstCheck = con.prepareStatement(QUERY_CHECK_MEMBER_TEAM)) {
@@ -210,7 +217,7 @@ public class EquipoJdbc {
 			}
 		}
 	}
-
+	
 	/**
 	 * Devuelve una lista de equipos de la organizacion
 	 * @param con
@@ -221,7 +228,7 @@ public class EquipoJdbc {
 
 		List<Equipo> equipos = new ArrayList<Equipo>();
 
-		try (PreparedStatement pst = con.prepareStatement(QUERY_GET_LOCAL_TEAMS); ResultSet rs = pst.executeQuery()) {
+		try (PreparedStatement pst = con.prepareStatement(QUERY_GET_ORGANIZATION_TEAMS); ResultSet rs = pst.executeQuery()) {
 
 			while (rs.next()) {
 
@@ -233,7 +240,7 @@ public class EquipoJdbc {
 
 			}
 		}
-
+	
 		return equipos;
 	}
 
