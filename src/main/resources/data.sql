@@ -937,30 +937,21 @@ INSERT INTO "Entrenamiento" ("fecha", "hora_inicio", "hora_fin", "id_equipo", "i
 VALUES ('2026-11-20', '16:00', '17:30', 2, 1);
 -- 5. Partido oficial en la misma instalación (Real Oviedo A vs Real Oviedo B: 18:00 a 20:00) [No sobreescribible - Bloqueante]
 INSERT INTO "Partido" ("fecha", "hora_inicio", "hora_fin", "id_local", "id_visitante", "id_instalacion") 
-VALUES ('2026-11-20', '18:00', '20:00', 1, 2, 1);
+VALUES ('2026-11-20', '19:30', '21:30', 1, 5, 1);
 -- 6. Tarea de jardinería en la instalación (Corte de césped: 08:00 a 09:30) [Sobreescribible]
 INSERT INTO "TareaMantenimiento" ("id_instalacion", "fecha", "hora_inicio", "hora_fin", "descripcion") 
 VALUES (1, '2026-11-20', '08:00', '09:30', 'Corte de césped');
 INSERT INTO "TareaMantenimientoJardinero" ("id_tarea", "dni_jardinero") 
 VALUES ((SELECT last_insert_rowid()), '70707070F');
 
--- 1. Entrenamiento en la instalación -> NO SOBREESCRIBIBLE (Colisión bloqueante)
-INSERT INTO "Entrenamiento" ("fecha", "hora_inicio", "hora_fin", "id_equipo", "id_instalacion") 
-VALUES ('2026-11-20', '09:30', '11:00', 1, 1);
--- 2. Reserva externa de particular -> SOBREESCRIBIBLE
+-- 7. Reserva externa de particular -> SOBREESCRIBIBLE
 INSERT INTO "Reserva" ("fecha", "hora_inicio", "hora_fin", "importe", "fecha_registro", "id_usuario", "id_instalacion") 
 VALUES ('2026-11-20', '11:30', '13:00', 75.0, '2026-11-01 10:00', 1, 1);
--- 3. Franja horaria libre de jugador (Borja Bastón) -> SOBREESCRIBIBLE
-INSERT INTO "FranjaHoraria" ("dni_jugador", "fecha", "hora_inicio", "hora_fin") 
-VALUES ('11111111A', '2026-11-20', '13:00', '14:00');
--- 4. Entrevista asignada a franja (Borja Bastón con Marca) -> SOBREESCRIBIBLE
+-- 8. Entrevista asignada a franja (Borja Bastón con Marca) -> SOBREESCRIBIBLE
 INSERT INTO "FranjaHoraria" ("dni_jugador", "fecha", "hora_inicio", "hora_fin") 
 VALUES ('11111111A', '2026-11-20', '14:00', '15:30');
 INSERT INTO "Entrevista" ("id_franja", "nombre_medio") 
 VALUES ((SELECT MAX(id_franja) FROM FranjaHoraria WHERE fecha = '2026-11-20' AND hora_inicio = '14:00'), 'Marca');
--- 5. Partido previo ya programado en el estadio -> NO SOBREESCRIBIBLE (Colisión bloqueante)
-INSERT INTO "Partido" ("fecha", "hora_inicio", "hora_fin", "id_local", "id_visitante", "id_instalacion", "dia_del_club", "precio_abonado") 
-VALUES ('2026-11-20', '18:00', '20:00', 1, 4, 1, 0, 0.0);
 
 -- Asignar entrenador y jugadores a Real Oviedo (id_equipo = 3)
 UPDATE "EmpleadoDeportivo" SET "id_equipo" = 3 WHERE "dni" = '33333333C';
