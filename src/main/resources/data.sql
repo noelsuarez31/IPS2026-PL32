@@ -937,7 +937,7 @@ INSERT INTO "Entrenamiento" ("fecha", "hora_inicio", "hora_fin", "id_equipo", "i
 VALUES ('2026-11-20', '16:00', '17:30', 2, 1);
 -- 5. Partido oficial en la misma instalación (Real Oviedo A vs Real Oviedo B: 18:00 a 20:00) [No sobreescribible - Bloqueante]
 INSERT INTO "Partido" ("fecha", "hora_inicio", "hora_fin", "id_local", "id_visitante", "id_instalacion") 
-VALUES ('2026-11-20', '19:30', '21:30', 1, 5, 1);
+VALUES ('2026-11-20', '19:30', '21:30', 3, 5, 1);
 -- 6. Tarea de jardinería en la instalación (Corte de césped: 08:00 a 09:30) [Sobreescribible]
 INSERT INTO "TareaMantenimiento" ("id_instalacion", "fecha", "hora_inicio", "hora_fin", "descripcion") 
 VALUES (1, '2026-11-20', '08:00', '09:30', 'Corte de césped');
@@ -955,7 +955,12 @@ VALUES ((SELECT MAX(id_franja) FROM FranjaHoraria WHERE fecha = '2026-11-20' AND
 
 -- Asignar entrenador y jugadores a Real Oviedo (id_equipo = 3)
 UPDATE "EmpleadoDeportivo" SET "id_equipo" = 3 WHERE "dni" = '33333333C';
-UPDATE "EmpleadoDeportivo" SET "id_equipo" = 3 WHERE "dni" IN ('22222222B', '77777777G', '88888888H', '99999999I', '12345678J', '87654321K', '11223344L', '55667788M', '99887766N');
+UPDATE "EmpleadoDeportivo" SET "id_equipo" = 3 WHERE "dni" IN (
+    '11111111A', '93000001A', '93000002B', 
+    '22222222B', '77777777G', '88888888H', '99999999I', '12345678J', '87654321K', '11223344L', '55667788M', '99887766N'
+);
 -- Asignar entrenador y jugadores a Real Oviedo B (id_equipo = 4)
 UPDATE "EmpleadoDeportivo" SET "id_equipo" = 4 WHERE "dni" = '66666666F';
-UPDATE "EmpleadoDeportivo" SET "id_equipo" = 4 WHERE "dni" IN ('33445566O', '77889900P', '50505050A', '50505050B', '50505050C', '50505050D', '50505050E', '50505050F');
+UPDATE "EmpleadoDeportivo" SET "id_equipo" = 4 WHERE "dni" IN (
+    '33445566O', '77889900P', '50505050A', '50505050B', '50505050C', '50505050D', '50505050E', '50505050F'
+);

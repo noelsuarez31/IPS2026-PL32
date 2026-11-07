@@ -199,6 +199,7 @@ public class VentanaPlanificarPartido extends JFrame {
 	public JComboBox<Equipo> getCbEquipoLocal() {
 		if (cbEquipoLocal == null) {
 			cbEquipoLocal = new JComboBox<>();
+			cbEquipoLocal.addActionListener(e -> actualizarOcupacion()); 
 			cbEquipoLocal.setRenderer(new DefaultListCellRenderer() {
 				private static final long serialVersionUID = 1L;
 				@Override
@@ -747,6 +748,7 @@ public class VentanaPlanificarPartido extends JFrame {
 						"Validación", JOptionPane.WARNING_MESSAGE);
 				return;
 			}
+			
 			// 2. Validar Fecha
 			Date fechaUtil = getDcFecha().getDate();
 			if (fechaUtil == null) {
@@ -760,6 +762,7 @@ public class VentanaPlanificarPartido extends JFrame {
 						"Fecha no válida", JOptionPane.WARNING_MESSAGE);
 				return;
 			}
+			
 			// 3. Validar Horario
 			LocalTime hIni = LocalTime.of((Integer) getSpHoraInicio().getValue(), (Integer) getSpMinInicio().getValue());
 			LocalTime hFin = LocalTime.of((Integer) getSpHoraFin().getValue(), (Integer) getSpMinFin().getValue());
@@ -773,6 +776,7 @@ public class VentanaPlanificarPartido extends JFrame {
 						"Horario fuera de rango", JOptionPane.WARNING_MESSAGE);
 				return;
 			}
+			
 			// 4. Validar Instalación
 			Instalacion inst = (Instalacion) getCbInstalacion().getSelectedItem();
 			if (inst == null) {
@@ -780,6 +784,7 @@ public class VentanaPlanificarPartido extends JFrame {
 						"Validación", JOptionPane.WARNING_MESSAGE);
 				return;
 			}
+			
 			// 5. Validar Precios por Sección
 			Map<TipoSeccion, Double> preciosSeccion = new HashMap<>();
 			for (Map.Entry<TipoSeccion, JSpinner> entry : spinnersSecciones.entrySet()) {
@@ -791,6 +796,7 @@ public class VentanaPlanificarPartido extends JFrame {
 				}
 				preciosSeccion.put(entry.getKey(), precio);
 			}
+			
 			// 6. Datos de Día del Club
 			boolean esDiaClub = getChkDiaClub().isSelected();
 			double precioAbonado = esDiaClub ? suplementoAbonadoActual : 0.0;
@@ -801,8 +807,11 @@ public class VentanaPlanificarPartido extends JFrame {
 			}
 			// 7. Comprobar colisiones no sobreescribibles (ej. otro partido ya registrado)
 			service.comprobarColisionesPartido(fecha, hIni, hFin, inst.getInstalacionId());
+			
 			// 8. Obtener eventos sobreescribibles con menor prioridad (jardinería, reservas, franjas, entrevistas)
-			List<EventoOcupacion> cancelables = service.obtenerSobreescribiblesCoincidentes(fecha, hIni, hFin, inst.getInstalacionId());
+			List<EventoOcupacion> cancelables = 
+					service.obtenerSobreescribiblesCoincidentes(local.getIdEquipo(), fecha, hIni, hFin, inst.getInstalacionId());
+			
 			// 9. Diálogo de confirmación agrupado (Sí / No / Cancelar)
 			if (!cancelables.isEmpty()) {
 				StringBuilder sb = new StringBuilder();
@@ -891,7 +900,10 @@ public class VentanaPlanificarPartido extends JFrame {
 		}
 		modeloOcupacion.setRowCount(0);
 		try {
-			List<EventoOcupacion> eventos = service.obtenerEventosOcupacion(inst.getInstalacionId(), fecha);
+			Equipo local = (Equipo) getCbEquipoLocal().getSelectedItem();
+			int idEquipoLocal = (local != null) ? local.getIdEquipo() : 0;
+			List<EventoOcupacion> eventos = service.obtenerEventosOcupacion(idEquipoLocal, inst.getInstalacionId(), fecha);
+		
 			if (eventos.isEmpty()) {
 				// Muestra una fila informativa si la instalación está totalmente libre ese día
 				modeloOcupacion.addRow(new Object[] {
@@ -933,8 +945,13 @@ public class VentanaPlanificarPartido extends JFrame {
 		try {
 			// 1. Comprobar colisión no sobreescribible (partidos u otros eventos bloqueantes)
 			service.comprobarColisionesPartido(fecha, hIni, hFin, inst.getInstalacionId());
+			
 			// 2. Comprobar actividades sobreescribibles (reservas, jardinería, franjas, entrevistas)
-			List<EventoOcupacion> cancelables = service.obtenerSobreescribiblesCoincidentes(fecha, hIni, hFin, inst.getInstalacionId());
+			Equipo local = (Equipo) getCbEquipoLocal().getSelectedItem();
+			int idEquipoLocal = (local != null) ? local.getIdEquipo() : 0;
+			List<EventoOcupacion> cancelables = 
+					service.obtenerSobreescribiblesCoincidentes(idEquipoLocal, fecha, hIni, hFin, inst.getInstalacionId());
+			
 			if (cancelables.isEmpty()) {
 				JOptionPane.showMessageDialog(this,
 						"Instalación disponible. No hay ningún conflicto en el horario " + hIni.format(FORMATO_HORA) + " - " + hFin.format(FORMATO_HORA) + ".",

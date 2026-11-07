@@ -894,12 +894,9 @@ public class JDBC {
 		EquipoJdbc.comprobarColisionesPartido(con, fecha, horaInicio, horaFin, idInstalacion);
 	}
 	
-	/**
-	 * Obtiene los eventos sobreescribibles de menor prioridad que se solapan con el horario del partido.
-	 */
-	public List<EventoOcupacion> obtenerSobreescribiblesPartidoSolapados(int idInstalacion,
+	public List<EventoOcupacion> obtenerSobreescribiblesPartidoSolapados(int idEquipoLocal, int idInstalacion,
 			LocalDate fecha, LocalTime horaInicio, LocalTime horaFin) throws SQLException {
-		return EquipoJdbc.obtenerSobreescribiblesPartidoSolapados(con, idInstalacion, fecha, horaInicio, horaFin);
+		return EquipoJdbc.obtenerSobreescribiblesPartidoSolapados(con, idEquipoLocal, idInstalacion, fecha, horaInicio, horaFin);
 	}
 	
 	/**
@@ -913,12 +910,9 @@ public class JDBC {
 				horaFin, esDiaClub, precioAbonado, preciosSeccion, cancelables);
 	}
 	
-	/**
-	 * Obtiene todos los eventos de ocupación para la fecha e instalación (para rellenar la tabla de la UI).
-	 */
-	public List<EventoOcupacion> obtenerEventosOcupacionPartido(int idInstalacion, LocalDate fecha)
+	public List<EventoOcupacion> obtenerEventosOcupacionPartido(int idEquipoLocal, int idInstalacion, LocalDate fecha)
 			throws SQLException {
-		return EquipoJdbc.obtenerEventosOcupacionPartido(con, idInstalacion, fecha);
+		return EquipoJdbc.obtenerEventosOcupacionPartido(con, idEquipoLocal, idInstalacion, fecha);
 	}
 	 
 	

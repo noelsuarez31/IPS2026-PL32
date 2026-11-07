@@ -66,9 +66,9 @@ public class PlanificarPartidoService {
     /**
      * Obtiene todos los eventos de ocupación de una instalación en una fecha dada.
      */
-    public List<EventoOcupacion> obtenerEventosOcupacion(int idInstalacion, LocalDate fecha) {
+	public List<EventoOcupacion> obtenerEventosOcupacion(int idEquipoLocal, int idInstalacion, LocalDate fecha) {
         try {
-            return jdbc.obtenerEventosOcupacionPartido(idInstalacion, fecha);
+            return jdbc.obtenerEventosOcupacionPartido(idEquipoLocal, idInstalacion, fecha);
         } catch (SQLException e) {
             throw new RuntimeException("Error al consultar la ocupación de la instalación: " + e.getMessage(), e);
         }
@@ -78,10 +78,10 @@ public class PlanificarPartidoService {
 	 * Obtiene los eventos sobreescribibles coincidentes (reservas, jardinería,
 	 * entrevistas, franjas).
 	 */
-	public List<EventoOcupacion> obtenerSobreescribiblesCoincidentes(LocalDate fecha, LocalTime horaInicio,
+    public List<EventoOcupacion> obtenerSobreescribiblesCoincidentes(int idEquipoLocal, LocalDate fecha, LocalTime horaInicio,
 			LocalTime horaFin, int idInstalacion) {
 		try {
-			return jdbc.obtenerSobreescribiblesPartidoSolapados(idInstalacion, fecha, horaInicio, horaFin);
+			return jdbc.obtenerSobreescribiblesPartidoSolapados(idEquipoLocal, idInstalacion, fecha, horaInicio, horaFin);
 		} catch (SQLException e) {
 			throw new RuntimeException("Error al consultar solapamientos: " + e.getMessage(), e);
 		}

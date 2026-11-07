@@ -5,20 +5,18 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
-
-import giis.demo.model.empleado.EmpleadoDeportivo;
-import giis.demo.model.equipo.CategoriaEquipo;
-import giis.demo.model.equipo.Equipo;
-
-import java.util.Comparator;
-import java.util.Map;
 import java.sql.Types;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+
+import giis.demo.model.empleado.EmpleadoDeportivo;
 import giis.demo.model.entradas.enumerados.TipoSeccion;
+import giis.demo.model.equipo.Equipo;
 import giis.demo.model.equipo.EventoOcupacion;
 
 public class EquipoJdbc {
@@ -55,7 +53,7 @@ public class EquipoJdbc {
 			+ "JOIN EmpleadoDeportivo ed ON f.dni_jugador = ed.dni "
 			+ "JOIN BaseEmpleado be ON ed.dni = be.dni "
 			+ "LEFT JOIN Entrevista ent ON f.id_franja = ent.id_franja "
-			+ "WHERE f.fecha = ? "
+			+ "WHERE ed.id_equipo = ? AND f.fecha = ? "
 			+ "ORDER BY f.hora_inicio";
 	
 	private static final String QUERY_RESERVAS_INSTALACION = 
@@ -262,11 +260,24 @@ public class EquipoJdbc {
 	}
 	
 	/**
-	 * Obtiene todos los eventos de ocupación (partidos, entrenamientos, entrevistas, franjas,
-	 * reservas y jardinería) para una instalación y fecha dadas.
+	 * Sobrecarga donde no influye el equipo
+	 * @param con
+	 * @param idInstalacion
+	 * @param fecha
+	 * @return
+	 * @throws SQLException
 	 */
 	public static List<EventoOcupacion> obtenerEventosOcupacionPartido(Connection con, int idInstalacion,
 			LocalDate fecha) throws SQLException {
+		return obtenerEventosOcupacionPartido(con, 0, idInstalacion, fecha);
+	}
+	
+	/**
+	 * Obtiene todos los eventos de ocupación (partidos, entrenamientos, entrevistas, franjas,
+	 * reservas y jardinería) para una instalación, equipo y fecha dadas.
+	 */
+	public static List<EventoOcupacion> obtenerEventosOcupacionPartido(Connection con, int idEquipoLocal,
+			int idInstalacion, LocalDate fecha) throws SQLException {
 		List<EventoOcupacion> eventos = new ArrayList<>();
 		// 1. Partidos en la instalación (No sobreescribible)
 		try (PreparedStatement pst = con.prepareStatement(QUERY_PARTIDOS_INSTALACION)) {
@@ -295,21 +306,24 @@ public class EquipoJdbc {
 		}
 		
 		// 3. Franjas y Entrevistas de jugadores (Sobreescribible)
-		try (PreparedStatement pst = con.prepareStatement(QUERY_FRANJAS_Y_ENTREVISTAS)) {
-			pst.setString(1, fecha.toString());
-			try (ResultSet rs = pst.executeQuery()) {
-				while (rs.next()) {
-					int idFranja = rs.getInt("id_franja");
-					String nombreCompleto = rs.getString("nombre") + " " + rs.getString("apellido");
-					String medio = rs.getString("nombre_medio");
-					LocalTime hIni = parseHora(rs.getString("hora_inicio"));
-					LocalTime hFin = parseHora(rs.getString("hora_fin"));
-					if (medio != null && !medio.isBlank()) {
-						eventos.add(new EventoOcupacion(idFranja, "ENTREVISTA", hIni, hFin,
-								"Entrevista", nombreCompleto + " (" + medio + ")", true));
-					} else {
-						eventos.add(new EventoOcupacion(idFranja, "FRANJA", hIni, hFin,
-								"Franja horaria", nombreCompleto + " (Franja libre)", true));
+		if (idEquipoLocal > 0) {
+			try (PreparedStatement pst = con.prepareStatement(QUERY_FRANJAS_Y_ENTREVISTAS)) {
+				pst.setInt(1, idEquipoLocal);
+				pst.setString(2, fecha.toString());
+				try (ResultSet rs = pst.executeQuery()) {
+					while (rs.next()) {
+						int idFranja = rs.getInt("id_franja");
+						String nombreCompleto = rs.getString("nombre") + " " + rs.getString("apellido");
+						String medio = rs.getString("nombre_medio");
+						LocalTime hIni = parseHora(rs.getString("hora_inicio"));
+						LocalTime hFin = parseHora(rs.getString("hora_fin"));
+						if (medio != null && !medio.isBlank()) {
+							eventos.add(new EventoOcupacion(idFranja, "ENTREVISTA", hIni, hFin, "Entrevista",
+									nombreCompleto + " (" + medio + ")", true));
+						} else {
+							eventos.add(new EventoOcupacion(idFranja, "FRANJA", hIni, hFin, "Franja horaria",
+									nombreCompleto + " (Franja libre)", true));
+						}
 					}
 				}
 			}
@@ -368,13 +382,14 @@ public class EquipoJdbc {
 			}
 		}
 	}
+	
 	/**
 	 * 2. Obtiene los eventos sobreescribibles (reservas, jardinería, entrevistas, franjas) solapados en el horario propuesto.
 	 */
-	public static List<EventoOcupacion> obtenerSobreescribiblesPartidoSolapados(Connection con,
+	public static List<EventoOcupacion> obtenerSobreescribiblesPartidoSolapados(Connection con, int idEquipoLocal,
 			int idInstalacion, LocalDate fecha, LocalTime horaInicio, LocalTime horaFin)
 			throws SQLException {
-		List<EventoOcupacion> todos = obtenerEventosOcupacionPartido(con, idInstalacion, fecha);
+		List<EventoOcupacion> todos = obtenerEventosOcupacionPartido(con, idEquipoLocal, idInstalacion, fecha);
 		List<EventoOcupacion> solapados = new ArrayList<>();
 		for (EventoOcupacion e : todos) {
 			if (e.isSobreescribible()) {
