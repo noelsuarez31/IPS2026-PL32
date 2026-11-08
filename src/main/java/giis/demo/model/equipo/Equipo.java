@@ -49,7 +49,7 @@ public class Equipo {
 
 	@Override
 	public String toString() {
-		return "Equipo [ " + nombre + ", " + categoriaEquipo + " ]";
+		return "Equipo" + nombre;
 	}
 	
 	
