@@ -552,7 +552,7 @@ public class VentanaVentaEntradas extends JFrame {
 
 			Partido partido = (Partido) getCbPartido().getSelectedItem();
 
-			se.enviar(email, "Compra de entradas abono : Día del club",
+			se.enviar(email, "Compra de entradas",
 					"Se ha comprado correctamente su entrada para el " + " dia del club para el partido "
 							+ partido.toString());
 
