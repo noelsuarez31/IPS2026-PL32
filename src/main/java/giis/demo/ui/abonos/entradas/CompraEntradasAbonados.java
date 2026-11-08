@@ -59,7 +59,6 @@ public class CompraEntradasAbonados extends JFrame {
 	private VentaDeEntradas venta;
 	private ServicioEmail se;
 
-
 	/**
 	 * Create the frame.
 	 */
@@ -288,17 +287,7 @@ public class CompraEntradasAbonados extends JFrame {
 			btFinalizar = new JButton("Finalizar");
 			btFinalizar.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-
-					try {
-
-						finalizar();
-
-					} catch (AbonoNoPermitidoException e1) {
-
-						JOptionPane.showMessageDialog(null, "El abono no se puede volver a comprar.");
-
-					}
-
+					finalizar();
 				}
 			});
 			btFinalizar.setMnemonic('F');
@@ -307,7 +296,7 @@ public class CompraEntradasAbonados extends JFrame {
 		return btFinalizar;
 	}
 
-	private void finalizar() throws AbonoNoPermitidoException {
+	private void finalizar() {
 
 		Partido partido = (Partido) getCbPartido().getSelectedItem();
 		if (partido == null) {
@@ -319,18 +308,37 @@ public class CompraEntradasAbonados extends JFrame {
 			JOptionPane.showMessageDialog(this, "Introduce un email válido.");
 			return;
 		}
-		
+
+		int idVenta;
+
 		try {
-			
-			se.enviar(email, "Compra de entradas abono : Día del club", "Se ha comprado correctamente su entrada para el "
-					+ " dia del club para el partido " + partido.toString());
-			
+
+			idVenta = venta.venderEntradaAbonado(vi.getDni(), partido);
+
+		} catch (AbonoNoPermitidoException e) {
+
+			JOptionPane.showMessageDialog(this, e.getMessage());
+			return;
+
+		} catch (SQLException e) {
+
+			JOptionPane.showMessageDialog(this, "Error al registrar la compra: " + e.getMessage());
+			return;
+		}
+
+		try {
+
+			se.enviar(email, "Compra de entradas abono : Día del club",
+					"Se ha comprado correctamente su entrada para el día del club.\n\n" + "Partido: " + partido + "\n"
+							+ "Asiento: " + getTfChair().getText() + "\n" + "Precio: " + getTfPrecio().getText() + "\n"
+							+ "Nº de venta: " + idVenta);
+
 		} catch (EmailException e) {
-			
+
 			JOptionPane.showMessageDialog(this, "No se ha podido enviar el email al usuario");
 			e.printStackTrace();
 		}
-		
+
 		JOptionPane.showMessageDialog(this, "Entrada vendida correctamente.");
 
 		cancelar();
@@ -401,6 +409,10 @@ public class CompraEntradasAbonados extends JFrame {
 		} catch (SQLException e) {
 
 			JOptionPane.showMessageDialog(null, "Se ha producido un error al obtener los datos del abonado");
+			return;
+		}
+		
+		if (abonado == null){
 			return;
 		}
 

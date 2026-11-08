@@ -247,7 +247,7 @@ CREATE TABLE IF NOT EXISTS "Abono" (
 	"categoria" TEXT NOT NULL CHECK("categoria" IN ('INFANTIL', 'SUB_26', 'ADULTO', 'JUBILADO')),
 	"precio" REAL NOT NULL,
 	UNIQUE("id_abonado", "fecha_inicio"),
-	UNIQUE("id_butaca", "fecha_inicio"),
+	UNIQUE("id_butaca", "id_equipo", "fecha_inicio")
 	FOREIGN KEY("id_venta") REFERENCES "Venta"("id_venta"),
 	FOREIGN KEY("id_abonado") REFERENCES "Abonado"("id_abonado"),
 	FOREIGN KEY("id_equipo") REFERENCES "Equipo"("id_equipo"),
