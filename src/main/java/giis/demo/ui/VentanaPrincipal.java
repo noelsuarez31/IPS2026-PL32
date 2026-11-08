@@ -18,6 +18,7 @@ import giis.demo.model.entrevistas.CrearEntrevistaService;
 import giis.demo.model.entrevistas.CrearFranjaService;
 import giis.demo.model.equipo.AñadirEquipoService;
 import giis.demo.model.equipo.CrearEntrenamientoService;
+import giis.demo.model.equipo.PlanificarPartidoService;
 import giis.demo.model.historial.HistorialVentas;
 import giis.demo.model.horarios.GestionHorarioSemanal;
 import giis.demo.model.horarios.GestionHorariosEspecificos;
@@ -26,6 +27,7 @@ import giis.demo.model.tienda.VentaMerchandising;
 import giis.demo.ui.abonos.VentanaAbono;
 import giis.demo.ui.accion.VentanaCampanasAcciones;
 import giis.demo.ui.abonos.entradas.VentanaIdentificacion;
+import giis.demo.ui.accion.VentanaCompraAcciones;
 import giis.demo.ui.accion.VentanaPortalAccionista;
 import giis.demo.ui.contrataciones.VentanaAltaEmpleado;
 import giis.demo.ui.contrataciones.VentanaGestionEmpleados;
@@ -34,6 +36,7 @@ import giis.demo.ui.entrevistas.VentanaCrearEntrevistas;
 import giis.demo.ui.entrevistas.VentanaCrearFranjas;
 import giis.demo.ui.equipo.VentanaAñadirEquipo;
 import giis.demo.ui.equipo.VentanaCrearEntrenamiento;
+import giis.demo.ui.equipo.VentanaPlanificarPartido;
 import giis.demo.ui.historial.VentanaHistorialVentas;
 import giis.demo.ui.horarios.VentanaHorarioEspecifico;
 import giis.demo.ui.horarios.VentanaHorarioPeriodico;
@@ -53,6 +56,7 @@ public class VentanaPrincipal extends JFrame {
 	private CrearEntrevistaService ces = new CrearEntrevistaService();
 	private GestorEmpleados gestorEmpleados = new GestorEmpleados();
 	private CrearEntrenamientoService crearEntrenoService = new CrearEntrenamientoService();
+	private PlanificarPartidoService pps = new PlanificarPartidoService();
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
@@ -79,10 +83,12 @@ public class VentanaPrincipal extends JFrame {
 	private JMenu mnAbonado;
 	private JMenu mnAccionista;
 	private JMenuItem mntmPortalAccionista;
+	private JMenuItem mntmComprarAcciones;
 	private JMenuItem mntmComprarAbono;
 	private JMenuItem mntmAñadirMantenimiento;
 	private JMenuItem mniVenderAbonado;
 	private JMenuItem mntmRegistrarEntrenamiento;
+	private JMenuItem mntmAñadirPartido;
 
 	/**
 	 * Create the frame.
@@ -167,6 +173,7 @@ public class VentanaPrincipal extends JFrame {
 			mnGerente.add(getMntmHistorialVentas());
 			mnGerente.add(getMntmAñadirMantenimiento());
 			mnGerente.add(getMntmCampanasAcciones());
+			mnGerente.add(getMntmPlanificarPartido());
 		}
 		return mnGerente;
 	}
@@ -570,7 +577,29 @@ public class VentanaPrincipal extends JFrame {
 		VentanaAsignarMantenimiento vAsignarMantenimiento = new VentanaAsignarMantenimiento(this);
 		this.setVisible(false);
 		vAsignarMantenimiento.setVisible(true);
+	}
 		
+	private JMenuItem getMntmPlanificarPartido() {
+		if (mntmAñadirPartido == null) {
+			mntmAñadirPartido = new JMenuItem("Planificar partido");
+			mntmAñadirPartido.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					gestionPlanificarPartido();
+				}
+			});
+		}
+		return mntmAñadirPartido;
+	}
+	
+	private void gestionPlanificarPartido() {
+		VentanaPlanificarPartido vpp = new VentanaPlanificarPartido(this);
+		vpp.setVisible(true);
+		this.setVisible(false);
+	}
+	
+	public PlanificarPartidoService getPlanificarPartidoService() {
+		return this.pps;
 	}
 	private JMenuItem getMniVenderAbonado() {
 		if (mniVenderAbonado == null) {
@@ -599,6 +628,7 @@ public class VentanaPrincipal extends JFrame {
 			mnAccionista = new JMenu("Accionista");
 			mnAccionista.setMnemonic('C');
 			mnAccionista.add(getMntmPortalAccionista());
+			mnAccionista.add(getMntmComprarAcciones());
 		}
 		return mnAccionista;
 	}
@@ -607,6 +637,7 @@ public class VentanaPrincipal extends JFrame {
 		if (mntmPortalAccionista == null) {
 			mntmPortalAccionista = new JMenuItem("Portal del accionista");
 			mntmPortalAccionista.addActionListener(new ActionListener() {
+				@Override
 				public void actionPerformed(ActionEvent e) {
 					abrirVentanaPortalAccionista();
 				}
@@ -619,6 +650,25 @@ public class VentanaPrincipal extends JFrame {
 		VentanaPortalAccionista vpa = new VentanaPortalAccionista(this);
 		this.setVisible(false);
 		vpa.setVisible(true);
+	}
+
+	private JMenuItem getMntmComprarAcciones() {
+		if (mntmComprarAcciones == null) {
+			mntmComprarAcciones = new JMenuItem("Comprar acciones");
+			mntmComprarAcciones.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					abrirVentanaCompraAcciones();
+				}
+			});
+		}
+		return mntmComprarAcciones;
+	}
+
+	private void abrirVentanaCompraAcciones() {
+		VentanaCompraAcciones vca = new VentanaCompraAcciones(this);
+		this.setVisible(false);
+		vca.setVisible(true);
 	}
 	
 	private JMenuItem getMntmRegistrarEntrenamiento() {

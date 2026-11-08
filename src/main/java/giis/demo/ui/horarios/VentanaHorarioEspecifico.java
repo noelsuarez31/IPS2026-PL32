@@ -96,7 +96,6 @@ public class VentanaHorarioEspecifico extends JFrame {
 		panelNorte.add(getSpHoraFin());
 		panelNorte.add(getLblMinutoFinal());
 		panelNorte.add(getSpMinFin());
-		panelNorte.add(getBtnGuardar());
 		contentPane.add(panelNorte, BorderLayout.NORTH);
 
 		// 2. ZONA CENTRO: Dos columnas (50% izquierda empleados, 50% derecha las 2 tablas)
@@ -124,9 +123,10 @@ public class VentanaHorarioEspecifico extends JFrame {
 		panelCentro.add(panelDerecho);
 		contentPane.add(panelCentro, BorderLayout.CENTER);
 
-		// 3. ZONA SUR: Botón Atrás
-		JPanel panelSur = new JPanel(new FlowLayout(FlowLayout.RIGHT, 5, 5));
+		// 3. ZONA SUR: Botones Atrás y Guardar
+		JPanel panelSur = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 5));
 		panelSur.add(getBtnAtras());
+		panelSur.add(getBtnGuardar());
 		contentPane.add(panelSur, BorderLayout.SOUTH);
 
 		setLocationRelativeTo(null);
@@ -168,7 +168,7 @@ public class VentanaHorarioEspecifico extends JFrame {
 	public JButton getBtnGuardar() {
 		if (btnGuardar == null) {
 			btnGuardar = new JButton("Guardar");
-			btnGuardar.setPreferredSize(new Dimension(85, 28));
+			btnGuardar.setPreferredSize(new Dimension(110, 30));
 		}
 		return btnGuardar;
 	}

@@ -579,7 +579,7 @@ public class VentanaAbono extends JFrame {
 
 		if (filaSeleccionada < 0 || asientoSeleccionado < 0) {
 
-			JOptionPane.showMessageDialog(null, "Seleccione un asiento anyes de finalizar la compra",
+			JOptionPane.showMessageDialog(null, "Seleccione un asiento antes de finalizar la compra",
 					"Asiento no seleccionado", JOptionPane.WARNING_MESSAGE);
 			return;
 
@@ -897,7 +897,7 @@ public class VentanaAbono extends JFrame {
 				Abono abono = va.getInfoAbono(dni);
 
 				JOptionPane.showMessageDialog(null,
-						"El dni " + dni + " ya tiene un abono para esta temporada: " + abono.toString(),
+						"El dni " + dni + " ya tiene un abono para esta temporada: \n" + abono.toString(),
 						"Abono existente", JOptionPane.WARNING_MESSAGE);
 
 				reiniciar();

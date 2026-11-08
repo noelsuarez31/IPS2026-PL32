@@ -18,28 +18,34 @@ import giis.demo.model.abonos.Abono.Categoria;
 
 public class AbonoJdbc {
 
-	public final static String QUERY_ASIENTOS_OCUPADOS = "SELECT b.fila, b.asiento "
-			+ "FROM Abono a JOIN Butaca b ON b.id_butaca = a.id_butaca " + "WHERE b.tribuna = ? AND b.seccion = ? "
-			+ "AND a.fecha_inicio <= ? AND a.fecha_fin >= ? " + "UNION " + "SELECT b.fila, b.asiento "
-			+ "FROM Entrada e JOIN Partido p ON p.id_partido = e.id_partido "
-			+ "JOIN Butaca b ON b.id_butaca = e.id_butaca "
-			+ "WHERE p.id_local = ? AND b.tribuna = ? AND b.seccion = ? " + "AND p.fecha >= ? AND p.fecha <= ?";
-
+	
 	public final static String QUERY_INFO_ABONO = "SELECT e.nombre, b.tribuna, b.seccion, b.fila, b.asiento, "
 			+ "a.fecha_inicio, a.fecha_fin, a.fecha_registro, a.categoria, a.precio " + "FROM Abono a "
 			+ "JOIN Abonado ab ON ab.id_abonado = a.id_abonado " + "JOIN Butaca b ON b.id_butaca = a.id_butaca "
 			+ "JOIN Equipo e ON e.id_equipo = a.id_equipo " + "WHERE ab.dni = ? AND a.fecha_inicio = ?";
 
+	public final static String QUERY_ASIENTOS_OCUPADOS = "SELECT b.fila, b.asiento "
+			+ "FROM Abono a JOIN Butaca b ON b.id_butaca = a.id_butaca "
+			+ "WHERE a.id_equipo = ? AND b.tribuna = ? AND b.seccion = ? "
+			+ "AND a.fecha_inicio <= ? AND a.fecha_fin >= ? "
+			+ "UNION "
+			+ "SELECT b.fila, b.asiento "
+			+ "FROM Entrada e JOIN Partido p ON p.id_partido = e.id_partido "
+			+ "JOIN Butaca b ON b.id_butaca = e.id_butaca "
+			+ "WHERE p.id_local = ? AND b.tribuna = ? AND b.seccion = ? "
+			+ "AND p.fecha >= ? AND p.fecha <= ?";
+	
 	public final static String QUERY_ES_PROPIO = "SELECT es_propio FROM Equipo WHERE id_equipo=?";
 
 	public final static String QUERY_GET_ID_BUTACA = "SELECT id_butaca FROM Butaca WHERE tribuna=? AND seccion=? "
 			+ "AND fila = ? AND asiento=?";
 
 	public final static String QUERY_BUTACA_NO_DISPONIBLE = "SELECT 1 FROM Abono a WHERE a.id_butaca = ? "
-			+ "AND a.fecha_inicio <= ? AND a.fecha_fin >= ? " + "UNION "
+			+ "AND a.id_equipo = ? AND a.fecha_inicio <= ? AND a.fecha_fin >= ? "
+			+ "UNION "
 			+ "SELECT 1 FROM Entrada e JOIN Partido p ON p.id_partido = e.id_partido "
-			+ "WHERE p.id_local = ? AND e.id_butaca = ? " + "AND p.fecha >= ? AND p.fecha <= ?";
-
+			+ "WHERE p.id_local = ? AND e.id_butaca = ? AND p.fecha >= ? AND p.fecha <= ?";
+	
 	public final static String QUERY_INSERT_VENTA = "INSERT INTO Venta (fecha, concepto, tipo, total) VALUES "
 			+ "(?,?,'ABONOS',?)";
 
@@ -76,16 +82,17 @@ public class AbonoJdbc {
 
 			LocalDate hoy = LocalDate.now();
 
-			pst.setString(1, tribuna);
-			pst.setString(2, seccion);
-			pst.setString(3, fin.toString());
-			pst.setString(4, inicio.toString());
+			pst.setInt(1, idEquipo);
+			pst.setString(2, tribuna);
+			pst.setString(3, seccion);
+			pst.setString(4, fin.toString());
+			pst.setString(5, inicio.toString());
 
-			pst.setInt(5, idEquipo);
-			pst.setString(6, tribuna);
-			pst.setString(7, seccion);
-			pst.setString(8, hoy.toString());
-			pst.setString(9, fin.toString());
+			pst.setInt(6, idEquipo);
+			pst.setString(7, tribuna);
+			pst.setString(8, seccion);
+			pst.setString(9, hoy.toString());
+			pst.setString(10, fin.toString());
 
 			try (ResultSet rs = pst.executeQuery()) {
 
@@ -283,13 +290,14 @@ public class AbonoJdbc {
 			LocalDate hoy = LocalDate.now();
 
 			pst.setInt(1, idButaca);
-			pst.setString(2, fin.toString());
-			pst.setString(3, inicio.toString());
+			pst.setInt(2, idEquipo);
+			pst.setString(3, fin.toString());
+			pst.setString(4, inicio.toString());
 
-			pst.setInt(4, idEquipo);
-			pst.setInt(5, idButaca);
-			pst.setString(6, hoy.toString());
-			pst.setString(7, fin.toString());
+			pst.setInt(5, idEquipo);
+			pst.setInt(6, idButaca);
+			pst.setString(7, hoy.toString());
+			pst.setString(8, fin.toString());
 
 			try (ResultSet rs = pst.executeQuery()) {
 

@@ -173,7 +173,7 @@ CREATE TABLE IF NOT EXISTS "Partido" (
 	
 	"dia_del_club" INTEGER NOT NULL DEFAULT 0 CHECK("dia_del_club" IN (0,1)),
 	"precio_abonado" REAL CHECK("precio_abonado" IS NULL OR "precio_abonado" >= 0),
-	 
+	
 	FOREIGN KEY("id_local") REFERENCES "Equipo"("id_equipo"),
 	FOREIGN KEY("id_visitante") REFERENCES "Equipo"("id_equipo"),
 	FOREIGN KEY("id_instalacion") REFERENCES "Instalacion"("id_instalacion"),
@@ -249,7 +249,7 @@ CREATE TABLE IF NOT EXISTS "Abono" (
 	"categoria" TEXT NOT NULL CHECK("categoria" IN ('INFANTIL', 'SUB_26', 'ADULTO', 'JUBILADO')),
 	"precio" REAL NOT NULL,
 	UNIQUE("id_abonado", "fecha_inicio"),
-	UNIQUE("id_butaca", "fecha_inicio"),
+	UNIQUE("id_butaca", "id_equipo", "fecha_inicio")
 	FOREIGN KEY("id_venta") REFERENCES "Venta"("id_venta"),
 	FOREIGN KEY("id_abonado") REFERENCES "Abonado"("id_abonado"),
 	FOREIGN KEY("id_equipo") REFERENCES "Equipo"("id_equipo"),

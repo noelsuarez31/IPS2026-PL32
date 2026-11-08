@@ -383,7 +383,7 @@ INSERT INTO "HorarioPeriodico" ("dni_empleado", "dia_semana", "hora_inicio", "ho
 INSERT INTO "HorarioPeriodico" ("dni_empleado", "dia_semana", "hora_inicio", "hora_fin") VALUES ('70707070L', 5, '08:00', '16:00');
 
 insert into Equipo (nombre, es_propio, tipo_equipo, id_categoria) values ('Real Oviedo', 1, 'Profesional', (select id_categoria from CategoriaEquipo where nombre = 'Primer equipo'));
-insert into Equipo (nombre, es_propio, tipo_equipo, id_categoria) values ('Real Oviedo B', 1, 'Profesional', (select id_categoria from CategoriaEquipo where nombre = 'Primer equipo'));
+insert into Equipo (nombre, es_propio, tipo_equipo, id_categoria) values ('Real Oviedo C', 1, 'Profesional', (select id_categoria from CategoriaEquipo where nombre = 'Primer equipo'));
 insert into Equipo (nombre, es_propio, tipo_equipo, id_categoria) values ('Sporting', 0, 'Profesional', (select id_categoria from CategoriaEquipo where nombre = 'Primer equipo'));
 insert into Equipo (nombre, es_propio, tipo_equipo, id_categoria) values ('Racing', 0, 'Profesional', (select id_categoria from CategoriaEquipo where nombre = 'Primer equipo'));
 insert into Equipo (nombre, es_propio, tipo_equipo, id_categoria) values ('Levante', 0, 'Profesional', (select id_categoria from CategoriaEquipo where nombre = 'Primer equipo'));
@@ -830,11 +830,11 @@ INSERT INTO "EmpleadoDeportivo" ("dni", "posicion") VALUES
 
 
 INSERT INTO "Partido" ("id_partido","fecha","hora_inicio","hora_fin","id_local","id_visitante","id_instalacion","dia_del_club","precio_abonado") VALUES
-(1,'2026-10-21','21:00:00','23:00:00',1,2,1,0,NULL),
-(2,'2026-10-27','18:30:00','20:30:00',3,4,2,0,NULL),
-(3,'2026-10-29','19:30:00','22:30:00',5,6,2,0,NULL),
-(4,'2026-11-03','14:30:00','16:30:00',2,8,3,0,NULL),
-(5,'2026-11-10','18:00:00','20:00:00',3,5,1,1,10.0),
+(1,'2026-11-21','21:00:00','23:00:00',1,2,1,0,NULL),
+(2,'2026-11-27','18:30:00','20:30:00',3,4,2,0,NULL),
+(3,'2026-11-29','19:30:00','22:30:00',5,6,2,0,NULL),
+(4,'2026-12-13','14:30:00','16:30:00',2,8,3,0,NULL),
+(5,'2026-12-10','18:00:00','20:00:00',3,5,1,1,10.0),
 (6,'2026-11-17','20:00:00','22:00:00',3,6,1,0,NULL);
 
 INSERT INTO "PrecioSeccion" ("id_partido", "seccion", "precio")
@@ -938,9 +938,30 @@ INSERT INTO "Entrenamiento" ("fecha", "hora_inicio", "hora_fin", "id_equipo", "i
 VALUES ('2026-11-20', '16:00', '17:30', 2, 1);
 -- 5. Partido oficial en la misma instalación (Real Oviedo A vs Real Oviedo B: 18:00 a 20:00) [No sobreescribible - Bloqueante]
 INSERT INTO "Partido" ("fecha", "hora_inicio", "hora_fin", "id_local", "id_visitante", "id_instalacion") 
-VALUES ('2026-11-20', '18:00', '20:00', 1, 2, 1);
+VALUES ('2026-11-20', '19:30', '21:30', 3, 5, 1);
 -- 6. Tarea de jardinería en la instalación (Corte de césped: 08:00 a 09:30) [Sobreescribible]
 INSERT INTO "TareaMantenimiento" ("id_instalacion", "fecha", "hora_inicio", "hora_fin", "descripcion") 
 VALUES (1, '2026-11-20', '08:00', '09:30', 'Corte de césped');
 INSERT INTO "TareaMantenimientoJardinero" ("id_tarea", "dni_jardinero") 
 VALUES ((SELECT last_insert_rowid()), '70707070F');
+
+-- 7. Reserva externa de particular -> SOBREESCRIBIBLE
+INSERT INTO "Reserva" ("fecha", "hora_inicio", "hora_fin", "importe", "fecha_registro", "id_usuario", "id_instalacion") 
+VALUES ('2026-11-20', '11:30', '13:00', 75.0, '2026-11-01 10:00', 1, 1);
+-- 8. Entrevista asignada a franja (Borja Bastón con Marca) -> SOBREESCRIBIBLE
+INSERT INTO "FranjaHoraria" ("dni_jugador", "fecha", "hora_inicio", "hora_fin") 
+VALUES ('11111111A', '2026-11-20', '14:00', '15:30');
+INSERT INTO "Entrevista" ("id_franja", "nombre_medio") 
+VALUES ((SELECT MAX(id_franja) FROM FranjaHoraria WHERE fecha = '2026-11-20' AND hora_inicio = '14:00'), 'Marca');
+
+-- Asignar entrenador y jugadores a Real Oviedo (id_equipo = 3)
+UPDATE "EmpleadoDeportivo" SET "id_equipo" = 3 WHERE "dni" = '33333333C';
+UPDATE "EmpleadoDeportivo" SET "id_equipo" = 3 WHERE "dni" IN (
+    '11111111A', '93000001A', '93000002B', 
+    '22222222B', '77777777G', '88888888H', '99999999I', '12345678J', '87654321K', '11223344L', '55667788M', '99887766N'
+);
+-- Asignar entrenador y jugadores a Real Oviedo B (id_equipo = 4)
+UPDATE "EmpleadoDeportivo" SET "id_equipo" = 4 WHERE "dni" = '66666666F';
+UPDATE "EmpleadoDeportivo" SET "id_equipo" = 4 WHERE "dni" IN (
+    '33445566O', '77889900P', '50505050A', '50505050B', '50505050C', '50505050D', '50505050E', '50505050F'
+);
