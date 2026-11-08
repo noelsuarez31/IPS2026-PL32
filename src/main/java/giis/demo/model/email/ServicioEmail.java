@@ -15,12 +15,18 @@ import jakarta.mail.Session;
 import jakarta.mail.Transport;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
+import jakarta.mail.internet.MimeBodyPart;
+import jakarta.mail.internet.MimeMultipart;
 
 public class ServicioEmail {
 
     public static final String FICHERO_CONFIGURACION = "email.properties";
 
     public void enviar(String destinatario, String asunto, String cuerpo) throws EmailException {
+        enviar(destinatario, asunto, cuerpo, null);
+    }
+
+    public void enviar(String destinatario, String asunto, String cuerpoTexto, String cuerpoHtml) throws EmailException {
         Properties cfg = cargarConfiguracion();
         String usuario;
         String clave;
@@ -41,10 +47,22 @@ public class ServicioEmail {
         });
         try {
             MimeMessage mensaje = new MimeMessage(sesion);
-            mensaje.setFrom(new InternetAddress(usuario, cfg.getProperty("email.remitente", "Tienda del club"), "UTF-8"));
+            mensaje.setFrom(
+                    new InternetAddress(usuario, cfg.getProperty("email.remitente", "Tienda del club"), "UTF-8"));
             mensaje.setRecipients(Message.RecipientType.TO, InternetAddress.parse(destinatario.trim(), false));
             mensaje.setSubject(asunto, "UTF-8");
-            mensaje.setText(cuerpo, "UTF-8");
+            if (cuerpoHtml == null) {
+                mensaje.setText(cuerpoTexto, "UTF-8");
+            } else {
+                MimeBodyPart texto = new MimeBodyPart();
+                texto.setText(cuerpoTexto, "UTF-8");
+                MimeBodyPart html = new MimeBodyPart();
+                html.setContent(cuerpoHtml, "text/html; charset=UTF-8");
+                MimeMultipart partes = new MimeMultipart("alternative");
+                partes.addBodyPart(texto); // el cliente muestra la ultima que soporte
+                partes.addBodyPart(html);
+                mensaje.setContent(partes);
+            }
             Transport.send(mensaje);
         } catch (MessagingException | UnsupportedEncodingException e) {
             throw new EmailException("No se pudo enviar el email a " + destinatario, e);
