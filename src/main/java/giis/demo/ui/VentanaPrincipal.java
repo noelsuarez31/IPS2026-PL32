@@ -26,6 +26,7 @@ import giis.demo.model.horarios.GestionHorariosPeriodicos;
 import giis.demo.model.tienda.VentaMerchandising;
 import giis.demo.ui.abonos.VentanaAbono;
 import giis.demo.ui.abonos.entradas.VentanaIdentificacion;
+import giis.demo.ui.accion.VentanaCompraAcciones;
 import giis.demo.ui.accion.VentanaPortalAccionista;
 import giis.demo.ui.contrataciones.VentanaAltaEmpleado;
 import giis.demo.ui.contrataciones.VentanaGestionEmpleados;
@@ -80,6 +81,7 @@ public class VentanaPrincipal extends JFrame {
 	private JMenu mnAbonado;
 	private JMenu mnAccionista;
 	private JMenuItem mntmPortalAccionista;
+	private JMenuItem mntmComprarAcciones;
 	private JMenuItem mntmComprarAbono;
 	private JMenuItem mntmAñadirMantenimiento;
 	private JMenuItem mniVenderAbonado;
@@ -603,6 +605,7 @@ public class VentanaPrincipal extends JFrame {
 			mnAccionista = new JMenu("Accionista");
 			mnAccionista.setMnemonic('C');
 			mnAccionista.add(getMntmPortalAccionista());
+			mnAccionista.add(getMntmComprarAcciones());
 		}
 		return mnAccionista;
 	}
@@ -624,6 +627,25 @@ public class VentanaPrincipal extends JFrame {
 		VentanaPortalAccionista vpa = new VentanaPortalAccionista(this);
 		this.setVisible(false);
 		vpa.setVisible(true);
+	}
+
+	private JMenuItem getMntmComprarAcciones() {
+		if (mntmComprarAcciones == null) {
+			mntmComprarAcciones = new JMenuItem("Comprar acciones");
+			mntmComprarAcciones.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					abrirVentanaCompraAcciones();
+				}
+			});
+		}
+		return mntmComprarAcciones;
+	}
+
+	private void abrirVentanaCompraAcciones() {
+		VentanaCompraAcciones vca = new VentanaCompraAcciones(this);
+		this.setVisible(false);
+		vca.setVisible(true);
 	}
 	
 	private JMenuItem getMntmRegistrarEntrenamiento() {

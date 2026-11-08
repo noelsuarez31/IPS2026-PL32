@@ -106,4 +106,32 @@ public class GestionAcciones {
 		}
 		jdbc.retirarAccionDeVenta(idAccion);
 	}
+
+	/**
+	 * Obtiene el listado de acciones puestas a la venta por otros accionistas,
+	 * excluyendo las pertenecientes al comprador indicado.
+	 * @param dniCompradorExcluir DNI del comprador para no mostrar sus propias acciones
+	 * @return lista de acciones en venta disponibles para compra
+	 * @throws SQLException si ocurre un error de base de datos
+	 */
+	public List<Accion> obtenerAccionesEnVenta(String dniCompradorExcluir) throws SQLException {
+		return jdbc.getAccionesEnVenta(dniCompradorExcluir);
+	}
+
+	/**
+	 * Ejecuta la compra de una o varias acciones por parte de un accionista comprador.
+	 * @param dniComprador DNI del accionista comprador
+	 * @param idsAcciones lista de identificadores de las acciones a comprar
+	 * @throws SQLException si ocurre un error de base de datos
+	 * @throws ApplicationException si no se selecciona ninguna acción o falla alguna regla de negocio
+	 */
+	public void comprarAcciones(String dniComprador, List<Integer> idsAcciones) throws SQLException {
+		if (dniComprador == null || dniComprador.isBlank()) {
+			throw new ApplicationException("Debe seleccionar un accionista comprador válido.");
+		}
+		if (idsAcciones == null || idsAcciones.isEmpty()) {
+			throw new ApplicationException("Debe seleccionar al menos una acción para comprar.");
+		}
+		jdbc.comprarAcciones(dniComprador, idsAcciones);
+	}
 }

@@ -999,4 +999,18 @@ public class JDBC {
 	public void retirarAccionDeVenta(int idAccion) throws SQLException {
 		AccionJdbc.retirarAccionDeVenta(con, idAccion);
 	}
+
+	/**
+	 * Devuelve las acciones puestas a la venta por otros accionistas (excluyendo las del comprador).
+	 */
+	public List<Accion> getAccionesEnVenta(String dniCompradorExcluir) throws SQLException {
+		return AccionJdbc.getAccionesEnVenta(con, dniCompradorExcluir);
+	}
+
+	/**
+	 * Ejecuta la compra de una o varias acciones por parte de un comprador.
+	 */
+	public void comprarAcciones(String dniComprador, List<Integer> idsAcciones) throws SQLException {
+		AccionJdbc.comprarAcciones(con, dniComprador, idsAcciones);
+	}
 }
