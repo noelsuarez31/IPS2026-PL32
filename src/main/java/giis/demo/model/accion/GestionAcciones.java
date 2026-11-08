@@ -76,4 +76,34 @@ public class GestionAcciones {
 	public List<Accion> obtenerAccionesAccionista(String dni) throws SQLException {
 		return jdbc.getAccionesPropietario(dni);
 	}
+
+	/**
+	 * Pone una acción a la venta validando que el precio sea mayor que cero.
+	 * @param idAccion identificador de la acción
+	 * @param precioVenta precio de venta por acción
+	 * @throws SQLException si ocurre un error de base de datos
+	 * @throws ApplicationException si la acción no es válida o el precio no es mayor que cero
+	 */
+	public void ponerAccionEnVenta(int idAccion, BigDecimal precioVenta) throws SQLException {
+		if (idAccion <= 0) {
+			throw new ApplicationException("Debe seleccionar una acción válida.");
+		}
+		if (precioVenta == null || precioVenta.compareTo(BigDecimal.ZERO) <= 0) {
+			throw new ApplicationException("El precio por acción debe ser mayor que cero.");
+		}
+		jdbc.ponerAccionEnVenta(idAccion, precioVenta);
+	}
+
+	/**
+	 * Retira una acción de la venta restableciendo su estado y precio.
+	 * @param idAccion identificador de la acción
+	 * @throws SQLException si ocurre un error de base de datos
+	 * @throws ApplicationException si la acción no es válida
+	 */
+	public void retirarAccionDeVenta(int idAccion) throws SQLException {
+		if (idAccion <= 0) {
+			throw new ApplicationException("Debe seleccionar una acción válida.");
+		}
+		jdbc.retirarAccionDeVenta(idAccion);
+	}
 }

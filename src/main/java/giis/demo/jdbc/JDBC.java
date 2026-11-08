@@ -1,5 +1,6 @@
 package giis.demo.jdbc;
 
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -806,5 +807,19 @@ public class JDBC {
 	 */
 	public List<Accion> getAccionesPropietario(String dni) throws SQLException {
 		return AccionJdbc.getAccionesPropietario(con, dni);
+	}
+
+	/**
+	 * Pone una acción a la venta fijando su precio de venta.
+	 */
+	public void ponerAccionEnVenta(int idAccion, BigDecimal precioVenta) throws SQLException {
+		AccionJdbc.ponerAccionEnVenta(con, idAccion, precioVenta);
+	}
+
+	/**
+	 * Retira una acción de la venta restableciendo su estado y precio.
+	 */
+	public void retirarAccionDeVenta(int idAccion) throws SQLException {
+		AccionJdbc.retirarAccionDeVenta(con, idAccion);
 	}
 }

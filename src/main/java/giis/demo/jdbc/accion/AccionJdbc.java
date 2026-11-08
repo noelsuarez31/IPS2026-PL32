@@ -34,6 +34,14 @@ public class AccionJdbc {
 			+ "WHERE UPPER(a.dni_propietario) = UPPER(?) "
 			+ "ORDER BY a.fecha_adquisicion ASC, a.id_accion ASC";
 
+	// 5. Poner una acción a la venta fijando su precio de venta
+	private static final String QUERY_PONER_ACCION_EN_VENTA = 
+			"UPDATE Accion SET en_venta = 1, precio_venta = ? WHERE id_accion = ? AND en_venta = 0";
+
+	// 6. Retirar una acción de la venta
+	private static final String QUERY_RETIRAR_ACCION_DE_VENTA = 
+			"UPDATE Accion SET en_venta = 0, precio_venta = NULL WHERE id_accion = ? AND en_venta = 1";
+
 	/**
 	 * Devuelve la lista de todos los accionistas registrados en el club.
 	 */
@@ -125,5 +133,26 @@ public class AccionJdbc {
 			}
 		}
 		return acciones;
+	}
+
+	/**
+	 * Pone una acción a la venta fijando su precio de venta.
+	 */
+	public static void ponerAccionEnVenta(Connection con, int idAccion, BigDecimal precioVenta) throws SQLException {
+		try (PreparedStatement ps = con.prepareStatement(QUERY_PONER_ACCION_EN_VENTA)) {
+			ps.setDouble(1, precioVenta.doubleValue());
+			ps.setInt(2, idAccion);
+			ps.executeUpdate();
+		}
+	}
+
+	/**
+	 * Retira una acción de la venta restableciendo su estado y precio.
+	 */
+	public static void retirarAccionDeVenta(Connection con, int idAccion) throws SQLException {
+		try (PreparedStatement ps = con.prepareStatement(QUERY_RETIRAR_ACCION_DE_VENTA)) {
+			ps.setInt(1, idAccion);
+			ps.executeUpdate();
+		}
 	}
 }
