@@ -34,7 +34,7 @@ import giis.demo.util.UnexpectedException;
 
 /**
  * Ventana del Portal del Accionista para la consulta de acciones en propiedad,
- * origen, estado de venta y porcentaje de participación en el club.
+ * origen, estado de venta, puesta en venta y porcentaje de participación en el club.
  */
 public class VentanaPortalAccionista extends JFrame {
 
@@ -42,6 +42,7 @@ public class VentanaPortalAccionista extends JFrame {
 
 	private VentanaPrincipal vp;
 	private GestionAcciones gestionAcciones;
+	private Accionista accionistaActual;
 
 	// Zona Norte: Autenticación / Selección del DNI del accionista
 	private JLabel lblDniAccionista;
@@ -56,13 +57,14 @@ public class VentanaPortalAccionista extends JFrame {
 	private DefaultTableModel modeloAcciones;
 	private JScrollPane scrollPaneAcciones;
 
-	// Zona Sur: Métricas de participación y botón de navegación
+	// Zona Sur: Métricas de participación y botones de acción
 	private JLabel lblTotalAccionesTexto;
 	private JLabel lblTotalAcciones;
 	private JLabel lblTotalClubTexto;
 	private JLabel lblTotalClub;
 	private JLabel lblParticipacionTexto;
 	private JLabel lblParticipacion;
+	private JButton btnVender;
 	private JButton btnAtras;
 
 	/**
@@ -107,7 +109,7 @@ public class VentanaPortalAccionista extends JFrame {
 		panelCentro.add(getScrollPaneAcciones(), BorderLayout.CENTER);
 		contentPane.add(panelCentro, BorderLayout.CENTER);
 
-		// 3. ZONA SUR: Métricas de participación (izquierda) y botón Atrás (derecha)
+		// 3. ZONA SUR: Métricas de participación (izquierda) y botones Vender / Atrás (derecha)
 		JPanel panelSur = new JPanel(new BorderLayout());
 
 		JPanel panelMetricas = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 5));
@@ -118,8 +120,12 @@ public class VentanaPortalAccionista extends JFrame {
 		panelMetricas.add(getLblParticipacionTexto());
 		panelMetricas.add(getLblParticipacion());
 
+		JPanel panelBotonesSur = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 5));
+		panelBotonesSur.add(getBtnVender());
+		panelBotonesSur.add(getBtnAtras());
+
 		panelSur.add(panelMetricas, BorderLayout.WEST);
-		panelSur.add(getBtnAtras(), BorderLayout.EAST);
+		panelSur.add(panelBotonesSur, BorderLayout.EAST);
 		contentPane.add(panelSur, BorderLayout.SOUTH);
 
 		setLocationRelativeTo(null);
@@ -140,6 +146,13 @@ public class VentanaPortalAccionista extends JFrame {
 		};
 		getTablaAcciones().setModel(modeloAcciones);
 
+		// Evento de selección en la tabla de acciones
+		getTablaAcciones().getSelectionModel().addListSelectionListener(e -> {
+			if (!e.getValueIsAdjusting()) {
+				actualizarEstadoBotonVender();
+			}
+		});
+
 		// Cargar lista inicial de DNIs de accionistas en el ComboBox
 		cargarDnisAccionistas();
 
@@ -148,6 +161,9 @@ public class VentanaPortalAccionista extends JFrame {
 
 		// Acción al pulsar ENTER en el editor del ComboBox
 		getCbDni().getEditor().addActionListener(e -> SwingUtil.exceptionWrapper(() -> ejecutarAcceso()));
+
+		// Botón Vender
+		getBtnVender().addActionListener(e -> SwingUtil.exceptionWrapper(() -> ejecutarVentaAccion()));
 
 		// Botón Atrás
 		getBtnAtras().addActionListener(new ActionListener() {
@@ -192,39 +208,108 @@ public class VentanaPortalAccionista extends JFrame {
 		Accionista accionista = null;
 		try {
 			accionista = gestionAcciones.validarYObtenerAccionista(dni);
+			this.accionistaActual = accionista;
+			cargarDatosAccionista(accionista);
+			actualizarEstadoBotonVender();
 		} catch (SQLException ex) {
 			throw new UnexpectedException(ex);
 		}
+	}
 
-		// Si es válido, actualizamos el nombre del titular
+	/**
+	 * Carga las métricas y la tabla de acciones del accionista indicado.
+	 */
+	private void cargarDatosAccionista(Accionista accionista) throws SQLException {
+		// Actualizar titular
 		getLblTitular().setText(accionista.getNombreCompleto());
 
-		try {
-			// 1. Cargar métricas de participación
-			ResumenParticipacion resumen = gestionAcciones.obtenerResumenParticipacion(accionista.getDni());
-			getLblTotalAcciones().setText(String.valueOf(resumen.getTotalAccionesPropias()));
-			getLblTotalClub().setText(String.valueOf(resumen.getTotalAccionesClub()));
-			getLblParticipacion().setText(String.format(Locale.GERMAN, "%.2f %%", resumen.getPorcentajeParticipacion()));
+		// 1. Cargar métricas de participación
+		ResumenParticipacion resumen = gestionAcciones.obtenerResumenParticipacion(accionista.getDni());
+		getLblTotalAcciones().setText(String.valueOf(resumen.getTotalAccionesPropias()));
+		getLblTotalClub().setText(String.valueOf(resumen.getTotalAccionesClub()));
+		getLblParticipacion().setText(String.format(Locale.GERMAN, "%.2f %%", resumen.getPorcentajeParticipacion()));
 
-			// 2. Cargar tabla de acciones en propiedad ordenadas por fecha de adquisición
-			List<Accion> acciones = gestionAcciones.obtenerAccionesAccionista(accionista.getDni());
-			modeloAcciones.setRowCount(0);
-			for (Accion a : acciones) {
-				String strPrecioPagado = String.format(Locale.GERMAN, "%.2f €", a.getPrecioPagado());
-				String strEnVenta = a.isEnVenta() ? "Sí" : "No";
-				String strPrecioVenta = (a.getPrecioVenta() != null)
-						? String.format(Locale.GERMAN, "%.2f €", a.getPrecioVenta())
-						: "-";
+		// 2. Cargar tabla de acciones en propiedad ordenadas por fecha de adquisición
+		List<Accion> acciones = gestionAcciones.obtenerAccionesAccionista(accionista.getDni());
+		modeloAcciones.setRowCount(0);
+		for (Accion a : acciones) {
+			String strPrecioPagado = String.format(Locale.GERMAN, "%.2f €", a.getPrecioPagado());
+			String strEnVenta = a.isEnVenta() ? "Sí" : "No";
+			String strPrecioVenta = (a.getPrecioVenta() != null)
+					? String.format(Locale.GERMAN, "%.2f €", a.getPrecioVenta())
+					: "-";
 
-				modeloAcciones.addRow(new Object[] {
-						String.format("%03d", a.getIdAccion()),
-						a.getFechaAdquisicion(),
-						a.getOrigen(),
-						strPrecioPagado,
-						strEnVenta,
-						strPrecioVenta
-				});
+			modeloAcciones.addRow(new Object[] {
+					String.format("%03d", a.getIdAccion()),
+					a.getFechaAdquisicion(),
+					a.getOrigen(),
+					strPrecioPagado,
+					strEnVenta,
+					strPrecioVenta
+			});
+		}
+	}
+
+	/**
+	 * Actualiza el estado habilitado/deshabilitado del botón Vender en base a la fila seleccionada.
+	 * Solo se habilita si hay una acción seleccionada y dicha acción no está ya en venta ("No").
+	 */
+	private void actualizarEstadoBotonVender() {
+		int fila = getTablaAcciones().getSelectedRow();
+		if (fila == -1) {
+			getBtnVender().setEnabled(false);
+			return;
+		}
+		Object enVenta = modeloAcciones.getValueAt(fila, 4);
+		getBtnVender().setEnabled("No".equalsIgnoreCase(String.valueOf(enVenta)));
+	}
+
+	/**
+	 * Gestiona el proceso de puesta en venta de la acción seleccionada abriendo el diálogo modal.
+	 */
+	private void ejecutarVentaAccion() {
+		int fila = getTablaAcciones().getSelectedRow();
+		if (fila == -1) {
+			return;
+		}
+		Object enVenta = modeloAcciones.getValueAt(fila, 4);
+		if (!"No".equalsIgnoreCase(String.valueOf(enVenta))) {
+			return;
+		}
+
+		String strIdAccion = String.valueOf(modeloAcciones.getValueAt(fila, 0));
+		int idAccion = Integer.parseInt(strIdAccion);
+
+		DialogoVentaAccion dialogo = new DialogoVentaAccion(this);
+		dialogo.setVisible(true);
+
+		if (dialogo.isConfirmado()) {
+			try {
+				gestionAcciones.ponerAccionEnVenta(idAccion, dialogo.getPrecioVenta());
+			} catch (SQLException ex) {
+				throw new UnexpectedException(ex);
 			}
+			recargarDatosAccionista(idAccion);
+		}
+	}
+
+	/**
+	 * Recarga los datos del accionista actual y vuelve a seleccionar la fila de la acción indicada.
+	 */
+	private void recargarDatosAccionista(int idAccionSeleccionar) {
+		if (accionistaActual == null) {
+			return;
+		}
+		try {
+			cargarDatosAccionista(accionistaActual);
+			// Buscar la fila de la acción para mantenerla seleccionada
+			for (int i = 0; i < modeloAcciones.getRowCount(); i++) {
+				if (Integer.parseInt(String.valueOf(modeloAcciones.getValueAt(i, 0))) == idAccionSeleccionar) {
+					getTablaAcciones().setRowSelectionInterval(i, i);
+					break;
+				}
+			}
+			actualizarEstadoBotonVender();
 		} catch (SQLException ex) {
 			throw new UnexpectedException(ex);
 		}
@@ -352,6 +437,15 @@ public class VentanaPortalAccionista extends JFrame {
 			lblParticipacion.setForeground(new Color(0, 102, 204));
 		}
 		return lblParticipacion;
+	}
+
+	private JButton getBtnVender() {
+		if (btnVender == null) {
+			btnVender = new JButton("Vender");
+			btnVender.setPreferredSize(new Dimension(100, 30));
+			btnVender.setEnabled(false);
+		}
+		return btnVender;
 	}
 
 	private JButton getBtnAtras() {

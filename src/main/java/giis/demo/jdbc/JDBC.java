@@ -1,5 +1,6 @@
 package giis.demo.jdbc;
 
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -7,11 +8,13 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
-import giis.demo.exceptions.PersistenceException;
+
 import giis.demo.exceptions.AbonoNoPermitidoException;
+import giis.demo.exceptions.PersistenceException;
 import giis.demo.jdbc.abonados.AbonadoJdbc;
 import giis.demo.jdbc.abonados.AbonoJdbc;
 import giis.demo.jdbc.abonados.EntradaAbonadoJdbc;
+import giis.demo.jdbc.accion.AccionJdbc;
 import giis.demo.jdbc.empleado.BaseEmpleadoJdbc;
 import giis.demo.jdbc.empleado.EmpleadoDeportivoJdbc;
 import giis.demo.jdbc.empleado.EmpleadoNoDeportivoJdbc;
@@ -28,9 +31,6 @@ import giis.demo.jdbc.historial.HistorialJdbc;
 import giis.demo.jdbc.horarios.HorarioEspecificoJdbc;
 import giis.demo.jdbc.horarios.HorarioPeriodicoJdbc;
 import giis.demo.jdbc.mantenimiento.TareaMantenimientoJdbc;
-import giis.demo.jdbc.accion.AccionJdbc;
-import giis.demo.model.accion.Accion;
-import giis.demo.model.accion.Accionista;
 import giis.demo.jdbc.reservas.ComprobarDisponibilidadJdbc;
 import giis.demo.jdbc.reservas.InstalacionJdbc;
 import giis.demo.jdbc.reservas.ReservaJdbc;
@@ -39,6 +39,8 @@ import giis.demo.jdbc.tienda.ProductoJdbc;
 import giis.demo.jdbc.tienda.RegistrarVentaMerchandising;
 import giis.demo.model.abonos.Abonado;
 import giis.demo.model.abonos.Abono;
+import giis.demo.model.accion.Accion;
+import giis.demo.model.accion.Accionista;
 import giis.demo.model.empleado.BaseEmpleado;
 import giis.demo.model.empleado.EmpleadoDeportivo;
 import giis.demo.model.empleado.EmpleadoNoDeportivo;
@@ -740,6 +742,7 @@ public class JDBC {
 		return FranjaJdbc.obtenerPartidosYEntrenamientos(con, idEquipo, fecha);
 	}
 	
+	
 	/**
 	 * Devuelve el precio de un asiento para un partido y una sección dadas
 	 * 
@@ -753,6 +756,7 @@ public class JDBC {
 		return PrecioSeccionJdbc.getPrecio(con, idPartido, seccion);
 		
 	}
+	
 	/**
 	 * Devuelve la lista de empleados que tienen puesto de JARDINERIA
 	 */
@@ -840,8 +844,9 @@ public class JDBC {
 	public int registrarEntradaAbonado(String dni, Partido partido) throws SQLException, AbonoNoPermitidoException {
 		return EntradaAbonadoJdbc.registrar(con, dni, partido);
 	}
+	
 	/**
-	 * Devuelve la lista completa de todos los accionistas registrados.
+	* Devuelve la lista completa de todos los accionistas registrados.
 	 */
 	public List<Accionista> getAccionistas() throws SQLException {
 		return AccionJdbc.getAccionistas(con);
@@ -867,6 +872,50 @@ public class JDBC {
 	public List<Accion> getAccionesPropietario(String dni) throws SQLException {
 		return AccionJdbc.getAccionesPropietario(con, dni);
 	}
+
+    /**
+     * Devuelve la lista de equipos externos rivales (visitantes)
+     */
+    public List<Equipo> getEquiposVisitantes() throws SQLException {
+        return EquipoJdbc.getEquiposExternos(con);
+    }
+    
+    /**
+     * Devuelve la lista de equipos propios de la organización (locales)
+     */
+    public List<Equipo> getEquiposPropios() throws SQLException {
+        return EquipoJdbc.getEquiposPropios(con);
+    }
+    
+    /**
+	 * Comprueba colisiones de horario para un partido en la instalación y fecha.
+	 */
+	public void comprobarColisionesPartido(LocalDate fecha, LocalTime horaInicio, LocalTime horaFin, int idInstalacion)
+			throws SQLException {
+		EquipoJdbc.comprobarColisionesPartido(con, fecha, horaInicio, horaFin, idInstalacion);
+	}
+	
+	public List<EventoOcupacion> obtenerSobreescribiblesPartidoSolapados(int idEquipoLocal, int idInstalacion,
+			LocalDate fecha, LocalTime horaInicio, LocalTime horaFin) throws SQLException {
+		return EquipoJdbc.obtenerSobreescribiblesPartidoSolapados(con, idEquipoLocal, idInstalacion, fecha, horaInicio, horaFin);
+	}
+	
+	/**
+	 * Registra el partido, sus precios de sección y cancela atómicamente los eventos sobreescritos.
+	 */
+	public void guardarPartidoCancelandoCoincidentes(int idLocal, int idVisitante, int idInstalacion, LocalDate fecha,
+			LocalTime horaInicio, LocalTime horaFin, boolean esDiaClub, double precioAbonado,
+			Map<TipoSeccion, Double> preciosSeccion, List<EventoOcupacion> cancelables)
+			throws SQLException {
+		EquipoJdbc.guardarPartidoCancelandoCoincidentes(con, idLocal, idVisitante, idInstalacion, fecha, horaInicio,
+				horaFin, esDiaClub, precioAbonado, preciosSeccion, cancelables);
+	}
+	
+	public List<EventoOcupacion> obtenerEventosOcupacionPartido(int idEquipoLocal, int idInstalacion, LocalDate fecha)
+			throws SQLException {
+		return EquipoJdbc.obtenerEventosOcupacionPartido(con, idEquipoLocal, idInstalacion, fecha);
+	}
+	 
 	
 	/**
 	 * Devuelve una lista de dnis de entrenadores con equipos asociados
@@ -935,5 +984,33 @@ public class JDBC {
 	public void guardarEntrenamientoCancelandoCoincidentes(LocalDate fecha, LocalTime horaInicio, LocalTime horaFin,
 			int idEquipo, int idInstalacion, List<EventoOcupacion> eventosACancelar) throws SQLException {
 		EntrenamientoJdbc.guardarEntrenamientoCancelandoCoincidentes(con, fecha, horaInicio, horaFin, idEquipo, idInstalacion, eventosACancelar);
+	}
+
+	/**
+	 * Pone una acción a la venta fijando su precio de venta.
+	 */
+	public void ponerAccionEnVenta(int idAccion, BigDecimal precioVenta) throws SQLException {
+		AccionJdbc.ponerAccionEnVenta(con, idAccion, precioVenta);
+	}
+
+	/**
+	 * Retira una acción de la venta restableciendo su estado y precio.
+	 */
+	public void retirarAccionDeVenta(int idAccion) throws SQLException {
+		AccionJdbc.retirarAccionDeVenta(con, idAccion);
+	}
+
+	/**
+	 * Devuelve las acciones puestas a la venta por otros accionistas (excluyendo las del comprador).
+	 */
+	public List<Accion> getAccionesEnVenta(String dniCompradorExcluir) throws SQLException {
+		return AccionJdbc.getAccionesEnVenta(con, dniCompradorExcluir);
+	}
+
+	/**
+	 * Ejecuta la compra de una o varias acciones por parte de un comprador.
+	 */
+	public void comprarAcciones(String dniComprador, List<Integer> idsAcciones) throws SQLException {
+		AccionJdbc.comprarAcciones(con, dniComprador, idsAcciones);
 	}
 }

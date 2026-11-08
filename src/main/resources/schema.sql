@@ -171,7 +171,7 @@ CREATE TABLE IF NOT EXISTS "Partido" (
 	
 	"dia_del_club" INTEGER NOT NULL DEFAULT 0 CHECK("dia_del_club" IN (0,1)),
 	"precio_abonado" REAL CHECK("precio_abonado" IS NULL OR "precio_abonado" >= 0),
-	 
+	
 	FOREIGN KEY("id_local") REFERENCES "Equipo"("id_equipo"),
 	FOREIGN KEY("id_visitante") REFERENCES "Equipo"("id_equipo"),
 	FOREIGN KEY("id_instalacion") REFERENCES "Instalacion"("id_instalacion"),

@@ -88,7 +88,6 @@ public class VentanaHorarioPeriodico extends JFrame {
 		panelNorte.add(getSpHoraFin());
 		panelNorte.add(getLblMinutoFinal());
 		panelNorte.add(getSpMinFin());
-		panelNorte.add(getBtnGuardar());
 		contentPane.add(panelNorte, BorderLayout.NORTH);
 
 		// 2. ZONA CENTRO: Dos columnas (50% empleados, 50% horarios)
@@ -106,14 +105,18 @@ public class VentanaHorarioPeriodico extends JFrame {
 
 		contentPane.add(panelCentro, BorderLayout.CENTER);
 
-		// 3. ZONA SUR: Contador de horas a la izquierda y botón Atrás a la derecha
+		// 3. ZONA SUR: Contador de horas a la izquierda y botones Atrás / Guardar a la derecha
 		JPanel panelSur = new JPanel(new BorderLayout());
 		JPanel panelHoras = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 5));
 		panelHoras.add(getLblHorasSemanaTexto());
 		panelHoras.add(getLblHorasSemana());
 
+		JPanel panelBotonesSur = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 5));
+		panelBotonesSur.add(getBtnAtras());
+		panelBotonesSur.add(getBtnGuardar());
+
 		panelSur.add(panelHoras, BorderLayout.WEST);
-		panelSur.add(getBtnAtras(), BorderLayout.EAST);
+		panelSur.add(panelBotonesSur, BorderLayout.EAST);
 		contentPane.add(panelSur, BorderLayout.SOUTH);
 
 		setLocationRelativeTo(null);
@@ -165,7 +168,7 @@ public class VentanaHorarioPeriodico extends JFrame {
 	public JButton getBtnGuardar() {
 		if (btnGuardar == null) {
 			btnGuardar = new JButton("Guardar");
-			btnGuardar.setPreferredSize(new Dimension(85, 28));
+			btnGuardar.setPreferredSize(new Dimension(110, 30));
 		}
 		return btnGuardar;
 	}

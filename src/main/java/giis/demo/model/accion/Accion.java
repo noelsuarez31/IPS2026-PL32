@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 
 /**
  * Objeto de transferencia de datos (DTO) para la visualización tabular de las
- * acciones de un accionista en el portal.
+ * acciones de un accionista en el portal y de las acciones en venta en el mercado.
  */
 public class Accion {
 
@@ -14,18 +14,27 @@ public class Accion {
 	private BigDecimal precioPagado;
 	private boolean enVenta;
 	private BigDecimal precioVenta;
+	private String dniVendedor;
+	private String nombreVendedor;
 
 	public Accion() {
 	}
 
 	public Accion(int idAccion, String fechaAdquisicion, String origen, BigDecimal precioPagado, boolean enVenta,
 			BigDecimal precioVenta) {
+		this(idAccion, fechaAdquisicion, origen, precioPagado, enVenta, precioVenta, null, null);
+	}
+
+	public Accion(int idAccion, String fechaAdquisicion, String origen, BigDecimal precioPagado, boolean enVenta,
+			BigDecimal precioVenta, String dniVendedor, String nombreVendedor) {
 		this.idAccion = idAccion;
 		this.fechaAdquisicion = fechaAdquisicion;
 		this.origen = origen;
 		this.precioPagado = precioPagado;
 		this.enVenta = enVenta;
 		this.precioVenta = precioVenta;
+		this.dniVendedor = dniVendedor;
+		this.nombreVendedor = nombreVendedor;
 	}
 
 	public int getIdAccion() {
@@ -74,5 +83,21 @@ public class Accion {
 
 	public void setPrecioVenta(BigDecimal precioVenta) {
 		this.precioVenta = precioVenta;
+	}
+
+	public String getDniVendedor() {
+		return dniVendedor;
+	}
+
+	public void setDniVendedor(String dniVendedor) {
+		this.dniVendedor = dniVendedor;
+	}
+
+	public String getNombreVendedor() {
+		return nombreVendedor;
+	}
+
+	public void setNombreVendedor(String nombreVendedor) {
+		this.nombreVendedor = nombreVendedor;
 	}
 }
