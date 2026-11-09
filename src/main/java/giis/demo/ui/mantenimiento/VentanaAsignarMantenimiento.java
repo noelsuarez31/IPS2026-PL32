@@ -39,6 +39,7 @@ import giis.demo.model.mantenimiento.TareaMantenimiento;
 import giis.demo.model.reserva.Instalacion;
 import giis.demo.model.reserva.Intervalo;
 import giis.demo.ui.VentanaPrincipal;
+import giis.demo.util.ApplicationException;
 import giis.demo.util.SwingUtil;
 import giis.demo.util.UnexpectedException;
 
@@ -577,6 +578,11 @@ public class VentanaAsignarMantenimiento extends JFrame {
 			JOptionPane.showMessageDialog(this, "Por favor, selecciona una fecha válida con el calendario.", "Aviso",
 					JOptionPane.WARNING_MESSAGE);
 			return;
+		}
+
+		LocalDate fechaSeleccionada = LocalDate.parse(fecha);
+		if (fechaSeleccionada.isBefore(LocalDate.now())) {
+			throw new ApplicationException("Solo se puede asignar una tarea de mantenimiento días posteriores al día actual.");
 		}
 
 		int[] filasSeleccionadas = getTablaJardineros().getSelectedRows();
