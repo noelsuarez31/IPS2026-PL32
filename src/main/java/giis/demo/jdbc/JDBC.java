@@ -17,6 +17,7 @@ import giis.demo.jdbc.abonados.AbonoJdbc;
 import giis.demo.jdbc.abonados.EntradaAbonadoJdbc;
 import giis.demo.jdbc.accion.AccionJdbc;
 import giis.demo.jdbc.accion.CampanaJdbc;
+import giis.demo.jdbc.accion.CompraCampanaJdbc;
 import giis.demo.jdbc.empleado.BaseEmpleadoJdbc;
 import giis.demo.jdbc.empleado.EmpleadoDeportivoJdbc;
 import giis.demo.jdbc.empleado.EmpleadoNoDeportivoJdbc;
@@ -44,6 +45,7 @@ import giis.demo.model.abonos.Abono;
 import giis.demo.model.accion.Accion;
 import giis.demo.model.accion.Accionista;
 import giis.demo.model.accion.Campana;
+import giis.demo.model.accion.ResultadoCompra;
 import giis.demo.model.empleado.BaseEmpleado;
 import giis.demo.model.empleado.EmpleadoDeportivo;
 import giis.demo.model.empleado.EmpleadoNoDeportivo;
@@ -1066,4 +1068,21 @@ public class JDBC {
 	public void comprarAcciones(String dniComprador, List<Integer> idsAcciones) throws SQLException {
 		AccionJdbc.comprarAcciones(con, dniComprador, idsAcciones);
 	}
+	
+	/**
+	   * Acciones que aun puede comprar un accionista en la fase 1 de la campaña (0 si no consta).
+	   */
+	  public int getCupoFase1Campana(int idCampana, String dni) throws SQLException {
+	      return CompraCampanaJdbc.getCupoFase1(con, idCampana, dni);
+	  }
+
+	  /**
+	   * Registra la compra de acciones de la campaña en una unica transaccion.
+	   * 
+	   * @throws ApplicationException si la campaña ha cambiado desde que se mostró o se supera el cupo
+	   */
+	  public ResultadoCompra comprarAccionesCampana(Campana campana, Accionista comprador, boolean esNuevo, int unidades)
+	          throws SQLException {
+	      return CompraCampanaJdbc.comprar(con, campana, comprador, esNuevo, unidades);
+	  }
 }
