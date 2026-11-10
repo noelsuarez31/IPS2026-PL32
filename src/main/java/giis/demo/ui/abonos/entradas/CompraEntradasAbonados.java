@@ -6,6 +6,7 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
@@ -22,6 +23,7 @@ import giis.demo.exceptions.AbonoNoPermitidoException;
 import giis.demo.exceptions.EmailException;
 import giis.demo.model.abonos.Abonado;
 import giis.demo.model.abonos.Abono;
+import giis.demo.model.email.ResumenCompra;
 import giis.demo.model.email.ServicioEmail;
 import giis.demo.model.email.ValidadorEmail;
 import giis.demo.model.entradas.Partido;
@@ -328,12 +330,13 @@ public class CompraEntradasAbonados extends JFrame {
 
 		try {
 
-			se.enviar(email, "Compra de entradas abono : Día del club",
-					"Se ha comprado correctamente su entrada para el día del club.\n\n" + "Partido: " + partido + "\n"
-							+ "Asiento: " + getTfChair().getText() + "\n" + "Precio: " + getTfPrecio().getText() + "\n"
-							+ "Nº de venta: " + idVenta);
+			ResumenCompra resumen = new ResumenCompra("Entrada",
+					"Entrada del día del club (nº de venta " + idVenta + ")", LocalDateTime.now(),
+					partido.getPrecioAbonado());
+			resumen.addLinea("Entrada " + partido + " - " + getTfChair().getText(), 1, partido.getPrecioAbonado());
+			se.enviar(email, resumen.getAsunto(), resumen.getCuerpo(), resumen.getCuerpoHtml());
 
-		} catch (EmailException e) {
+		} catch (EmailException | RuntimeException e) {
 
 			JOptionPane.showMessageDialog(this, "No se ha podido enviar el email al usuario");
 			e.printStackTrace();

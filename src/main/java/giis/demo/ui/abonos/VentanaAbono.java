@@ -47,6 +47,7 @@ import giis.demo.model.abonos.Abonado;
 import giis.demo.model.abonos.Abono;
 import giis.demo.model.abonos.Abono.Categoria;
 import giis.demo.model.abonos.VentaDeAbonos;
+import giis.demo.model.email.ResumenCompra;
 import giis.demo.model.email.ServicioEmail;
 import giis.demo.model.email.ValidadorEmail;
 import giis.demo.model.entradas.enumerados.TipoSeccion;
@@ -605,12 +606,15 @@ public class VentanaAbono extends JFrame {
 			va.venderAbono(abonado, abono, equipo.getIdEquipo());
 			
 			try {
-				se.enviar(getTfEmail().getText(), "Compra de abono",
-						"Abono vendido correctamente.\n" + "Abonado: " + abonado.getNombre() + " " + abonado.getApellidos()
-								+ "\nDNI: " + abonado.getDni() + "\nCategoría: " + abono.getCategoria() + "\nAsiento: fila "
-								+ abono.getFila() + ", asiento " + abono.getAsiento() + "\nPrecio: " + abono.getPrecio()
-								+ " €");
-			} catch (EmailException e) {
+				ResumenCompra resumen = new ResumenCompra("Abono",
+						"Abono a nombre de " + abonado.getNombre() + " " + abonado.getApellidos() + " ("
+								+ abonado.getDni() + ")",
+						LocalDateTime.now(), abono.getPrecio());
+				resumen.addLinea("Abono " + abono.getCategoria() + " - " + equipo.getNombre() + " (fila "
+						+ abono.getFila() + ", asiento " + abono.getAsiento() + ")", 1, abono.getPrecio());
+				se.enviar(getTfEmail().getText().trim(), resumen.getAsunto(), resumen.getCuerpo(),
+						resumen.getCuerpoHtml());
+			} catch (EmailException | RuntimeException e) {
 
 				JOptionPane.showMessageDialog(null,"No se ha podido enviar el email.","Error al enviar el email" ,JOptionPane.INFORMATION_MESSAGE);
 				e.printStackTrace();

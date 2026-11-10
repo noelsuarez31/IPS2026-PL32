@@ -15,6 +15,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import javax.swing.DefaultComboBoxModel;
@@ -34,6 +35,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 
 import giis.demo.exceptions.EmailException;
 import giis.demo.exceptions.SinDisponibilidadException;
+import giis.demo.model.email.ResumenCompra;
 import giis.demo.model.email.ServicioEmail;
 import giis.demo.model.email.ValidadorEmail;
 import giis.demo.model.entradas.Butaca;
@@ -546,17 +548,24 @@ public class VentanaVentaEntradas extends JFrame {
 
 		final String email = getTfEmail().getText().trim();
 
+		// Datos para el email: se obtienen antes de guardar la venta, para que un fallo aqui no deje la venta a medias
+		Partido partido = (Partido) getCbPartido().getSelectedItem();
+		TipoSeccion seccion = (TipoSeccion) getCbSeccion().getSelectedItem();
+		double precioEntrada = venta.getPrecio(partido.getId_partido(), seccion.name());
+		int numEntradas = venta.getButacasSeleccionadas().size();
+		String asientos = tfAsientosObtenidos.getText();
+
 		venta.almacenar(venta.getIdPartido(), venta.getButacasSeleccionadas());
 		
 		try {
 
-			Partido partido = (Partido) getCbPartido().getSelectedItem();
+			ResumenCompra resumen = new ResumenCompra("Entradas", "Entradas para el partido " + partido,
+					LocalDateTime.now(), numEntradas * precioEntrada);
+			resumen.addLinea("Entrada " + partido + " - sección " + seccion + " (" + asientos + ")", numEntradas,
+					precioEntrada);
+			se.enviar(email, resumen.getAsunto(), resumen.getCuerpo(), resumen.getCuerpoHtml());
 
-			se.enviar(email, "Compra de entradas abono : Día del club",
-					"Se ha comprado correctamente su entrada para el " + " dia del club para el partido "
-							+ partido.toString());
-
-		} catch (EmailException e) {
+		} catch (EmailException | RuntimeException e) {
 
 			JOptionPane.showMessageDialog(this, "No se ha podido enviar el email al usuario");
 			e.printStackTrace();

@@ -39,7 +39,7 @@ public class VentanaHorarioPeriodico extends JFrame {
 	private VentanaPrincipal vp;
 	private GestionHorariosPeriodicos ghp;
 
-	private JComboBox cbDia;
+	private JComboBox<String> cbDia;
 	private JSpinner spHoraInicio;
 	private JSpinner spMinInicio;
 	private JSpinner spHoraFin;
@@ -123,9 +123,9 @@ public class VentanaHorarioPeriodico extends JFrame {
 		inicializarTablasYEventos();
 	}
 
-	public JComboBox getCbDia() {
+	public JComboBox<String> getCbDia() {
 		if (cbDia == null) {
-			cbDia = new JComboBox();
+			cbDia = new JComboBox<>();
 			cbDia.setModel(new DefaultComboBoxModel<String>(
 					new String[] { "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo" }));
 			cbDia.setPreferredSize(new Dimension(95, 26));
