@@ -32,8 +32,10 @@ drop table if exists TareaMantenimientoJardinero;
 drop table if exists TareaMantenimiento;
 
 drop table if exists Accion;
+drop table if exists CampanaAccionista;
 drop table if exists Campana;
 drop table if exists Accionista;
+
 
 CREATE TABLE IF NOT EXISTS "butaca" (
 	"id_butaca"	INTEGER,
@@ -283,9 +285,17 @@ CREATE TABLE IF NOT EXISTS "Accionista" (
 CREATE TABLE IF NOT EXISTS "Campana" (
 	"id_campana" INTEGER PRIMARY KEY AUTOINCREMENT,
 	"nombre" TEXT NOT NULL,
-	"fase" INTEGER NOT NULL CHECK("fase" > 0),
-	"precio_emision" REAL NOT NULL CHECK("precio_emision" > 0)
+	"fase" INTEGER NOT NULL CHECK("fase" BETWEEN 1 AND 3),
+	"precio_emision" REAL NOT NULL CHECK("precio_emision" > 0),
+	"num_acciones" INTEGER NOT NULL CHECK("num_acciones" > 0),
+	"acciones_vendidas" INTEGER NOT NULL DEFAULT 0 CHECK("acciones_vendidas" >= 0),
+	"estado" TEXT NOT NULL CHECK("estado" IN ('ACTIVA', 'CERRADA')),
+	"fecha_lanzamiento" TEXT NOT NULL,
+	CHECK("acciones_vendidas" <= "num_acciones")
 );
+
+-- Solo puede haber una campana activa a la vez
+CREATE UNIQUE INDEX IF NOT EXISTS "idx_campana_unica_activa" ON "Campana"("estado") WHERE "estado" = 'ACTIVA';
 
 CREATE TABLE IF NOT EXISTS "Accion" (
 	"id_accion" INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -299,4 +309,16 @@ CREATE TABLE IF NOT EXISTS "Accion" (
 	"vendedor_previo" TEXT,
 	FOREIGN KEY("dni_propietario") REFERENCES "Accionista"("dni"),
 	FOREIGN KEY("id_campana") REFERENCES "Campana"("id_campana")
+);
+
+-- Acciones que poseia cada accionista al lanzarse una campana (limite de la fase 1)
+-- y acciones que ha comprado en ella
+CREATE TABLE IF NOT EXISTS "CampanaAccionista" (
+	"id_campana" INTEGER NOT NULL,
+	"dni" TEXT NOT NULL,
+	"acciones_iniciales" INTEGER NOT NULL CHECK("acciones_iniciales" >= 0),
+	"acciones_compradas" INTEGER NOT NULL DEFAULT 0 CHECK("acciones_compradas" >= 0),
+	PRIMARY KEY("id_campana", "dni"),
+	FOREIGN KEY("id_campana") REFERENCES "Campana"("id_campana"),
+	FOREIGN KEY("dni") REFERENCES "Accionista"("dni")
 );

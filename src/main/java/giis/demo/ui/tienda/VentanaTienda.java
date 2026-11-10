@@ -324,16 +324,16 @@ public class VentanaTienda extends JFrame {
         for (Map.Entry<Producto, Integer> linea : controladorVenta.getCesta().getLineas().entrySet()) {
             Producto p = linea.getKey();
             int unidades = linea.getValue();
-            resumen.addDetalle(String.format("- %s: %d x %s = %s", p.getNombre(), unidades, ResumenCompra.precio(p.getPrecio()), ResumenCompra.precio(p.getPrecio() * unidades)));
+            resumen.addLinea(p.getNombre(), unidades, p.getPrecio());
         }
         return resumen;
     }
 
     private boolean enviarEmail(String destinatario, ResumenCompra resumen) {
         try {
-            new ServicioEmail().enviar(destinatario, resumen.getAsunto(), resumen.getCuerpo());
+            new ServicioEmail().enviar(destinatario, resumen.getAsunto(), resumen.getCuerpo(), resumen.getCuerpoHtml());
             return true;
-        } catch (EmailException e) {
+        } catch (EmailException | RuntimeException e) {
             e.printStackTrace();
             return false;
         }

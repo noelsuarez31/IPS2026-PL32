@@ -143,6 +143,11 @@ public class GestionTareaMantenimiento {
 			throw new ApplicationException("Debe seleccionar una fecha para la tarea.");
 		}
 
+		LocalDate fecha = LocalDate.parse(fechaStr);
+		if (fecha.isBefore(LocalDate.now())) {
+			throw new ApplicationException("Solo se puede asignar una tarea de mantenimiento días posteriores al día actual.");
+		}
+
 		// 3. Validación de horas
 		if (horaInicioStr == null || horaInicioStr.isBlank() || horaFinStr == null || horaFinStr.isBlank()) {
 			throw new ApplicationException("Debe indicar tanto la hora de inicio como la hora de fin.");
@@ -210,7 +215,7 @@ public class GestionTareaMantenimiento {
 		}
 
 		// 7. Validación de disponibilidad de la instalación (no solapar con reservas, partidos, etc.)
-		List<Intervalo> ocupaciones = jdbc.obtenerOcupaciones(idInstalacion, LocalDate.parse(fechaStr));
+		List<Intervalo> ocupaciones = jdbc.obtenerOcupaciones(idInstalacion, fecha);
 		for (Intervalo ocupado : ocupaciones) {
 			LocalTime inicioOcupado = ocupado.getHoraInicio();
 			LocalTime finOcupado = ocupado.getHoraFin();

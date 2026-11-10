@@ -564,9 +564,7 @@ public class VentanaVentaEntradas extends JFrame {
 			resumen.addLinea("Entrada " + partido + " - sección " + seccion + " (" + asientos + ")", numEntradas,
 					precioEntrada);
 			se.enviar(email, resumen.getAsunto(), resumen.getCuerpo(), resumen.getCuerpoHtml());
-
 		} catch (EmailException | RuntimeException e) {
-
 			JOptionPane.showMessageDialog(this, "No se ha podido enviar el email al usuario");
 			e.printStackTrace();
 		}

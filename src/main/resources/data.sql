@@ -28,6 +28,7 @@ delete from PrecioSeccion;
 delete from TareaMantenimientoJardinero;
 delete from TareaMantenimiento;
 delete from Accion;
+delete from CampanaAccionista;
 delete from Campana;
 delete from Accionista;
 
@@ -889,10 +890,10 @@ INSERT INTO "Accionista" ("dni", "nombre", "apellidos", "email") VALUES
 ('71765432C', 'Carlos', 'Rodríguez Menéndez', 'carlos.rodriguez@correo.es'),
 ('71654321D', 'Elena', 'García Suárez', 'elena.garcia@correo.es');
 
-INSERT INTO "Campana" ("id_campana", "nombre", "fase", "precio_emision") VALUES
-(1, 'Campaña 2024', 1, 10.00),
-(2, 'Campaña 2024', 2, 12.00),
-(3, 'Ampliación 2025', 1, 15.00);
+INSERT INTO "Campana" ("id_campana", "nombre", "fase", "precio_emision", "num_acciones", "acciones_vendidas", "estado", "fecha_lanzamiento") VALUES
+(1, 'Campaña 2024', 1, 10.00, 7, 7, 'CERRADA', '2024-01-01 09:00'),
+(2, 'Campaña 2024', 2, 12.00, 6, 6, 'CERRADA', '2024-05-15 09:00'),
+(3, 'Ampliación 2025', 1, 15.00, 5, 5, 'CERRADA', '2025-03-01 09:00');
 
 -- Acciones de prueba (para Lucas Vega Fernández - 71987654A, exactamente como en el prototipo)
 INSERT INTO "Accion" ("id_accion", "dni_propietario", "fecha_adquisicion", "precio_adquisicion", "en_venta", "precio_venta", "origen_tipo", "id_campana", "vendedor_previo") VALUES

@@ -26,7 +26,9 @@ import giis.demo.model.horarios.GestionHorariosPeriodicos;
 import giis.demo.model.tienda.VentaMerchandising;
 import giis.demo.ui.abonos.VentanaAbono;
 import giis.demo.ui.abonos.entradas.VentanaIdentificacion;
+import giis.demo.ui.accion.VentanaCampanasAcciones;
 import giis.demo.ui.accion.VentanaCompraAcciones;
+import giis.demo.ui.accion.VentanaCompraCampana;
 import giis.demo.ui.accion.VentanaPortalAccionista;
 import giis.demo.ui.contrataciones.VentanaAltaEmpleado;
 import giis.demo.ui.contrataciones.VentanaGestionEmpleados;
@@ -71,6 +73,7 @@ public class VentanaPrincipal extends JFrame {
 	private JMenuItem mntmAltaEmpleado;
 	private JMenuItem mntmGestionEmpleados;
 	private JMenuItem mntmHistorialVentas;
+	private JMenuItem mntmCampanasAcciones;
 	private JMenuItem mntmAñadirHorarioPeriodico;
 	private JMenuItem mntmAñadirHorarioEspecifico;
 	private JMenuItem mntmVisualizarHorarioSemanal;
@@ -81,6 +84,7 @@ public class VentanaPrincipal extends JFrame {
 	private JMenu mnAbonado;
 	private JMenu mnAccionista;
 	private JMenuItem mntmPortalAccionista;
+	private JMenuItem mntmComprarAccionesCampana;
 	private JMenuItem mntmComprarAcciones;
 	private JMenuItem mntmComprarAbono;
 	private JMenuItem mntmAñadirMantenimiento;
@@ -170,9 +174,29 @@ public class VentanaPrincipal extends JFrame {
 			mnGerente.add(getMntmGestionEmpleados());
 			mnGerente.add(getMntmHistorialVentas());
 			mnGerente.add(getMntmAñadirMantenimiento());
+			mnGerente.add(getMntmCampanasAcciones());
 			mnGerente.add(getMntmPlanificarPartido());
 		}
 		return mnGerente;
+	}
+	
+	private JMenuItem getMntmCampanasAcciones() {
+	    if (mntmCampanasAcciones == null) {
+	        mntmCampanasAcciones = new JMenuItem("Campañas de acciones");
+	        mntmCampanasAcciones.addActionListener(new ActionListener() {
+	            @Override
+	            public void actionPerformed(ActionEvent e) {
+	                abrirVentanaCampanasAcciones();
+	            }
+	        });
+	    }
+	    return mntmCampanasAcciones;
+	}
+
+	private void abrirVentanaCampanasAcciones() {
+	    VentanaCampanasAcciones ventana = new VentanaCampanasAcciones(this);
+	    this.setVisible(false);
+	    ventana.setVisible(true);
 	}
 
 	private JMenuItem getMntmHistorialVentas() {
@@ -314,6 +338,7 @@ public class VentanaPrincipal extends JFrame {
 			vT.setVisible(true);
 
 		} catch (SQLException ex) {
+		    
 			javax.swing.JOptionPane.showMessageDialog(this,
 					"Error al conectar con la base de datos para cargar el catálogo:\n" + ex.getMessage(),
 					"Error Crítico", javax.swing.JOptionPane.ERROR_MESSAGE);
@@ -606,9 +631,29 @@ public class VentanaPrincipal extends JFrame {
 			mnAccionista.setMnemonic('C');
 			mnAccionista.add(getMntmPortalAccionista());
 			mnAccionista.add(getMntmComprarAcciones());
+			mnAccionista.add(getMntmComprarAccionesCampana());
 		}
 		return mnAccionista;
 	}
+	
+	private JMenuItem getMntmComprarAccionesCampana() {
+	       if (mntmComprarAccionesCampana == null) {
+	           mntmComprarAccionesCampana = new JMenuItem("Comprar acciones de la campaña");
+	           mntmComprarAccionesCampana.addActionListener(new ActionListener() {
+	               @Override
+	               public void actionPerformed(ActionEvent e) {
+	                   abrirVentanaCompraCampana();
+	               }
+	           });
+	       }
+	       return mntmComprarAccionesCampana;
+	   }
+
+	   private void abrirVentanaCompraCampana() {
+	       VentanaCompraCampana ventana = new VentanaCompraCampana(this);
+	       this.setVisible(false);
+	       ventana.setVisible(true);
+	   }
 
 	private JMenuItem getMntmPortalAccionista() {
 		if (mntmPortalAccionista == null) {
