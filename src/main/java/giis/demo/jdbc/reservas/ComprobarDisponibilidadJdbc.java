@@ -153,10 +153,35 @@ public class ComprobarDisponibilidadJdbc {
 
 		List<Intervalo> ocupados = new ArrayList<Intervalo>();
 
-		cargarIntervalos(con, QUERY_ENTRENAMIENTOS, idInstalacion, fecha, ocupados, true, false);
-		cargarIntervalos(con, QUERY_PARTIDOS, idInstalacion, fecha, ocupados, false, true);
-		cargarIntervalos(con, QUERY_RESERVAS, idInstalacion, fecha, ocupados, false, false);
+		cargarIntervalos(con, QUERY_ENTRENAMIENTOS, idInstalacion, fecha, ocupados, true, false, true);
+		cargarIntervalos(con, QUERY_PARTIDOS, idInstalacion, fecha, ocupados, false, true, true);
+		cargarIntervalos(con, QUERY_RESERVAS, idInstalacion, fecha, ocupados, false, false, true);
 		cargarIntervalosMantenimiento(con, idInstalacion, fecha, ocupados);
+
+		ocupados.sort(Comparator.comparing(Intervalo::getHoraInicio));
+		return ocupados;
+	}
+
+	/**
+	 * Obtiene los intervalos de ocupación relevantes para la asignación de tareas de mantenimiento
+	 * (entrenamientos, partidos y reservas externas). No incluye el margen de hora y media (90 minutos)
+	 * posterior a partidos/entrenamientos (el cual solo restringe a usuarios externos) ni incluye otras
+	 * tareas de mantenimiento (ya que pueden solaparse en una misma instalación).
+	 * 
+	 * @param con
+	 * @param idInstalacion
+	 * @param fecha
+	 * @return lista con los intervalos ocupados para tareas de mantenimiento
+	 * @throws SQLException
+	 */
+	public static List<Intervalo> obtenerIntervalosOcupadosMantenimiento(Connection con, int idInstalacion, LocalDate fecha)
+			throws SQLException {
+
+		List<Intervalo> ocupados = new ArrayList<Intervalo>();
+
+		cargarIntervalos(con, QUERY_ENTRENAMIENTOS, idInstalacion, fecha, ocupados, true, false, false);
+		cargarIntervalos(con, QUERY_PARTIDOS, idInstalacion, fecha, ocupados, false, true, false);
+		cargarIntervalos(con, QUERY_RESERVAS, idInstalacion, fecha, ocupados, false, false, false);
 
 		ocupados.sort(Comparator.comparing(Intervalo::getHoraInicio));
 		return ocupados;
@@ -185,7 +210,7 @@ public class ComprobarDisponibilidadJdbc {
 	 * @throws SQLException
 	 */
 	private static void cargarIntervalos(Connection con, String query, int idInstalacion, LocalDate fecha,
-			List<Intervalo> ocupados, boolean isTraining, boolean isMatch) throws SQLException {
+			List<Intervalo> ocupados, boolean isTraining, boolean isMatch, boolean incluirMargen) throws SQLException {
 
 		try (PreparedStatement ps = con.prepareStatement(query)) {
 
@@ -232,7 +257,7 @@ public class ComprobarDisponibilidadJdbc {
 
 					}
 
-					if (equipoLocal && fin.isBefore(CIERRE)) {
+					if (incluirMargen && equipoLocal && fin.isBefore(CIERRE)) {
 
 						LocalTime inicioMargen = fin.isBefore(APERTURA) ? APERTURA : fin;
 						LocalTime finMargen = fin.plusMinutes(MARGEN_MINUTOS);

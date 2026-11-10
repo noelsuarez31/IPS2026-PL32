@@ -505,6 +505,19 @@ public class JDBC {
 	}
 
 	/**
+	 * Obtiene las franjas ocupadas de una instalación relevantes para mantenimiento en una fecha
+	 * (partidos, entrenamientos y reservas externas, sin margen de hora y media ni tareas de mantenimiento).
+	 * 
+	 * @param idInstalacion
+	 * @param fecha
+	 * @return lista de los intervalos ocupados para mantenimiento
+	 * @throws SQLException
+	 */
+	public List<Intervalo> obtenerOcupacionesMantenimiento(int idInstalacion, LocalDate fecha) throws SQLException {
+		return ComprobarDisponibilidadJdbc.obtenerIntervalosOcupadosMantenimiento(con, idInstalacion, fecha);
+	}
+
+	/**
 	 * Obtiene los intervalos disponibles
 	 * 
 	 * @param idInstalacion

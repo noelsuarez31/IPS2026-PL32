@@ -45,14 +45,14 @@ public class GestionTareaMantenimiento {
 	}
 
 	/**
-	 * Obtiene los intervalos de ocupación de una instalación en una fecha determinada
-	 * (partidos, entrenamientos, reservas externas y tareas de mantenimiento).
+	 * Obtiene los intervalos de ocupación de una instalación en una fecha determinada relevantes para mantenimiento
+	 * (partidos, entrenamientos y reservas externas, sin margen de hora y media ni tareas de mantenimiento).
 	 */
 	public List<Intervalo> obtenerOcupacionesInstalacion(int idInstalacion, String fechaStr) throws SQLException {
 		if (fechaStr == null || fechaStr.isBlank() || fechaStr.equals("Ninguno")) {
 			return new ArrayList<>();
 		}
-		return jdbc.obtenerOcupaciones(idInstalacion, LocalDate.parse(fechaStr));
+		return jdbc.obtenerOcupacionesMantenimiento(idInstalacion, LocalDate.parse(fechaStr));
 	}
 
 	/**
@@ -214,8 +214,8 @@ public class GestionTareaMantenimiento {
 			}
 		}
 
-		// 7. Validación de disponibilidad de la instalación (no solapar con reservas, partidos, etc.)
-		List<Intervalo> ocupaciones = jdbc.obtenerOcupaciones(idInstalacion, fecha);
+		// 7. Validación de disponibilidad de la instalación (no solapar con reservas, partidos o entrenamientos)
+		List<Intervalo> ocupaciones = jdbc.obtenerOcupacionesMantenimiento(idInstalacion, fecha);
 		for (Intervalo ocupado : ocupaciones) {
 			LocalTime inicioOcupado = ocupado.getHoraInicio();
 			LocalTime finOcupado = ocupado.getHoraFin();

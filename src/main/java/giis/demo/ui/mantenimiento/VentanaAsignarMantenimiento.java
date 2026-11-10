@@ -51,7 +51,7 @@ public class VentanaAsignarMantenimiento extends JFrame {
 	private VentanaPrincipal vp;
 	private GestionTareaMantenimiento gtm;
 
-	// Zona Norte: Parámetros en una sola fila compacta (solo horas, minutos siempre :00)
+	// Zona Norte: Parámetros en una sola fila compacta (con selección de horas y minutos)
 	private JLabel lblInstalacion;
 	private JComboBox<Instalacion> cbInstalacion;
 	private JButton btnSeleccionarDia;
@@ -59,8 +59,12 @@ public class VentanaAsignarMantenimiento extends JFrame {
 	private JTextField txtFecha;
 	private JLabel lblHoraInicio;
 	private JSpinner spHoraInicio;
+	private JLabel lblDosPuntosInicio;
+	private JSpinner spMinutoInicio;
 	private JLabel lblHoraFinal;
 	private JSpinner spHoraFin;
+	private JLabel lblDosPuntosFin;
+	private JSpinner spMinutoFin;
 
 	// Zona Centro: 4 tablas en cuadrícula 2x2
 	private JLabel lblJardineros;
@@ -110,14 +114,14 @@ public class VentanaAsignarMantenimiento extends JFrame {
 	private void inicializarComponentes() {
 		setTitle("Asignar Tareas de Mantenimiento a Jardineros");
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setBounds(100, 100, 780, 500);
-		setMinimumSize(new Dimension(700, 420));
+		setBounds(100, 100, 880, 520);
+		setMinimumSize(new Dimension(800, 440));
 
 		JPanel contentPane = new JPanel(new BorderLayout(10, 10));
 		contentPane.setBorder(new EmptyBorder(10, 15, 10, 15));
 		setContentPane(contentPane);
 
-		// 1. ZONA NORTE: Formulario en una sola fila completa
+		// 1. ZONA NORTE: Formulario en una sola fila completa con horas y minutos
 		JPanel panelNorte = new JPanel(new FlowLayout(FlowLayout.CENTER, 6, 4));
 		panelNorte.add(getLblInstalacion());
 		panelNorte.add(getCbInstalacion());
@@ -126,8 +130,12 @@ public class VentanaAsignarMantenimiento extends JFrame {
 		panelNorte.add(getTxtFecha());
 		panelNorte.add(getLblHoraInicio());
 		panelNorte.add(getSpHoraInicio());
+		panelNorte.add(getLblDosPuntosInicio());
+		panelNorte.add(getSpMinutoInicio());
 		panelNorte.add(getLblHoraFinal());
 		panelNorte.add(getSpHoraFin());
+		panelNorte.add(getLblDosPuntosFin());
+		panelNorte.add(getSpMinutoFin());
 		contentPane.add(panelNorte, BorderLayout.NORTH);
 
 		// 2. ZONA CENTRO: Dos columnas (Izquierda: Jardineros y turnos / Derecha: Mantenimiento y ocupación)
@@ -229,9 +237,27 @@ public class VentanaAsignarMantenimiento extends JFrame {
 	public JSpinner getSpHoraInicio() {
 		if (spHoraInicio == null) {
 			spHoraInicio = new JSpinner(new SpinnerNumberModel(8, 0, 23, 1));
-			spHoraInicio.setPreferredSize(new Dimension(48, 26)); // Agrandado para visualización cómoda de dos dígitos
+			spHoraInicio.setEditor(new JSpinner.NumberEditor(spHoraInicio, "00"));
+			spHoraInicio.setPreferredSize(new Dimension(46, 26));
 		}
 		return spHoraInicio;
+	}
+
+	public JLabel getLblDosPuntosInicio() {
+		if (lblDosPuntosInicio == null) {
+			lblDosPuntosInicio = new JLabel(":");
+			lblDosPuntosInicio.setFont(new Font("Tahoma", Font.BOLD, 12));
+		}
+		return lblDosPuntosInicio;
+	}
+
+	public JSpinner getSpMinutoInicio() {
+		if (spMinutoInicio == null) {
+			spMinutoInicio = new JSpinner(new SpinnerNumberModel(0, 0, 59, 1));
+			spMinutoInicio.setEditor(new JSpinner.NumberEditor(spMinutoInicio, "00"));
+			spMinutoInicio.setPreferredSize(new Dimension(46, 26));
+		}
+		return spMinutoInicio;
 	}
 
 	public JLabel getLblHoraFinal() {
@@ -245,9 +271,27 @@ public class VentanaAsignarMantenimiento extends JFrame {
 	public JSpinner getSpHoraFin() {
 		if (spHoraFin == null) {
 			spHoraFin = new JSpinner(new SpinnerNumberModel(10, 0, 23, 1));
-			spHoraFin.setPreferredSize(new Dimension(48, 26)); // Agrandado para visualización cómoda de dos dígitos
+			spHoraFin.setEditor(new JSpinner.NumberEditor(spHoraFin, "00"));
+			spHoraFin.setPreferredSize(new Dimension(46, 26));
 		}
 		return spHoraFin;
+	}
+
+	public JLabel getLblDosPuntosFin() {
+		if (lblDosPuntosFin == null) {
+			lblDosPuntosFin = new JLabel(":");
+			lblDosPuntosFin.setFont(new Font("Tahoma", Font.BOLD, 12));
+		}
+		return lblDosPuntosFin;
+	}
+
+	public JSpinner getSpMinutoFin() {
+		if (spMinutoFin == null) {
+			spMinutoFin = new JSpinner(new SpinnerNumberModel(0, 0, 59, 1));
+			spMinutoFin.setEditor(new JSpinner.NumberEditor(spMinutoFin, "00"));
+			spMinutoFin.setPreferredSize(new Dimension(46, 26));
+		}
+		return spMinutoFin;
 	}
 
 	// ==================== GETTERS COMPONENTES ZONA CENTRO ====================
@@ -604,9 +648,9 @@ public class VentanaAsignarMantenimiento extends JFrame {
 			}
 		}
 
-		// Minutos fijados siempre a 00
-		String horaInicio = String.format("%02d:00", (int) getSpHoraInicio().getValue());
-		String horaFin = String.format("%02d:00", (int) getSpHoraFin().getValue());
+		// Horas y minutos seleccionados
+		String horaInicio = String.format("%02d:%02d", (int) getSpHoraInicio().getValue(), (int) getSpMinutoInicio().getValue());
+		String horaFin = String.format("%02d:%02d", (int) getSpHoraFin().getValue(), (int) getSpMinutoFin().getValue());
 
 		try {
 			gtm.validarYAsignarTarea(
