@@ -23,6 +23,7 @@ import giis.demo.model.historial.HistorialVentas;
 import giis.demo.model.horarios.GestionHorarioSemanal;
 import giis.demo.model.horarios.GestionHorariosEspecificos;
 import giis.demo.model.horarios.GestionHorariosPeriodicos;
+import giis.demo.model.noticias.AñadirNoticiaService;
 import giis.demo.model.tienda.VentaMerchandising;
 import giis.demo.ui.abonos.VentanaAbono;
 import giis.demo.ui.abonos.entradas.VentanaIdentificacion;
@@ -58,6 +59,7 @@ public class VentanaPrincipal extends JFrame {
 	private GestorEmpleados gestorEmpleados = new GestorEmpleados();
 	private CrearEntrenamientoService crearEntrenoService = new CrearEntrenamientoService();
 	private PlanificarPartidoService pps = new PlanificarPartidoService();
+	private AñadirNoticiaService añadirNoticiaService = new AñadirNoticiaService();
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
@@ -607,6 +609,7 @@ public class VentanaPrincipal extends JFrame {
 		if (mniVenderAbonado == null) {
 			mniVenderAbonado = new JMenuItem("Venta de entradas abonados");
 			mniVenderAbonado.addActionListener(new ActionListener() {
+				@Override
 				public void actionPerformed(ActionEvent e) {
 					
 					abrirVentanaIdentificacion();
@@ -714,5 +717,9 @@ public class VentanaPrincipal extends JFrame {
 	
 	public CrearEntrenamientoService getCrearEntrenamientoService() {
 		return this.crearEntrenoService;
+	}
+
+	public AñadirNoticiaService getAñadirNoticiaService() {
+		return añadirNoticiaService;
 	}
 }
