@@ -12,8 +12,8 @@ public class EmpleadoDeportivo extends BaseEmpleado{
 	private int idEquipo;
 	
 	public EmpleadoDeportivo(String dni, String nombre, String apellido, BigDecimal salario,
-			LocalDate fechaDeNacimiento, String numeroTelefono, Posicion posicion, String usuario, String contrasena, String salt) throws EmployeeException {
-		super(dni, nombre, apellido, salario, fechaDeNacimiento, numeroTelefono, usuario, contrasena, salt);
+			LocalDate fechaDeNacimiento, String numeroTelefono, Posicion posicion, String usuario, String contrasena) throws EmployeeException {
+		super(dni, nombre, apellido, salario, fechaDeNacimiento, numeroTelefono, usuario, contrasena);
 		
 		if(posicion == null || (posicion != Posicion.JUGADOR && posicion != Posicion.ENTRENADOR
 				&& posicion != Posicion.TECNICO_ADICIONAL)) {

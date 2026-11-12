@@ -15,10 +15,9 @@ public abstract class BaseEmpleado {
 	
 	private String usuario; //en bbdd numero_usuario
 	private String contrasena; //en bbdd contrasena
-	private String salt; //en bbdd salt
 	
 	public BaseEmpleado(String dni, String nombre, String apellido, BigDecimal salario, LocalDate fechaDeNacimiento,
-			String numeroTelefono, String usuario, String contrasena, String salt) throws EmployeeException {
+			String numeroTelefono, String usuario, String contrasena) throws EmployeeException {
 		
 		if(dni == null || dni.isBlank()) {
 			throw new EmployeeException("dni no puede ser null ni blanco");
@@ -52,10 +51,6 @@ public abstract class BaseEmpleado {
 			throw new EmployeeException("contrasena no puede ser null ni blanco");
 		}
 		
-		if(salt == null || salt.isBlank()) {
-			throw new EmployeeException("salt no puede ser null ni blanco");
-		}
-		
 		this.dni = dni;
 		this.nombre = nombre;
 		this.apellido = apellido;
@@ -64,7 +59,6 @@ public abstract class BaseEmpleado {
 		this.numeroDeTelefono = numeroTelefono;
 		this.usuario = usuario;
 		this.contrasena = contrasena;
-		this.salt = salt;
 	}
 
 	public abstract Posicion getPosicion();
@@ -103,9 +97,5 @@ public abstract class BaseEmpleado {
 
 	public String getContrasena() {
 		return contrasena;
-	}
-
-	public String getSalt() {
-		return salt;
 	}
 }

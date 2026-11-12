@@ -76,9 +76,8 @@ CREATE TABLE IF NOT EXISTS "BaseEmpleado" (
     "fecha_nacimiento" DATE NOT NULL,
     "numero_de_telefono" TEXT NOT NULL UNIQUE,
     
-    "numero_usuario" TEXT NOT NULL UNIQUE,
-    "contarsena" TEXT NOT NULL,
-    "salt" TEXT NOT NULL,
+    "nombre_usuario" TEXT NOT NULL UNIQUE,
+    "contrasena" TEXT NOT NULL,
     
     PRIMARY KEY("dni")
 );

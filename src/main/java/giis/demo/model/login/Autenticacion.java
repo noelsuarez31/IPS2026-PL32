@@ -9,13 +9,13 @@ import giis.demo.util.UnexpectedException;
 public class Autenticacion {
 
 	private JDBC jdbc;
-	
+
 	public Autenticacion() {
-		
+
 		jdbc = new JDBC();
-		
+
 	}
-	
+
 	/**
 	 * Autentica a un empleado
 	 * 
@@ -30,25 +30,18 @@ public class Autenticacion {
 		if (usuario == null || usuario.isBlank() || contrasena == null || contrasena.isEmpty()) {
 			throw new ApplicationException("Usuario y contraseña son obligatorios");
 		}
- 
 		String[] credenciales;
-		
 		try {
 			credenciales = jdbc.getCredenciales(usuario);
 		} catch (SQLException e) {
 			throw new UnexpectedException(e);
 		} finally {
-			try {
-				jdbc.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
+
 		}
- 
-		if (credenciales == null || !PasswordHasher.verificar(contrasena, credenciales[2], credenciales[1])) {
+		if (credenciales == null || !PasswordHasher.verificar(contrasena, credenciales[1])) {
 			throw new ApplicationException("Usuario o contraseña incorrectos");
 		}
- 
 		return credenciales[0];
+
 	}
 }

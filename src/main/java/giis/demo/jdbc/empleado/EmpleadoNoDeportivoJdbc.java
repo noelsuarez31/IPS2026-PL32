@@ -32,7 +32,7 @@ public class EmpleadoNoDeportivoJdbc {
 	
 	//consulta los empleados no deportivos
 	private static final String GET_NO_DEPORTIVOS = "SELECT be.dni, be.nombre, be.apellido, be.salario, "
-			+ "be.fecha_nacimiento, be.numero_de_telefono, be.nombre_usuario, be.contrasena_hash, be.salt, "
+			+ "be.fecha_nacimiento, be.numero_de_telefono, be.nombre_usuario, be.contrasena, "
 			+ "end.posicion "
 			+ "FROM EmpleadoNoDeportivo end "
 			+ "JOIN BaseEmpleado be ON end.dni = be.dni";
@@ -55,8 +55,7 @@ public class EmpleadoNoDeportivoJdbc {
 	            		    rs.getString("numero_de_telefono"),
 	            		    Posicion.valueOf(rs.getString("posicion")),
 	            		    rs.getString("nombre_usuario"),
-	            		    rs.getString("contrasena_hash"),
-	            		    rs.getString("salt")
+	            		    rs.getString("contrasena")
 	            		);
 	                empleados.add(emp);
 	            }

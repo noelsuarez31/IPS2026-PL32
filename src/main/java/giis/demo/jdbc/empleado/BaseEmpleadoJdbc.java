@@ -17,13 +17,13 @@ import giis.demo.model.empleado.Posicion;
 public class BaseEmpleadoJdbc {
 	private static final String QUERY_INSERT_BASE = "INSERT INTO BaseEmpleado "
 			+ "(dni, nombre, apellido, salario, fecha_nacimiento, numero_de_telefono, "
-			+ "nombre_usuario, contrasena_hash, salt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			+ "nombre_usuario, contrasena) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 	
 	private static final String QUERY_EXISTE_DNI = "SELECT 1 FROM BaseEmpleado WHERE dni = ?";
 	private static final String QUERY_EXISTE_TELEFONO = "SELECT 1 FROM BaseEmpleado WHERE numero_de_telefono = ?";
 	private static final String QUERY_EXISTE_TELEFONO_OTRO = "SELECT 1 FROM BaseEmpleado WHERE numero_de_telefono = ? AND dni <> ?";
 	private static final String QUERY_GET_EMPLEADOS = "SELECT be.dni, be.nombre, be.apellido, be.salario, "
-			+ "be.fecha_nacimiento, be.numero_de_telefono, be.nombre_usuario, be.contrasena_hash, be.salt, "
+			+ "be.fecha_nacimiento, be.numero_de_telefono, be.nombre_usuario, be.contrasena, "
 			+ "ed.posicion AS posicion_deportiva, ed.id_equipo, "
 			+ "nd.posicion AS posicion_no_deportiva FROM BaseEmpleado be "
 			+ "LEFT JOIN EmpleadoDeportivo ed ON ed.dni = be.dni "
@@ -32,7 +32,7 @@ public class BaseEmpleadoJdbc {
 
 	private static final String QUERY_UPDATE_BASE = "UPDATE BaseEmpleado SET dni = ?, nombre = ?, apellido = ?, "
 			+ "salario = ?, fecha_nacimiento = ?, numero_de_telefono = ?, "
-			+ "nombre_usuario = ?, contrasena_hash = ?, salt = ? WHERE dni = ?";
+			+ "nombre_usuario = ?, contrasena = ? WHERE dni = ?";
 	
 	private static final String[] QUERIES_UPDATE_DNI_DEPENDIENTES = {
 			"UPDATE EmpleadoDeportivo SET dni = ? WHERE dni = ?",
@@ -56,7 +56,7 @@ public class BaseEmpleadoJdbc {
 	private static final String QUERY_EXISTE_USUARIO = "SELECT 1 FROM BaseEmpleado WHERE nombre_usuario = ?";
 	private static final String QUERY_EXISTE_USUARIO_OTRO = "SELECT 1 FROM BaseEmpleado WHERE nombre_usuario = ? AND dni <> ?";
 	private static final String QUERY_GET_CREDENCIALES =
-			"SELECT dni, contrasena_hash, salt FROM BaseEmpleado WHERE nombre_usuario = ?";
+			"SELECT dni, contrasena FROM BaseEmpleado WHERE nombre_usuario = ?";
 	
 	/**
 	 * Inserta los datos comunes de un empleado (deportivo o no deportivo)
@@ -72,6 +72,8 @@ public class BaseEmpleadoJdbc {
 			pst.setBigDecimal(4, emp.getSalario());
 			pst.setString(5, emp.getFechaNacimiento().toString()); // yyyy-MM-dd, igual que en el resto de la BBDD
 			pst.setString(6, emp.getNumeroTelefono());
+			pst.setString(7, emp.getUsuario());
+			pst.setString(8, emp.getContrasena());
 			pst.executeUpdate();
 		}
 	}
@@ -130,15 +132,14 @@ public class BaseEmpleadoJdbc {
 				String telefono = rs.getString("numero_de_telefono");
 				
 				String usuario = rs.getString("nombre_usuario");
-				String contrasena = rs.getString("contrasena_hash");
-				String salt = rs.getString("salt");
+				String contrasena = rs.getString("contrasena");
 				
 				String posicionDeportiva = rs.getString("posicion_deportiva");
 				String posicionNoDeportiva = rs.getString("posicion_no_deportiva");
 
 				if (posicionDeportiva != null) {
 					EmpleadoDeportivo emp = new EmpleadoDeportivo(dni, nombre, apellido, salario, fechaNacimiento,
-							telefono, Posicion.valueOf(posicionDeportiva), usuario, contrasena, salt);
+							telefono, Posicion.valueOf(posicionDeportiva), usuario, contrasena);
 					int idEquipo = rs.getInt("id_equipo");
 					if (!rs.wasNull()) {
 						emp.setIdEquipo(idEquipo);
@@ -146,7 +147,7 @@ public class BaseEmpleadoJdbc {
 					empleados.add(emp);
 				} else if (posicionNoDeportiva != null) {
 					empleados.add(new EmpleadoNoDeportivo(dni, nombre, apellido, salario, fechaNacimiento, telefono,
-							Posicion.valueOf(posicionNoDeportiva), usuario, contrasena, salt));
+							Posicion.valueOf(posicionNoDeportiva), usuario, contrasena));
 				}
 				// Si no esta en ninguna de las dos tablas es un registro incompleto y se ignora
 			}
@@ -169,7 +170,6 @@ public class BaseEmpleadoJdbc {
 			pst.setString(6, emp.getNumeroTelefono());
 			pst.setString(7, emp.getUsuario());
 			pst.setString(8, emp.getContrasena());
-			pst.setString(9, emp.getSalt());
 			pst.setString(10, dniOriginal);
 			
 			if (pst.executeUpdate() != 1) {
@@ -232,8 +232,7 @@ public class BaseEmpleadoJdbc {
 			pst.setString(1, nombreUsuario);
 			try (ResultSet rs = pst.executeQuery()) {
 				if (rs.next()) {
-					return new String[] { rs.getString("dni"), rs.getString("contrasena_hash"),
-							rs.getString("salt") };
+					return new String[] { rs.getString("dni"), rs.getString("contrasena")};
 				}
 			}
 		}

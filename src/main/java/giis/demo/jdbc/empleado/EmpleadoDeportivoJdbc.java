@@ -16,7 +16,7 @@ import giis.demo.model.equipo.CategoriaEquipo;
 public class EmpleadoDeportivoJdbc {
 	private final static String QUERY_GET_ADITIONAL_MANAGERS = "SELECT * FROM EmpleadoDeportivo WHERE posicion=? AND id_equipo IS NULL";
 	private final static String QUERY_GET_COMPLETE_ADITIONAL_MANAGERS = "SELECT nombre, apellido, salario, fecha_nacimiento, "
-			+ "numero_de_telefono, nombre_usuario, contrasena_hash, salt FROM"
+			+ "numero_de_telefono, nombre_usuario, contrasena FROM"
 			+ " EmpleadoDeportivo ed, BaseEmpleado bd WHERE ed.dni=bd.dni and ed.dni=?";
 	
 	private final static String QUERY_GET_PLAYERS = "SELECT * FROM EmpleadoDeportivo WHERE posicion = ? AND id_equipo IS NULL";
@@ -53,8 +53,7 @@ public class EmpleadoDeportivoJdbc {
 								rsTecnicoAdicionalCompleto.getBigDecimal(3), LocalDate.parse(rsTecnicoAdicionalCompleto.getString(4)),
 								rsTecnicoAdicionalCompleto.getString(5), posicion,
 								rsTecnicoAdicionalCompleto.getString("nombre_usuario"),
-								rsTecnicoAdicionalCompleto.getString("contrasena_hash"),
-								rsTecnicoAdicionalCompleto.getString("salt"));
+								rsTecnicoAdicionalCompleto.getString("contrasena"));
 						
 						tecnicosAdicionales.add(tecnicoAdicional);
 					}
@@ -92,8 +91,7 @@ public class EmpleadoDeportivoJdbc {
 								rsJugadorCompleto.getBigDecimal(4), LocalDate.parse(rsJugadorCompleto.getString(5)),
 								rsJugadorCompleto.getString(6), Posicion.JUGADOR,
 								rsJugadorCompleto.getString("nombre_usuario"),
-								rsJugadorCompleto.getString("contrasena_hash"),
-								rsJugadorCompleto.getString("salt")));
+								rsJugadorCompleto.getString("contrasena")));
 					}
 				}
 			}
@@ -137,8 +135,7 @@ public class EmpleadoDeportivoJdbc {
 								rsEntrenadorCompleto.getString(3), rsEntrenadorCompleto.getBigDecimal(4),
 								LocalDate.parse(rsEntrenadorCompleto.getString(5)), rsEntrenadorCompleto.getString(6), Posicion.JUGADOR,
 								rsEntrenadorCompleto.getString("nombre_usuario"),
-								rsEntrenadorCompleto.getString("contrasena_hash"),
-								rsEntrenadorCompleto.getString("salt"));
+								rsEntrenadorCompleto.getString("contrasena"));
 						cuerpoTecnico.add(entrenador);
 					}
 				}
