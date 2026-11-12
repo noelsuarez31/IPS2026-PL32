@@ -30,6 +30,7 @@ import com.toedter.calendar.JDateChooser;
 import giis.demo.exceptions.EmployeeException;
 import giis.demo.model.contrataciones.GestorEmpleados;
 import giis.demo.model.empleado.Posicion;
+import javax.swing.JPasswordField;
 
 public class VentanaAltaEmpleado extends JFrame {
 	private static final long serialVersionUID = 1L;
@@ -57,6 +58,10 @@ public class VentanaAltaEmpleado extends JFrame {
 	private JComboBox<Posicion> cbPosicion;
 
 	private GestorEmpleados gestor;
+	private JLabel lblUsuario;
+	private JTextField tfUsuario;
+	private JLabel lbContrasenia;
+	private JPasswordField passwordField;
 
 	public VentanaAltaEmpleado(GestorEmpleados gestor) {
 		this.gestor = gestor;
@@ -104,7 +109,7 @@ public class VentanaAltaEmpleado extends JFrame {
 			pnDatosPersonales.setBorder(new TitledBorder(null, "Datos Personales", TitledBorder.DEFAULT_JUSTIFICATION,
 					TitledBorder.DEFAULT_POSITION, new Font("Arial", Font.BOLD, 14), new Color(51, 51, 51)));
 			pnDatosPersonales.setBackground(Color.WHITE);
-			pnDatosPersonales.setLayout(new GridLayout(5, 2, 5, 10));
+			pnDatosPersonales.setLayout(new GridLayout(7, 2, 5, 10));
 
 			lbNombre = new JLabel("Nombre:");
 			txNombre = new JTextField();
@@ -116,7 +121,21 @@ public class VentanaAltaEmpleado extends JFrame {
 			txTelefono = new JTextField();
 			lbFechaNac = new JLabel("Fecha de nacimiento:");
 			dcFechaNac = crearSelectorFechaNacimiento();
-
+			
+			lblUsuario = new JLabel("Usuario:");
+			pnDatosPersonales.add(lblUsuario);
+			
+			tfUsuario = new JTextField();
+			pnDatosPersonales.add(tfUsuario);
+			
+			lbContrasenia = new JLabel("Contraseña:");
+			pnDatosPersonales.add(lbContrasenia);
+			
+			passwordField = new JPasswordField();
+			pnDatosPersonales.add(passwordField);
+			pnDatosPersonales.add(lbFechaNac);
+			pnDatosPersonales.add(dcFechaNac);
+			
 			pnDatosPersonales.add(lbNombre);
 			pnDatosPersonales.add(txNombre);
 			pnDatosPersonales.add(lbApellido);
@@ -125,8 +144,8 @@ public class VentanaAltaEmpleado extends JFrame {
 			pnDatosPersonales.add(txDni);
 			pnDatosPersonales.add(lbTelefono);
 			pnDatosPersonales.add(txTelefono);
-			pnDatosPersonales.add(lbFechaNac);
-			pnDatosPersonales.add(dcFechaNac);
+			
+			
 		}
 		return pnDatosPersonales;
 	}
@@ -271,7 +290,8 @@ public class VentanaAltaEmpleado extends JFrame {
 	 */
 	private boolean validarFormulario() {
 		if (txNombre.getText().isBlank() || txApellido.getText().isBlank() || txDni.getText().isBlank()
-				|| txTelefono.getText().isBlank() || dcFechaNac.getDate() == null || txSalario.getText().isBlank()) {
+				|| txTelefono.getText().isBlank() || dcFechaNac.getDate() == null || txSalario.getText().isBlank()
+				|| tfUsuario.getText().isBlank() || passwordField.getPassword().length==0) {
 			mostrarError("Todos los campos son obligatorios");
 			return false;
 		}
@@ -297,11 +317,19 @@ public class VentanaAltaEmpleado extends JFrame {
 			mostrarError("El teléfono debe ser un número de 9 dígitos");
 			return false;
 		}
+		
+		if (passwordField.getPassword().length < 8) {
+			mostrarError("La contraseña debe tener al menos 8 caracteres");
+			return false;
+		}
 
 		return true;
 	}
 
 	private void crearYGuardarEmpleado() {
+		
+		char[] contrasenia = passwordField.getPassword();
+
 		try {
 			LocalDate fechaNac = aLocalDate(dcFechaNac.getDate());
 			BigDecimal salario = new BigDecimal(txSalario.getText().trim());
@@ -309,7 +337,8 @@ public class VentanaAltaEmpleado extends JFrame {
 			Posicion posicion = (Posicion) getCbPosicion().getSelectedItem();
 
 			gestor.registrarNuevoEmpleado(txDni.getText().trim(), txNombre.getText().trim(),
-					txApellido.getText().trim(), salario, fechaNac, txTelefono.getText().trim(), esDeportivo, posicion);
+					txApellido.getText().trim(), salario, fechaNac, txTelefono.getText().trim(), esDeportivo, posicion,
+					tfUsuario.getText().trim(), new String(contrasenia));
 
 			JOptionPane.showMessageDialog(this, "Empleado registrado con éxito", "Éxito",
 					JOptionPane.INFORMATION_MESSAGE);

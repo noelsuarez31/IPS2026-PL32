@@ -13,6 +13,7 @@ import giis.demo.model.empleado.EmpleadoDeportivo;
 import giis.demo.model.empleado.EmpleadoNoDeportivo;
 import giis.demo.model.empleado.Posicion;
 import giis.demo.model.equipo.CategoriaEquipo;
+import giis.demo.model.login.PasswordHasher;
 
 public class GestorEmpleados {
 
@@ -27,10 +28,17 @@ public class GestorEmpleados {
 	 * el dni o el telefono ya estan registrados, o si falla el acceso a la BBDD
 	 */
 	public void registrarNuevoEmpleado(String dni, String nombre, String apellido, BigDecimal salario,
-			LocalDate fechaNacimiento, String telefono, boolean esDeportivo, Posicion posicion, String usuario, String contraseña, String salt) {
+			LocalDate fechaNacimiento, String telefono, boolean esDeportivo, Posicion posicion, String usuario, String contrasena) {
 
+		if (contrasena == null || contrasena.isEmpty()) {
+			throw new EmployeeException("La contraseña es obligatoria");
+		}
+		String salt = PasswordHasher.generarSalt();
+		String hash = PasswordHasher.hash(contrasena, salt);
+
+		
 		BaseEmpleado empleado = crearEmpleado(dni, nombre, apellido, salario, fechaNacimiento, telefono, esDeportivo,
-				posicion, usuario, contraseña, salt);
+				posicion, usuario, hash, salt);
 
 		try {
 			if (jdbc.existeDniEmpleado(empleado.getDni())) {
@@ -80,18 +88,31 @@ public class GestorEmpleados {
 	 * El puesto de trabajo (posicion y tipo de empleado) no se puede cambiar,
 	 * por eso se toma siempre del empleado original
 	 * @param original empleado tal y como esta en la BBDD
+	 * @throws SQLException 
 	 * @throws EmployeeException si algun dato incumple las reglas de negocio, si el
 	 * nuevo dni o telefono ya pertenecen a otro empleado, o si falla la BBDD
 	 */
 	public void modificarEmpleado(BaseEmpleado original, String dni, String nombre, String apellido,
-			BigDecimal salario, LocalDate fechaNacimiento, String telefono, String user, String password, String salt) {
+			BigDecimal salario, LocalDate fechaNacimiento, String telefono, String user, String password) {
+		
 		if (original == null) {
 			throw new EmployeeException("Debe seleccionar un empleado");
 		}
 
+		String hash;
+		String salt;
+
+		if (password == null || password.isEmpty()) {
+			hash = original.getContrasena();
+			salt = original.getSalt();
+		} else {
+			salt = PasswordHasher.generarSalt();
+			hash = PasswordHasher.hash(password, salt);
+		}
+
 		boolean esDeportivo = original instanceof EmpleadoDeportivo;
 		BaseEmpleado modificado = crearEmpleado(dni, nombre, apellido, salario, fechaNacimiento, telefono,
-				esDeportivo, original.getPosicion(), user, password, salt);
+				esDeportivo, original.getPosicion(), user, hash, salt);
 
 		try {
 			if (esDeportivo) {
@@ -102,6 +123,9 @@ public class GestorEmpleados {
 			}
 			if (jdbc.existeTelefonoEnOtroEmpleado(modificado.getNumeroTelefono(), original.getDni())) {
 				throw new EmployeeException("El numero de telefono ya esta registrado en otro empleado");
+			}
+			if (jdbc.existeUsuarioEnOtroEmpleado(modificado.getUsuario(), original.getDni())) {
+				throw new EmployeeException("Ya existe un empleado con ese nombre de usuario");
 			}
 			jdbc.modificarEmpleado(original.getDni(), modificado);
 		} catch (SQLException e) {

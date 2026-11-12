@@ -16,6 +16,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
@@ -55,6 +56,10 @@ public class VentanaGestionEmpleados extends JFrame {
 	private JDateChooser dcFechaNac;
 	private JLabel lbTipoValor, lbPosicionValor;
 	private JButton btGuardar, btEliminar;
+	private JLabel lblUsuario;
+	private JTextField tfUsuario;
+	private JLabel lblContrasena;
+	private JPasswordField pfContrasena;
 
 	public VentanaGestionEmpleados(VentanaPrincipal ventanaPrincipal, GestorEmpleados gestor) {
 		this.gestor = gestor;
@@ -63,7 +68,7 @@ public class VentanaGestionEmpleados extends JFrame {
 
 		setTitle("Gestión de Club - Modificar y eliminar empleados");
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setBounds(100, 100, 1000, 560);
+		setBounds(100, 100, 1000, 641);
 		setLocationRelativeTo(ventanaPrincipal);
 		addWindowListener(new java.awt.event.WindowAdapter() {
 			@Override
@@ -189,7 +194,7 @@ public class VentanaGestionEmpleados extends JFrame {
 	}
 
 	private JPanel crearPanelDatosPersonales() {
-		JPanel pn = new JPanel(new GridLayout(5, 2, 5, 8));
+		JPanel pn = new JPanel(new GridLayout(7, 2, 5, 8));
 		pn.setBackground(Color.WHITE);
 		pn.setBorder(BorderFactory.createTitledBorder("Datos personales"));
 
@@ -207,6 +212,19 @@ public class VentanaGestionEmpleados extends JFrame {
 		pn.add(txDni);
 		pn.add(new JLabel("Teléfono:"));
 		pn.add(txTelefono);
+		
+		lblUsuario = new JLabel("Usuario:");
+		pn.add(lblUsuario);
+		
+		tfUsuario = new JTextField();
+		pn.add(tfUsuario);
+		
+		lblContrasena = new JLabel("Contraseña:");
+		pn.add(lblContrasena);
+		
+		pfContrasena = new JPasswordField();
+		pfContrasena.setToolTipText("Deja este campo vacio si desea mantener la contraseña");
+		pn.add(pfContrasena);
 		pn.add(new JLabel("Fecha de nacimiento:"));
 		pn.add(dcFechaNac);
 		return pn;
@@ -263,6 +281,9 @@ public class VentanaGestionEmpleados extends JFrame {
 		txSalario.setText(emp.getSalario().toPlainString());
 		lbTipoValor.setText(textoTipo(emp));
 		lbPosicionValor.setText(VentanaAltaEmpleado.formatearPosicion(emp.getPosicion()));
+		
+		tfUsuario.setText(emp.getUsuario());
+		pfContrasena.setText("");
 	}
 
 	private void limpiarFormulario() {
@@ -279,6 +300,15 @@ public class VentanaGestionEmpleados extends JFrame {
 			lbTipoValor.setText("-");
 			lbPosicionValor.setText("-");
 		}
+		
+		if (pfContrasena != null) {
+			pfContrasena.setText("");
+		}
+		
+		if (tfUsuario != null) {
+			tfUsuario.setText("");
+		}
+		
 		habilitarFormulario(false);
 	}
 
@@ -295,6 +325,14 @@ public class VentanaGestionEmpleados extends JFrame {
 			btGuardar.setEnabled(habilitar);
 			btEliminar.setEnabled(habilitar);
 		}
+		
+		if (pfContrasena != null) {
+			pfContrasena.setEnabled(habilitar);
+		}
+		
+		if (tfUsuario != null) {
+			tfUsuario.setEnabled(habilitar);
+		}
 	}
 
 	// Acciones
@@ -303,10 +341,14 @@ public class VentanaGestionEmpleados extends JFrame {
 		if (empleadoSeleccionado == null || !validarFormulario()) {
 			return;
 		}
+		
+		char[] contrasenia = pfContrasena.getPassword();
+		
 		try {
 			gestor.modificarEmpleado(empleadoSeleccionado, txDni.getText().trim(), txNombre.getText().trim(),
 					txApellido.getText().trim(), new BigDecimal(txSalario.getText().trim()),
-					VentanaAltaEmpleado.aLocalDate(dcFechaNac.getDate()), txTelefono.getText().trim());
+					VentanaAltaEmpleado.aLocalDate(dcFechaNac.getDate()), txTelefono.getText().trim(),
+					tfUsuario.getText().trim(), new String(contrasenia));
 
 			JOptionPane.showMessageDialog(this, "Empleado modificado con éxito", "Éxito",
 					JOptionPane.INFORMATION_MESSAGE);
@@ -364,8 +406,9 @@ public class VentanaGestionEmpleados extends JFrame {
 	 */
 	private boolean validarFormulario() {
 		if (txNombre.getText().isBlank() || txApellido.getText().isBlank() || txDni.getText().isBlank()
-				|| txTelefono.getText().isBlank() || dcFechaNac.getDate() == null || txSalario.getText().isBlank()) {
-			mostrarError("Todos los campos son obligatorios");
+				|| txTelefono.getText().isBlank() || dcFechaNac.getDate() == null || txSalario.getText().isBlank()
+				|| tfUsuario.getText().isBlank()) {
+			mostrarError("Todos los campos son obligatorios (la contraseña solo si desea cambiarla)");
 			return false;
 		}
 		try {
@@ -387,6 +430,13 @@ public class VentanaGestionEmpleados extends JFrame {
 		// Validación de teléfono de 9 dígitos
 		if (!txTelefono.getText().trim().matches("\\d{9}")) {
 			mostrarError("El teléfono debe ser un número de 9 dígitos");
+			return false;
+		}
+
+		// Contraseña: vacía = mantener la actual; si se escribe, longitud mínima
+		int longitudContrasena = pfContrasena.getPassword().length;
+		if (longitudContrasena > 0 && longitudContrasena < 8) {
+			mostrarError("La contraseña debe tener al menos 8 caracteres");
 			return false;
 		}
 
