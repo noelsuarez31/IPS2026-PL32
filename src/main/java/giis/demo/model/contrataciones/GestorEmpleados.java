@@ -27,10 +27,10 @@ public class GestorEmpleados {
 	 * el dni o el telefono ya estan registrados, o si falla el acceso a la BBDD
 	 */
 	public void registrarNuevoEmpleado(String dni, String nombre, String apellido, BigDecimal salario,
-			LocalDate fechaNacimiento, String telefono, boolean esDeportivo, Posicion posicion) {
+			LocalDate fechaNacimiento, String telefono, boolean esDeportivo, Posicion posicion, String usuario, String contraseña, String salt) {
 
 		BaseEmpleado empleado = crearEmpleado(dni, nombre, apellido, salario, fechaNacimiento, telefono, esDeportivo,
-				posicion);
+				posicion, usuario, contraseña, salt);
 
 		try {
 			if (jdbc.existeDniEmpleado(empleado.getDni())) {
@@ -46,7 +46,7 @@ public class GestorEmpleados {
 	}
 
 	private BaseEmpleado crearEmpleado(String dni, String nombre, String apellido, BigDecimal salario,
-			LocalDate fechaNacimiento, String telefono, boolean esDeportivo, Posicion posicion) {
+			LocalDate fechaNacimiento, String telefono, boolean esDeportivo, Posicion posicion, String usuario, String contrasenia, String salt) {
 
 		if (fechaNacimiento != null && posicion != Posicion.JUGADOR && calcularEdad(fechaNacimiento) < EDAD_MAYORIA) {
 			throw new EmployeeException("Solo los jugadores pueden ser menores de edad");
@@ -54,9 +54,9 @@ public class GestorEmpleados {
 
 		// Los constructores validan el resto de datos y que la posicion sea del tipo correcto
 		if (esDeportivo) {
-			return new EmpleadoDeportivo(dni, nombre, apellido, salario, fechaNacimiento, telefono, posicion);
+			return new EmpleadoDeportivo(dni, nombre, apellido, salario, fechaNacimiento, telefono, posicion, usuario, contrasenia, salt);
 		}
-		return new EmpleadoNoDeportivo(dni, nombre, apellido, salario, fechaNacimiento, telefono, posicion);
+		return new EmpleadoNoDeportivo(dni, nombre, apellido, salario, fechaNacimiento, telefono, posicion, usuario, contrasenia, salt);
 	}
 
 	public void close() throws SQLException {
@@ -84,14 +84,14 @@ public class GestorEmpleados {
 	 * nuevo dni o telefono ya pertenecen a otro empleado, o si falla la BBDD
 	 */
 	public void modificarEmpleado(BaseEmpleado original, String dni, String nombre, String apellido,
-			BigDecimal salario, LocalDate fechaNacimiento, String telefono) {
+			BigDecimal salario, LocalDate fechaNacimiento, String telefono, String user, String password, String salt) {
 		if (original == null) {
 			throw new EmployeeException("Debe seleccionar un empleado");
 		}
 
 		boolean esDeportivo = original instanceof EmpleadoDeportivo;
 		BaseEmpleado modificado = crearEmpleado(dni, nombre, apellido, salario, fechaNacimiento, telefono,
-				esDeportivo, original.getPosicion());
+				esDeportivo, original.getPosicion(), user, password, salt);
 
 		try {
 			if (esDeportivo) {

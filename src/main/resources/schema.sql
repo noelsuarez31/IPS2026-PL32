@@ -75,6 +75,11 @@ CREATE TABLE IF NOT EXISTS "BaseEmpleado" (
     "salario" NUMERIC NOT NULL CHECK(salario > 0),
     "fecha_nacimiento" DATE NOT NULL,
     "numero_de_telefono" TEXT NOT NULL UNIQUE,
+    
+    "numero_usuario" TEXT NOT NULL UNIQUE,
+    "contarsena" TEXT NOT NULL,
+    "salt" TEXT NOT NULL,
+    
     PRIMARY KEY("dni")
 );
 

@@ -74,8 +74,13 @@ public class FranjaJdbc {
 				LocalDate fechaDeNacimiento = LocalDate.parse(rs.getString("fecha_nacimiento"));
 				String numeroDeTelefono = rs.getString("numero_de_telefono");
 				Posicion posicion = Posicion.valueOf(rs.getString("posicion"));
+				String usuario = rs.getString("nombre_usuario");
+				String contrasena = rs.getString("contrasena_hash");
+				String salt = rs.getString("salt");
+				
 				EmpleadoDeportivo jugador = new EmpleadoDeportivo(dni, nombre, apellido,
-						salario, fechaDeNacimiento, numeroDeTelefono, posicion);
+						salario, fechaDeNacimiento, numeroDeTelefono, posicion, usuario, contrasena, salt);
+				
 				jugador.setIdEquipo(idEquipoProfesional);
 				jugadores.add(jugador);
 			}

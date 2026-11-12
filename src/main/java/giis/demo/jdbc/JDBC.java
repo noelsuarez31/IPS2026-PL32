@@ -505,8 +505,9 @@ public class JDBC {
 	}
 
 	/**
-	 * Obtiene las franjas ocupadas de una instalación relevantes para mantenimiento en una fecha
-	 * (partidos, entrenamientos y reservas externas, sin margen de hora y media ni tareas de mantenimiento).
+	 * Obtiene las franjas ocupadas de una instalación relevantes para mantenimiento
+	 * en una fecha (partidos, entrenamientos y reservas externas, sin margen de
+	 * hora y media ni tareas de mantenimiento).
 	 * 
 	 * @param idInstalacion
 	 * @param fecha
@@ -664,7 +665,6 @@ public class JDBC {
 			con.setAutoCommit(autoCommitOriginal);
 		}
 	}
-	
 
 	/**
 	 * Obtiene todos los equipos locales disponibles
@@ -689,8 +689,8 @@ public class JDBC {
 	 * @return uan lista con los asientos ocupados
 	 * @throws SQLException
 	 */
-	public List<int[]> getAsientosOcupados(int idEquipo, String nameTribuna, String nameSeccion, LocalDate inicio, LocalDate fin)
-			throws SQLException {
+	public List<int[]> getAsientosOcupados(int idEquipo, String nameTribuna, String nameSeccion, LocalDate inicio,
+			LocalDate fin) throws SQLException {
 
 		return AbonoJdbc.getAsientosOcupados(con, idEquipo, nameTribuna, nameSeccion, inicio, fin);
 	}
@@ -721,7 +721,7 @@ public class JDBC {
 
 		return AbonadoJdbc.tieneAbonoTemporada(con, dni, fechaInicio);
 	}
-	
+
 	/**
 	 * Inserta el abonado en la BBDD
 	 * 
@@ -730,11 +730,11 @@ public class JDBC {
 	 * @throws SQLException
 	 */
 	public void insertarAbonado(Abonado abonado, Abono abono) throws SQLException {
-		
+
 		AbonadoJdbc.insertarAbonado(con, abonado);
-		
+
 	}
-	
+
 	/**
 	 * Inserta el abono en la BBDD
 	 * 
@@ -745,14 +745,15 @@ public class JDBC {
 	 * @throws AbonoNoPermitidoException
 	 */
 	public void venderAbono(Abonado abonado, Abono abono, int idEquipo) throws SQLException, AbonoNoPermitidoException {
-		
+
 		AbonoJdbc.venderAbono(con, abonado, abono, idEquipo);
-		
+
 	}
 
 	/**
-	 * Devuelve la lista de entrenamientos y partidos que tiene el equipo,
-	 * de id el pasado por parametro, asociados
+	 * Devuelve la lista de entrenamientos y partidos que tiene el equipo, de id el
+	 * pasado por parametro, asociados
+	 * 
 	 * @param idEquipo
 	 * @param fecha
 	 * @return
@@ -761,22 +762,21 @@ public class JDBC {
 	public List<String> obtenerPartidosYEntrenamientos(int idEquipo, LocalDate fecha) throws SQLException {
 		return FranjaJdbc.obtenerPartidosYEntrenamientos(con, idEquipo, fecha);
 	}
-	
-	
+
 	/**
 	 * Devuelve el precio de un asiento para un partido y una sección dadas
 	 * 
 	 * @param idPartido
 	 * @param seccion
 	 * @return el precio del asiento
-	 * @throws SQLException 
+	 * @throws SQLException
 	 */
 	public double obtenerPrecio(int idPartido, String seccion) throws SQLException {
-		
+
 		return PrecioSeccionJdbc.getPrecio(con, idPartido, seccion);
-		
+
 	}
-	
+
 	/**
 	 * Devuelve la lista de empleados que tienen puesto de JARDINERIA
 	 */
@@ -785,7 +785,8 @@ public class JDBC {
 	}
 
 	/**
-	 * Comprueba si un jardinero tiene otra tarea de mantenimiento solapada en esa fecha y horario
+	 * Comprueba si un jardinero tiene otra tarea de mantenimiento solapada en esa
+	 * fecha y horario
 	 */
 	public boolean tieneTareaSolapadaJardinero(String dniJardinero, String fecha, String horaInicio, String horaFin)
 			throws SQLException {
@@ -793,19 +794,21 @@ public class JDBC {
 	}
 
 	/**
-	 * Registra una tarea de mantenimiento y vincula a los jardineros asignados de forma transaccional
+	 * Registra una tarea de mantenimiento y vincula a los jardineros asignados de
+	 * forma transaccional
 	 */
 	public void registrarTareaMantenimiento(TareaMantenimiento tarea, List<String> dnisJardineros) throws SQLException {
 		TareaMantenimientoJdbc.registrarTareaMantenimiento(con, tarea, dnisJardineros);
 	}
 
 	/**
-	 * Obtiene las tareas de mantenimiento de una instalación en una fecha determinada
+	 * Obtiene las tareas de mantenimiento de una instalación en una fecha
+	 * determinada
 	 */
 	public List<TareaMantenimiento> getTareasInstalacionFecha(int idInstalacion, String fecha) throws SQLException {
 		return TareaMantenimientoJdbc.getTareasInstalacionFecha(con, idInstalacion, fecha);
 	}
-	
+
 	/**
 	 * Obtiene los datos de un abonado dado un dni
 	 * 
@@ -814,12 +817,13 @@ public class JDBC {
 	 * @throws SQLException
 	 */
 	public Abonado getObtenerDatosAbonado(String dni) throws SQLException {
-		
+
 		return AbonadoJdbc.obtenerDatosAbonado(con, dni);
 	}
-	
+
 	/**
 	 * Obtiene el abono disponible dado un dni, un equipo y una fecha
+	 * 
 	 * @param dni
 	 * @param idEquipo
 	 * @param fecha
@@ -829,7 +833,7 @@ public class JDBC {
 	public Abono getAbonoParaPartido(String dni, int idEquipo, LocalDate fecha) throws SQLException {
 		return AbonoJdbc.getAbonoParaPartido(con, dni, idEquipo, fecha);
 	}
-	
+
 	/**
 	 * Obtiene una lista con los partidos declarados como el dia del club
 	 * 
@@ -837,13 +841,14 @@ public class JDBC {
 	 * @throws SQLException
 	 */
 	public List<Partido> getPartidosDelDiaDelClub(String dni) throws SQLException {
-		
+
 		return PartidoJdbc.getPartidosDelDiaDelClub(con, dni);
-		
+
 	}
-	
+
 	/**
 	 * Comprueba que exista un abonado con ese Dni
+	 * 
 	 * @param dni
 	 * @return
 	 * @throws SQLException
@@ -851,7 +856,7 @@ public class JDBC {
 	public boolean comprobarDniAbonado(String dni) throws SQLException {
 		return AbonadoJdbc.existeAbonado(con, dni);
 	}
-	
+
 	/**
 	 * Registra la entrada en la BBDD
 	 * 
@@ -859,14 +864,14 @@ public class JDBC {
 	 * @param partido
 	 * @return
 	 * @throws SQLException
-	 * @throws AbonoNoPermitidoException 
+	 * @throws AbonoNoPermitidoException
 	 */
 	public int registrarEntradaAbonado(String dni, Partido partido) throws SQLException, AbonoNoPermitidoException {
 		return EntradaAbonadoJdbc.registrar(con, dni, partido);
 	}
-	
+
 	/**
-	* Devuelve la lista completa de todos los accionistas registrados.
+	 * Devuelve la lista completa de todos los accionistas registrados.
 	 */
 	public List<Accionista> getAccionistas() throws SQLException {
 		return AccionJdbc.getAccionistas(con);
@@ -887,67 +892,71 @@ public class JDBC {
 	}
 
 	/**
-	 * Devuelve las acciones pertenecientes a un accionista ordenadas por fecha de adquisición.
+	 * Devuelve las acciones pertenecientes a un accionista ordenadas por fecha de
+	 * adquisición.
 	 */
 	public List<Accion> getAccionesPropietario(String dni) throws SQLException {
 		return AccionJdbc.getAccionesPropietario(con, dni);
 	}
 
-    /**
-     * Devuelve la lista de equipos externos rivales (visitantes)
-     */
-    public List<Equipo> getEquiposVisitantes() throws SQLException {
-        return EquipoJdbc.getEquiposExternos(con);
-    }
-    
-    /**
-     * Devuelve la lista de equipos propios de la organización (locales)
-     */
-    public List<Equipo> getEquiposPropios() throws SQLException {
-        return EquipoJdbc.getEquiposPropios(con);
-    }
-    
-    /**
+	/**
+	 * Devuelve la lista de equipos externos rivales (visitantes)
+	 */
+	public List<Equipo> getEquiposVisitantes() throws SQLException {
+		return EquipoJdbc.getEquiposExternos(con);
+	}
+
+	/**
+	 * Devuelve la lista de equipos propios de la organización (locales)
+	 */
+	public List<Equipo> getEquiposPropios() throws SQLException {
+		return EquipoJdbc.getEquiposPropios(con);
+	}
+
+	/**
 	 * Comprueba colisiones de horario para un partido en la instalación y fecha.
 	 */
 	public void comprobarColisionesPartido(LocalDate fecha, LocalTime horaInicio, LocalTime horaFin, int idInstalacion)
 			throws SQLException {
 		EquipoJdbc.comprobarColisionesPartido(con, fecha, horaInicio, horaFin, idInstalacion);
 	}
-	
+
 	public List<EventoOcupacion> obtenerSobreescribiblesPartidoSolapados(int idEquipoLocal, int idInstalacion,
 			LocalDate fecha, LocalTime horaInicio, LocalTime horaFin) throws SQLException {
-		return EquipoJdbc.obtenerSobreescribiblesPartidoSolapados(con, idEquipoLocal, idInstalacion, fecha, horaInicio, horaFin);
+		return EquipoJdbc.obtenerSobreescribiblesPartidoSolapados(con, idEquipoLocal, idInstalacion, fecha, horaInicio,
+				horaFin);
 	}
-	
+
 	/**
-	 * Registra el partido, sus precios de sección y cancela atómicamente los eventos sobreescritos.
+	 * Registra el partido, sus precios de sección y cancela atómicamente los
+	 * eventos sobreescritos.
 	 */
 	public void guardarPartidoCancelandoCoincidentes(int idLocal, int idVisitante, int idInstalacion, LocalDate fecha,
 			LocalTime horaInicio, LocalTime horaFin, boolean esDiaClub, double precioAbonado,
-			Map<TipoSeccion, Double> preciosSeccion, List<EventoOcupacion> cancelables)
-			throws SQLException {
+			Map<TipoSeccion, Double> preciosSeccion, List<EventoOcupacion> cancelables) throws SQLException {
 		EquipoJdbc.guardarPartidoCancelandoCoincidentes(con, idLocal, idVisitante, idInstalacion, fecha, horaInicio,
 				horaFin, esDiaClub, precioAbonado, preciosSeccion, cancelables);
 	}
-	
+
 	public List<EventoOcupacion> obtenerEventosOcupacionPartido(int idEquipoLocal, int idInstalacion, LocalDate fecha)
 			throws SQLException {
 		return EquipoJdbc.obtenerEventosOcupacionPartido(con, idEquipoLocal, idInstalacion, fecha);
 	}
-	 
-	
+
 	/**
 	 * Devuelve una lista de dnis de entrenadores con equipos asociados
+	 * 
 	 * @return
 	 * @throws SQLException
 	 */
 	public List<String> obtenerDnisEntrenadoresConEquipo() throws SQLException {
 		return EntrenamientoJdbc.obtenerDnisEntrenadoresConEquipo(con);
 	}
-	
+
 	/**
-	 * Devuelve un string que es el nombre del equipo al que esta asociado el entrenador
+	 * Devuelve un string que es el nombre del equipo al que esta asociado el
+	 * entrenador
+	 * 
 	 * @param dniEntrenador
 	 * @return
 	 * @throws SQLException
@@ -955,9 +964,10 @@ public class JDBC {
 	public String obtenerNombreEquipoPorDniEntrenador(String dniEntrenador) throws SQLException {
 		return EntrenamientoJdbc.obtenerNombreEquipoPorDniEntrenador(con, dniEntrenador);
 	}
-	
+
 	/**
 	 * Devuelve el id del equipo por el dni del entrenador
+	 * 
 	 * @param dniEntrenador
 	 * @return
 	 * @throws SQLException
@@ -965,94 +975,101 @@ public class JDBC {
 	public int obtenerIdEquipoPorDniEntrenador(String dniEntrenador) throws SQLException {
 		return EntrenamientoJdbc.obtenerIdEquipoPorDniEntrenador(con, dniEntrenador);
 	}
-	
+
 	/**
-	 * Devuelve una lista de eventos que ocupan las instalaciones. Incluye:
-	 * Tareas de jardineria, reservas externas, entrenamientos/partidos de 
-	 * otros equipos o del equipo que entrena el entrenador y entrevistas
-	 * de los jugadores pertenecientes al equipo
+	 * Devuelve una lista de eventos que ocupan las instalaciones. Incluye: Tareas
+	 * de jardineria, reservas externas, entrenamientos/partidos de otros equipos o
+	 * del equipo que entrena el entrenador y entrevistas de los jugadores
+	 * pertenecientes al equipo
+	 * 
 	 * @param idEquipo
 	 * @param idInstalacion
 	 * @param fecha
 	 * @return
 	 * @throws SQLException
 	 */
-	public List<EventoOcupacion> obtenerEventosOcupacion(int idEquipo, int idInstalacion, LocalDate fecha) throws SQLException {
+	public List<EventoOcupacion> obtenerEventosOcupacion(int idEquipo, int idInstalacion, LocalDate fecha)
+			throws SQLException {
 		return EntrenamientoJdbc.obtenerEventosOcupacion(con, idEquipo, idInstalacion, fecha);
 	}
-	
+
 	/**
-	 * Comprueba las colisiones del entrenamiento a crear con la ocupacion de las instalaciones
+	 * Comprueba las colisiones del entrenamiento a crear con la ocupacion de las
+	 * instalaciones
+	 * 
 	 * @param fecha
 	 * @param horaInicio
 	 * @param horaFin
 	 * @param idEquipo
 	 * @param idInstalacion
 	 * @throws SQLException
-	 * @throws PersistenceException 
+	 * @throws PersistenceException
 	 */
-	public void comprobarColisionesEntrenamiento(LocalDate fecha, LocalTime horaInicio, LocalTime horaFin,
-			int idEquipo, int idInstalacion) throws SQLException, PersistenceException {
+	public void comprobarColisionesEntrenamiento(LocalDate fecha, LocalTime horaInicio, LocalTime horaFin, int idEquipo,
+			int idInstalacion) throws SQLException, PersistenceException {
 		EntrenamientoJdbc.comprobarColisiones(con, fecha, horaInicio, horaFin, idEquipo, idInstalacion);
 	}
-	
+
 	public List<EventoOcupacion> obtenerEventosSobreescribiblesSolapados(int idEquipo, int idInstalacion,
 			LocalDate fecha, LocalTime horaInicio, LocalTime horaFin) throws SQLException {
-		return EntrenamientoJdbc.obtenerEventosSobreescribiblesSolapados(con, idEquipo, idInstalacion, fecha, horaInicio, horaFin);
+		return EntrenamientoJdbc.obtenerEventosSobreescribiblesSolapados(con, idEquipo, idInstalacion, fecha,
+				horaInicio, horaFin);
 	}
 
 	public void guardarEntrenamientoCancelandoCoincidentes(LocalDate fecha, LocalTime horaInicio, LocalTime horaFin,
 			int idEquipo, int idInstalacion, List<EventoOcupacion> eventosACancelar) throws SQLException {
-		EntrenamientoJdbc.guardarEntrenamientoCancelandoCoincidentes(con, fecha, horaInicio, horaFin, idEquipo, idInstalacion, eventosACancelar);
+		EntrenamientoJdbc.guardarEntrenamientoCancelandoCoincidentes(con, fecha, horaInicio, horaFin, idEquipo,
+				idInstalacion, eventosACancelar);
 	}
-	
+
 	/**
-     * Devuelve la campaña de acciones activa o null si no hay ninguna.
-     */
-    public Campana getCampanaActiva() throws SQLException {
-        return CampanaJdbc.getCampanaActiva(con);
-    }
+	 * Devuelve la campaña de acciones activa o null si no hay ninguna.
+	 */
+	public Campana getCampanaActiva() throws SQLException {
+		return CampanaJdbc.getCampanaActiva(con);
+	}
 
-    /**
-     * Lanza una campaña de acciones en una unica transaccion: la crea en la fase 1
-     * y guarda las acciones que posee cada accionista en este momento.
-     * 
-     * @throws ApplicationException si ya hay una campaña activa
-     */
-    public void lanzarCampana(double precio, int numAcciones) throws SQLException {
-        boolean autoCommitOriginal = con.getAutoCommit();
-        try {
-            con.setAutoCommit(false);
-            if (CampanaJdbc.getCampanaActiva(con) != null)
-                throw new ApplicationException("Ya hay una campaña activa.");
-            int idCampana = CampanaJdbc.insertarCampana(con, precio, numAcciones, LocalDateTime.now());
-            CampanaJdbc.insertarAccionesIniciales(con, idCampana);
-            con.commit();
-        } catch (SQLException | RuntimeException e) {
-            con.rollback();
-            throw e;
-        } finally {
-            con.setAutoCommit(autoCommitOriginal);
-        }
-    }
-    
-    /**
-     * Avanza la campaña a la fase siguiente.
-     * 
-     * @return false si la campaña ya no estaba en la fase indicada o no se puede avanzar
-     */
-    public boolean avanzarFaseCampana(int idCampana, int faseActual) throws SQLException {
-        return CampanaJdbc.avanzarFase(con, idCampana, faseActual);
-    }
+	/**
+	 * Lanza una campaña de acciones en una unica transaccion: la crea en la fase 1
+	 * y guarda las acciones que posee cada accionista en este momento.
+	 * 
+	 * @throws ApplicationException si ya hay una campaña activa
+	 */
+	public void lanzarCampana(double precio, int numAcciones) throws SQLException {
+		boolean autoCommitOriginal = con.getAutoCommit();
+		try {
+			con.setAutoCommit(false);
+			if (CampanaJdbc.getCampanaActiva(con) != null)
+				throw new ApplicationException("Ya hay una campaña activa.");
+			int idCampana = CampanaJdbc.insertarCampana(con, precio, numAcciones, LocalDateTime.now());
+			CampanaJdbc.insertarAccionesIniciales(con, idCampana);
+			con.commit();
+		} catch (SQLException | RuntimeException e) {
+			con.rollback();
+			throw e;
+		} finally {
+			con.setAutoCommit(autoCommitOriginal);
+		}
+	}
 
-    /**
-     * Cierra la campaña (solo posible en la ultima fase).
-     * 
-     * @return false si la campaña ya no estaba activa o no estaba en la ultima fase
-     */
-    public boolean cerrarCampana(int idCampana) throws SQLException {
-        return CampanaJdbc.cerrarCampana(con, idCampana);
-    }
+	/**
+	 * Avanza la campaña a la fase siguiente.
+	 * 
+	 * @return false si la campaña ya no estaba en la fase indicada o no se puede
+	 *         avanzar
+	 */
+	public boolean avanzarFaseCampana(int idCampana, int faseActual) throws SQLException {
+		return CampanaJdbc.avanzarFase(con, idCampana, faseActual);
+	}
+
+	/**
+	 * Cierra la campaña (solo posible en la ultima fase).
+	 * 
+	 * @return false si la campaña ya no estaba activa o no estaba en la ultima fase
+	 */
+	public boolean cerrarCampana(int idCampana) throws SQLException {
+		return CampanaJdbc.cerrarCampana(con, idCampana);
+	}
 
 	/**
 	 * Pone una acción a la venta fijando su precio de venta.
@@ -1069,7 +1086,8 @@ public class JDBC {
 	}
 
 	/**
-	 * Devuelve las acciones puestas a la venta por otros accionistas (excluyendo las del comprador).
+	 * Devuelve las acciones puestas a la venta por otros accionistas (excluyendo
+	 * las del comprador).
 	 */
 	public List<Accion> getAccionesEnVenta(String dniCompradorExcluir) throws SQLException {
 		return AccionJdbc.getAccionesEnVenta(con, dniCompradorExcluir);
@@ -1081,21 +1099,35 @@ public class JDBC {
 	public void comprarAcciones(String dniComprador, List<Integer> idsAcciones) throws SQLException {
 		AccionJdbc.comprarAcciones(con, dniComprador, idsAcciones);
 	}
-	
-	/**
-	   * Acciones que aun puede comprar un accionista en la fase 1 de la campaña (0 si no consta).
-	   */
-	  public int getCupoFase1Campana(int idCampana, String dni) throws SQLException {
-	      return CompraCampanaJdbc.getCupoFase1(con, idCampana, dni);
-	  }
 
-	  /**
-	   * Registra la compra de acciones de la campaña en una unica transaccion.
-	   * 
-	   * @throws ApplicationException si la campaña ha cambiado desde que se mostró o se supera el cupo
-	   */
-	  public ResultadoCompra comprarAccionesCampana(Campana campana, Accionista comprador, boolean esNuevo, int unidades)
-	          throws SQLException {
-	      return CompraCampanaJdbc.comprar(con, campana, comprador, esNuevo, unidades);
-	  }
+	/**
+	 * Acciones que aun puede comprar un accionista en la fase 1 de la campaña (0 si
+	 * no consta).
+	 */
+	public int getCupoFase1Campana(int idCampana, String dni) throws SQLException {
+		return CompraCampanaJdbc.getCupoFase1(con, idCampana, dni);
+	}
+
+	/**
+	 * Registra la compra de acciones de la campaña en una unica transaccion.
+	 * 
+	 * @throws ApplicationException si la campaña ha cambiado desde que se mostró o
+	 *                              se supera el cupo
+	 */
+	public ResultadoCompra comprarAccionesCampana(Campana campana, Accionista comprador, boolean esNuevo, int unidades)
+			throws SQLException {
+		return CompraCampanaJdbc.comprar(con, campana, comprador, esNuevo, unidades);
+	}
+
+	public boolean existeUsuarioEmpleado(String usuario) throws SQLException {
+		return BaseEmpleadoJdbc.existeUsuario(con, usuario);
+	}
+
+	public boolean existeUsuarioEnOtroEmpleado(String usuario, String dniPropio) throws SQLException {
+		return BaseEmpleadoJdbc.existeUsuarioEnOtroEmpleado(con, usuario, dniPropio);
+	}
+
+	public String[] getCredenciales(String nombreUsuario) throws SQLException {
+		return BaseEmpleadoJdbc.getCredenciales(con, nombreUsuario);
+	}
 }

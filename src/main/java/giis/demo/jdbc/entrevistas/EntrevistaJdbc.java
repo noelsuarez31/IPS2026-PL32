@@ -140,15 +140,20 @@ public class EntrevistaJdbc {
 			
 			ResultSet rs = pst.executeQuery();
 			while(rs.next()) {
-				String dni = rs.getString("dni");	
+				
+				String dni = rs.getString("dni");
 				String nombre = rs.getString("nombre");
 				String apellido = rs.getString("apellido");
 				BigDecimal salario = rs.getBigDecimal("salario");
 				LocalDate fechaDeNacimiento = LocalDate.parse(rs.getString("fecha_nacimiento"));
 				String numeroDeTelefono = rs.getString("numero_de_telefono");
 				Posicion posicion = Posicion.valueOf(rs.getString("posicion"));
+				String usuario = rs.getString("nombre_usuario");
+				String contrasena = rs.getString("contrasena_hash");
+				String salt = rs.getString("salt");
+
 				EmpleadoDeportivo jugador = new EmpleadoDeportivo(dni, nombre, apellido,
-						salario, fechaDeNacimiento, numeroDeTelefono, posicion);
+						salario, fechaDeNacimiento, numeroDeTelefono, posicion, usuario, contrasena, salt);
 				
 				jugadores.add(jugador);
 			}

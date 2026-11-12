@@ -9,8 +9,8 @@ public class EmpleadoNoDeportivo extends BaseEmpleado {
 	private Posicion posicion; 
 	
 	public EmpleadoNoDeportivo(String dni, String nombre, String apellido, BigDecimal salario,
-			LocalDate fechaDeNacimiento, String numeroTelefono, Posicion posicion) {
-		super(dni, nombre, apellido, salario, fechaDeNacimiento, numeroTelefono);
+			LocalDate fechaDeNacimiento, String numeroTelefono, Posicion posicion, String usuario, String contrasena, String salt) throws EmployeeException {
+		super(dni, nombre, apellido, salario, fechaDeNacimiento, numeroTelefono, usuario, contrasena, salt);
 		
 		if(posicion == null || !posicionValida(posicion)) {
 			throw new EmployeeException("Posicion invalida");
