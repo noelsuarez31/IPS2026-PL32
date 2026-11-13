@@ -36,6 +36,9 @@ drop table if exists CampanaAccionista;
 drop table if exists Campana;
 drop table if exists Accionista;
 
+drop table if exists Noticia;
+drop table if exists ImagenNoticia;
+
 
 CREATE TABLE IF NOT EXISTS "butaca" (
 	"id_butaca"	INTEGER,
@@ -321,4 +324,20 @@ CREATE TABLE IF NOT EXISTS "CampanaAccionista" (
 	PRIMARY KEY("id_campana", "dni"),
 	FOREIGN KEY("id_campana") REFERENCES "Campana"("id_campana"),
 	FOREIGN KEY("dni") REFERENCES "Accionista"("dni")
+);
+
+CREATE TABLE IF NOT EXISTS Noticia (
+    id_noticia INTEGER PRIMARY KEY AUTOINCREMENT,
+    titular TEXT NOT NULL,
+    subtitulo TEXT,
+    fecha TEXT NOT NULL,
+    autor TEXT,
+    cuerpo TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS ImagenNoticia (
+    id_imagen INTEGER PRIMARY KEY AUTOINCREMENT,
+    id_noticia INTEGER NOT NULL,
+    ruta_imagen TEXT NOT NULL,
+    FOREIGN KEY (id_noticia) REFERENCES Noticia(id_noticia) ON DELETE CASCADE
 );

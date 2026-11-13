@@ -11,6 +11,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -558,15 +560,17 @@ public class VentanaAñadirNoticia extends JFrame {
 		String autor = getTxtAutor().getText().trim();
 		List<String> rutasImagenes = getImagenesSeleccionadas();
 
-		JOptionPane.showMessageDialog(this,
-				"¡Formulario validado con éxito!\n\n"
-				+ "Titular: " + titular + "\n"
-				+ "Fecha: " + fechaSeleccionada + "\n"
-				+ "Subtítulo: " + (subtitulo.isEmpty() ? "(Sin subtítulo)" : subtitulo) + "\n"
-				+ "Autor: " + (autor.isEmpty() ? "(Sin autor)" : autor) + "\n"
-				+ "Imágenes adjuntas: " + rutasImagenes.size() + "\n\n"
-				+ "Listo para pasar a la capa de negocio y persistencia.",
-				"Validación de UI correcta", JOptionPane.INFORMATION_MESSAGE);
+		LocalDate fecha = fechaSeleccionada.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+		try {
+			service.añadirNoticia(titular, subtitulo, fecha, autor, cuerpo, rutasImagenes);
+			JOptionPane.showMessageDialog(this, "Noticia guardada y publicada con éxito en el portal.", "Éxito",
+					JOptionPane.INFORMATION_MESSAGE);
+			limpiarFormulario();
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(this, "Error al guardar la noticia: " + e.getMessage(), "Error",
+					JOptionPane.ERROR_MESSAGE);
+		}
 	}
 
 	public List<String> getImagenesSeleccionadas() {

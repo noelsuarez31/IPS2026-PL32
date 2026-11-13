@@ -34,6 +34,7 @@ import giis.demo.jdbc.historial.HistorialJdbc;
 import giis.demo.jdbc.horarios.HorarioEspecificoJdbc;
 import giis.demo.jdbc.horarios.HorarioPeriodicoJdbc;
 import giis.demo.jdbc.mantenimiento.TareaMantenimientoJdbc;
+import giis.demo.jdbc.noticias.NoticiaJdbc;
 import giis.demo.jdbc.reservas.ComprobarDisponibilidadJdbc;
 import giis.demo.jdbc.reservas.InstalacionJdbc;
 import giis.demo.jdbc.reservas.ReservaJdbc;
@@ -62,6 +63,7 @@ import giis.demo.model.historial.LineaDetalle;
 import giis.demo.model.horarios.HorarioEspecifico;
 import giis.demo.model.horarios.HorarioPeriodico;
 import giis.demo.model.mantenimiento.TareaMantenimiento;
+import giis.demo.model.noticias.Noticia;
 import giis.demo.model.reserva.Instalacion;
 import giis.demo.model.reserva.Intervalo;
 import giis.demo.model.reserva.Reserva;
@@ -1023,8 +1025,9 @@ public class JDBC {
         boolean autoCommitOriginal = con.getAutoCommit();
         try {
             con.setAutoCommit(false);
-            if (CampanaJdbc.getCampanaActiva(con) != null)
-                throw new ApplicationException("Ya hay una campaña activa.");
+            if (CampanaJdbc.getCampanaActiva(con) != null) {
+				throw new ApplicationException("Ya hay una campaña activa.");
+			}
             int idCampana = CampanaJdbc.insertarCampana(con, precio, numAcciones, LocalDateTime.now());
             CampanaJdbc.insertarAccionesIniciales(con, idCampana);
             con.commit();
@@ -1083,19 +1086,25 @@ public class JDBC {
 	}
 	
 	/**
-	   * Acciones que aun puede comprar un accionista en la fase 1 de la campaña (0 si no consta).
-	   */
-	  public int getCupoFase1Campana(int idCampana, String dni) throws SQLException {
-	      return CompraCampanaJdbc.getCupoFase1(con, idCampana, dni);
-	  }
+	 * Acciones que aun puede comprar un accionista en la fase 1 de la campaña (0 si
+	 * no consta).
+	 */
+	public int getCupoFase1Campana(int idCampana, String dni) throws SQLException {
+		return CompraCampanaJdbc.getCupoFase1(con, idCampana, dni);
+	}
 
-	  /**
-	   * Registra la compra de acciones de la campaña en una unica transaccion.
-	   * 
-	   * @throws ApplicationException si la campaña ha cambiado desde que se mostró o se supera el cupo
-	   */
-	  public ResultadoCompra comprarAccionesCampana(Campana campana, Accionista comprador, boolean esNuevo, int unidades)
-	          throws SQLException {
-	      return CompraCampanaJdbc.comprar(con, campana, comprador, esNuevo, unidades);
-	  }
+	/**
+	 * Registra la compra de acciones de la campaña en una unica transaccion.
+	 * 
+	 * @throws ApplicationException si la campaña ha cambiado desde que se mostró o
+	 *                              se supera el cupo
+	 */
+	public ResultadoCompra comprarAccionesCampana(Campana campana, Accionista comprador, boolean esNuevo, int unidades)
+			throws SQLException {
+		return CompraCampanaJdbc.comprar(con, campana, comprador, esNuevo, unidades);
+	}
+
+	public void insertarNoticia(Noticia noticia) throws SQLException {
+		NoticiaJdbc.insertarNoticia(con, noticia);
+	}
 }

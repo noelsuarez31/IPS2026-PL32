@@ -965,3 +965,13 @@ UPDATE "EmpleadoDeportivo" SET "id_equipo" = 4 WHERE "dni" = '66666666F';
 UPDATE "EmpleadoDeportivo" SET "id_equipo" = 4 WHERE "dni" IN (
     '33445566O', '77889900P', '50505050A', '50505050B', '50505050C', '50505050D', '50505050E', '50505050F'
 );
+
+
+INSERT INTO Noticia (id_noticia, titular, subtitulo, fecha, autor, cuerpo) VALUES
+(1, 'Convocatoria oficial para el derbi asturiano', 'El cuerpo técnico recupera a dos defensas titulares', '2026-11-10', 'Dpto. Prensa Real Oviedo', 'El cuerpo técnico ha hecho pública este mediodía la lista oficial de convocados para el derbi asturiano que se disputará este fin de semana en el Estadio Carlos Tartiere. El equipo completará mañana la última sesión de entrenamiento a puerta cerrada.'),
+(2, 'Apertura del nuevo punto oficial de atención al socio', 'Atención personalizada y taquilla rápida en el centro de la ciudad', '2026-11-08', 'Comunicación Institucional', 'El club inaugura un nuevo espacio comercial y de atención al abonado donde se podrán realizar gestiones, compra de entradas y adquisición de equipaciones oficiales.'),
+(3, 'Horarios confirmados para las próximas jornadas de liga', NULL, '2026-11-03', NULL, 'La organización de la competición ha confirmado los horarios de los próximos encuentros del primer equipo correspondientes a las jornadas 15 a 18.');
+INSERT INTO ImagenNoticia (id_noticia, ruta_imagen) VALUES
+(1, 'src/main/resources/img/1.png'),
+(1, 'src/main/resources/img/2.png'),
+(2, 'src/main/resources/img/3.png');

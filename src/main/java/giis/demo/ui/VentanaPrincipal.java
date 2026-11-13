@@ -93,6 +93,7 @@ public class VentanaPrincipal extends JFrame {
 	private JMenuItem mniVenderAbonado;
 	private JMenuItem mntmRegistrarEntrenamiento;
 	private JMenuItem mntmAñadirPartido;
+	private JMenuItem mntmAñadirNoticia;
 
 	/**
 	 * Create the frame.
@@ -482,6 +483,7 @@ public class VentanaPrincipal extends JFrame {
 		if (mnDirectorDeComunicaciones == null) {
 			mnDirectorDeComunicaciones = new JMenu("Director de comunicaciones");
 			mnDirectorDeComunicaciones.add(getMntmAsignarEntrevistas());
+			mnDirectorDeComunicaciones.add(getMntmAñadirNoticia());
 		}
 		return mnDirectorDeComunicaciones;
 	}
@@ -721,5 +723,11 @@ public class VentanaPrincipal extends JFrame {
 
 	public AñadirNoticiaService getAñadirNoticiaService() {
 		return añadirNoticiaService;
+	}
+	private JMenuItem getMntmAñadirNoticia() {
+		if (mntmAñadirNoticia == null) {
+			mntmAñadirNoticia = new JMenuItem("Añadir noticia");
+		}
+		return mntmAñadirNoticia;
 	}
 }
