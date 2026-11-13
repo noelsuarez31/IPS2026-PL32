@@ -35,9 +35,8 @@ public class Autenticacion {
 			credenciales = jdbc.getCredenciales(usuario);
 		} catch (SQLException e) {
 			throw new UnexpectedException(e);
-		} finally {
-
 		}
+		
 		if (credenciales == null || !PasswordHasher.verificar(contrasena, credenciales[1])) {
 			throw new ApplicationException("Usuario o contraseña incorrectos");
 		}

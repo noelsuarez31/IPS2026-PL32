@@ -17,7 +17,7 @@ import giis.demo.model.empleado.Posicion;
 public class BaseEmpleadoJdbc {
 	private static final String QUERY_INSERT_BASE = "INSERT INTO BaseEmpleado "
 			+ "(dni, nombre, apellido, salario, fecha_nacimiento, numero_de_telefono, "
-			+ "nombre_usuario, contrasena) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			+ "nombre_usuario, contrasena) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 	
 	private static final String QUERY_EXISTE_DNI = "SELECT 1 FROM BaseEmpleado WHERE dni = ?";
 	private static final String QUERY_EXISTE_TELEFONO = "SELECT 1 FROM BaseEmpleado WHERE numero_de_telefono = ?";
@@ -55,8 +55,7 @@ public class BaseEmpleadoJdbc {
 	
 	private static final String QUERY_EXISTE_USUARIO = "SELECT 1 FROM BaseEmpleado WHERE nombre_usuario = ?";
 	private static final String QUERY_EXISTE_USUARIO_OTRO = "SELECT 1 FROM BaseEmpleado WHERE nombre_usuario = ? AND dni <> ?";
-	private static final String QUERY_GET_CREDENCIALES =
-			"SELECT dni, contrasena FROM BaseEmpleado WHERE nombre_usuario = ?";
+	private static final String QUERY_GET_CREDENCIALES = "SELECT dni, contrasena FROM BaseEmpleado WHERE nombre_usuario = ?";
 	
 	/**
 	 * Inserta los datos comunes de un empleado (deportivo o no deportivo)
@@ -170,7 +169,7 @@ public class BaseEmpleadoJdbc {
 			pst.setString(6, emp.getNumeroTelefono());
 			pst.setString(7, emp.getUsuario());
 			pst.setString(8, emp.getContrasena());
-			pst.setString(10, dniOriginal);
+			pst.setString(9, dniOriginal);
 			
 			if (pst.executeUpdate() != 1) {
 				throw new SQLException("No existe ningun empleado con DNI " + dniOriginal);

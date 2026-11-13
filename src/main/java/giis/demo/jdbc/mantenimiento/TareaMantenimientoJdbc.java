@@ -50,7 +50,7 @@ public class TareaMantenimientoJdbc {
 
 	// 5. Obtener los jardineros asignados a una tarea concreta
 	private static final String QUERY_GET_JARDINEROS_DE_TAREA = 
-			"SELECT be.dni, be.nombre, be.apellido, be.salario, be.fecha_nacimiento, be.numero_de_telefono, end.posicion, be.nombre_usuario, be.contrasena"
+			"SELECT be.dni, be.nombre, be.apellido, be.salario, be.fecha_nacimiento, be.numero_de_telefono, end.posicion, be.nombre_usuario, be.contrasena "
 			+ "FROM TareaMantenimientoJardinero tmj "
 			+ "JOIN EmpleadoNoDeportivo end ON tmj.dni_jardinero = end.dni "
 			+ "JOIN BaseEmpleado be ON end.dni = be.dni "

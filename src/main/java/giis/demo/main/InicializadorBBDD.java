@@ -9,7 +9,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.UIManager;
 
-import giis.demo.ui.VentanaPrincipal;
+import giis.demo.ui.login.VentanaLogin;
 import giis.demo.util.Database;
 
 
@@ -56,7 +56,7 @@ public class InicializadorBBDD {
         JButton btnEjecutarTkrun = new JButton("Ejecutar giis.demo.tkrun");
         btnEjecutarTkrun.addActionListener(new ActionListener() { //NOSONAR codigo autogenerado
             public void actionPerformed(ActionEvent e) {
-        		new VentanaPrincipal().setVisible(true);
+        		new VentanaLogin().setVisible(true);
             }
         });
         frame.getContentPane().setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.Y_AXIS));

@@ -67,7 +67,7 @@ public class VentanaAltaEmpleado extends JFrame {
 		this.gestor = gestor;
 		setTitle("Gestión de Club - Alta de Empleados");
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setBounds(100, 100, 600, 550);
+		setBounds(100, 100, 600, 910);
 		setLocationRelativeTo(null);
 		contentPane = new JPanel();
 		contentPane.setBackground(Color.WHITE);
@@ -359,6 +359,8 @@ public class VentanaAltaEmpleado extends JFrame {
 		txTelefono.setText("");
 		dcFechaNac.setDate(null);
 		txSalario.setText("");
+		passwordField.setText("");
+		tfUsuario.setText("");
 		getRbDeportivo().setSelected(true);
 		actualizarModeloPosicion();
 	}

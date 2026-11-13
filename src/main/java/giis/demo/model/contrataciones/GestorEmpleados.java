@@ -32,10 +32,11 @@ public class GestorEmpleados {
 	public void registrarNuevoEmpleado(String dni, String nombre, String apellido, BigDecimal salario,
 			LocalDate fechaNacimiento, String telefono, boolean esDeportivo, Posicion posicion, String usuario,
 			String contrasena) {
+		
 		if (contrasena == null || contrasena.isEmpty()) {
 			throw new EmployeeException("La contraseña es obligatoria");
 		}
-		// Argon2id genera e integra el salt automáticamente en el hash
+
 		String hash = PasswordHasher.hash(contrasena);
 		BaseEmpleado empleado = crearEmpleado(dni, nombre, apellido, salario, fechaNacimiento, telefono, esDeportivo,
 				posicion, usuario, hash);
@@ -45,6 +46,10 @@ public class GestorEmpleados {
 			}
 			if (jdbc.existeTelefonoEmpleado(empleado.getNumeroTelefono())) {
 				throw new EmployeeException("El numero de telefono ya esta registrado en el sistema");
+			}
+			
+			if (jdbc.existeUsuarioEmpleado(empleado.getUsuario())) {
+				throw new EmployeeException("Ya existe un empleado con ese nombre de usuario");
 			}
 			jdbc.almacenarEmpleado(empleado);
 		} catch (SQLException e) {
