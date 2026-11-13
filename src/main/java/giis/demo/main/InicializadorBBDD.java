@@ -59,6 +59,7 @@ public class InicializadorBBDD {
         		new VentanaLogin().setVisible(true);
             }
         });
+        
         frame.getContentPane().setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.Y_AXIS));
         frame.getContentPane().add(btnEjecutarTkrun);
 
