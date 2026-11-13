@@ -377,7 +377,10 @@ public class VentanaGestionEmpleados extends JFrame {
 		}
 
 		try {
+			
 			gestor.eliminarEmpleado(empleadoSeleccionado);
+			gestor.eliminarCredenciales(empleadoSeleccionado.getDni());
+			
 			JOptionPane.showMessageDialog(this, "Empleado eliminado del sistema", "Éxito",
 					JOptionPane.INFORMATION_MESSAGE);
 			cargarEmpleados();

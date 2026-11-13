@@ -1135,19 +1135,61 @@ public class JDBC {
 		return MiembroJdbc.existeMiembro(con, dni);
 	}
 
+	/**
+	 * Comprueba si existe el usuario
+	 * @param usuario
+	 * @return
+	 * @throws SQLException
+	 */
 	public boolean existeUsuarioEmpleado(String usuario) throws SQLException {
 		return MiembroJdbc.existeNombreUsuario(con, usuario);
 	}
 
+	
 	public boolean existeUsuarioEnOtroEmpleado(String usuario, String dniPropio) throws SQLException {
 		return MiembroJdbc.existeNombreUsuarioOtroMiembro(con, usuario, dniPropio);
 	}
-
+	
+	/**
+	 * Devuelve las credenciales de un usuario
+	 * @param nombreUsuario
+	 * @return
+	 * @throws SQLException
+	 */
 	public String[] getCredenciales(String nombreUsuario) throws SQLException {
 		return MiembroJdbc.getCredenciales(con, nombreUsuario);
 	}
 	
+	/**
+	 * Devuelve las credenciales de un usuario dado un dni
+	 * @param nombreUsuario
+	 * @return
+	 * @throws SQLException
+	 */
 	public String[] getCredencialesPorDni(String dni) throws SQLException {
 	    return MiembroJdbc.getCredencialesPorDni(con, dni);
+	}
+	
+	/**
+	 * Actualiza las credenciales
+	 * @param dni
+	 * @param user
+	 * @param contrasenia
+	 * @return trus si las actualiza, false en caso contrario
+	 * @throws SQLException 
+	 */
+	public boolean actualizarCredenciales(String dni, String user, String contrasenia) throws SQLException {
+		return MiembroJdbc.actualizarCredenciales(con, dni, user, contrasenia);
+	}
+
+	/**
+	 * Elimina las credenciales asociadas a un miembro
+	 * 
+	 * @param dni
+	 * @return
+	 * @throws SQLException
+	 */
+	public boolean eliminarCredenciales(String dni) throws SQLException {
+		return MiembroJdbc.eliminarMiembro(con, dni);
 	}
 }

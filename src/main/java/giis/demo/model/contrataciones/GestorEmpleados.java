@@ -131,6 +131,8 @@ public class GestorEmpleados {
 				throw new EmployeeException("Ya existe un empleado con ese nombre de usuario");
 			}
 			jdbc.modificarEmpleado(original.getDni(), modificado);
+			jdbc.actualizarCredenciales(dni, user, hash);
+			
 		} catch (SQLException e) {
 			throw new EmployeeException("Error al modificar el empleado en la BBDD: " + e.getMessage());
 		}
@@ -177,5 +179,19 @@ public class GestorEmpleados {
 
 	private static int calcularEdad(LocalDate fechaNacimiento) {
 		return Period.between(fechaNacimiento, LocalDate.now()).getYears();
+	}
+
+	public void eliminarCredenciales(String dni) {
+		
+		if (dni.isBlank()) {
+			throw new IllegalArgumentException("El dni no se puede eliminar");
+		}
+		try {
+			
+			jdbc.eliminarCredenciales(dni);
+			
+		} catch (SQLException e) {
+			throw new EmployeeException("Error al eliminar las credenciales del empleado de la BBDD: " + e.getMessage());
+		}
 	}
 }

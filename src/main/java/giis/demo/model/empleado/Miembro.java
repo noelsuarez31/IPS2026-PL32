@@ -15,7 +15,7 @@ public abstract class Miembro {
 			throw new EmployeeException("usuario no puede ser null ni blanco");
 		}
 		
-		if(contrasena == null || contrasena.isBlank()) {
+		if(contraseña == null || contraseña.isBlank()) {
 			throw new EmployeeException("contrasena no puede ser null ni blanco");
 		}
 		
