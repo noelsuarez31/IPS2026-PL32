@@ -139,7 +139,7 @@ public class VentanaLogin extends JFrame {
 	
 	private void validar() {
 		
-		String usuario = tfUsuario.getText();
+		String usuario = tfUsuario.getText().toLowerCase();
 		char[] contrasenia = pfContrasenia.getPassword();
 		 
 		try {
