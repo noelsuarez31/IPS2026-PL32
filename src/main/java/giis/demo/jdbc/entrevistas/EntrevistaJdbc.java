@@ -20,17 +20,22 @@ public class EntrevistaJdbc {
 	private final static String QUERY_GET_SLOTS = "SELECT * FROM FranjaHoraria f " +
             "WHERE f.dni_jugador = ? AND f.fecha = ? " +
             "AND NOT EXISTS (SELECT 1 FROM Entrevista e WHERE e.id_franja = f.id_franja)";
-	private final static String QUERY_GET_PLAYERS_WITH_SLOTS = 
-		    "SELECT ed.*, bd.* FROM EmpleadoDeportivo ed " +
-		    "JOIN BaseEmpleado bd ON ed.dni = bd.dni " +
-		    "WHERE ed.posicion = ? AND EXISTS (" +
-		    "    SELECT 1 FROM FranjaHoraria fh " +
-		    "    WHERE fh.dni_jugador = ed.dni " +
-		    "    AND NOT EXISTS (" +
-		    "        SELECT 1 FROM Entrevista e " +
-		    "        WHERE e.id_franja = fh.id_franja" +
-		    "    )" +
-		    ")";
+	private final static String QUERY_GET_PLAYERS_WITH_SLOTS =
+	        "SELECT ed.dni, ed.posicion, "
+	        + "bd.nombre, bd.apellido, bd.salario, "
+	        + "bd.fecha_nacimiento, bd.numero_de_telefono, "
+	        + "m.nombre_usuario, m.contrasena "
+	        + "FROM EmpleadoDeportivo ed "
+	        + "JOIN BaseEmpleado bd ON ed.dni = bd.dni "
+	        + "JOIN Miembro m ON bd.dni = m.dni "
+	        + "WHERE ed.posicion = ? AND EXISTS ("
+	        + "    SELECT 1 FROM FranjaHoraria fh "
+	        + "    WHERE fh.dni_jugador = ed.dni "
+	        + "    AND NOT EXISTS ("
+	        + "        SELECT 1 FROM Entrevista e "
+	        + "        WHERE e.id_franja = fh.id_franja"
+	        + "    )"
+	        + ")";
 	
 	// strftime lo que hace es extraer los 4 digitos del año en el primer caso y los dos
 	// del mes en el segundo

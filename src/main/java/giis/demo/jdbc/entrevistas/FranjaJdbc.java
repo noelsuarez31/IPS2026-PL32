@@ -16,9 +16,17 @@ import giis.demo.model.empleado.Posicion;
 import giis.demo.model.entrevistas.FranjaHoraria;
 
 public class FranjaJdbc {
-	private final static String QUERY_GET_PLAYERS_PROFESIONAL_TEAM = 
-			"SELECT * FROM EmpleadoDeportivo ed, BaseEmpleado bd WHERE id_equipo=? AND "
-			+ "bd.dni=ed.dni AND posicion='JUGADOR'";
+
+	private final static String QUERY_GET_PLAYERS_PROFESIONAL_TEAM =
+	        "SELECT ed.dni, ed.posicion, ed.id_equipo, "
+	        + "bd.nombre, bd.apellido, bd.salario, "
+	        + "bd.fecha_nacimiento, bd.numero_de_telefono, "
+	        + "m.nombre_usuario, m.contrasena "
+	        + "FROM EmpleadoDeportivo ed "
+	        + "JOIN BaseEmpleado bd ON ed.dni = bd.dni "
+	        + "JOIN Miembro m ON bd.dni = m.dni "
+	        + "WHERE ed.id_equipo = ? AND ed.posicion = 'JUGADOR'";
+	
 	private final static String QUERY_GET_DNIS_FOR_TRAINERS_PROFESIONAL_TEAMS = 
 			"SELECT ed.dni FROM EmpleadoDeportivo ed, Equipo e WHERE "
 			+ "ed.id_equipo=e.id_equipo AND ed.posicion='ENTRENADOR' AND e.tipo_equipo='Profesional'";

@@ -33,6 +33,7 @@ import giis.demo.jdbc.equipo.EquipoJdbc;
 import giis.demo.jdbc.historial.HistorialJdbc;
 import giis.demo.jdbc.horarios.HorarioEspecificoJdbc;
 import giis.demo.jdbc.horarios.HorarioPeriodicoJdbc;
+import giis.demo.jdbc.login.MiembroJdbc;
 import giis.demo.jdbc.mantenimiento.TareaMantenimientoJdbc;
 import giis.demo.jdbc.reservas.ComprobarDisponibilidadJdbc;
 import giis.demo.jdbc.reservas.InstalacionJdbc;
@@ -316,9 +317,16 @@ public class JDBC {
 	 * @throws SQLException
 	 */
 	public void almacenarEmpleado(BaseEmpleado empleado) throws SQLException {
+
 		boolean autoCommitOriginal = con.getAutoCommit();
+
 		try {
 			con.setAutoCommit(false);
+
+			if (!MiembroJdbc.existeMiembro(con, empleado.getDni())) {
+				MiembroJdbc.insertarMiembro(con, empleado.getDni(), empleado.getUsuario(), empleado.getContrasena());
+			}
+
 			BaseEmpleadoJdbc.insertarBaseEmpleado(con, empleado);
 			if (empleado instanceof EmpleadoDeportivo) {
 				EmpleadoDeportivoJdbc.insertarEmpleadoDeportivo(con, (EmpleadoDeportivo) empleado);
@@ -1114,20 +1122,32 @@ public class JDBC {
 	 * @throws ApplicationException si la campaña ha cambiado desde que se mostró o
 	 *                              se supera el cupo
 	 */
-	public ResultadoCompra comprarAccionesCampana(Campana campana, Accionista comprador, boolean esNuevo, int unidades)
-			throws SQLException {
-		return CompraCampanaJdbc.comprar(con, campana, comprador, esNuevo, unidades);
+	public ResultadoCompra comprarAccionesCampana(Campana campana, Accionista comprador, boolean esNuevo, int unidades,
+			String usuario, String hashContrasena) throws SQLException {
+
+		return CompraCampanaJdbc.comprar(con, campana, comprador, esNuevo, unidades, usuario, hashContrasena);
+	}
+
+	/**
+	 * Comprueba si existe un miembro con el DNI indicado.
+	 */
+	public boolean existeMiembro(String dni) throws SQLException {
+		return MiembroJdbc.existeMiembro(con, dni);
 	}
 
 	public boolean existeUsuarioEmpleado(String usuario) throws SQLException {
-		return BaseEmpleadoJdbc.existeUsuario(con, usuario);
+		return MiembroJdbc.existeNombreUsuario(con, usuario);
 	}
 
 	public boolean existeUsuarioEnOtroEmpleado(String usuario, String dniPropio) throws SQLException {
-		return BaseEmpleadoJdbc.existeUsuarioEnOtroEmpleado(con, usuario, dniPropio);
+		return MiembroJdbc.existeNombreUsuarioOtroMiembro(con, usuario, dniPropio);
 	}
 
 	public String[] getCredenciales(String nombreUsuario) throws SQLException {
-		return BaseEmpleadoJdbc.getCredenciales(con, nombreUsuario);
+		return MiembroJdbc.getCredenciales(con, nombreUsuario);
+	}
+	
+	public String[] getCredencialesPorDni(String dni) throws SQLException {
+	    return MiembroJdbc.getCredencialesPorDni(con, dni);
 	}
 }

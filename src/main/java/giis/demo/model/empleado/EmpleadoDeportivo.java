@@ -22,6 +22,7 @@ public class EmpleadoDeportivo extends BaseEmpleado{
 		
 		this.posicion = posicion;
 	}
+	
 
 	@Override
 	public Posicion getPosicion() {

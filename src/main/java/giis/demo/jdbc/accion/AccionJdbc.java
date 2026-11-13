@@ -16,13 +16,21 @@ import giis.demo.util.ApplicationException;
 public class AccionJdbc {
 
 	// 1. Obtener todos los accionistas ordenados por apellidos y nombre
-	private static final String QUERY_GET_ACCIONISTAS = 
-			"SELECT dni, nombre, apellidos, email FROM Accionista ORDER BY apellidos, nombre";
-
+	private static final String QUERY_GET_ACCIONISTAS =
+	        "SELECT a.dni, a.nombre, a.apellidos, a.email, "
+	        + "m.nombre_usuario, m.contrasena "
+	        + "FROM Accionista a "
+	        + "JOIN Miembro m ON a.dni = m.dni "
+	        + "ORDER BY a.apellidos, a.nombre";
+	
 	// 2. Comprobar si existe un accionista por DNI y obtener sus datos
-	private static final String QUERY_GET_ACCIONISTA_BY_DNI = 
-			"SELECT dni, nombre, apellidos, email FROM Accionista WHERE UPPER(dni) = UPPER(?)";
-
+	private static final String QUERY_GET_ACCIONISTA_BY_DNI =
+	        "SELECT a.dni, a.nombre, a.apellidos, a.email, "
+	        + "m.nombre_usuario, m.contrasena "
+	        + "FROM Accionista a "
+	        + "JOIN Miembro m ON a.dni = m.dni "
+	        + "WHERE UPPER(a.dni) = UPPER(?)";
+	
 	// 3. Obtener el número total de acciones emitidas por el club
 	private static final String QUERY_GET_TOTAL_ACCIONES_CLUB = 
 			"SELECT COUNT(*) FROM Accion";
@@ -84,7 +92,9 @@ public class AccionJdbc {
 						rs.getString("dni"),
 						rs.getString("nombre"),
 						rs.getString("apellidos"),
-						rs.getString("email"));
+						rs.getString("email"),
+						rs.getString("nombre_usuario"),
+				        rs.getString("contrasena"));
 				accionistas.add(a);
 			}
 		}
@@ -100,10 +110,13 @@ public class AccionJdbc {
 			try (ResultSet rs = ps.executeQuery()) {
 				if (rs.next()) {
 					return new Accionista(
-							rs.getString("dni"),
-							rs.getString("nombre"),
-							rs.getString("apellidos"),
-							rs.getString("email"));
+					        rs.getString("dni"),
+					        rs.getString("nombre"),
+					        rs.getString("apellidos"),
+					        rs.getString("email"),
+					        rs.getString("nombre_usuario"),
+					        rs.getString("contrasena")
+					);
 				}
 			}
 		}
