@@ -44,6 +44,7 @@ import giis.demo.ui.horarios.VentanaHorarioEspecifico;
 import giis.demo.ui.horarios.VentanaHorarioPeriodico;
 import giis.demo.ui.horarios.VentanaHorarioSemanal;
 import giis.demo.ui.mantenimiento.VentanaAsignarMantenimiento;
+import giis.demo.ui.noticias.VentanaAñadirNoticia;
 import giis.demo.ui.reserva.VentanaReserva;
 import giis.demo.ui.tienda.VentanaTienda;
 
@@ -64,6 +65,7 @@ public class VentanaPrincipal extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	private JMenuBar menuBar;
+	private JMenuItem mntmAñadirNoticia;
 	private JMenu mnEmpleado;
 	private JMenu mnEntrenador;
 	private JMenu mnGerente;
@@ -93,7 +95,6 @@ public class VentanaPrincipal extends JFrame {
 	private JMenuItem mniVenderAbonado;
 	private JMenuItem mntmRegistrarEntrenamiento;
 	private JMenuItem mntmAñadirPartido;
-	private JMenuItem mntmAñadirNoticia;
 
 	/**
 	 * Create the frame.
@@ -727,7 +728,19 @@ public class VentanaPrincipal extends JFrame {
 	private JMenuItem getMntmAñadirNoticia() {
 		if (mntmAñadirNoticia == null) {
 			mntmAñadirNoticia = new JMenuItem("Añadir noticia");
+			mntmAñadirNoticia.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					gestionAñadirNoticia();
+				}
+			});
 		}
 		return mntmAñadirNoticia;
+	}
+
+	protected void gestionAñadirNoticia() {
+		VentanaAñadirNoticia vAñadirNoticia = new VentanaAñadirNoticia(this);
+		vAñadirNoticia.setVisible(true);
+		this.setVisible(false);
 	}
 }
