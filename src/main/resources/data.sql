@@ -972,6 +972,5 @@ INSERT INTO Noticia (id_noticia, titular, subtitulo, fecha, autor, cuerpo) VALUE
 (2, 'Apertura del nuevo punto oficial de atención al socio', 'Atención personalizada y taquilla rápida en el centro de la ciudad', '2026-11-08', 'Comunicación Institucional', 'El club inaugura un nuevo espacio comercial y de atención al abonado donde se podrán realizar gestiones, compra de entradas y adquisición de equipaciones oficiales.'),
 (3, 'Horarios confirmados para las próximas jornadas de liga', NULL, '2026-11-03', NULL, 'La organización de la competición ha confirmado los horarios de los próximos encuentros del primer equipo correspondientes a las jornadas 15 a 18.');
 INSERT INTO ImagenNoticia (id_noticia, ruta_imagen) VALUES
-(1, 'src/main/resources/img/1.png'),
-(1, 'src/main/resources/img/2.png'),
-(2, 'src/main/resources/img/3.png');
+(1, 'src/main/resources/img/noticia_entrenamiento.png'),
+(2, 'src/main/resources/img/noticia_estadio.png');

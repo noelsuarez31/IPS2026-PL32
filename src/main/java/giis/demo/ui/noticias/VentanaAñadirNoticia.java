@@ -267,6 +267,7 @@ public class VentanaAñadirNoticia extends JFrame {
 			dcFecha = new JDateChooser();
 			dcFecha.setDateFormatString("dd/MM/yyyy");
 			dcFecha.setDate(new Date());
+			dcFecha.setMinSelectableDate(new Date()); // No permite elegir días pasados en el calendario
 			dcFecha.setFont(new Font("Segoe UI", Font.PLAIN, 12));
 			dcFecha.setPreferredSize(new Dimension(0, 26));
 		}
@@ -459,8 +460,6 @@ public class VentanaAñadirNoticia extends JFrame {
 		if (btnGuardar == null) {
 			btnGuardar = new JButton("Guardar Noticia");
 			btnGuardar.setFont(new Font("Segoe UI", Font.BOLD, 12));
-			btnGuardar.setBackground(new Color(22, 101, 192));
-			btnGuardar.setForeground(Color.WHITE);
 			btnGuardar.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
@@ -473,6 +472,13 @@ public class VentanaAñadirNoticia extends JFrame {
 
 	private void accionExaminarImagen() {
 		JFileChooser chooser = new JFileChooser();
+		
+		// Abre directamente la carpeta de imágenes del proyecto
+		File carpetaImg = new File("src/main/resources/img");
+		if (carpetaImg.exists()) {
+			chooser.setCurrentDirectory(carpetaImg);
+		}
+
 		chooser.setDialogTitle("Seleccionar imagen para la noticia");
 		chooser.setFileFilter(new FileNameExtensionFilter("Imágenes (JPG, PNG, GIF)", "jpg", "jpeg", "png", "gif"));
 		chooser.setMultiSelectionEnabled(true);
@@ -482,10 +488,10 @@ public class VentanaAñadirNoticia extends JFrame {
 			File[] archivos = chooser.getSelectedFiles();
 			if (archivos != null && archivos.length > 0) {
 				for (File f : archivos) {
-					modeloListaImagenes.addElement(f.getAbsolutePath());
+					modeloListaImagenes.addElement(f.getPath());
 				}
 			} else if (chooser.getSelectedFile() != null) {
-				modeloListaImagenes.addElement(chooser.getSelectedFile().getAbsolutePath());
+				modeloListaImagenes.addElement(chooser.getSelectedFile().getPath());
 			}
 		}
 	}
@@ -543,10 +549,18 @@ public class VentanaAñadirNoticia extends JFrame {
 		}
 
 		if (fechaSeleccionada == null) {
-			JOptionPane.showMessageDialog(this, "Debe seleccionar una fecha de publicación válida.", "Error de Validación",
-					JOptionPane.WARNING_MESSAGE);
-			getDcFecha().requestFocus();
-			return;
+		    JOptionPane.showMessageDialog(this, "Debe seleccionar una fecha de publicación válida.", "Error de Validación",
+		            JOptionPane.WARNING_MESSAGE);
+		    getDcFecha().requestFocus();
+		    return;
+		}
+		
+		LocalDate fecha = fechaSeleccionada.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+		if (fecha.isBefore(LocalDate.now())) {
+		    JOptionPane.showMessageDialog(this, "La fecha de publicación no puede ser anterior al día actual.",
+		            "Fecha inválida", JOptionPane.WARNING_MESSAGE);
+		    getDcFecha().requestFocus();
+		    return;
 		}
 
 		if (cuerpo.isEmpty()) {
@@ -559,8 +573,6 @@ public class VentanaAñadirNoticia extends JFrame {
 		String subtitulo = getTxtSubtitulo().getText().trim();
 		String autor = getTxtAutor().getText().trim();
 		List<String> rutasImagenes = getImagenesSeleccionadas();
-
-		LocalDate fecha = fechaSeleccionada.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 
 		try {
 			service.añadirNoticia(titular, subtitulo, fecha, autor, cuerpo, rutasImagenes);
@@ -581,9 +593,5 @@ public class VentanaAñadirNoticia extends JFrame {
 			}
 		}
 		return lista;
-	}
-
-	public AñadirNoticiaService getService() {
-		return service;
 	}
 }

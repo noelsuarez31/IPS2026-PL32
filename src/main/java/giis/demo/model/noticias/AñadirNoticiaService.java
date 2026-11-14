@@ -29,6 +29,9 @@ public class AñadirNoticiaService {
 		if (fecha == null) {
 			throw new IllegalArgumentException("La fecha de publicación es obligatoria.");
 		}
+		if (fecha.isBefore(LocalDate.now())) {
+			throw new IllegalArgumentException("La fecha de publicación no puede ser anterior al día actual.");
+		}
 		if (cuerpo == null || cuerpo.trim().isEmpty()) {
 			throw new IllegalArgumentException("El cuerpo de la noticia es un campo obligatorio.");
 		}
