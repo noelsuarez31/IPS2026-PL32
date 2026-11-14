@@ -1073,16 +1073,6 @@ public class JDBC {
     }
 
 	/**
-	 * Avanza la campaña a la fase siguiente.
-	 * 
-	 * @return false si la campaña ya no estaba en la fase indicada o no se puede
-	 *         avanzar
-	 */
-	public boolean avanzarFaseCampana(int idCampana, int faseActual) throws SQLException {
-		return CampanaJdbc.avanzarFase(con, idCampana, faseActual);
-	}
-
-	/**
 	 * Cierra la campaña (solo posible en la ultima fase).
 	 * 
 	 * @return false si la campaña ya no estaba activa o no estaba en la ultima fase
@@ -1118,14 +1108,6 @@ public class JDBC {
 	 */
 	public void comprarAcciones(String dniComprador, List<Integer> idsAcciones) throws SQLException {
 		AccionJdbc.comprarAcciones(con, dniComprador, idsAcciones);
-	}
-
-	/**
-	 * Acciones que aun puede comprar un accionista en la fase 1 de la campaña (0 si
-	 * no consta).
-	 */
-	public int getCupoFase1Campana(int idCampana, String dni) throws SQLException {
-		return CompraCampanaJdbc.getCupoFase1(con, idCampana, dni);
 	}
 
 	/**
@@ -1168,17 +1150,6 @@ public class JDBC {
 	 */
 	public int getCupoFase1Campana(int idCampana, String dni) throws SQLException {
 		return CompraCampanaJdbc.getCupoFase1(con, idCampana, dni);
-	}
-
-	/**
-	 * Registra la compra de acciones de la campaña en una unica transaccion.
-	 * 
-	 * @throws ApplicationException si la campaña ha cambiado desde que se mostró o
-	 *                              se supera el cupo
-	 */
-	public ResultadoCompra comprarAccionesCampana(Campana campana, Accionista comprador, boolean esNuevo, int unidades)
-			throws SQLException {
-		return CompraCampanaJdbc.comprar(con, campana, comprador, esNuevo, unidades);
 	}
 
 	public void insertarNoticia(Noticia noticia) throws SQLException {

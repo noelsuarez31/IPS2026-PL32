@@ -329,18 +329,24 @@ CREATE TABLE IF NOT EXISTS "CampanaAccionista" (
 	FOREIGN KEY("dni") REFERENCES "Accionista"("dni")
 );
 
-CREATE TABLE IF NOT EXISTS Noticia (
-    id_noticia INTEGER PRIMARY KEY AUTOINCREMENT,
-    titular TEXT NOT NULL,
-    subtitulo TEXT,
-    fecha TEXT NOT NULL,
-    autor TEXT,
-    cuerpo TEXT NOT NULL
+CREATE TABLE IF NOT EXISTS "Noticia" (
+    "id_noticia" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "titular" TEXT NOT NULL,
+    "subtitulo" TEXT,
+    "fecha" TEXT NOT NULL,
+    "autor" TEXT,
+    "cuerpo" TEXT NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS ImagenNoticia (
-    id_imagen INTEGER PRIMARY KEY AUTOINCREMENT,
-    id_noticia INTEGER NOT NULL,
-    ruta_imagen TEXT NOT NULL,
-    FOREIGN KEY (id_noticia) REFERENCES Noticia(id_noticia) ON DELETE CASCADE
+CREATE TABLE IF NOT EXISTS "ImagenNoticia" (
+    "id_imagen" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "id_noticia" INTEGER NOT NULL,
+    "ruta_imagen" TEXT NOT NULL,
+    FOREIGN KEY ("id_noticia") REFERENCES Noticia("id_noticia") ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS "Miembro" (
+    "dni" TEXT PRIMARY KEY,
+    "nombre_usuario" TEXT NOT NULL UNIQUE COLLATE NOCASE,
+    "contrasena" TEXT NOT NULL
 );
