@@ -1,23 +1,33 @@
 package giis.demo.model.accion;
 
+import giis.demo.model.empleado.Miembro;
+
 /**
  * Representa a un accionista del club con sus datos identificativos.
  */
-public class Accionista {
+public class Accionista extends Miembro{
 
 	private String dni;
 	private String nombre;
 	private String apellidos;
 	private String email;
 
-	public Accionista() {
+	public Accionista(String user, String password) {
+		
+		super(user, password);
 	}
 
-	public Accionista(String dni, String nombre, String apellidos, String email) {
+	public Accionista(String dni, String nombre, String apellidos, String email, String usuario, String contrasena) {
+
+		super(usuario, contrasena);
+		
 		this.dni = dni;
 		this.nombre = nombre;
 		this.apellidos = apellidos;
 		this.email = email;
+		
+		super.setDni(dni);
+
 	}
 
 	public String getDni() {

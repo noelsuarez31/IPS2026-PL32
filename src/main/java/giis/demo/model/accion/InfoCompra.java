@@ -12,12 +12,17 @@ public class InfoCompra {
     private final String dni;
     private final Accionista accionista; // null si todavia no es accionista
     private final int maximo;
+    private final boolean miembroExistente;
 
-    public InfoCompra(Campana campana, String dni, Accionista accionista, int maximo) {
+    public InfoCompra(Campana campana, String dni, Accionista accionista, int maximo,
+    		boolean miembroExistente) {
+    	
         this.campana = campana;
         this.dni = dni;
         this.accionista = accionista;
         this.maximo = maximo;
+        this.miembroExistente = miembroExistente;
+        
     }
 
     public Campana getCampana() {
@@ -47,5 +52,9 @@ public class InfoCompra {
         if (accionista != null && ValidadorEmail.esValido(accionista.getEmail()))
             return accionista.getEmail().trim();
         return null;
+    }
+    
+    public boolean tieneMiembro() {
+        return miembroExistente;
     }
 }

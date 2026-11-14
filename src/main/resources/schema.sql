@@ -1,44 +1,37 @@
---Primero se deben borrar todas las tablas
+-- Primero se borran todas las tablas, respetando las claves foráneas.
 
 --Para giis.demo.tkrun:
-Drop table if exists Entrada;
-drop table if exists Venta;
-drop table if exists Partido;
-drop table if exists Butaca;
-
-drop table if exists BaseEmpleado;
-drop table if exists EmpleadoDeportivo;
-drop table if exists EmpleadoNoDeportivo;
-drop table if exists CategoriaEquipo;
-drop table if exists Equipo;
-
-drop table if exists HorarioPeriodico;
-drop table if exists HorarioEspecifico;
-drop table if exists Entrenamiento;
-drop table if exists FranjaHoraria;
-drop table if exists Entrevista;
-
-drop table if exists LineaVenta;
-drop table if exists Producto;
-
-drop table if exists Reserva;
-drop table if exists Instalacion;
-drop table if exists Usuario;
-drop table if exists Abonado;
-drop table if exists Abono;
-drop table if exists PrecioSeccion;
-
-drop table if exists TareaMantenimientoJardinero;
-drop table if exists TareaMantenimiento;
-
-drop table if exists Accion;
-drop table if exists CampanaAccionista;
-drop table if exists Campana;
-drop table if exists Accionista;
-
 drop table if exists Noticia;
 drop table if exists ImagenNoticia;
-
+DROP TABLE IF EXISTS Entrada;
+DROP TABLE IF EXISTS PrecioSeccion;
+DROP TABLE IF EXISTS Partido;
+DROP TABLE IF EXISTS LineaVenta;
+DROP TABLE IF EXISTS Abono;
+DROP TABLE IF EXISTS TareaMantenimientoJardinero;
+DROP TABLE IF EXISTS CampanaAccionista;
+DROP TABLE IF EXISTS Accion;
+DROP TABLE IF EXISTS HorarioPeriodico;
+DROP TABLE IF EXISTS HorarioEspecifico;
+DROP TABLE IF EXISTS Entrevista;
+DROP TABLE IF EXISTS FranjaHoraria;
+DROP TABLE IF EXISTS Entrenamiento;
+DROP TABLE IF EXISTS Reserva;
+DROP TABLE IF EXISTS TareaMantenimiento;
+DROP TABLE IF EXISTS EmpleadoDeportivo;
+DROP TABLE IF EXISTS EmpleadoNoDeportivo;
+DROP TABLE IF EXISTS Abonado;
+DROP TABLE IF EXISTS Accionista;
+DROP TABLE IF EXISTS BaseEmpleado;
+DROP TABLE IF EXISTS Miembro;
+DROP TABLE IF EXISTS Venta;
+DROP TABLE IF EXISTS Butaca;
+DROP TABLE IF EXISTS Producto;
+DROP TABLE IF EXISTS Instalacion;
+DROP TABLE IF EXISTS Equipo;
+DROP TABLE IF EXISTS CategoriaEquipo;
+DROP TABLE IF EXISTS Campana;
+DROP TABLE IF EXISTS Usuario;
 
 CREATE TABLE IF NOT EXISTS "butaca" (
 	"id_butaca"	INTEGER,
@@ -72,13 +65,18 @@ CREATE TABLE IF NOT EXISTS "venta" (
 );
 
 CREATE TABLE IF NOT EXISTS "BaseEmpleado" (
-    "dni" TEXT,
+    "dni" TEXT NOT NULL,
     "nombre" TEXT NOT NULL,
     "apellido" TEXT NOT NULL,
     "salario" NUMERIC NOT NULL CHECK(salario > 0),
     "fecha_nacimiento" DATE NOT NULL,
     "numero_de_telefono" TEXT NOT NULL UNIQUE,
-    PRIMARY KEY("dni")
+
+    PRIMARY KEY("dni"),
+    FOREIGN KEY("dni") REFERENCES Miembro(dni)
+		    ON DELETE CASCADE
+		    ON UPDATE CASCADE
+
 );
 
 CREATE TABLE IF NOT EXISTS "EmpleadoDeportivo" (
@@ -238,6 +236,7 @@ CREATE TABLE IF NOT EXISTS "Abonado" (
 	"apellidos" TEXT NOT NULL,
 	"fecha_nacimiento" TEXT NOT NULL,
 	"email" TEXT NOT NULL
+
 );
 
 CREATE TABLE IF NOT EXISTS "Abono" (
@@ -252,7 +251,7 @@ CREATE TABLE IF NOT EXISTS "Abono" (
 	"categoria" TEXT NOT NULL CHECK("categoria" IN ('INFANTIL', 'SUB_26', 'ADULTO', 'JUBILADO')),
 	"precio" REAL NOT NULL,
 	UNIQUE("id_abonado", "fecha_inicio"),
-	UNIQUE("id_butaca", "id_equipo", "fecha_inicio")
+	UNIQUE("id_butaca", "id_equipo", "fecha_inicio"),
 	FOREIGN KEY("id_venta") REFERENCES "Venta"("id_venta"),
 	FOREIGN KEY("id_abonado") REFERENCES "Abonado"("id_abonado"),
 	FOREIGN KEY("id_equipo") REFERENCES "Equipo"("id_equipo"),
@@ -282,7 +281,11 @@ CREATE TABLE IF NOT EXISTS "Accionista" (
 	"dni" TEXT PRIMARY KEY,
 	"nombre" TEXT NOT NULL,
 	"apellidos" TEXT NOT NULL,
-	"email" TEXT
+	"email" TEXT,
+	FOREIGN KEY(dni) REFERENCES Miembro(dni)
+		ON DELETE CASCADE
+        ON UPDATE CASCADE
+
 );
 
 CREATE TABLE IF NOT EXISTS "Campana" (

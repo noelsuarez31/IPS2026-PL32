@@ -13,6 +13,7 @@ import giis.demo.model.empleado.EmpleadoDeportivo;
 import giis.demo.model.empleado.EmpleadoNoDeportivo;
 import giis.demo.model.empleado.Posicion;
 import giis.demo.model.equipo.CategoriaEquipo;
+import giis.demo.model.login.PasswordHasher;
 
 public class GestorEmpleados {
 
@@ -23,21 +24,32 @@ public class GestorEmpleados {
 
 	/**
 	 * Da de alta un nuevo empleado. Los menores de edad solo pueden ser jugadores.
+	 * 
 	 * @throws EmployeeException si algun dato incumple las reglas de negocio o si
-	 * el dni o el telefono ya estan registrados, o si falla el acceso a la BBDD
+	 *                           el dni o el telefono ya estan registrados, o si
+	 *                           falla el acceso a la BBDD
 	 */
 	public void registrarNuevoEmpleado(String dni, String nombre, String apellido, BigDecimal salario,
-			LocalDate fechaNacimiento, String telefono, boolean esDeportivo, Posicion posicion) {
+			LocalDate fechaNacimiento, String telefono, boolean esDeportivo, Posicion posicion, String usuario,
+			String contrasena) {
+		
+		if (contrasena == null || contrasena.isEmpty()) {
+			throw new EmployeeException("La contraseña es obligatoria");
+		}
 
+		String hash = PasswordHasher.hash(contrasena);
 		BaseEmpleado empleado = crearEmpleado(dni, nombre, apellido, salario, fechaNacimiento, telefono, esDeportivo,
-				posicion);
-
+				posicion, usuario, hash);
 		try {
 			if (jdbc.existeDniEmpleado(empleado.getDni())) {
 				throw new EmployeeException("Ya existe un empleado con el DNI " + empleado.getDni());
 			}
 			if (jdbc.existeTelefonoEmpleado(empleado.getNumeroTelefono())) {
 				throw new EmployeeException("El numero de telefono ya esta registrado en el sistema");
+			}
+			
+			if (jdbc.existeUsuarioEmpleado(empleado.getUsuario())) {
+				throw new EmployeeException("Ya existe un empleado con ese nombre de usuario");
 			}
 			jdbc.almacenarEmpleado(empleado);
 		} catch (SQLException e) {
@@ -46,25 +58,28 @@ public class GestorEmpleados {
 	}
 
 	private BaseEmpleado crearEmpleado(String dni, String nombre, String apellido, BigDecimal salario,
-			LocalDate fechaNacimiento, String telefono, boolean esDeportivo, Posicion posicion) {
-
+			LocalDate fechaNacimiento, String telefono, boolean esDeportivo, Posicion posicion, String usuario,
+			String hashContrasena) {
 		if (fechaNacimiento != null && posicion != Posicion.JUGADOR && calcularEdad(fechaNacimiento) < EDAD_MAYORIA) {
 			throw new EmployeeException("Solo los jugadores pueden ser menores de edad");
 		}
-
-		// Los constructores validan el resto de datos y que la posicion sea del tipo correcto
+		// Los constructores validan el resto de datos y que la posicion sea del tipo
+		// correcto
 		if (esDeportivo) {
-			return new EmpleadoDeportivo(dni, nombre, apellido, salario, fechaNacimiento, telefono, posicion);
+			return new EmpleadoDeportivo(dni, nombre, apellido, salario, fechaNacimiento, telefono, posicion, usuario,
+					hashContrasena);
 		}
-		return new EmpleadoNoDeportivo(dni, nombre, apellido, salario, fechaNacimiento, telefono, posicion);
+		return new EmpleadoNoDeportivo(dni, nombre, apellido, salario, fechaNacimiento, telefono, posicion, usuario,
+				hashContrasena);
 	}
 
 	public void close() throws SQLException {
 		jdbc.close();
 	}
-	
+
 	/**
 	 * Devuelve todos los empleados del sistema
+	 * 
 	 * @throws EmployeeException si falla el acceso a la BBDD
 	 */
 	public List<BaseEmpleado> obtenerEmpleados() {
@@ -74,25 +89,34 @@ public class GestorEmpleados {
 			throw new EmployeeException("Error al obtener los empleados: " + e.getMessage());
 		}
 	}
-	
+
 	/**
-	 * Modifica los datos personales y el salario de un empleado existente.
-	 * El puesto de trabajo (posicion y tipo de empleado) no se puede cambiar,
-	 * por eso se toma siempre del empleado original
+	 * Modifica los datos personales y el salario de un empleado existente. El
+	 * puesto de trabajo (posicion y tipo de empleado) no se puede cambiar, por eso
+	 * se toma siempre del empleado original
+	 * 
 	 * @param original empleado tal y como esta en la BBDD
+	 * @throws SQLException
 	 * @throws EmployeeException si algun dato incumple las reglas de negocio, si el
-	 * nuevo dni o telefono ya pertenecen a otro empleado, o si falla la BBDD
+	 *                           nuevo dni o telefono ya pertenecen a otro empleado,
+	 *                           o si falla la BBDD
 	 */
-	public void modificarEmpleado(BaseEmpleado original, String dni, String nombre, String apellido,
-			BigDecimal salario, LocalDate fechaNacimiento, String telefono) {
+	public void modificarEmpleado(BaseEmpleado original, String dni, String nombre, String apellido, BigDecimal salario,
+			LocalDate fechaNacimiento, String telefono, String user, String password) {
 		if (original == null) {
 			throw new EmployeeException("Debe seleccionar un empleado");
 		}
-
+		// Si no se proporciona nueva contraseña, se conserva el hash actual (ya incluye
+		// el salt)
+		String hash;
+		if (password == null || password.isEmpty()) {
+			hash = original.getContrasena();
+		} else {
+			hash = PasswordHasher.hash(password);
+		}
 		boolean esDeportivo = original instanceof EmpleadoDeportivo;
-		BaseEmpleado modificado = crearEmpleado(dni, nombre, apellido, salario, fechaNacimiento, telefono,
-				esDeportivo, original.getPosicion());
-
+		BaseEmpleado modificado = crearEmpleado(dni, nombre, apellido, salario, fechaNacimiento, telefono, esDeportivo,
+				original.getPosicion(), user, hash);
 		try {
 			if (esDeportivo) {
 				comprobarEdadParaSuEquipo((EmpleadoDeportivo) original, fechaNacimiento);
@@ -103,14 +127,20 @@ public class GestorEmpleados {
 			if (jdbc.existeTelefonoEnOtroEmpleado(modificado.getNumeroTelefono(), original.getDni())) {
 				throw new EmployeeException("El numero de telefono ya esta registrado en otro empleado");
 			}
+			if (jdbc.existeUsuarioEnOtroEmpleado(modificado.getUsuario(), original.getDni())) {
+				throw new EmployeeException("Ya existe un empleado con ese nombre de usuario");
+			}
 			jdbc.modificarEmpleado(original.getDni(), modificado);
+			jdbc.actualizarCredenciales(dni, user, hash);
+			
 		} catch (SQLException e) {
 			throw new EmployeeException("Error al modificar el empleado en la BBDD: " + e.getMessage());
 		}
 	}
-	
+
 	/**
 	 * Elimina al empleado del sistema junto con sus horarios, franjas y entrevistas
+	 * 
 	 * @throws EmployeeException si falla el acceso a la BBDD
 	 */
 	public void eliminarEmpleado(BaseEmpleado empleado) {
@@ -123,14 +153,14 @@ public class GestorEmpleados {
 			throw new EmployeeException("Error al eliminar el empleado de la BBDD: " + e.getMessage());
 		}
 	}
-	
+
 	/**
 	 * @return true si el empleado pertenece a algun equipo
 	 */
 	public boolean perteneceAEquipo(BaseEmpleado empleado) {
 		return empleado instanceof EmpleadoDeportivo && ((EmpleadoDeportivo) empleado).getIdEquipo() > 0;
 	}
-	
+
 	/**
 	 * Si un jugador esta en un equipo en formacion, su nueva fecha de nacimiento
 	 * debe seguir cumpliendo los limites de edad de la categoria (HU de equipos)
@@ -146,8 +176,22 @@ public class GestorEmpleados {
 					+ categoria.getNombre() + " de su equipo");
 		}
 	}
-	
+
 	private static int calcularEdad(LocalDate fechaNacimiento) {
 		return Period.between(fechaNacimiento, LocalDate.now()).getYears();
+	}
+
+	public void eliminarCredenciales(String dni) {
+		
+		if (dni.isBlank()) {
+			throw new IllegalArgumentException("El dni no se puede eliminar");
+		}
+		try {
+			
+			jdbc.eliminarCredenciales(dni);
+			
+		} catch (SQLException e) {
+			throw new EmployeeException("Error al eliminar las credenciales del empleado de la BBDD: " + e.getMessage());
+		}
 	}
 }

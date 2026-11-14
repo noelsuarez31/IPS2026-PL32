@@ -15,20 +15,32 @@ import giis.demo.model.empleado.EmpleadoNoDeportivo;
 import giis.demo.model.empleado.Posicion;
 
 public class BaseEmpleadoJdbc {
-	private static final String QUERY_INSERT_BASE = "INSERT INTO BaseEmpleado "
-			+ "(dni, nombre, apellido, salario, fecha_nacimiento, numero_de_telefono) VALUES (?, ?, ?, ?, ?, ?)";
+	
+	private static final String QUERY_INSERT_BASE =
+	        "INSERT INTO BaseEmpleado "
+	        + "(dni, nombre, apellido, salario, fecha_nacimiento, numero_de_telefono) "
+	        + "VALUES (?, ?, ?, ?, ?, ?)";
+	
 	private static final String QUERY_EXISTE_DNI = "SELECT 1 FROM BaseEmpleado WHERE dni = ?";
 	private static final String QUERY_EXISTE_TELEFONO = "SELECT 1 FROM BaseEmpleado WHERE numero_de_telefono = ?";
 	private static final String QUERY_EXISTE_TELEFONO_OTRO = "SELECT 1 FROM BaseEmpleado WHERE numero_de_telefono = ? AND dni <> ?";
-	private static final String QUERY_GET_EMPLEADOS = "SELECT be.dni, be.nombre, be.apellido, be.salario, "
-			+ "be.fecha_nacimiento, be.numero_de_telefono, ed.posicion AS posicion_deportiva, ed.id_equipo, "
-			+ "nd.posicion AS posicion_no_deportiva FROM BaseEmpleado be "
-			+ "LEFT JOIN EmpleadoDeportivo ed ON ed.dni = be.dni "
-			+ "LEFT JOIN EmpleadoNoDeportivo nd ON nd.dni = be.dni "
-			+ "ORDER BY be.apellido, be.nombre";
+	private static final String QUERY_GET_EMPLEADOS =
+	        "SELECT be.dni, be.nombre, be.apellido, be.salario, "
+	        + "be.fecha_nacimiento, be.numero_de_telefono, "
+	        + "m.nombre_usuario, m.contrasena, "
+	        + "ed.posicion AS posicion_deportiva, ed.id_equipo, "
+	        + "nd.posicion AS posicion_no_deportiva "
+	        + "FROM BaseEmpleado be "
+	        + "JOIN Miembro m ON m.dni = be.dni "
+	        + "LEFT JOIN EmpleadoDeportivo ed ON ed.dni = be.dni "
+	        + "LEFT JOIN EmpleadoNoDeportivo nd ON nd.dni = be.dni "
+	        + "ORDER BY be.apellido, be.nombre";
 
-	private static final String QUERY_UPDATE_BASE = "UPDATE BaseEmpleado SET dni = ?, nombre = ?, apellido = ?, "
-			+ "salario = ?, fecha_nacimiento = ?, numero_de_telefono = ? WHERE dni = ?";
+	private static final String QUERY_UPDATE_BASE =
+	        "UPDATE BaseEmpleado SET dni = ?, nombre = ?, apellido = ?, "
+	        + "salario = ?, fecha_nacimiento = ?, numero_de_telefono = ? "
+	        + "WHERE dni = ?";
+	
 	private static final String[] QUERIES_UPDATE_DNI_DEPENDIENTES = {
 			"UPDATE EmpleadoDeportivo SET dni = ? WHERE dni = ?",
 			"UPDATE EmpleadoNoDeportivo SET dni = ? WHERE dni = ?",
@@ -45,7 +57,7 @@ public class BaseEmpleadoJdbc {
 			"DELETE FROM EmpleadoNoDeportivo WHERE dni = ?",
 			"DELETE FROM BaseEmpleado WHERE dni = ?" ,
 			"DELETE FROM TareaMantenimientoJardinero WHERE dni_jardinero = ?"};
-
+	
 	/**
 	 * Inserta los datos comunes de un empleado (deportivo o no deportivo)
 	 * @param con
@@ -116,13 +128,16 @@ public class BaseEmpleadoJdbc {
 				BigDecimal salario = new BigDecimal(rs.getString("salario"));
 				LocalDate fechaNacimiento = LocalDate.parse(rs.getString("fecha_nacimiento"));
 				String telefono = rs.getString("numero_de_telefono");
-
+				
+				String usuario = rs.getString("nombre_usuario");
+				String contrasena = rs.getString("contrasena");
+				
 				String posicionDeportiva = rs.getString("posicion_deportiva");
 				String posicionNoDeportiva = rs.getString("posicion_no_deportiva");
 
 				if (posicionDeportiva != null) {
 					EmpleadoDeportivo emp = new EmpleadoDeportivo(dni, nombre, apellido, salario, fechaNacimiento,
-							telefono, Posicion.valueOf(posicionDeportiva));
+							telefono, Posicion.valueOf(posicionDeportiva), usuario, contrasena);
 					int idEquipo = rs.getInt("id_equipo");
 					if (!rs.wasNull()) {
 						emp.setIdEquipo(idEquipo);
@@ -130,7 +145,7 @@ public class BaseEmpleadoJdbc {
 					empleados.add(emp);
 				} else if (posicionNoDeportiva != null) {
 					empleados.add(new EmpleadoNoDeportivo(dni, nombre, apellido, salario, fechaNacimiento, telefono,
-							Posicion.valueOf(posicionNoDeportiva)));
+							Posicion.valueOf(posicionNoDeportiva), usuario, contrasena));
 				}
 				// Si no esta en ninguna de las dos tablas es un registro incompleto y se ignora
 			}
@@ -152,6 +167,7 @@ public class BaseEmpleadoJdbc {
 			pst.setString(5, emp.getFechaNacimiento().toString());
 			pst.setString(6, emp.getNumeroTelefono());
 			pst.setString(7, dniOriginal);
+			
 			if (pst.executeUpdate() != 1) {
 				throw new SQLException("No existe ningun empleado con DNI " + dniOriginal);
 			}
@@ -180,4 +196,5 @@ public class BaseEmpleadoJdbc {
 			}
 		}
 	}
+
 }

@@ -18,7 +18,8 @@ public class TareaMantenimientoJdbc {
 
 	// 1. Obtener empleados que son exclusivamente JARDINEROS
 	private static final String QUERY_GET_JARDINEROS = 
-			"SELECT be.dni, be.nombre, be.apellido, be.salario, be.fecha_nacimiento, be.numero_de_telefono, end.posicion "
+			"SELECT be.dni, be.nombre, be.apellido, be.salario, be.fecha_nacimiento, be.numero_de_telefono, end.posicion, "
+			+" be.nombre_usuario, be.contrasena "
 			+ "FROM EmpleadoNoDeportivo end "
 			+ "JOIN BaseEmpleado be ON end.dni = be.dni "
 			+ "WHERE end.posicion = 'JARDINERIA' "
@@ -49,7 +50,7 @@ public class TareaMantenimientoJdbc {
 
 	// 5. Obtener los jardineros asignados a una tarea concreta
 	private static final String QUERY_GET_JARDINEROS_DE_TAREA = 
-			"SELECT be.dni, be.nombre, be.apellido, be.salario, be.fecha_nacimiento, be.numero_de_telefono, end.posicion "
+			"SELECT be.dni, be.nombre, be.apellido, be.salario, be.fecha_nacimiento, be.numero_de_telefono, end.posicion, be.nombre_usuario, be.contrasena "
 			+ "FROM TareaMantenimientoJardinero tmj "
 			+ "JOIN EmpleadoNoDeportivo end ON tmj.dni_jardinero = end.dni "
 			+ "JOIN BaseEmpleado be ON end.dni = be.dni "
@@ -71,7 +72,10 @@ public class TareaMantenimientoJdbc {
 						new BigDecimal(rs.getString("salario")),
 						LocalDate.parse(rs.getString("fecha_nacimiento")),
 						rs.getString("numero_de_telefono"),
-						Posicion.valueOf(rs.getString("posicion")));
+						Posicion.valueOf(rs.getString("posicion")),
+						rs.getString("nombre_usuario"),
+						rs.getString("contrasena"));
+				
 				jardineros.add(emp);
 			}
 		}
@@ -192,7 +196,9 @@ public class TareaMantenimientoJdbc {
 							new BigDecimal(rs.getString("salario")),
 							LocalDate.parse(rs.getString("fecha_nacimiento")),
 							rs.getString("numero_de_telefono"),
-							Posicion.valueOf(rs.getString("posicion"))));
+							Posicion.valueOf(rs.getString("posicion")),
+							rs.getString("nombre_usuario"),
+							rs.getString("contrasena")));
 				}
 			}
 		}

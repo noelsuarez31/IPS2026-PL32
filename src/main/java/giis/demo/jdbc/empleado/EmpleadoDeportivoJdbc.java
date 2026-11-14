@@ -14,17 +14,43 @@ import giis.demo.model.empleado.Posicion;
 import giis.demo.model.equipo.CategoriaEquipo;
 
 public class EmpleadoDeportivoJdbc {
-	private final static String QUERY_GET_ADITIONAL_MANAGERS = "SELECT * FROM EmpleadoDeportivo WHERE posicion=? AND id_equipo IS NULL";
-	private final static String QUERY_GET_COMPLETE_ADITIONAL_MANAGERS = "SELECT nombre, apellido, salario, fecha_nacimiento, numero_de_telefono FROM"
-			+ " EmpleadoDeportivo ed, BaseEmpleado bd WHERE ed.dni=bd.dni and ed.dni=?";
+	private static final String QUERY_GET_ADITIONAL_MANAGERS =
+	        "SELECT * FROM EmpleadoDeportivo WHERE posicion=? AND id_equipo IS NULL";
 	
-	private final static String QUERY_GET_PLAYERS = "SELECT * FROM EmpleadoDeportivo WHERE posicion = ? AND id_equipo IS NULL";
-	private final static String QUERY_GET_COMPLETE_PLAYERS = "SELECT * FROM BaseEmpleado be, EmpleadoDeportivo ed "
-			+ "WHERE be.dni=ed.dni AND ed.dni=?";
-	private final static String QUERY_INSERT_DEPORTIVO = "INSERT INTO EmpleadoDeportivo (dni, posicion, id_equipo) VALUES (?, ?, NULL)";
-	private final static String QUERY_GET_MANAGERS = "SELECT * FROM EmpleadoDeportivo WHERE posicion=? AND id_equipo IS NULL";
-	private final static String QUERY_GET_COMPLETE_MANAGERS = "SELECT * FROM BaseEmpleado be, EmpleadoDeportivo ed "
-			+ "WHERE be.dni=ed.dni AND ed.dni=?";
+	private static final String QUERY_GET_COMPLETE_ADITIONAL_MANAGERS =
+		        "SELECT be.nombre, be.apellido, be.salario, be.fecha_nacimiento, "
+		        + "be.numero_de_telefono, m.nombre_usuario, m.contrasena "
+		        + "FROM EmpleadoDeportivo ed "
+		        + "JOIN BaseEmpleado be ON ed.dni = be.dni "
+		        + "JOIN Miembro m ON be.dni = m.dni "
+		        + "WHERE ed.dni=?";
+	
+	private static final String QUERY_GET_PLAYERS =
+		        "SELECT * FROM EmpleadoDeportivo WHERE posicion = ? AND id_equipo IS NULL";
+
+	private static final String QUERY_GET_COMPLETE_PLAYERS =
+	        "SELECT be.dni, be.nombre, be.apellido, be.salario, "
+	        + "be.fecha_nacimiento, be.numero_de_telefono, "
+	        + "m.nombre_usuario, m.contrasena, ed.posicion "
+	        + "FROM BaseEmpleado be "
+	        + "JOIN EmpleadoDeportivo ed ON be.dni = ed.dni "
+	        + "JOIN Miembro m ON be.dni = m.dni "
+	        + "WHERE ed.dni=?";
+	
+	private static final String QUERY_INSERT_DEPORTIVO =
+	        "INSERT INTO EmpleadoDeportivo (dni, posicion, id_equipo) VALUES (?, ?, NULL)";
+
+	private static final String QUERY_GET_MANAGERS =
+	        "SELECT * FROM EmpleadoDeportivo WHERE posicion=? AND id_equipo IS NULL";
+	
+	private static final String QUERY_GET_COMPLETE_MANAGERS =
+	        "SELECT be.dni, be.nombre, be.apellido, be.salario, "
+	        + "be.fecha_nacimiento, be.numero_de_telefono, "
+	        + "m.nombre_usuario, m.contrasena, ed.posicion "
+	        + "FROM BaseEmpleado be "
+	        + "JOIN EmpleadoDeportivo ed ON be.dni = ed.dni "
+	        + "JOIN Miembro m ON be.dni = m.dni "
+	        + "WHERE ed.dni=?";
 	
 	/**
 	 * Devuelve una lista de los empleados deportivos que no tienen asignado 
@@ -47,8 +73,13 @@ public class EmpleadoDeportivoJdbc {
 					pst2.setString(1, dniTecnicoAdicional);
 					ResultSet rsTecnicoAdicionalCompleto = pst2.executeQuery();
 					while(rsTecnicoAdicionalCompleto.next()) {
-						EmpleadoDeportivo tecnicoAdicional = new EmpleadoDeportivo(dniTecnicoAdicional, rsTecnicoAdicionalCompleto.getString(1), rsTecnicoAdicionalCompleto.getString(2),
-								rsTecnicoAdicionalCompleto.getBigDecimal(3), LocalDate.parse(rsTecnicoAdicionalCompleto.getString(4)) ,rsTecnicoAdicionalCompleto.getString(5), posicion);
+						EmpleadoDeportivo tecnicoAdicional =  new EmpleadoDeportivo(dniTecnicoAdicional,
+								rsTecnicoAdicionalCompleto.getString(1), rsTecnicoAdicionalCompleto.getString(2),
+								rsTecnicoAdicionalCompleto.getBigDecimal(3), LocalDate.parse(rsTecnicoAdicionalCompleto.getString(4)),
+								rsTecnicoAdicionalCompleto.getString(5), posicion,
+								rsTecnicoAdicionalCompleto.getString("nombre_usuario"),
+								rsTecnicoAdicionalCompleto.getString("contrasena"));
+						
 						tecnicosAdicionales.add(tecnicoAdicional);
 					}
 				}
@@ -81,8 +112,17 @@ public class EmpleadoDeportivoJdbc {
 					ResultSet rsJugadorCompleto = pst2.executeQuery();
 					
 					while(rsJugadorCompleto.next()) {
-						jugadores.add(new EmpleadoDeportivo(dni, rsJugadorCompleto.getString(2), rsJugadorCompleto.getString(3),
-								rsJugadorCompleto.getBigDecimal(4), LocalDate.parse(rsJugadorCompleto.getString(5)), rsJugadorCompleto.getString(6), Posicion.JUGADOR));
+						jugadores.add(new EmpleadoDeportivo(
+						        dni,
+						        rsJugadorCompleto.getString("nombre"),
+						        rsJugadorCompleto.getString("apellido"),
+						        rsJugadorCompleto.getBigDecimal("salario"),
+						        LocalDate.parse(rsJugadorCompleto.getString("fecha_nacimiento")),
+						        rsJugadorCompleto.getString("numero_de_telefono"),
+						        Posicion.valueOf(rsJugadorCompleto.getString("posicion")),
+						        rsJugadorCompleto.getString("nombre_usuario"),
+						        rsJugadorCompleto.getString("contrasena")
+						));
 					}
 				}
 			}
@@ -110,27 +150,41 @@ public class EmpleadoDeportivoJdbc {
 	 * @throws SQLException
 	 */
 	public static List<EmpleadoDeportivo> obtenerEntrenadoresDisponibles(Connection con) throws SQLException {
-		List<EmpleadoDeportivo> cuerpoTecnico = new ArrayList<EmpleadoDeportivo>();
-		
-		try(PreparedStatement pst = con.prepareStatement(QUERY_GET_MANAGERS)){
-			pst.setString(1, Posicion.ENTRENADOR.name());
-			ResultSet rsEntrenador = pst.executeQuery();
-			while(rsEntrenador.next()) {
-				String dniEntrenador = rsEntrenador.getString(1);
-				
-				try(PreparedStatement pst2 = con.prepareStatement(QUERY_GET_COMPLETE_MANAGERS);){
-					pst2.setString(1, dniEntrenador);
-					ResultSet rsEntrenadorCompleto = pst2.executeQuery();
-					while(rsEntrenadorCompleto.next()) {
-						EmpleadoDeportivo entrenador = new EmpleadoDeportivo(dniEntrenador, rsEntrenadorCompleto.getString(2), rsEntrenadorCompleto.getString(3),
-								rsEntrenadorCompleto.getBigDecimal(4), LocalDate.parse(rsEntrenadorCompleto.getString(5)) ,rsEntrenadorCompleto.getString(6), Posicion.JUGADOR);
-						cuerpoTecnico.add(entrenador);
-					}
-				}
-			}
-		}
-		
-		return cuerpoTecnico;
+		List<EmpleadoDeportivo> cuerpoTecnico = new ArrayList<>();
+
+	    try (PreparedStatement pst = con.prepareStatement(QUERY_GET_MANAGERS)) {
+	        pst.setString(1, Posicion.ENTRENADOR.name());
+
+	        try (ResultSet rsEntrenador = pst.executeQuery()) {
+	            while (rsEntrenador.next()) {
+	                String dniEntrenador = rsEntrenador.getString("dni");
+
+	                try (PreparedStatement pst2 = con.prepareStatement(QUERY_GET_COMPLETE_MANAGERS)) {
+	                    pst2.setString(1, dniEntrenador);
+
+	                    try (ResultSet rsEntrenadorCompleto = pst2.executeQuery()) {
+	                        if (rsEntrenadorCompleto.next()) {
+	                            EmpleadoDeportivo entrenador = new EmpleadoDeportivo(
+	                                    dniEntrenador,
+	                                    rsEntrenadorCompleto.getString("nombre"),
+	                                    rsEntrenadorCompleto.getString("apellido"),
+	                                    rsEntrenadorCompleto.getBigDecimal("salario"),
+	                                    LocalDate.parse(rsEntrenadorCompleto.getString("fecha_nacimiento")),
+	                                    rsEntrenadorCompleto.getString("numero_de_telefono"),
+	                                    Posicion.valueOf(rsEntrenadorCompleto.getString("posicion")),
+	                                    rsEntrenadorCompleto.getString("nombre_usuario"),
+	                                    rsEntrenadorCompleto.getString("contrasena")
+	                            );
+
+	                            cuerpoTecnico.add(entrenador);
+	                        }
+	                    }
+	                }
+	            }
+	        }
+	    }
+
+	    return cuerpoTecnico;
 	}
 
 	/**

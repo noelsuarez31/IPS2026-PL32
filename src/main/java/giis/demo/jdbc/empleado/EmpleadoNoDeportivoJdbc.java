@@ -31,10 +31,13 @@ public class EmpleadoNoDeportivoJdbc {
 	}
 	
 	//consulta los empleados no deportivos
-		private static final String GET_NO_DEPORTIVOS = "SELECT be.dni, be.nombre, be.apellido, be.salario, be.fecha_nacimiento, be.numero_de_telefono, end.posicion " +
-													    "FROM EmpleadoNoDeportivo end " +
-													    "JOIN BaseEmpleado be ON end.dni = be.dni";
-		
+	private static final String GET_NO_DEPORTIVOS =
+	        "SELECT be.dni, be.nombre, be.apellido, be.salario, "
+	        + "be.fecha_nacimiento, be.numero_de_telefono, "
+	        + "m.nombre_usuario, m.contrasena, end.posicion "
+	        + "FROM EmpleadoNoDeportivo end "
+	        + "JOIN BaseEmpleado be ON end.dni = be.dni "
+	        + "JOIN Miembro m ON be.dni = m.dni";
 		/*
 		 * devuelve una lista de todos los empleados no deportivos
 		 */
@@ -45,15 +48,17 @@ public class EmpleadoNoDeportivoJdbc {
 	        try (PreparedStatement pst = con.prepareStatement(GET_NO_DEPORTIVOS);
 	             ResultSet rs = pst.executeQuery()) {
 	            while (rs.next()) {
-	                EmpleadoNoDeportivo emp = new EmpleadoNoDeportivo(
-	                    rs.getString("dni"),
-	                    rs.getString("nombre"),
-	                    rs.getString("apellido"),
-	                    new BigDecimal(rs.getString("salario")),
-	                    LocalDate.parse(rs.getString("fecha_nacimiento")),
-	                    rs.getString("numero_de_telefono"),
-	                    Posicion.valueOf(rs.getString("posicion"))
-	                );
+	            	EmpleadoNoDeportivo emp = new EmpleadoNoDeportivo(
+	            		    rs.getString("dni"),
+	            		    rs.getString("nombre"),
+	            		    rs.getString("apellido"),
+	            		    new BigDecimal(rs.getString("salario")),
+	            		    LocalDate.parse(rs.getString("fecha_nacimiento")),
+	            		    rs.getString("numero_de_telefono"),
+	            		    Posicion.valueOf(rs.getString("posicion")),
+	            		    rs.getString("nombre_usuario"),
+	            		    rs.getString("contrasena")
+	            		);
 	                empleados.add(emp);
 	            }
 	        }

@@ -5,7 +5,7 @@ import java.time.LocalDate;
 
 import giis.demo.exceptions.EmployeeException;
 
-public abstract class BaseEmpleado {
+public abstract class BaseEmpleado extends Miembro{
 	private String dni;
 	private String nombre;
 	private String apellido;
@@ -13,8 +13,13 @@ public abstract class BaseEmpleado {
 	private LocalDate fechaNacimiento; // en bbdd fecha_nacimiento
 	private String numeroDeTelefono; //en bbdd numero_de_telefono
 	
+	
+	
 	public BaseEmpleado(String dni, String nombre, String apellido, BigDecimal salario, LocalDate fechaDeNacimiento,
-			String numeroTelefono) {
+			String numeroTelefono, String usuario, String contrasena) throws EmployeeException {
+		
+		super(usuario, contrasena);
+
 		if(dni == null || dni.isBlank()) {
 			throw new EmployeeException("dni no puede ser null ni blanco");
 		}
@@ -38,13 +43,15 @@ public abstract class BaseEmpleado {
 		if(numeroTelefono == null || numeroTelefono.isBlank()) {
 			throw new EmployeeException("numeroTelefono no puede ser null ni blanco");
 		}
-		
+				
 		this.dni = dni;
 		this.nombre = nombre;
 		this.apellido = apellido;
 		this.salario = salario;
 		this.fechaNacimiento = fechaDeNacimiento;
 		this.numeroDeTelefono = numeroTelefono;
+		
+		super.setDni(dni);
 	}
 
 	public abstract Posicion getPosicion();
@@ -72,4 +79,9 @@ public abstract class BaseEmpleado {
 	public BigDecimal getSalario() {
 		return this.salario;
 	}
+
+	public String getNumeroDeTelefono() {
+		return numeroDeTelefono;
+	}
+
 }
