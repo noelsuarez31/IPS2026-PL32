@@ -815,3 +815,30 @@ INSERT INTO Noticia (id_noticia, titular, subtitulo, fecha, autor, cuerpo) VALUE
 INSERT INTO ImagenNoticia (id_noticia, ruta_imagen) VALUES
 (1, 'src/main/resources/img/noticia_entrenamiento.png'),
 (2, 'src/main/resources/img/noticia_estadio.png');
+
+INSERT INTO Noticia (id_noticia, titular, subtitulo, fecha, autor, cuerpo) VALUES
+(1, 'El club presenta el proyecto de ampliación de la ciudad deportiva', 'Un proyecto histórico que modernizará las instalaciones del club', '2026-11-15', 'Gabinete de Presidencia', 'El Real Oviedo ha presentado esta mañana el anteproyecto de la nueva ciudad deportiva ante los medios de comunicación y representantes institucionales.\n\nEl complejo contará con 6 campos reglamentarios de césped natural, residencia para jóvenes canteranos, gimnasio de última generación y un centro médico avanzado para la recuperación de lesiones.\n\nLas obras darán comienzo a principios del próximo año con un plazo estimado de ejecución de 14 meses.'),
+(2, 'Convocatoria oficial para el derbi asturiano', 'El cuerpo técnico recupera a dos defensas titulares tras superar sus molestias', '2026-11-13', 'Dpto. Prensa Real Oviedo', 'El cuerpo técnico ha hecho pública este mediodía la lista oficial de convocados para el derbi asturiano que se disputará este fin de semana en el Estadio Carlos Tartiere.\n\nEl equipo completará mañana la última sesión de entrenamiento a puerta cerrada en las instalaciones de El Requexón antes de quedar concentrados para el partido.\n\nSe espera una afluencia masiva de aficionados blanquiazules en una jornada donde la afición volverá a arropar al conjunto carbayón.'),
+(3, 'Éxito rotundo en las jornadas de captación de la cantera', 'Más de 300 jóvenes participaron en las pruebas de captación del fútbol base', '2026-11-10', 'Dirección de Cantera', 'Las jornadas de puertas abiertas celebradas durante el fin de semana congregaron a centenares de jóvenes talentos de toda la región.\n\nLos técnicos de las categorías inferiores destacaron el gran nivel exhibido por los aspirantes en todas las posiciones del campo.'),
+(4, 'Apertura del nuevo punto oficial de atención al socio', 'Atención personalizada y taquilla rápida en el centro de la ciudad', '2026-11-08', 'Comunicación Institucional', 'El club inaugura un nuevo espacio comercial y de atención al abonado donde se podrán realizar gestiones, compra de entradas y adquisición de equipaciones oficiales.'),
+(5, 'Acuerdo de patrocinio estratégico para las dos próximas temporadas', 'Una alianza comercial que potenciará los proyectos de innovación y cantera', '2026-11-05', 'Área de Negocio y Marketing', 'El club ha rubricado un nuevo acuerdo de patrocinio que proporcionará respaldo financiero a las iniciativas sociales y deportivas del club de cara a los próximos cursos.'),
+(6, 'Horarios confirmados para las próximas jornadas de liga', NULL, '2026-11-03', NULL, 'La organización de la competición ha confirmado los horarios de los próximos encuentros del primer equipo correspondientes a las jornadas 15 a 18.'),
+(7, 'Actualización médica: partes de lesionados del primer equipo', 'Evolución favorable de los futbolistas que continúan con sus procesos de recuperación', '2026-10-28', 'Servicios Médicos', 'El departamento médico del club informa de la evolución positiva de los jugadores que causaron baja en la última jornada de liga. Todos ellos avanzan según los plazos previstos en sus planes de readaptación.'),
+(8, 'Convocatoria de la Junta General Ordinaria de Accionistas', 'Aprobación de cuentas anuales y presupuesto de la temporada en curso', '2026-10-20', 'Secretaría del Consejo', 'El Consejo de Administración del club convoca a los señores accionistas a la celebración de la Junta General Ordinaria que tendrá lugar en el auditorio municipal el próximo mes.'),
+(9, 'Jornada de puertas abiertas en el Museo Histórico del Club', 'Entrada gratuita para todos los abonados y simpatizantes durante el fin de semana', '2026-10-15', 'Área Social y Cultural', 'Con motivo del aniversario institucional, el club abrirá las puertas de su sala de trofeos y museo histórico para que toda la afición pueda disfrutar del patrimonio y legado del club.'),
+(10, 'Lanzamiento del nuevo portal digital y servicios para abonados', 'Toda la actualidad, gestión de asientos y contenidos multimedia en un solo lugar', '2026-10-02', 'Transformación Digital', 'El club da un paso adelante en su estrategia digital con el lanzamiento de la nueva plataforma integral para socios y seguidores.');
+
+INSERT INTO ImagenNoticia (id_noticia, ruta_imagen) VALUES
+(1, 'src/main/resources/img/noticia_estadio.png'),
+(1, 'src/main/resources/img/ansu_momento.png'),
+(1, 'src/main/resources/img/noticia_entrenamiento.png'),
+(2, 'src/main/resources/img/noticia_entrenamiento.png'),
+(2, 'src/main/resources/img/segunda_estrella.png'),
+(3, 'src/main/resources/img/ansu_momento.png'),
+(3, 'src/main/resources/img/segunda_estrella.png'),
+(4, 'src/main/resources/img/noticia_estadio.png'),
+(5, 'src/main/resources/img/ansu_momento.png'),
+(8, 'src/main/resources/img/ansu_momento.png'),
+(9, 'src/main/resources/img/segunda_estrella.png'),
+(9, 'src/main/resources/img/ansu_momento.png'),
+(9, 'src/main/resources/img/ansu_momento.png');

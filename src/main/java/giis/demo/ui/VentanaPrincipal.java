@@ -24,6 +24,7 @@ import giis.demo.model.horarios.GestionHorarioSemanal;
 import giis.demo.model.horarios.GestionHorariosEspecificos;
 import giis.demo.model.horarios.GestionHorariosPeriodicos;
 import giis.demo.model.noticias.AñadirNoticiaService;
+import giis.demo.model.noticias.VisualizarNoticiasService;
 import giis.demo.model.tienda.VentaMerchandising;
 import giis.demo.ui.abonos.VentanaAbono;
 import giis.demo.ui.abonos.entradas.VentanaIdentificacion;
@@ -45,6 +46,7 @@ import giis.demo.ui.horarios.VentanaHorarioPeriodico;
 import giis.demo.ui.horarios.VentanaHorarioSemanal;
 import giis.demo.ui.mantenimiento.VentanaAsignarMantenimiento;
 import giis.demo.ui.noticias.VentanaAñadirNoticia;
+import giis.demo.ui.noticias.VentanaVisualizarNoticias;
 import giis.demo.ui.reserva.VentanaReserva;
 import giis.demo.ui.tienda.VentanaTienda;
 
@@ -61,6 +63,7 @@ public class VentanaPrincipal extends JFrame {
 	private CrearEntrenamientoService crearEntrenoService = new CrearEntrenamientoService();
 	private PlanificarPartidoService pps = new PlanificarPartidoService();
 	private AñadirNoticiaService añadirNoticiaService = new AñadirNoticiaService();
+	private VisualizarNoticiasService visualizarNoticiasService = new VisualizarNoticiasService();
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
@@ -95,6 +98,8 @@ public class VentanaPrincipal extends JFrame {
 	private JMenuItem mniVenderAbonado;
 	private JMenuItem mntmRegistrarEntrenamiento;
 	private JMenuItem mntmAñadirPartido;
+	private JMenu mnMiembro;
+	private JMenuItem mntmPanelNoticias;
 
 	/**
 	 * Create the frame.
@@ -135,6 +140,7 @@ public class VentanaPrincipal extends JFrame {
 	private JMenuBar getMenuBar_1() {
 		if (menuBar == null) {
 			menuBar = new JMenuBar();
+			menuBar.add(getMnMiembro());
 			menuBar.add(getMnAbonado());
 			menuBar.add(getMnAccionista());
 			menuBar.add(getMnDirectorDeComunicaciones());
@@ -725,6 +731,11 @@ public class VentanaPrincipal extends JFrame {
 	public AñadirNoticiaService getAñadirNoticiaService() {
 		return añadirNoticiaService;
 	}
+	
+	public VisualizarNoticiasService getVisualizarNoticiasService() {
+		return visualizarNoticiasService;
+	}
+	
 	private JMenuItem getMntmAñadirNoticia() {
 		if (mntmAñadirNoticia == null) {
 			mntmAñadirNoticia = new JMenuItem("Añadir noticia");
@@ -742,5 +753,30 @@ public class VentanaPrincipal extends JFrame {
 		VentanaAñadirNoticia vAñadirNoticia = new VentanaAñadirNoticia(this);
 		vAñadirNoticia.setVisible(true);
 		this.setVisible(false);
+	}
+	private JMenu getMnMiembro() {
+		if (mnMiembro == null) {
+			mnMiembro = new JMenu("Miembro");
+			mnMiembro.add(getMntmPanelNoticias());
+		}
+		return mnMiembro;
+	}
+	private JMenuItem getMntmPanelNoticias() {
+		if (mntmPanelNoticias == null) {
+			mntmPanelNoticias = new JMenuItem("Panel de noticias");
+			mntmPanelNoticias.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					gestionVisualizarNoticias();
+				}
+			});
+		}
+		return mntmPanelNoticias;
+	}
+
+	protected void gestionVisualizarNoticias() {
+		VentanaVisualizarNoticias vVisNoticias = new VentanaVisualizarNoticias(this);
+		this.setVisible(false);
+		vVisNoticias.setVisible(true);
 	}
 }

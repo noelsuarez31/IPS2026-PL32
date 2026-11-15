@@ -985,6 +985,15 @@ public class JDBC {
 	public int obtenerIdEquipoPorDniEntrenador(String dniEntrenador) throws SQLException {
 		return EntrenamientoJdbc.obtenerIdEquipoPorDniEntrenador(con, dniEntrenador);
 	}
+	
+	/**
+	 * Devuelve la lista de noticias almacenadas en la BBDD
+	 * @return
+	 * @throws SQLException
+	 */
+	public List<Noticia> getNoticias() throws SQLException {
+		return NoticiaJdbc.getNoticias(con);
+	}
 
 	/**
 	 * Devuelve una lista de eventos que ocupan las instalaciones. Incluye: Tareas
