@@ -8,6 +8,7 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Image;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -35,8 +36,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.EtchedBorder;
-import javax.swing.border.TitledBorder;
+import javax.swing.border.LineBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
@@ -83,18 +83,25 @@ public class VentanaVisualizarNoticias extends JFrame {
 	private JTextArea taDetalleTitular;
 	private JTextArea taDetalleSubtitulo;
 	private JSeparator separadorDetalle;
+	private JPanel pnContenedorVisorCentrado;
 	private JPanel pnVisorImagenes;
-	private JButton btnFotoAnterior;
+	private JPanel pnMarcoFoto;
 	private JLabel lblFotoPrincipal;
-	private JButton btnFotoSiguiente;
+	private JPanel pnControlesFoto;
+	private JButton btnFotoAnterior;
 	private JLabel lblContadorFotos;
+	private JButton btnFotoSiguiente;
 	private JTextArea taDetalleCuerpo;
 	private JPanel pnSurDetalle;
 	private JButton btnVolverListadoSur;
 
 	public VentanaVisualizarNoticias(VentanaPrincipal vPrincipal) {
 		this.vPrincipal = vPrincipal;
-		this.service = vPrincipal.getVisualizarNoticiasService();
+		if (vPrincipal != null) {
+			this.service = vPrincipal.getVisualizarNoticiasService();
+		} else {
+			this.service = new VisualizarNoticiasService();
+		}
 
 		setTitle("Portal de Noticias del Club");
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -140,9 +147,9 @@ public class VentanaVisualizarNoticias extends JFrame {
 		return pnCards;
 	}
 
-	// Lista de noticias
+	// Card 1: Listado noticia
 
-	private JPanel getPnLista() {
+	public JPanel getPnLista() {
 		if (pnLista == null) {
 			pnLista = new JPanel(new BorderLayout(0, 10));
 			pnLista.add(getPnNorteLista(), BorderLayout.NORTH);
@@ -152,32 +159,37 @@ public class VentanaVisualizarNoticias extends JFrame {
 		return pnLista;
 	}
 
-	private JPanel getPnNorteLista() {
+	public JPanel getPnNorteLista() {
 		if (pnNorteLista == null) {
-			pnNorteLista = new JPanel(new BorderLayout(0, 2));
-			pnNorteLista.add(getLbTituloLista(), BorderLayout.NORTH);
-			pnNorteLista.add(getLbSubtituloLista(), BorderLayout.SOUTH);
+			pnNorteLista = new JPanel();
+			pnNorteLista.setLayout(new BoxLayout(pnNorteLista, BoxLayout.Y_AXIS));
+			pnNorteLista.add(getLbTituloLista());
+			pnNorteLista.add(Box.createVerticalStrut(4));
+			pnNorteLista.add(getLbSubtituloLista());
 		}
 		return pnNorteLista;
 	}
 
 	public JLabel getLbTituloLista() {
 		if (lbTituloLista == null) {
-			lbTituloLista = new JLabel("Noticias del Club");
+			lbTituloLista = new JLabel("Tablón de Noticias del Club");
 			lbTituloLista.setFont(new Font("Segoe UI", Font.BOLD, 18));
+			lbTituloLista.setAlignmentX(Component.LEFT_ALIGNMENT);
 		}
 		return lbTituloLista;
 	}
 
 	public JLabel getLbSubtituloLista() {
 		if (lbSubtituloLista == null) {
-			lbSubtituloLista = new JLabel("Seleccione una noticia de la lista para leer su contenido completo.");
+			lbSubtituloLista = new JLabel("Consulte toda la actualidad, comunicados oficiales y novedades de la entidad.");
 			lbSubtituloLista.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+			lbSubtituloLista.setForeground(new Color(90, 90, 90));
+			lbSubtituloLista.setAlignmentX(Component.LEFT_ALIGNMENT);
 		}
 		return lbSubtituloLista;
 	}
 
-	private JPanel getPnCentroLista() {
+	public JPanel getPnCentroLista() {
 		if (pnCentroLista == null) {
 			pnCentroLista = new JPanel(new BorderLayout());
 			pnCentroLista.add(getSpTablaNoticias(), BorderLayout.CENTER);
@@ -196,17 +208,19 @@ public class VentanaVisualizarNoticias extends JFrame {
 	public JTable getTablaNoticias() {
 		if (tablaNoticias == null) {
 			tablaNoticias = new JTable();
-			tablaNoticias.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-			tablaNoticias.setRowHeight(26);
 			tablaNoticias.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+			tablaNoticias.setRowHeight(26);
+			tablaNoticias.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+			tablaNoticias.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 12));
+			tablaNoticias.getTableHeader().setReorderingAllowed(false);
 			tablaNoticias.setModel(getModeloTabla());
 
-			tablaNoticias.getColumnModel().getColumn(0).setPreferredWidth(100);
-			tablaNoticias.getColumnModel().getColumn(0).setMaxWidth(130);
-			tablaNoticias.getColumnModel().getColumn(1).setPreferredWidth(480);
+			tablaNoticias.getColumnModel().getColumn(0).setPreferredWidth(90);
+			tablaNoticias.getColumnModel().getColumn(0).setMaxWidth(110);
+			tablaNoticias.getColumnModel().getColumn(1).setPreferredWidth(380);
 			tablaNoticias.getColumnModel().getColumn(2).setPreferredWidth(140);
-			tablaNoticias.getColumnModel().getColumn(3).setPreferredWidth(70);
-			tablaNoticias.getColumnModel().getColumn(3).setMaxWidth(80);
+			tablaNoticias.getColumnModel().getColumn(3).setPreferredWidth(60);
+			tablaNoticias.getColumnModel().getColumn(3).setMaxWidth(75);
 
 			tablaNoticias.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 				@Override
@@ -245,12 +259,15 @@ public class VentanaVisualizarNoticias extends JFrame {
 		return modeloTabla;
 	}
 
-	private JPanel getPnSurLista() {
+	public JPanel getPnSurLista() {
 		if (pnSurLista == null) {
-			pnSurLista = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 4));
-			pnSurLista.add(getBtnVolverPrincipal());
-			pnSurLista.add(getBtnActualizar());
-			pnSurLista.add(getBtnLeerNoticia());
+			pnSurLista = new JPanel(new BorderLayout());
+			pnSurLista.add(getBtnVolverPrincipal(), BorderLayout.WEST);
+
+			JPanel pnAcciones = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
+			pnAcciones.add(getBtnActualizar());
+			pnAcciones.add(getBtnLeerNoticia());
+			pnSurLista.add(pnAcciones, BorderLayout.EAST);
 		}
 		return pnSurLista;
 	}
@@ -258,8 +275,9 @@ public class VentanaVisualizarNoticias extends JFrame {
 	public JButton getBtnVolverPrincipal() {
 		if (btnVolverPrincipal == null) {
 			btnVolverPrincipal = new JButton("Volver");
-			btnVolverPrincipal.setFont(new Font("Segoe UI", Font.PLAIN, 12));
 			btnVolverPrincipal.setMnemonic('V');
+			btnVolverPrincipal.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+			btnVolverPrincipal.setToolTipText("Regresar al menú anterior");
 			btnVolverPrincipal.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
@@ -273,8 +291,9 @@ public class VentanaVisualizarNoticias extends JFrame {
 	public JButton getBtnActualizar() {
 		if (btnActualizar == null) {
 			btnActualizar = new JButton("Actualizar");
-			btnActualizar.setFont(new Font("Segoe UI", Font.PLAIN, 12));
 			btnActualizar.setMnemonic('A');
+			btnActualizar.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+			btnActualizar.setToolTipText("Recargar la lista de noticias");
 			btnActualizar.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
@@ -287,10 +306,11 @@ public class VentanaVisualizarNoticias extends JFrame {
 
 	public JButton getBtnLeerNoticia() {
 		if (btnLeerNoticia == null) {
-			btnLeerNoticia = new JButton("Leer noticia completa");
-			btnLeerNoticia.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+			btnLeerNoticia = new JButton("Leer noticia");
 			btnLeerNoticia.setMnemonic('L');
+			btnLeerNoticia.setFont(new Font("Segoe UI", Font.BOLD, 12));
 			btnLeerNoticia.setEnabled(false);
+			btnLeerNoticia.setToolTipText("Visualizar el contenido completo de la noticia seleccionada");
 			btnLeerNoticia.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
@@ -301,9 +321,9 @@ public class VentanaVisualizarNoticias extends JFrame {
 		return btnLeerNoticia;
 	}
 
-	// Detalle noticia
+	// Card 2: Detalle Noticia
 
-	private JPanel getPnDetalle() {
+	public JPanel getPnDetalle() {
 		if (pnDetalle == null) {
 			pnDetalle = new JPanel(new BorderLayout(0, 8));
 			pnDetalle.add(getSpDetalleScroll(), BorderLayout.CENTER);
@@ -327,14 +347,14 @@ public class VentanaVisualizarNoticias extends JFrame {
 		if (pnArticulo == null) {
 			pnArticulo = new JPanel();
 			pnArticulo.setLayout(new BoxLayout(pnArticulo, BoxLayout.Y_AXIS));
-			pnArticulo.setBorder(new EmptyBorder(5, 5, 5, 5));
+			pnArticulo.setBorder(new EmptyBorder(4, 4, 4, 4));
 
 			pnArticulo.add(getPnCabeceraArticulo());
 			pnArticulo.add(Box.createVerticalStrut(8));
 			pnArticulo.add(getSeparadorDetalle());
-			pnArticulo.add(Box.createVerticalStrut(10));
-			pnArticulo.add(getPnVisorImagenes());
 			pnArticulo.add(Box.createVerticalStrut(12));
+			pnArticulo.add(getPnContenedorVisorCentrado());
+			pnArticulo.add(Box.createVerticalStrut(14));
 			pnArticulo.add(getTaDetalleCuerpo());
 			pnArticulo.add(Box.createVerticalGlue());
 		}
@@ -382,6 +402,7 @@ public class VentanaVisualizarNoticias extends JFrame {
 			taDetalleTitular.setWrapStyleWord(true);
 			taDetalleTitular.setEditable(false);
 			taDetalleTitular.setOpaque(false);
+			taDetalleTitular.setBackground(new Color(240, 240, 240));
 			taDetalleTitular.setBorder(null);
 			taDetalleTitular.setAlignmentX(Component.LEFT_ALIGNMENT);
 		}
@@ -404,6 +425,7 @@ public class VentanaVisualizarNoticias extends JFrame {
 			taDetalleSubtitulo.setWrapStyleWord(true);
 			taDetalleSubtitulo.setEditable(false);
 			taDetalleSubtitulo.setOpaque(false);
+			taDetalleSubtitulo.setBackground(new Color(240, 240, 240));
 			taDetalleSubtitulo.setBorder(null);
 			taDetalleSubtitulo.setAlignmentX(Component.LEFT_ALIGNMENT);
 		}
@@ -419,27 +441,68 @@ public class VentanaVisualizarNoticias extends JFrame {
 		return separadorDetalle;
 	}
 
+	public JPanel getPnContenedorVisorCentrado() {
+		if (pnContenedorVisorCentrado == null) {
+			pnContenedorVisorCentrado = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+			pnContenedorVisorCentrado.setOpaque(false);
+			pnContenedorVisorCentrado.setAlignmentX(Component.LEFT_ALIGNMENT);
+			pnContenedorVisorCentrado.setMaximumSize(new Dimension(Integer.MAX_VALUE, 290));
+
+			pnContenedorVisorCentrado.add(getPnVisorImagenes());
+		}
+		return pnContenedorVisorCentrado;
+	}
+
 	public JPanel getPnVisorImagenes() {
 		if (pnVisorImagenes == null) {
-			pnVisorImagenes = new JPanel(new BorderLayout(8, 4));
-			pnVisorImagenes.setBorder(new TitledBorder(new EtchedBorder(), "Imágenes de la noticia"));
-			pnVisorImagenes.setMaximumSize(new Dimension(Integer.MAX_VALUE, 230));
-			pnVisorImagenes.setPreferredSize(new Dimension(680, 230));
-			pnVisorImagenes.setAlignmentX(Component.LEFT_ALIGNMENT);
+			pnVisorImagenes = new JPanel(new BorderLayout(0, 6));
+			pnVisorImagenes.setOpaque(false);
+			pnVisorImagenes.setPreferredSize(new Dimension(380, 275));
 
-			pnVisorImagenes.add(getBtnFotoAnterior(), BorderLayout.WEST);
-			pnVisorImagenes.add(getLblFotoPrincipal(), BorderLayout.CENTER);
-			pnVisorImagenes.add(getBtnFotoSiguiente(), BorderLayout.EAST);
-			pnVisorImagenes.add(getLblContadorFotos(), BorderLayout.SOUTH);
+			pnVisorImagenes.add(getPnMarcoFoto(), BorderLayout.CENTER);
+			pnVisorImagenes.add(getPnControlesFoto(), BorderLayout.SOUTH);
 		}
 		return pnVisorImagenes;
 	}
 
+	public JPanel getPnMarcoFoto() {
+		if (pnMarcoFoto == null) {
+			pnMarcoFoto = new JPanel(new BorderLayout());
+			pnMarcoFoto.setBackground(new Color(230, 230, 230));
+			pnMarcoFoto.setBorder(new LineBorder(new Color(205, 205, 205), 1));
+			pnMarcoFoto.setPreferredSize(new Dimension(380, 235));
+			pnMarcoFoto.add(getLblFotoPrincipal(), BorderLayout.CENTER);
+		}
+		return pnMarcoFoto;
+	}
+
+	public JLabel getLblFotoPrincipal() {
+		if (lblFotoPrincipal == null) {
+			lblFotoPrincipal = new JLabel();
+			lblFotoPrincipal.setHorizontalAlignment(SwingConstants.CENTER);
+			lblFotoPrincipal.setVerticalAlignment(SwingConstants.CENTER);
+		}
+		return lblFotoPrincipal;
+	}
+
+	public JPanel getPnControlesFoto() {
+		if (pnControlesFoto == null) {
+			pnControlesFoto = new JPanel(new FlowLayout(FlowLayout.CENTER, 8, 2));
+			pnControlesFoto.setOpaque(false);
+			pnControlesFoto.add(getBtnFotoAnterior());
+			pnControlesFoto.add(getLblContadorFotos());
+			pnControlesFoto.add(getBtnFotoSiguiente());
+		}
+		return pnControlesFoto;
+	}
+
 	public JButton getBtnFotoAnterior() {
 		if (btnFotoAnterior == null) {
-			btnFotoAnterior = new JButton("◀");
-			btnFotoAnterior.setFont(new Font("Segoe UI", Font.BOLD, 14));
+			btnFotoAnterior = new JButton("<");
+			btnFotoAnterior.setFont(new Font("Segoe UI", Font.BOLD, 12));
+			btnFotoAnterior.setMargin(new Insets(2, 8, 2, 8));
 			btnFotoAnterior.setToolTipText("Foto anterior");
+			btnFotoAnterior.setFocusable(false);
 			btnFotoAnterior.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
@@ -453,19 +516,22 @@ public class VentanaVisualizarNoticias extends JFrame {
 		return btnFotoAnterior;
 	}
 
-	public JLabel getLblFotoPrincipal() {
-		if (lblFotoPrincipal == null) {
-			lblFotoPrincipal = new JLabel();
-			lblFotoPrincipal.setHorizontalAlignment(SwingConstants.CENTER);
+	public JLabel getLblContadorFotos() {
+		if (lblContadorFotos == null) {
+			lblContadorFotos = new JLabel("Foto 1 de 1");
+			lblContadorFotos.setFont(new Font("Segoe UI", Font.BOLD, 12));
+			lblContadorFotos.setHorizontalAlignment(SwingConstants.CENTER);
 		}
-		return lblFotoPrincipal;
+		return lblContadorFotos;
 	}
 
 	public JButton getBtnFotoSiguiente() {
 		if (btnFotoSiguiente == null) {
-			btnFotoSiguiente = new JButton("▶");
-			btnFotoSiguiente.setFont(new Font("Segoe UI", Font.BOLD, 14));
+			btnFotoSiguiente = new JButton(">");
+			btnFotoSiguiente.setFont(new Font("Segoe UI", Font.BOLD, 12));
+			btnFotoSiguiente.setMargin(new Insets(2, 8, 2, 8));
 			btnFotoSiguiente.setToolTipText("Siguiente foto");
+			btnFotoSiguiente.setFocusable(false);
 			btnFotoSiguiente.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
@@ -478,15 +544,6 @@ public class VentanaVisualizarNoticias extends JFrame {
 			});
 		}
 		return btnFotoSiguiente;
-	}
-
-	public JLabel getLblContadorFotos() {
-		if (lblContadorFotos == null) {
-			lblContadorFotos = new JLabel("Foto 1 de 1");
-			lblContadorFotos.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-			lblContadorFotos.setHorizontalAlignment(SwingConstants.CENTER);
-		}
-		return lblContadorFotos;
 	}
 
 	public JTextArea getTaDetalleCuerpo() {
@@ -504,13 +561,14 @@ public class VentanaVisualizarNoticias extends JFrame {
 			taDetalleCuerpo.setWrapStyleWord(true);
 			taDetalleCuerpo.setEditable(false);
 			taDetalleCuerpo.setOpaque(false);
+			taDetalleCuerpo.setBackground(new Color(240, 240, 240));
 			taDetalleCuerpo.setBorder(null);
 			taDetalleCuerpo.setAlignmentX(Component.LEFT_ALIGNMENT);
 		}
 		return taDetalleCuerpo;
 	}
 
-	private JPanel getPnSurDetalle() {
+	public JPanel getPnSurDetalle() {
 		if (pnSurDetalle == null) {
 			pnSurDetalle = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 4));
 			pnSurDetalle.add(getBtnVolverListadoSur());
@@ -538,7 +596,7 @@ public class VentanaVisualizarNoticias extends JFrame {
 	public void cargarNoticias() {
 		try {
 			listaNoticias = service.obtenerNoticiasOrdenadasPorFecha();
-			modeloTabla.setRowCount(0);
+			getModeloTabla().setRowCount(0);
 
 			DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 			for (Noticia n : listaNoticias) {
@@ -546,7 +604,7 @@ public class VentanaVisualizarNoticias extends JFrame {
 				String autorStr = (n.getAutor() != null && !n.getAutor().isBlank()) ? n.getAutor() : "-";
 				int numFotos = (n.getImagenes() != null) ? n.getImagenes().size() : 0;
 
-				modeloTabla.addRow(new Object[] {
+				getModeloTabla().addRow(new Object[] {
 					fechaStr,
 					n.getTitular(),
 					autorStr,
@@ -564,7 +622,7 @@ public class VentanaVisualizarNoticias extends JFrame {
 	}
 
 	private void abrirDetalleNoticiaSeleccionada() {
-		int filaSeleccionada = tablaNoticias.getSelectedRow();
+		int filaSeleccionada = getTablaNoticias().getSelectedRow();
 		if (filaSeleccionada == -1 || filaSeleccionada >= listaNoticias.size()) {
 			JOptionPane.showMessageDialog(this,
 					"Debe seleccionar una noticia de la lista para ver su contenido.",
@@ -587,19 +645,26 @@ public class VentanaVisualizarNoticias extends JFrame {
 		getTaDetalleTitular().setText(n.getTitular());
 
 		if (n.getSubtitulo() != null && !n.getSubtitulo().isBlank()) {
-			getTaDetalleSubtitulo().setText(n.getSubtitulo());
+			getTaDetalleSubtitulo().setText(n.getSubtitulo().replace("\\n", " "));
 			getTaDetalleSubtitulo().setVisible(true);
 		} else {
 			getTaDetalleSubtitulo().setText("");
 			getTaDetalleSubtitulo().setVisible(false);
 		}
 
-		getTaDetalleCuerpo().setText(n.getCuerpo());
+		// Reemplazar saltos de línea literales por saltos reales
+		String cuerpo = n.getCuerpo();
+		if (cuerpo != null) {
+			cuerpo = cuerpo.replace("\\n", "\n");
+		}
+		getTaDetalleCuerpo().setText(cuerpo);
 
 		List<String> fotos = n.getImagenes();
 		if (fotos == null || fotos.isEmpty()) {
+			getPnContenedorVisorCentrado().setVisible(false);
 			getPnVisorImagenes().setVisible(false);
 		} else {
+			getPnContenedorVisorCentrado().setVisible(true);
 			getPnVisorImagenes().setVisible(true);
 			indiceFotoActual = 0;
 			actualizarVisorFotos();
@@ -613,10 +678,12 @@ public class VentanaVisualizarNoticias extends JFrame {
 
 		List<String> fotos = noticiaSeleccionada.getImagenes();
 		if (fotos == null || fotos.isEmpty()) {
+			getPnContenedorVisorCentrado().setVisible(false);
 			getPnVisorImagenes().setVisible(false);
 			return;
 		}
 
+		getPnContenedorVisorCentrado().setVisible(true);
 		getPnVisorImagenes().setVisible(true);
 		int totalFotos = fotos.size();
 		if (indiceFotoActual < 0) {
@@ -631,7 +698,8 @@ public class VentanaVisualizarNoticias extends JFrame {
 		getLblContadorFotos().setText("Foto " + (indiceFotoActual + 1) + " de " + totalFotos);
 
 		String ruta = fotos.get(indiceFotoActual);
-		ImageIcon icono = cargarImagenEscalada(ruta, 480, 160);
+		// Escalado adaptado al marco centrado (376 x 231)
+		ImageIcon icono = cargarImagenEscalada(ruta, 376, 231);
 		getLblFotoPrincipal().setIcon(icono);
 		if (icono == null) {
 			getLblFotoPrincipal().setText("[ " + new File(ruta).getName() + " ]");
