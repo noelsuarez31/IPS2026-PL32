@@ -3,6 +3,7 @@ package giis.demo.model.login;
 import java.sql.SQLException;
 
 import giis.demo.jdbc.JDBC;
+import giis.demo.model.log.GestionLogSesion;
 import giis.demo.util.ApplicationException;
 import giis.demo.util.UnexpectedException;
 
@@ -40,7 +41,15 @@ public class Autenticacion {
 		if (credenciales == null || !PasswordHasher.verificar(contrasena, credenciales[1])) {
 			throw new ApplicationException("Usuario o contraseña incorrectos");
 		}
-		return credenciales[0];
+		String dni = credenciales[0];
+		try {
+			String rol = jdbc.obtenerRolPorDni(dni);
+			GestionLogSesion.setUsuarioActivo(usuario, dni, rol);
+			GestionLogSesion.registrarAccion("Inicio de sesión (" + usuario + ")");
+		} catch (SQLException e) {
+			throw new UnexpectedException(e);
+		}
+		return dni;
 
 	}
 }

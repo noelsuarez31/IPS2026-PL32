@@ -23,6 +23,7 @@ import giis.demo.model.historial.HistorialVentas;
 import giis.demo.model.horarios.GestionHorarioSemanal;
 import giis.demo.model.horarios.GestionHorariosEspecificos;
 import giis.demo.model.horarios.GestionHorariosPeriodicos;
+import giis.demo.model.log.GestionLogSesion;
 import giis.demo.model.noticias.AñadirNoticiaService;
 import giis.demo.model.tienda.VentaMerchandising;
 import giis.demo.ui.abonos.VentanaAbono;
@@ -43,6 +44,8 @@ import giis.demo.ui.historial.VentanaHistorialVentas;
 import giis.demo.ui.horarios.VentanaHorarioEspecifico;
 import giis.demo.ui.horarios.VentanaHorarioPeriodico;
 import giis.demo.ui.horarios.VentanaHorarioSemanal;
+import giis.demo.ui.log.VentanaLogSesion;
+import giis.demo.ui.login.VentanaLogin;
 import giis.demo.ui.mantenimiento.VentanaAsignarMantenimiento;
 import giis.demo.ui.noticias.VentanaAñadirNoticia;
 import giis.demo.ui.reserva.VentanaReserva;
@@ -95,6 +98,10 @@ public class VentanaPrincipal extends JFrame {
 	private JMenuItem mniVenderAbonado;
 	private JMenuItem mntmRegistrarEntrenamiento;
 	private JMenuItem mntmAñadirPartido;
+	private JMenuItem mntmConsultarLogSesion;
+	private JMenu mnSesion;
+	private JMenuItem mntmCambiarUsuario;
+	private JMenuItem mntmCerrarSesionNueva;
 
 	/**
 	 * Create the frame.
@@ -144,6 +151,7 @@ public class VentanaPrincipal extends JFrame {
 			menuBar.add(getMnGestorDeInstalaciones());
 			menuBar.add(getMnTienda());
 			menuBar.add(getMnVendedorDeEntradas());
+			menuBar.add(getMnSesion());
 		}
 		return menuBar;
 	}
@@ -180,6 +188,7 @@ public class VentanaPrincipal extends JFrame {
 			mnGerente.add(getMntmAñadirMantenimiento());
 			mnGerente.add(getMntmCampanasAcciones());
 			mnGerente.add(getMntmPlanificarPartido());
+			mnGerente.add(getMntmConsultarLogSesion());
 		}
 		return mnGerente;
 	}
@@ -198,6 +207,7 @@ public class VentanaPrincipal extends JFrame {
 	}
 
 	private void abrirVentanaCampanasAcciones() {
+	    GestionLogSesion.registrarAccion("Ventana Campañas de Acciones");
 	    VentanaCampanasAcciones ventana = new VentanaCampanasAcciones(this);
 	    this.setVisible(false);
 	    ventana.setVisible(true);
@@ -217,6 +227,7 @@ public class VentanaPrincipal extends JFrame {
 	}
 
 	private void abrirVentanaHistorialVentas() {
+		GestionLogSesion.registrarAccion("Ventana Historial de Ventas");
 		VentanaHistorialVentas ventana = new VentanaHistorialVentas(this, new HistorialVentas());
 		this.setVisible(false);
 		ventana.setVisible(true);
@@ -236,6 +247,7 @@ public class VentanaPrincipal extends JFrame {
 	}
 
 	private void abrirVentanaAltaEmpleado() {
+		GestionLogSesion.registrarAccion("Ventana Alta de Empleado");
 		VentanaAltaEmpleado ventana = new VentanaAltaEmpleado(gestorEmpleados);
 		this.setVisible(false);
 		ventana.addWindowListener(new java.awt.event.WindowAdapter() {
@@ -261,6 +273,7 @@ public class VentanaPrincipal extends JFrame {
 	}
 
 	private void abrirVentanaGestionEmpleados() {
+		GestionLogSesion.registrarAccion("Ventana Gestión de Empleados");
 		VentanaGestionEmpleados ventana = new VentanaGestionEmpleados(this, gestorEmpleados);
 		this.setVisible(false);
 		ventana.setVisible(true);
@@ -303,7 +316,7 @@ public class VentanaPrincipal extends JFrame {
 	 * @throws SQLException
 	 */
 	private void abrirVentanaVentaEntradas() throws SQLException {
-
+		GestionLogSesion.registrarAccion("Ventana Venta de Entradas");
 		VentanaVentaEntradas vve = new VentanaVentaEntradas(this);
 		this.setVisible(false);
 		vve.setVisible(true);
@@ -330,6 +343,7 @@ public class VentanaPrincipal extends JFrame {
 
 	public void abrirVentanaTienda() {
 		try {
+			GestionLogSesion.registrarAccion("Ventana Tienda");
 			// Instanciar lógica
 			VentaMerchandising ventaActiva = new VentaMerchandising();
 
@@ -372,6 +386,7 @@ public class VentanaPrincipal extends JFrame {
 	}
 
 	private void abrirVentanaAñadirEquipo() {
+		GestionLogSesion.registrarAccion("Ventana Añadir Equipo");
 		VentanaAñadirEquipo vAñadirEquipo = new VentanaAñadirEquipo(this);
 		this.setVisible(false);
 		vAñadirEquipo.setVisible(true);
@@ -392,6 +407,7 @@ public class VentanaPrincipal extends JFrame {
 	}
 
 	private void abrirVentanaAñadirHorarioPeriodico() {
+		GestionLogSesion.registrarAccion("Ventana Horario Periódico");
 		VentanaHorarioPeriodico vHorarioPeriodico = new VentanaHorarioPeriodico(this);
 		this.setVisible(false);
 		vHorarioPeriodico.setVisible(true);
@@ -412,6 +428,7 @@ public class VentanaPrincipal extends JFrame {
 	}
 
 	private void abrirVentanaAñadirHorarioEspecifico() {
+		GestionLogSesion.registrarAccion("Ventana Horario Específico");
 		VentanaHorarioEspecifico vHorarioEspecifico = new VentanaHorarioEspecifico(this);
 		this.setVisible(false);
 		vHorarioEspecifico.setVisible(true);
@@ -459,6 +476,7 @@ public class VentanaPrincipal extends JFrame {
 	}
 
 	private void abrirVentanaCrearFranjas() {
+		GestionLogSesion.registrarAccion("Ventana Crear Franjas");
 		VentanaCrearFranjas vFranjas = new VentanaCrearFranjas(this);
 		this.setVisible(false);
 		vFranjas.setVisible(true);
@@ -474,7 +492,7 @@ public class VentanaPrincipal extends JFrame {
 	 * @throws SQLException
 	 */
 	private void abrirVentanaReserva() throws SQLException {
-
+		GestionLogSesion.registrarAccion("Ventana Reserva de Instalaciones");
 		VentanaReserva vr = new VentanaReserva(this);
 		this.setVisible(false);
 		vr.setVisible(true);
@@ -503,6 +521,7 @@ public class VentanaPrincipal extends JFrame {
 	}
 
 	private void abrirVentanaCrearEntrevistas() {
+		GestionLogSesion.registrarAccion("Ventana Asignar Entrevistas");
 		VentanaCrearEntrevistas vCrearEntrev = new VentanaCrearEntrevistas(this);
 		this.setVisible(false);
 		vCrearEntrev.setVisible(true);
@@ -526,6 +545,7 @@ public class VentanaPrincipal extends JFrame {
 	}
 
 	private void abrirVentanaHorarioSemanal() {
+		GestionLogSesion.registrarAccion("Ventana Horario Semanal");
 		VentanaHorarioSemanal vHorarioSemanal = new VentanaHorarioSemanal(this);
 		this.setVisible(false);
 		vHorarioSemanal.setVisible(true);
@@ -558,8 +578,7 @@ public class VentanaPrincipal extends JFrame {
 	}
 	
 	private void abrirVentaAbono() {
-		
-		
+		GestionLogSesion.registrarAccion("Ventana Comprar Abono");
 		VentanaAbono va = new VentanaAbono(this);
 		this.setVisible(false);
 		va.setVisible(true);
@@ -581,6 +600,7 @@ public class VentanaPrincipal extends JFrame {
 	}
 	
 	private void abrirVentanaAñadirMantenimiento() {
+		GestionLogSesion.registrarAccion("Ventana Asignar Mantenimiento");
 		VentanaAsignarMantenimiento vAsignarMantenimiento = new VentanaAsignarMantenimiento(this);
 		this.setVisible(false);
 		vAsignarMantenimiento.setVisible(true);
@@ -600,6 +620,7 @@ public class VentanaPrincipal extends JFrame {
 	}
 	
 	private void gestionPlanificarPartido() {
+		GestionLogSesion.registrarAccion("Ventana Planificar Partido");
 		VentanaPlanificarPartido vpp = new VentanaPlanificarPartido(this);
 		vpp.setVisible(true);
 		this.setVisible(false);
@@ -623,7 +644,7 @@ public class VentanaPrincipal extends JFrame {
 	}
 	
 	private void abrirVentanaIdentificacion() {
-		
+		GestionLogSesion.registrarAccion("Ventana Venta de Entradas Abonados");
 		VentanaIdentificacion vi = new VentanaIdentificacion(this);
 		
 		this.setVisible(false);
@@ -656,6 +677,7 @@ public class VentanaPrincipal extends JFrame {
 	   }
 
 	   private void abrirVentanaCompraCampana() {
+	       GestionLogSesion.registrarAccion("Ventana Comprar Acciones de Campaña");
 	       VentanaCompraCampana ventana = new VentanaCompraCampana(this);
 	       this.setVisible(false);
 	       ventana.setVisible(true);
@@ -675,6 +697,7 @@ public class VentanaPrincipal extends JFrame {
 	}
 
 	private void abrirVentanaPortalAccionista() {
+		GestionLogSesion.registrarAccion("Ventana Portal del Accionista");
 		VentanaPortalAccionista vpa = new VentanaPortalAccionista(this);
 		this.setVisible(false);
 		vpa.setVisible(true);
@@ -694,6 +717,7 @@ public class VentanaPrincipal extends JFrame {
 	}
 
 	private void abrirVentanaCompraAcciones() {
+		GestionLogSesion.registrarAccion("Ventana Comprar Acciones");
 		VentanaCompraAcciones vca = new VentanaCompraAcciones(this);
 		this.setVisible(false);
 		vca.setVisible(true);
@@ -713,6 +737,7 @@ public class VentanaPrincipal extends JFrame {
 	}
 
 	protected void gestionRegistrarEntrenamiento() {
+		GestionLogSesion.registrarAccion("Ventana Registrar Entrenamiento");
 		VentanaCrearEntrenamiento ces2 = new VentanaCrearEntrenamiento(this);
 		this.setVisible(false);
 		ces2.setVisible(true);
@@ -739,8 +764,82 @@ public class VentanaPrincipal extends JFrame {
 	}
 
 	protected void gestionAñadirNoticia() {
+		GestionLogSesion.registrarAccion("Ventana Añadir Noticia");
 		VentanaAñadirNoticia vAñadirNoticia = new VentanaAñadirNoticia(this);
 		vAñadirNoticia.setVisible(true);
 		this.setVisible(false);
+	}
+
+	private JMenuItem getMntmConsultarLogSesion() {
+		if (mntmConsultarLogSesion == null) {
+			mntmConsultarLogSesion = new JMenuItem("Consultar log de la sesión");
+			mntmConsultarLogSesion.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					abrirVentanaLogSesion();
+				}
+			});
+		}
+		return mntmConsultarLogSesion;
+	}
+
+	private void abrirVentanaLogSesion() {
+		GestionLogSesion.registrarAccion("Ventana Consultar Log de la Sesión");
+		VentanaLogSesion vLog = new VentanaLogSesion(this);
+		this.setVisible(false);
+		vLog.setVisible(true);
+	}
+
+	private JMenu getMnSesion() {
+		if (mnSesion == null) {
+			mnSesion = new JMenu("Sesión");
+			mnSesion.setMnemonic('E');
+			mnSesion.add(getMntmCambiarUsuario());
+			mnSesion.add(getMntmCerrarSesionNueva());
+		}
+		return mnSesion;
+	}
+
+	private JMenuItem getMntmCambiarUsuario() {
+		if (mntmCambiarUsuario == null) {
+			mntmCambiarUsuario = new JMenuItem("Cambiar de usuario");
+			mntmCambiarUsuario.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					cambiarDeUsuario();
+				}
+			});
+		}
+		return mntmCambiarUsuario;
+	}
+
+	private JMenuItem getMntmCerrarSesionNueva() {
+		if (mntmCerrarSesionNueva == null) {
+			mntmCerrarSesionNueva = new JMenuItem("Cerrar sesión (nueva sesión)");
+			mntmCerrarSesionNueva.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					cerrarSesionYNuevaSesion();
+				}
+			});
+		}
+		return mntmCerrarSesionNueva;
+	}
+
+	private void cambiarDeUsuario() {
+		GestionLogSesion.registrarAccion("Cambio de usuario");
+		GestionLogSesion.limpiarUsuarioActivo();
+		VentanaLogin vl = new VentanaLogin();
+		vl.setVisible(true);
+		this.dispose();
+	}
+
+	private void cerrarSesionYNuevaSesion() {
+		GestionLogSesion.registrarAccion("Cierre de sesión");
+		GestionLogSesion.limpiarUsuarioActivo();
+		GestionLogSesion.iniciarNuevaSesion();
+		VentanaLogin vl = new VentanaLogin();
+		vl.setVisible(true);
+		this.dispose();
 	}
 }

@@ -37,6 +37,13 @@ public class MiembroJdbc {
 
 	private static final String QUERY_GET_CREDENCIALES_POR_DNI = "SELECT nombre_usuario, contrasena FROM Miembro WHERE UPPER(dni) = UPPER(?)";
 
+	private static final String QUERY_GET_ROL_POR_DNI = "SELECT COALESCE("
+			+ "(SELECT posicion FROM EmpleadoNoDeportivo WHERE UPPER(dni) = UPPER(?)), "
+			+ "(SELECT posicion FROM EmpleadoDeportivo WHERE UPPER(dni) = UPPER(?)), "
+			+ "(SELECT 'ACCIONISTA' FROM Accionista WHERE UPPER(dni) = UPPER(?)), "
+			+ "(SELECT 'ABONADO' FROM Abonado WHERE UPPER(dni) = UPPER(?)), "
+			+ "'MIEMBRO') AS rol";
+
 	/**
 	 * Inserta un nuevo miembro en la base de datos.
 	 */
@@ -153,6 +160,28 @@ public class MiembroJdbc {
 		}
 
 		return null;
+	}
+
+	/**
+	 * Devuelve el rol del miembro a partir de su DNI.
+	 */
+	public static String obtenerRolPorDni(Connection con, String dni) throws SQLException {
+		if (dni == null || dni.isBlank()) {
+			return "SIN_ROL";
+		}
+		try (PreparedStatement ps = con.prepareStatement(QUERY_GET_ROL_POR_DNI)) {
+			ps.setString(1, dni);
+			ps.setString(2, dni);
+			ps.setString(3, dni);
+			ps.setString(4, dni);
+
+			try (ResultSet rs = ps.executeQuery()) {
+				if (rs.next()) {
+					return rs.getString("rol");
+				}
+			}
+		}
+		return "MIEMBRO";
 	}
 
 }
