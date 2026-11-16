@@ -38,7 +38,7 @@ import giis.demo.model.email.ValidadorEmail;
 import giis.demo.model.tienda.FiltroProducto;
 import giis.demo.model.tienda.Producto;
 import giis.demo.model.tienda.VentaMerchandising;
-import giis.demo.ui.VentanaPrincipal;
+import giis.demo.ui.login.VentanaPrincipal;
 
 public class VentanaTienda extends JFrame {
 

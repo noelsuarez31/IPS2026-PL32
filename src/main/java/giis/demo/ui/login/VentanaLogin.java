@@ -2,7 +2,6 @@ package giis.demo.ui.login;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Arrays;
@@ -17,7 +16,7 @@ import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
 import giis.demo.model.login.Autenticacion;
-import giis.demo.ui.VentanaPrincipal;
+import giis.demo.model.rol.UsuarioAutenticado;
 import giis.demo.util.ApplicationException;
 
 public class VentanaLogin extends JFrame {
@@ -33,21 +32,6 @@ public class VentanaLogin extends JFrame {
 	private JButton btValidar;
 
 	private Autenticacion autenticacion;
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					VentanaLogin frame = new VentanaLogin();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
 
 	/**
 	 * Create the frame.
@@ -148,8 +132,9 @@ public class VentanaLogin extends JFrame {
 			}
  
 			String dni = autenticacion.autenticar(usuario, new String(contrasenia));
- 
-			abrirVentanaPrincipal();
+			UsuarioAutenticado usuarioAutenticado = autenticacion.obtenerUsuarioAutenticado(dni);
+			
+			abrirVentanaPrincipal(usuarioAutenticado);
 			
 		} catch (ApplicationException e) {
 			JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -186,9 +171,9 @@ public class VentanaLogin extends JFrame {
 		return true;
 	}
 	
-	private void abrirVentanaPrincipal() {
+	private void abrirVentanaPrincipal(UsuarioAutenticado usuario) {
 		
-		VentanaPrincipal vp = new VentanaPrincipal();
+		VentanaPrincipal vp = new VentanaPrincipal(usuario);
 		vp.setVisible(true);
 		this.dispose();
 	}

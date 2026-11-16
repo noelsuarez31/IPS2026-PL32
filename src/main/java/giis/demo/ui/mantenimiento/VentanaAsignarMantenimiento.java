@@ -38,7 +38,7 @@ import giis.demo.model.mantenimiento.GestionTareaMantenimiento;
 import giis.demo.model.mantenimiento.TareaMantenimiento;
 import giis.demo.model.reserva.Instalacion;
 import giis.demo.model.reserva.Intervalo;
-import giis.demo.ui.VentanaPrincipal;
+import giis.demo.ui.login.VentanaPrincipal;
 import giis.demo.util.ApplicationException;
 import giis.demo.util.SwingUtil;
 import giis.demo.util.UnexpectedException;

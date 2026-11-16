@@ -1,4 +1,4 @@
-package giis.demo.ui;
+package giis.demo.ui.login;
 
 import java.awt.Color;
 import java.awt.event.ActionEvent;
@@ -14,6 +14,7 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import giis.demo.model.contrataciones.GestorEmpleados;
+import giis.demo.model.empleado.Posicion;
 import giis.demo.model.entrevistas.CrearEntrevistaService;
 import giis.demo.model.entrevistas.CrearFranjaService;
 import giis.demo.model.equipo.AñadirEquipoService;
@@ -23,6 +24,7 @@ import giis.demo.model.historial.HistorialVentas;
 import giis.demo.model.horarios.GestionHorarioSemanal;
 import giis.demo.model.horarios.GestionHorariosEspecificos;
 import giis.demo.model.horarios.GestionHorariosPeriodicos;
+import giis.demo.model.rol.UsuarioAutenticado;
 import giis.demo.model.tienda.VentaMerchandising;
 import giis.demo.ui.abonos.VentanaAbono;
 import giis.demo.ui.abonos.entradas.VentanaIdentificacion;
@@ -92,10 +94,13 @@ public class VentanaPrincipal extends JFrame {
 	private JMenuItem mntmRegistrarEntrenamiento;
 	private JMenuItem mntmAñadirPartido;
 
+	private UsuarioAutenticado usuario;
+	
 	/**
 	 * Create the frame.
 	 */
-	public VentanaPrincipal() {
+	public VentanaPrincipal(UsuarioAutenticado usuario) {
+		
 		setTitle("Ventana Inicial");
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -111,8 +116,11 @@ public class VentanaPrincipal extends JFrame {
 		lbInicio.setBackground(new Color(240, 240, 240));
 		lbInicio.setBounds(341, 154, 90, 20);
 		contentPane.add(lbInicio);
-
+		
 		this.setLocationRelativeTo(null);
+		
+		this.usuario = usuario;
+		configurarMenus();
 
 	}
 
@@ -714,5 +722,25 @@ public class VentanaPrincipal extends JFrame {
 	
 	public CrearEntrenamientoService getCrearEntrenamientoService() {
 		return this.crearEntrenoService;
+	}
+	
+	private void configurarMenus() {
+
+	    mnAccionista.setVisible(usuario.esAccionista());
+	    mnEmpleado.setVisible(usuario.esEmpleado());
+	    mnEntrenador.setVisible(usuario.tienePosicion(Posicion.ENTRENADOR));
+	    mnGerente.setVisible(usuario.tienePosicion(Posicion.GERENTE));
+	    mnVendedorDeEntradas.setVisible(
+	            usuario.tienePosicion(Posicion.VENDEDOR_DE_ENTRADAS));
+	    mnAbonado.setVisible(usuario.tienePosicion(Posicion.VENDEDOR_DE_ENTRADAS));
+	    mnTienda.setVisible(
+	            usuario.tienePosicion(Posicion.EMPLEADO_DE_TIENDA)
+	            || usuario.tienePosicion(Posicion.ENCARGADO_DE_TIENDA));
+
+	    mnGestorDeInstalaciones.setVisible(
+	            usuario.tienePosicion(Posicion.GESTOR_DE_INSTALACIONES));
+
+	    mnDirectorDeComunicaciones.setVisible(
+	            usuario.tienePosicion(Posicion.DIRECTOR_DE_COMUNICACIONES));
 	}
 }

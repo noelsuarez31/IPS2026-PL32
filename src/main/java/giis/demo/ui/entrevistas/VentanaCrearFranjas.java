@@ -37,7 +37,8 @@ import com.toedter.calendar.JCalendar;
 import giis.demo.exceptions.NoAvailableSlotException;
 import giis.demo.model.empleado.EmpleadoDeportivo;
 import giis.demo.model.entrevistas.CrearFranjaService;
-import giis.demo.ui.VentanaPrincipal;
+import giis.demo.ui.login.VentanaPrincipal;
+
 import java.time.ZoneId;
 
 public class VentanaCrearFranjas extends JFrame{

@@ -40,7 +40,7 @@ import giis.demo.exceptions.InterviewException;
 import giis.demo.model.empleado.EmpleadoDeportivo;
 import giis.demo.model.entrevistas.CrearEntrevistaService;
 import giis.demo.model.entrevistas.FranjaHoraria;
-import giis.demo.ui.VentanaPrincipal;
+import giis.demo.ui.login.VentanaPrincipal;
 
 public class VentanaCrearEntrevistas extends JFrame {
 	

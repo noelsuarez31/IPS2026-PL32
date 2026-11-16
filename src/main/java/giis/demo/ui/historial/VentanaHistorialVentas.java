@@ -30,7 +30,7 @@ import giis.demo.exceptions.HistorialException;
 import giis.demo.model.historial.HistorialVentas;
 import giis.demo.model.historial.Ingreso;
 import giis.demo.model.historial.LineaDetalle;
-import giis.demo.ui.VentanaPrincipal;
+import giis.demo.ui.login.VentanaPrincipal;
 
 public class VentanaHistorialVentas extends JFrame {
 

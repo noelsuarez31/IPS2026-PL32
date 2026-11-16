@@ -29,7 +29,7 @@ import javax.swing.table.DefaultTableModel;
 import giis.demo.model.reserva.Instalacion;
 import giis.demo.model.reserva.Intervalo;
 import giis.demo.model.reserva.RealizarReserva;
-import giis.demo.ui.VentanaPrincipal;
+import giis.demo.ui.login.VentanaPrincipal;
 
 import javax.swing.border.LineBorder;
 import javax.swing.border.EtchedBorder;
