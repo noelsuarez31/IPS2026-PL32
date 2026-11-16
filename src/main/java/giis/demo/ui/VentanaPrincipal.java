@@ -23,6 +23,7 @@ import giis.demo.model.historial.HistorialVentas;
 import giis.demo.model.horarios.GestionHorarioSemanal;
 import giis.demo.model.horarios.GestionHorariosEspecificos;
 import giis.demo.model.horarios.GestionHorariosPeriodicos;
+import giis.demo.model.informe.GestionInformeFinanciero;
 import giis.demo.model.log.GestionLogSesion;
 import giis.demo.model.noticias.AñadirNoticiaService;
 import giis.demo.model.tienda.VentaMerchandising;
@@ -44,6 +45,7 @@ import giis.demo.ui.historial.VentanaHistorialVentas;
 import giis.demo.ui.horarios.VentanaHorarioEspecifico;
 import giis.demo.ui.horarios.VentanaHorarioPeriodico;
 import giis.demo.ui.horarios.VentanaHorarioSemanal;
+import giis.demo.ui.informe.VentanaInformeFinanciero;
 import giis.demo.ui.log.VentanaLogSesion;
 import giis.demo.ui.login.VentanaLogin;
 import giis.demo.ui.mantenimiento.VentanaAsignarMantenimiento;
@@ -80,6 +82,7 @@ public class VentanaPrincipal extends JFrame {
 	private JMenuItem mntmAltaEmpleado;
 	private JMenuItem mntmGestionEmpleados;
 	private JMenuItem mntmHistorialVentas;
+	private JMenuItem mntmInformeFinanciero;
 	private JMenuItem mntmCampanasAcciones;
 	private JMenuItem mntmAñadirHorarioPeriodico;
 	private JMenuItem mntmAñadirHorarioEspecifico;
@@ -185,6 +188,7 @@ public class VentanaPrincipal extends JFrame {
 			mnGerente.add(getMntmAltaEmpleado());
 			mnGerente.add(getMntmGestionEmpleados());
 			mnGerente.add(getMntmHistorialVentas());
+			mnGerente.add(getMntmInformeFinanciero());
 			mnGerente.add(getMntmAñadirMantenimiento());
 			mnGerente.add(getMntmCampanasAcciones());
 			mnGerente.add(getMntmPlanificarPartido());
@@ -245,6 +249,26 @@ public class VentanaPrincipal extends JFrame {
 		}
 		return mntmAltaEmpleado;
 	}
+	
+	private JMenuItem getMntmInformeFinanciero() {
+        if (mntmInformeFinanciero == null) {
+            mntmInformeFinanciero = new JMenuItem("Informe financiero");
+            mntmInformeFinanciero.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    abrirVentanaInformeFinanciero();
+                }
+            });
+        }
+        return mntmInformeFinanciero;
+    }
+
+    private void abrirVentanaInformeFinanciero() {
+        GestionLogSesion.registrarAccion("Ventana Informe Financiero");
+        VentanaInformeFinanciero ventana = new VentanaInformeFinanciero(this, new GestionInformeFinanciero());
+        this.setVisible(false);
+        ventana.setVisible(true);
+    }
 
 	private void abrirVentanaAltaEmpleado() {
 		GestionLogSesion.registrarAccion("Ventana Alta de Empleado");

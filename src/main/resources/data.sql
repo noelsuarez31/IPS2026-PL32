@@ -125,6 +125,7 @@ insert into Equipo (nombre, es_propio, tipo_equipo, id_categoria) values ('Alav√
 --------------------------------------------------------------------------------
 INSERT INTO "Miembro" ("dni", "nombre_usuario", "contrasena") VALUES 
 ('11111111A', 'borja.baston', '$argon2id$v=19$m=65536,t=3,p=4$w0WzrcPszGiSZVKMkOc/7g$VVcgYsDNypRyIaqK1fLkgWguytFoPU2cS/nT7bmVQWc'),
+('10101010A', 'noel', 'noel'),
 ('22222222B', 'jimmy.suarez', '$argon2id$v=19$m=65536,t=3,p=4$ILq9wU+QOMXuKef8dyiasg$ONTVvI/v5xMekwmO+Pd4VxMb8u1E4tiJ8fwPu6dNUMg'),
 ('33333333C', 'javier.calleja', '$argon2id$v=19$m=65536,t=3,p=4$l4+uPq0StJiyK1kN5NwHug$mbDsMnL35IxPKK0xDeQIRvx97+Bi8DdJotCH7djWxRU'),
 ('44444444D', 'nacho.gonzalez', '$argon2id$v=19$m=65536,t=3,p=4$JknyKtCtfZFqpoUSkUfHWg$x4HkT+pbjUyJU7BHFcE6kxOxR+LEg+Oh8uiCISjeCkE'),
