@@ -1,8 +1,15 @@
 package giis.demo.model.login;
 
 import java.sql.SQLException;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import giis.demo.jdbc.JDBC;
+import giis.demo.model.accion.Accionista;
+import giis.demo.model.empleado.BaseEmpleado;
+import giis.demo.model.empleado.Posicion;
+import giis.demo.model.rol.UsuarioAutenticado;
 import giis.demo.util.ApplicationException;
 import giis.demo.util.UnexpectedException;
 
@@ -41,6 +48,33 @@ public class Autenticacion {
 			throw new ApplicationException("Usuario o contraseña incorrectos");
 		}
 		return credenciales[0];
+
+	}
+	
+	public UsuarioAutenticado obtenerUsuarioAutenticado(String dni) {
+
+		try {
+
+	        Set<Posicion> posiciones = new HashSet<>();
+	        List<BaseEmpleado> empleados = jdbc.getEmpleados();
+
+	        for (BaseEmpleado empleado : empleados) {
+
+	            if (empleado.getDni().equals(dni)) {
+	                posiciones.add(empleado.getPosicion());
+	            }
+
+	        }
+
+	        Accionista accionista = jdbc.getAccionistaByDni(dni);
+
+	        boolean esAccionista = accionista != null;
+
+	        return new UsuarioAutenticado(dni, posiciones, esAccionista);
+
+	    } catch (SQLException e) {
+	        throw new UnexpectedException(e);
+	    }
 
 	}
 }

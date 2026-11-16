@@ -68,7 +68,6 @@ CREATE TABLE IF NOT EXISTS "BaseEmpleado" (
     "salario" NUMERIC NOT NULL CHECK(salario > 0),
     "fecha_nacimiento" DATE NOT NULL,
     "numero_de_telefono" TEXT NOT NULL UNIQUE,
-
     PRIMARY KEY("dni"),
     FOREIGN KEY("dni") REFERENCES Miembro(dni)
 		    ON DELETE CASCADE
