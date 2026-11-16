@@ -1,17 +1,20 @@
 package giis.demo.ui.login;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
 
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.TitledBorder;
 
 import giis.demo.model.contrataciones.GestorEmpleados;
 import giis.demo.model.empleado.Posicion;
@@ -47,6 +50,7 @@ import giis.demo.ui.horarios.VentanaHorarioSemanal;
 import giis.demo.ui.mantenimiento.VentanaAsignarMantenimiento;
 import giis.demo.ui.reserva.VentanaReserva;
 import giis.demo.ui.tienda.VentanaTienda;
+import javax.swing.SwingConstants;
 
 public class VentanaPrincipal extends JFrame {
 
@@ -63,65 +67,58 @@ public class VentanaPrincipal extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
-	private JMenuBar menuBar;
-	private JMenu mnEmpleado;
-	private JMenu mnEntrenador;
-	private JMenu mnGerente;
-	private JMenu mnVendedorDeEntradas;
-	private JMenuItem mniVender;
-	private JMenu mnTienda;
-	private JMenuItem mntmVerTienda;
-	private JMenuItem mntmAñadirEquipo;
-	private JMenuItem mntmAltaEmpleado;
-	private JMenuItem mntmGestionEmpleados;
-	private JMenuItem mntmHistorialVentas;
-	private JMenuItem mntmCampanasAcciones;
-	private JMenuItem mntmAñadirHorarioPeriodico;
-	private JMenuItem mntmAñadirHorarioEspecifico;
-	private JMenuItem mntmVisualizarHorarioSemanal;
-	private JMenu mnGestorDeInstalaciones;
-	private JMenuItem mntmCrearFranjas;
-	private JMenu mnDirectorDeComunicaciones;
-	private JMenuItem mntmAsignarEntrevistas;
-	private JMenu mnAbonado;
-	private JMenu mnAccionista;
-	private JMenuItem mntmPortalAccionista;
-	private JMenuItem mntmComprarAccionesCampana;
-	private JMenuItem mntmComprarAcciones;
-	private JMenuItem mntmComprarAbono;
-	private JMenuItem mntmAñadirMantenimiento;
-	private JMenuItem mniVenderAbonado;
-	private JMenuItem mntmRegistrarEntrenamiento;
-	private JMenuItem mntmAñadirPartido;
+	private JPanel panelUser;
+	private JLabel lbName;
+	private JTextField tfName;
+	private JLabel lbRol;
+	private JTextField tfRol;
+	private JPanel panelOpciones;
 
 	private UsuarioAutenticado usuario;
-	
+	private JPanel panelSalida;
+
 	/**
 	 * Create the frame.
 	 */
-	public VentanaPrincipal(UsuarioAutenticado usuario) {
-		
+	public VentanaPrincipal(UsuarioAutenticado user) {
+
+		this.usuario = user;
+
 		setTitle("Ventana Inicial");
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 820, 420);
-		setJMenuBar(getMenuBar_1());
 		contentPane = new JPanel();
 		contentPane.setBackground(new Color(240, 240, 240));
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
-		contentPane.setLayout(null);
+		contentPane.setLayout(new BorderLayout(0, 0));
+		contentPane.add(getPanelUser(), BorderLayout.NORTH);
+		contentPane.add(getPanelOpciones(), BorderLayout.CENTER);
+		contentPane.add(getPanelSalida(), BorderLayout.SOUTH);
 
-		JLabel lbInicio = new JLabel("¡Bienvenido!");
-		lbInicio.setBackground(new Color(240, 240, 240));
-		lbInicio.setBounds(341, 154, 90, 20);
-		contentPane.add(lbInicio);
-		
+		actualizarDatosUsuario();
+		actualizarAccionesDisponibles();
+
 		this.setLocationRelativeTo(null);
-		
-		this.usuario = usuario;
-		configurarMenus();
 
+	}
+
+	private void actualizarDatosUsuario() {
+
+		tfName.setText(usuario.getDni());
+
+		String posiciones = usuario.getPosiciones().toString();
+
+		if (usuario.esAccionista()) {
+			if (!posiciones.isEmpty()) {
+				posiciones += " - ACCIONISTA";
+			} else {
+				posiciones = "ACCIONISTA";
+			}
+		}
+
+		tfRol.setText(posiciones);
 	}
 
 	public AñadirEquipoService getAñadirEquipoService() {
@@ -136,107 +133,16 @@ public class VentanaPrincipal extends JFrame {
 		return this.ghp;
 	}
 
-	private JMenuBar getMenuBar_1() {
-		if (menuBar == null) {
-			menuBar = new JMenuBar();
-			menuBar.add(getMnAbonado());
-			menuBar.add(getMnAccionista());
-			menuBar.add(getMnDirectorDeComunicaciones());
-			menuBar.add(getMnEmpleado());
-			menuBar.add(getMnEntrenador());
-			menuBar.add(getMnGerente());
-			menuBar.add(getMnGestorDeInstalaciones());
-			menuBar.add(getMnTienda());
-			menuBar.add(getMnVendedorDeEntradas());
-		}
-		return menuBar;
-	}
-
-	private JMenu getMnEmpleado() {
-		if (mnEmpleado == null) {
-			mnEmpleado = new JMenu("Empleado");
-			mnEmpleado.setMnemonic('P');
-			mnEmpleado.add(getMntmVisualizarHorarioSemanal());
-		}
-		return mnEmpleado;
-	}
-
-	private JMenu getMnEntrenador() {
-		if (mnEntrenador == null) {
-			mnEntrenador = new JMenu("Entrenador");
-			mnEntrenador.setMnemonic('T');
-			mnEntrenador.add(getMntmCrearFranjas());
-			mnEntrenador.add(getMntmRegistrarEntrenamiento());
-		}
-		return mnEntrenador;
-	}
-
-	private JMenu getMnGerente() {
-		if (mnGerente == null) {
-			mnGerente = new JMenu("Gerente");
-			mnGerente.setMnemonic('G');
-			mnGerente.add(getMntmAñadirEquipo());
-			mnGerente.add(getMntmAñadirHorarioPeriodico());
-			mnGerente.add(getMntmAñadirHorarioEspecifico());
-			mnGerente.add(getMntmAltaEmpleado());
-			mnGerente.add(getMntmGestionEmpleados());
-			mnGerente.add(getMntmHistorialVentas());
-			mnGerente.add(getMntmAñadirMantenimiento());
-			mnGerente.add(getMntmCampanasAcciones());
-			mnGerente.add(getMntmPlanificarPartido());
-		}
-		return mnGerente;
-	}
-	
-	private JMenuItem getMntmCampanasAcciones() {
-	    if (mntmCampanasAcciones == null) {
-	        mntmCampanasAcciones = new JMenuItem("Campañas de acciones");
-	        mntmCampanasAcciones.addActionListener(new ActionListener() {
-	            @Override
-	            public void actionPerformed(ActionEvent e) {
-	                abrirVentanaCampanasAcciones();
-	            }
-	        });
-	    }
-	    return mntmCampanasAcciones;
-	}
-
 	private void abrirVentanaCampanasAcciones() {
-	    VentanaCampanasAcciones ventana = new VentanaCampanasAcciones(this);
-	    this.setVisible(false);
-	    ventana.setVisible(true);
-	}
-
-	private JMenuItem getMntmHistorialVentas() {
-		if (mntmHistorialVentas == null) {
-			mntmHistorialVentas = new JMenuItem("Historial de ventas");
-			mntmHistorialVentas.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					abrirVentanaHistorialVentas();
-				}
-			});
-		}
-		return mntmHistorialVentas;
+		VentanaCampanasAcciones ventana = new VentanaCampanasAcciones(this);
+		this.setVisible(false);
+		ventana.setVisible(true);
 	}
 
 	private void abrirVentanaHistorialVentas() {
 		VentanaHistorialVentas ventana = new VentanaHistorialVentas(this, new HistorialVentas());
 		this.setVisible(false);
 		ventana.setVisible(true);
-	}
-
-	private JMenuItem getMntmAltaEmpleado() {
-		if (mntmAltaEmpleado == null) {
-			mntmAltaEmpleado = new JMenuItem("Alta de empleado");
-			mntmAltaEmpleado.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					abrirVentanaAltaEmpleado();
-				}
-			});
-		}
-		return mntmAltaEmpleado;
 	}
 
 	private void abrirVentanaAltaEmpleado() {
@@ -251,54 +157,10 @@ public class VentanaPrincipal extends JFrame {
 		ventana.setVisible(true);
 	}
 
-	private JMenuItem getMntmGestionEmpleados() {
-		if (mntmGestionEmpleados == null) {
-			mntmGestionEmpleados = new JMenuItem("Modificar / eliminar empleados");
-			mntmGestionEmpleados.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					abrirVentanaGestionEmpleados();
-				}
-			});
-		}
-		return mntmGestionEmpleados;
-	}
-
 	private void abrirVentanaGestionEmpleados() {
 		VentanaGestionEmpleados ventana = new VentanaGestionEmpleados(this, gestorEmpleados);
 		this.setVisible(false);
 		ventana.setVisible(true);
-	}
-
-	private JMenu getMnVendedorDeEntradas() {
-		if (mnVendedorDeEntradas == null) {
-			mnVendedorDeEntradas = new JMenu("Vendedor de Entradas");
-			mnVendedorDeEntradas.setMnemonic('V');
-			mnVendedorDeEntradas.add(getMniVender());
-			mnVendedorDeEntradas.add(getMniVenderAbonado());
-		}
-		return mnVendedorDeEntradas;
-	}
-
-	private JMenuItem getMniVender() {
-		if (mniVender == null) {
-			mniVender = new JMenuItem("Venta de entradas");
-			mniVender.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-
-					try {
-						abrirVentanaVentaEntradas();
-					} catch (SQLException e1) {
-
-						System.err.print("Se ha producido un error al intentar abrir la ventana de ventas");
-						e1.printStackTrace();
-					}
-
-				}
-			});
-		}
-		return mniVender;
 	}
 
 	/**
@@ -312,15 +174,6 @@ public class VentanaPrincipal extends JFrame {
 		this.setVisible(false);
 		vve.setVisible(true);
 
-	}
-
-	private JMenu getMnTienda() {
-		if (mnTienda == null) {
-			mnTienda = new JMenu("Tienda");
-			mnTienda.setMnemonic('T');
-			mnTienda.add(getMntmVerTienda());
-		}
-		return mnTienda;
 	}
 
 	private class GestionaTienda implements ActionListener {
@@ -346,33 +199,12 @@ public class VentanaPrincipal extends JFrame {
 			vT.setVisible(true);
 
 		} catch (SQLException ex) {
-		    
+
 			javax.swing.JOptionPane.showMessageDialog(this,
 					"Error al conectar con la base de datos para cargar el catálogo:\n" + ex.getMessage(),
 					"Error Crítico", javax.swing.JOptionPane.ERROR_MESSAGE);
 			ex.printStackTrace();
 		}
-	}
-
-	private JMenuItem getMntmVerTienda() {
-		if (mntmVerTienda == null) {
-			mntmVerTienda = new JMenuItem("Ver Tienda");
-			mntmVerTienda.addActionListener(gestionaTienda);
-		}
-		return mntmVerTienda;
-	}
-
-	private JMenuItem getMntmAñadirEquipo() {
-		if (mntmAñadirEquipo == null) {
-			mntmAñadirEquipo = new JMenuItem("Añadir equipo");
-			mntmAñadirEquipo.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					abrirVentanaAñadirEquipo();
-				}
-			});
-		}
-		return mntmAñadirEquipo;
 	}
 
 	private void abrirVentanaAñadirEquipo() {
@@ -382,37 +214,11 @@ public class VentanaPrincipal extends JFrame {
 
 	}
 
-	private JMenuItem getMntmAñadirHorarioPeriodico() {
-		if (mntmAñadirHorarioPeriodico == null) {
-			mntmAñadirHorarioPeriodico = new JMenuItem("Añadir horario periódico");
-			mntmAñadirHorarioPeriodico.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					abrirVentanaAñadirHorarioPeriodico();
-				}
-			});
-		}
-		return mntmAñadirHorarioPeriodico;
-	}
-
 	private void abrirVentanaAñadirHorarioPeriodico() {
 		VentanaHorarioPeriodico vHorarioPeriodico = new VentanaHorarioPeriodico(this);
 		this.setVisible(false);
 		vHorarioPeriodico.setVisible(true);
 
-	}
-
-	private JMenuItem getMntmAñadirHorarioEspecifico() {
-		if (mntmAñadirHorarioEspecifico == null) {
-			mntmAñadirHorarioEspecifico = new JMenuItem("Añadir horario específico");
-			mntmAñadirHorarioEspecifico.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					abrirVentanaAñadirHorarioEspecifico();
-				}
-			});
-		}
-		return mntmAñadirHorarioEspecifico;
 	}
 
 	private void abrirVentanaAñadirHorarioEspecifico() {
@@ -424,42 +230,6 @@ public class VentanaPrincipal extends JFrame {
 	public GestionHorariosEspecificos getGestionHorariosEspecificos() {
 
 		return this.ghe;
-	}
-
-	private JMenu getMnGestorDeInstalaciones() {
-		if (mnGestorDeInstalaciones == null) {
-			mnGestorDeInstalaciones = new JMenu("Gestor de Instalaciones");
-			mnGestorDeInstalaciones.setMnemonic('S');
-
-			JMenuItem mntmReservaDeInstalaciones = new JMenuItem("Reserva de Instalaciones");
-			mntmReservaDeInstalaciones.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					try {
-						abrirVentanaReserva();
-					} catch (SQLException e1) {
-
-						System.err.print("Se ha producido un error al intentar abrir la ventana de reserva");
-						e1.printStackTrace();
-					}
-				}
-			});
-			mnGestorDeInstalaciones.add(mntmReservaDeInstalaciones);
-		}
-		return mnGestorDeInstalaciones;
-	}
-
-	private JMenuItem getMntmCrearFranjas() {
-		if (mntmCrearFranjas == null) {
-			mntmCrearFranjas = new JMenuItem("Crear franjas");
-			mntmCrearFranjas.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					abrirVentanaCrearFranjas();
-				}
-			});
-		}
-		return mntmCrearFranjas;
 	}
 
 	private void abrirVentanaCrearFranjas() {
@@ -484,27 +254,6 @@ public class VentanaPrincipal extends JFrame {
 		vr.setVisible(true);
 	}
 
-	private JMenu getMnDirectorDeComunicaciones() {
-		if (mnDirectorDeComunicaciones == null) {
-			mnDirectorDeComunicaciones = new JMenu("Director de comunicaciones");
-			mnDirectorDeComunicaciones.add(getMntmAsignarEntrevistas());
-		}
-		return mnDirectorDeComunicaciones;
-	}
-
-	private JMenuItem getMntmAsignarEntrevistas() {
-		if (mntmAsignarEntrevistas == null) {
-			mntmAsignarEntrevistas = new JMenuItem("Asignar entrevistas");
-			mntmAsignarEntrevistas.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					abrirVentanaCrearEntrevistas();
-				}
-			});
-		}
-		return mntmAsignarEntrevistas;
-	}
-
 	private void abrirVentanaCrearEntrevistas() {
 		VentanaCrearEntrevistas vCrearEntrev = new VentanaCrearEntrevistas(this);
 		this.setVisible(false);
@@ -513,19 +262,6 @@ public class VentanaPrincipal extends JFrame {
 
 	public CrearEntrevistaService getCrearEntrevistaService() {
 		return this.ces;
-	}
-
-	private JMenuItem getMntmVisualizarHorarioSemanal() {
-		if (mntmVisualizarHorarioSemanal == null) {
-			mntmVisualizarHorarioSemanal = new JMenuItem("Consultar horarios semanales");
-			mntmVisualizarHorarioSemanal.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					abrirVentanaHorarioSemanal();
-				}
-			});
-		}
-		return mntmVisualizarHorarioSemanal;
 	}
 
 	private void abrirVentanaHorarioSemanal() {
@@ -537,143 +273,43 @@ public class VentanaPrincipal extends JFrame {
 	public GestionHorarioSemanal getGestionHorarioSemanal() {
 		return this.ghs;
 	}
-	private JMenu getMnAbonado() {
-		if (mnAbonado == null) {
-			mnAbonado = new JMenu("Abonado");
-			mnAbonado.setMnemonic('B');
-			mnAbonado.add(getMntmComprarAbono());
-		}
-		return mnAbonado;
-	}
-	private JMenuItem getMntmComprarAbono() {
-		if (mntmComprarAbono == null) {
-			mntmComprarAbono = new JMenuItem("Comprar abono");
-			mntmComprarAbono.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					
-					abrirVentaAbono();
-					
-				}
-			});
-		}
-		return mntmComprarAbono;
-	}
-	
+
 	private void abrirVentaAbono() {
-		
-		
+
 		VentanaAbono va = new VentanaAbono(this);
 		this.setVisible(false);
 		va.setVisible(true);
 	}
 
-	private JMenuItem getMntmAñadirMantenimiento() {
-		if (mntmAñadirMantenimiento == null) {
-			mntmAñadirMantenimiento = new JMenuItem("Añadir servicio de mantenimiento");
-			mntmAñadirMantenimiento.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					abrirVentanaAñadirMantenimiento();
-				}
-
-				
-			});
-		}
-		return mntmAñadirMantenimiento;
-	}
-	
 	private void abrirVentanaAñadirMantenimiento() {
 		VentanaAsignarMantenimiento vAsignarMantenimiento = new VentanaAsignarMantenimiento(this);
 		this.setVisible(false);
 		vAsignarMantenimiento.setVisible(true);
 	}
-		
-	private JMenuItem getMntmPlanificarPartido() {
-		if (mntmAñadirPartido == null) {
-			mntmAñadirPartido = new JMenuItem("Planificar partido");
-			mntmAñadirPartido.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					gestionPlanificarPartido();
-				}
-			});
-		}
-		return mntmAñadirPartido;
-	}
-	
+
 	private void gestionPlanificarPartido() {
 		VentanaPlanificarPartido vpp = new VentanaPlanificarPartido(this);
 		vpp.setVisible(true);
 		this.setVisible(false);
 	}
-	
+
 	public PlanificarPartidoService getPlanificarPartidoService() {
 		return this.pps;
 	}
-	private JMenuItem getMniVenderAbonado() {
-		if (mniVenderAbonado == null) {
-			mniVenderAbonado = new JMenuItem("Venta de entradas abonados");
-			mniVenderAbonado.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					
-					abrirVentanaIdentificacion();
-				}
-			});
-		}
-		return mniVenderAbonado;
-	}
-	
+
 	private void abrirVentanaIdentificacion() {
-		
+
 		VentanaIdentificacion vi = new VentanaIdentificacion(this);
-		
+
 		this.setVisible(false);
 		vi.setVisible(true);
-		
-	}
-	
-	private JMenu getMnAccionista() {
-		if (mnAccionista == null) {
-			mnAccionista = new JMenu("Accionista");
-			mnAccionista.setMnemonic('C');
-			mnAccionista.add(getMntmPortalAccionista());
-			mnAccionista.add(getMntmComprarAcciones());
-			mnAccionista.add(getMntmComprarAccionesCampana());
-		}
-		return mnAccionista;
-	}
-	
-	private JMenuItem getMntmComprarAccionesCampana() {
-	       if (mntmComprarAccionesCampana == null) {
-	           mntmComprarAccionesCampana = new JMenuItem("Comprar acciones de la campaña");
-	           mntmComprarAccionesCampana.addActionListener(new ActionListener() {
-	               @Override
-	               public void actionPerformed(ActionEvent e) {
-	                   abrirVentanaCompraCampana();
-	               }
-	           });
-	       }
-	       return mntmComprarAccionesCampana;
-	   }
 
-	   private void abrirVentanaCompraCampana() {
-	       VentanaCompraCampana ventana = new VentanaCompraCampana(this);
-	       this.setVisible(false);
-	       ventana.setVisible(true);
-	   }
+	}
 
-	private JMenuItem getMntmPortalAccionista() {
-		if (mntmPortalAccionista == null) {
-			mntmPortalAccionista = new JMenuItem("Portal del accionista");
-			mntmPortalAccionista.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					abrirVentanaPortalAccionista();
-				}
-			});
-		}
-		return mntmPortalAccionista;
+	private void abrirVentanaCompraCampana() {
+		VentanaCompraCampana ventana = new VentanaCompraCampana(this);
+		this.setVisible(false);
+		ventana.setVisible(true);
 	}
 
 	private void abrirVentanaPortalAccionista() {
@@ -682,36 +318,10 @@ public class VentanaPrincipal extends JFrame {
 		vpa.setVisible(true);
 	}
 
-	private JMenuItem getMntmComprarAcciones() {
-		if (mntmComprarAcciones == null) {
-			mntmComprarAcciones = new JMenuItem("Comprar acciones");
-			mntmComprarAcciones.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					abrirVentanaCompraAcciones();
-				}
-			});
-		}
-		return mntmComprarAcciones;
-	}
-
 	private void abrirVentanaCompraAcciones() {
 		VentanaCompraAcciones vca = new VentanaCompraAcciones(this);
 		this.setVisible(false);
 		vca.setVisible(true);
-	}
-	
-	private JMenuItem getMntmRegistrarEntrenamiento() {
-		if (mntmRegistrarEntrenamiento == null) {
-			mntmRegistrarEntrenamiento = new JMenuItem("Registrar entrenamiento");
-			mntmRegistrarEntrenamiento.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					gestionRegistrarEntrenamiento();
-				}
-			});
-		}
-		return mntmRegistrarEntrenamiento;
 	}
 
 	protected void gestionRegistrarEntrenamiento() {
@@ -719,28 +329,118 @@ public class VentanaPrincipal extends JFrame {
 		this.setVisible(false);
 		ces2.setVisible(true);
 	}
-	
+
 	public CrearEntrenamientoService getCrearEntrenamientoService() {
 		return this.crearEntrenoService;
 	}
-	
-	private void configurarMenus() {
 
-	    mnAccionista.setVisible(usuario.esAccionista());
-	    mnEmpleado.setVisible(usuario.esEmpleado());
-	    mnEntrenador.setVisible(usuario.tienePosicion(Posicion.ENTRENADOR));
-	    mnGerente.setVisible(usuario.tienePosicion(Posicion.GERENTE));
-	    mnVendedorDeEntradas.setVisible(
-	            usuario.tienePosicion(Posicion.VENDEDOR_DE_ENTRADAS));
-	    mnAbonado.setVisible(usuario.tienePosicion(Posicion.VENDEDOR_DE_ENTRADAS));
-	    mnTienda.setVisible(
-	            usuario.tienePosicion(Posicion.EMPLEADO_DE_TIENDA)
-	            || usuario.tienePosicion(Posicion.ENCARGADO_DE_TIENDA));
+	private JPanel getPanelUser() {
 
-	    mnGestorDeInstalaciones.setVisible(
-	            usuario.tienePosicion(Posicion.GESTOR_DE_INSTALACIONES));
+		if (panelUser == null) {
 
-	    mnDirectorDeComunicaciones.setVisible(
-	            usuario.tienePosicion(Posicion.DIRECTOR_DE_COMUNICACIONES));
+			panelUser = new JPanel();
+			panelUser.setBorder(new TitledBorder(null, "Datos:", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+
+	        panelUser.setLayout(new GridLayout(2, 1, 5, 5));
+
+	        JPanel panelDni = new JPanel(new FlowLayout(FlowLayout.LEFT));
+	        panelDni.add(getLbName());
+	        panelDni.add(getTfName());
+
+	        JPanel panelPosicion = new JPanel(new FlowLayout(FlowLayout.LEFT));
+	        panelPosicion.add(getLbRol());
+	        panelPosicion.add(getTfRol());
+
+	        panelUser.add(panelDni);
+	        panelUser.add(panelPosicion);
+
+		}
+		return panelUser;
+	}
+
+	private JLabel getLbName() {
+		if (lbName == null) {
+			lbName = new JLabel("DNI: ");
+		}
+		return lbName;
+	}
+
+	private JTextField getTfName() {
+		if (tfName == null) {
+			tfName = new JTextField();
+			tfName.setForeground(new Color(255, 0, 0));
+			tfName.setEditable(false);
+		}
+		return tfName;
+	}
+
+	private JLabel getLbRol() {
+		if (lbRol == null) {
+			lbRol = new JLabel("Posición: ");
+		}
+		return lbRol;
+	}
+
+	private JTextField getTfRol() {
+		if (tfRol == null) {
+
+			tfRol = new JTextField();
+			tfRol.setForeground(new Color(255, 0, 0));
+			tfRol.setEditable(false);
+		}
+		return tfRol;
+	}
+
+	private JPanel getPanelOpciones() {
+		if (panelOpciones == null) {
+			panelOpciones = new JPanel();
+			panelOpciones
+					.setBorder(new TitledBorder(null, "Acciones", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+			panelOpciones.setLayout(new FlowLayout(FlowLayout.LEFT, 15, 15));
+		}
+		return panelOpciones;
+	}
+
+	private void actualizarAccionesDisponibles() {
+		panelOpciones.removeAll();
+
+		if (usuario.tienePosicion(Posicion.MEDICO)) {
+			añadirBoton("Consultar horarios", this::abrirVentanaHorarioSemanal);
+		}
+
+		if (usuario.tienePosicion(Posicion.ENTRENADOR)) {
+			añadirBoton("Registrar entrenamiento", this::gestionRegistrarEntrenamiento);
+			añadirBoton("Crear franjas", this::abrirVentanaCrearFranjas);
+		}
+
+		if (usuario.tienePosicion(Posicion.GERENTE)) {
+			añadirBoton("Añadir equipo", this::abrirVentanaAñadirEquipo);
+			añadirBoton("Alta de empleado", this::abrirVentanaAltaEmpleado);
+			añadirBoton("Gestionar empleados", this::abrirVentanaGestionEmpleados);
+		}
+
+		if (usuario.esAccionista()) {
+			añadirBoton("Portal accionista", this::abrirVentanaPortalAccionista);
+			añadirBoton("Comprar acciones", this::abrirVentanaCompraAcciones);
+			añadirBoton("Comprar acciones de campaña", this::abrirVentanaCompraCampana);
+		}
+
+		panelOpciones.revalidate();
+		panelOpciones.repaint();
+	}
+
+	private void añadirBoton(String texto, Runnable accion) {
+
+		JButton boton = new JButton(texto);
+		boton.addActionListener(e -> accion.run());
+
+		panelOpciones.add(boton);
+	}
+	private JPanel getPanelSalida() {
+		if (panelSalida == null) {
+			panelSalida = new JPanel();
+			panelSalida.setLayout(new BorderLayout(0, 0));
+		}
+		return panelSalida;
 	}
 }
