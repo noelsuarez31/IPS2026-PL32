@@ -18,63 +18,80 @@ public class Autenticacion {
 	private JDBC jdbc;
 
 	public Autenticacion() {
-
 		jdbc = new JDBC();
-
 	}
 
 	/**
-	 * Autentica a un empleado
-	 * 
-	 * @param usuario    nombre de usuario
+	 * Autentica a un miembro y obtiene su sesión con los permisos
+	 * correspondientes al tipo de cuenta utilizado.
+	 *
+	 * @param usuario nombre de usuario
 	 * @param contrasena contraseña en claro
-	 * @return el dni del empleado autenticado
-	 * @throws ApplicationException si los campos estan vacios o las credenciales no
-	 *                              son validas (mismo mensaje si falla el usuario o
-	 *                              la contraseña)
+	 * @return el usuario autenticado
+	 * @throws ApplicationException si los campos están vacíos o las
+	 *                              credenciales no son válidas.
 	 */
-	public String autenticar(String usuario, String contrasena) {
-		if (usuario == null || usuario.isBlank() || contrasena == null || contrasena.isEmpty()) {
+	public UsuarioAutenticado autenticar(String usuario, String contrasena) {
+
+		if (usuario == null || usuario.isBlank()
+				|| contrasena == null || contrasena.isEmpty()) {
 			throw new ApplicationException("Usuario y contraseña son obligatorios");
 		}
+
 		String[] credenciales;
+
 		try {
 			credenciales = jdbc.getCredenciales(usuario);
 		} catch (SQLException e) {
 			throw new UnexpectedException(e);
 		}
-		
-		if (credenciales == null || !PasswordHasher.verificar(contrasena, credenciales[1])) {
+
+		if (credenciales == null
+				|| !PasswordHasher.verificar(contrasena, credenciales[1])) {
 			throw new ApplicationException("Usuario o contraseña incorrectos");
 		}
-		return credenciales[0];
 
-	}
-	
-	public UsuarioAutenticado obtenerUsuarioAutenticado(String dni) {
+		String dni = credenciales[0];
+		String tipo = credenciales[2];
 
 		try {
 
-	        Set<Posicion> posiciones = new HashSet<>();
-	        List<BaseEmpleado> empleados = jdbc.getEmpleados();
+			Set<Posicion> posiciones = new HashSet<>();
 
-	        for (BaseEmpleado empleado : empleados) {
+			if ("EMPLEADO".equalsIgnoreCase(tipo)) {
 
-	            if (empleado.getDni().equals(dni)) {
-	                posiciones.add(empleado.getPosicion());
-	            }
+				List<BaseEmpleado> empleados = jdbc.getEmpleados();
 
-	        }
+				for (BaseEmpleado empleado : empleados) {
+					if (empleado.getDni().equalsIgnoreCase(dni)) {
+						posiciones.add(empleado.getPosicion());
+					}
+				}
 
-	        Accionista accionista = jdbc.getAccionistaByDni(dni);
+				if (posiciones.isEmpty()) {
+					throw new ApplicationException(
+							"La cuenta de empleado no tiene un perfil asociado");
+				}
 
-	        boolean esAccionista = accionista != null;
+				return new UsuarioAutenticado(dni, posiciones, false);
 
-	        return new UsuarioAutenticado(dni, posiciones, esAccionista);
+			} else if ("ACCIONISTA".equalsIgnoreCase(tipo)) {
 
-	    } catch (SQLException e) {
-	        throw new UnexpectedException(e);
-	    }
+				Accionista accionista = jdbc.getAccionistaByDni(dni);
 
+				if (accionista == null) {
+					throw new ApplicationException(
+							"La cuenta de accionista no tiene un perfil asociado");
+				}
+
+				return new UsuarioAutenticado(dni, posiciones, true);
+
+			} else {
+				throw new ApplicationException("Tipo de cuenta desconocido");
+			}
+
+		} catch (SQLException e) {
+			throw new UnexpectedException(e);
+		}
 	}
 }

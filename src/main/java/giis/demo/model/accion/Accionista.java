@@ -12,22 +12,20 @@ public class Accionista extends Miembro{
 	private String apellidos;
 	private String email;
 
-	public Accionista(String user, String password) {
+	public Accionista(String user, String password, String dni) {
 		
-		super(user, password);
+		super(user, password, dni);
 	}
 
 	public Accionista(String dni, String nombre, String apellidos, String email, String usuario, String contrasena) {
 
-		super(usuario, contrasena);
+		super(usuario, contrasena, dni);
 		
 		this.dni = dni;
 		this.nombre = nombre;
 		this.apellidos = apellidos;
 		this.email = email;
 		
-		super.setDni(dni);
-
 	}
 
 	public String getDni() {

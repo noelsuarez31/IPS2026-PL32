@@ -127,12 +127,11 @@ public class GestorEmpleados {
 			if (jdbc.existeTelefonoEnOtroEmpleado(modificado.getNumeroTelefono(), original.getDni())) {
 				throw new EmployeeException("El numero de telefono ya esta registrado en otro empleado");
 			}
-			if (jdbc.existeUsuarioEnOtroEmpleado(modificado.getUsuario(), original.getDni())) {
-				throw new EmployeeException("Ya existe un empleado con ese nombre de usuario");
+			if (jdbc.existeUsuarioEnOtroEmpleado(modificado.getUsuario(), original.getDni(), "EMPLEADO")) {
+			    throw new EmployeeException("Ya existe un miembro con ese nombre de usuario");
 			}
 			jdbc.modificarEmpleado(original.getDni(), modificado);
-			jdbc.actualizarCredenciales(dni, user, hash);
-			
+			jdbc.actualizarCredenciales(dni, "EMPLEADO", user, hash);			
 		} catch (SQLException e) {
 			throw new EmployeeException("Error al modificar el empleado en la BBDD: " + e.getMessage());
 		}
@@ -188,7 +187,7 @@ public class GestorEmpleados {
 		}
 		try {
 			
-			jdbc.eliminarCredenciales(dni);
+			jdbc.eliminarCredenciales(dni, "EMPLEADO");
 			
 		} catch (SQLException e) {
 			throw new EmployeeException("Error al eliminar las credenciales del empleado de la BBDD: " + e.getMessage());

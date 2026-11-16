@@ -103,14 +103,15 @@ public class CompraCampanaJdbc {
 							+ " ya está registrado como accionista.\nVuelva a identificarlo.");
 				
 				// Si todavía no tiene cuenta, creamos sus credenciales.
-			    if (!MiembroJdbc.existeMiembro(con, comprador.getDni())) {
-			        MiembroJdbc.insertarMiembro(
-			                con,
-			                comprador.getDni(),
-			                usuario,
-			                hashContrasena
-			        );
-			    }
+				if (!MiembroJdbc.existeMiembro(con, comprador.getDni(), "ACCIONISTA")) {
+				    MiembroJdbc.insertarMiembro(
+				            con,
+				            comprador.getDni(),
+				            usuario,
+				            hashContrasena,
+				            "ACCIONISTA"
+				    );
+				}
 				
 				insertarAccionista(con, comprador);
 			

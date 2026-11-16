@@ -122,26 +122,26 @@ public class VentanaLogin extends JFrame {
 	}
 	
 	private void validar() {
-		
-		String usuario = tfUsuario.getText().toLowerCase();
-		char[] contrasenia = pfContrasenia.getPassword();
-		 
-		try {
-			if (!checkCredentials(usuario, contrasenia)) {
-				return;
-			}
- 
-			String dni = autenticacion.autenticar(usuario, new String(contrasenia));
-			UsuarioAutenticado usuarioAutenticado = autenticacion.obtenerUsuarioAutenticado(dni);
-			
-			abrirVentanaPrincipal(usuarioAutenticado);
-			
-		} catch (ApplicationException e) {
-			JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-			pfContrasenia.setText("");
-		} finally {
-			Arrays.fill(contrasenia, ' ');
-		}
+	    String usuario = tfUsuario.getText().trim().toLowerCase();
+	    char[] contrasenia = pfContrasenia.getPassword();
+
+	    try {
+	        if (!checkCredentials(usuario, contrasenia)) {
+	            return;
+	        }
+
+	        UsuarioAutenticado usuarioAutenticado =
+	                autenticacion.autenticar(usuario, new String(contrasenia));
+
+	        abrirVentanaPrincipal(usuarioAutenticado);
+
+	    } catch (ApplicationException e) {
+	        JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+	        pfContrasenia.setText("");
+
+	    } finally {
+	        Arrays.fill(contrasenia, ' ');
+	    }
 	}
 	
 	private boolean checkCredentials(String usuario, char[] contrasenia) {

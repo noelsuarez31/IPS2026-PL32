@@ -66,8 +66,8 @@ public class GestionCompraCampana {
 				: 0;
 		int maximo = calcularMaximo(campana.getFase(), campana.getAccionesDisponibles(), cupoFase1);
 
-		boolean miembroExistente = jdbc.existeMiembro(dni);
-
+		boolean miembroExistente = jdbc.existeMiembro(dni, "ACCIONISTA");
+		
 		return new InfoCompra(campana, dni, accionista, maximo, miembroExistente);
 	}
 
@@ -171,11 +171,12 @@ public class GestionCompraCampana {
 
 		if (info.tieneMiembro()) {
 
-			// Reutilizamos las credenciales que ya existen.
-			String[] credenciales = jdbc.getCredencialesPorDni(info.getDni());
+			// Recuperamos exclusivamente las credenciales de la cuenta ACCIONISTA.
+			String[] credenciales = jdbc.getCredencialesPorDni(info.getDni()).stream()
+					.filter(c -> "ACCIONISTA".equals(c[2])).findFirst().orElse(null);
 
 			if (credenciales == null) {
-				throw new ApplicationException("No se han encontrado las credenciales del miembro.");
+				throw new ApplicationException("No se han encontrado las credenciales del accionista.");
 			}
 
 			usuarioFinal = credenciales[0];
@@ -183,7 +184,7 @@ public class GestionCompraCampana {
 
 		} else {
 
-			// Creamos las credenciales para un miembro nuevo.
+			// Creamos las credenciales para un accionista nuevo.
 			usuarioFinal = usuario.trim();
 			hashContrasena = PasswordHasher.hash(contrasena);
 		}

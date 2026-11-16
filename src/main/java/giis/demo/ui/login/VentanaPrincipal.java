@@ -2,16 +2,22 @@ package giis.demo.ui.login;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
 
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
@@ -50,7 +56,6 @@ import giis.demo.ui.horarios.VentanaHorarioSemanal;
 import giis.demo.ui.mantenimiento.VentanaAsignarMantenimiento;
 import giis.demo.ui.reserva.VentanaReserva;
 import giis.demo.ui.tienda.VentanaTienda;
-import javax.swing.SwingConstants;
 
 public class VentanaPrincipal extends JFrame {
 
@@ -72,7 +77,7 @@ public class VentanaPrincipal extends JFrame {
 	private JTextField tfName;
 	private JLabel lbRol;
 	private JTextField tfRol;
-	private JPanel panelOpciones;
+	private JScrollPane panelOpciones;
 
 	private UsuarioAutenticado usuario;
 	private JPanel panelSalida;
@@ -168,11 +173,23 @@ public class VentanaPrincipal extends JFrame {
 	 * 
 	 * @throws SQLException
 	 */
-	private void abrirVentanaVentaEntradas() throws SQLException {
+	private void abrirVentanaVentaEntradas() {
 
-		VentanaVentaEntradas vve = new VentanaVentaEntradas(this);
-		this.setVisible(false);
-		vve.setVisible(true);
+		VentanaVentaEntradas vve;
+
+		try {
+			vve = new VentanaVentaEntradas(this);
+
+			this.setVisible(false);
+			vve.setVisible(true);
+
+		} catch (SQLException e) {
+
+			JOptionPane.showMessageDialog(this,
+					"No se ha podido abrir la ventana de venta de entradas.\n" + e.getMessage(), "Error",
+					JOptionPane.ERROR_MESSAGE);
+			e.printStackTrace();
+		}
 
 	}
 
@@ -247,11 +264,24 @@ public class VentanaPrincipal extends JFrame {
 	 * 
 	 * @throws SQLException
 	 */
-	private void abrirVentanaReserva() throws SQLException {
+	private void abrirVentanaReserva() {
 
-		VentanaReserva vr = new VentanaReserva(this);
-		this.setVisible(false);
-		vr.setVisible(true);
+		VentanaReserva vr;
+
+		try {
+
+			vr = new VentanaReserva(this);
+
+			this.setVisible(false);
+			vr.setVisible(true);
+
+		} catch (SQLException e) {
+			JOptionPane.showMessageDialog(this,
+					"No se ha podido abrir la ventana de venta de entradas.\n" + e.getMessage(), "Error",
+					JOptionPane.ERROR_MESSAGE);
+			e.printStackTrace();
+		}
+
 	}
 
 	private void abrirVentanaCrearEntrevistas() {
@@ -341,18 +371,18 @@ public class VentanaPrincipal extends JFrame {
 			panelUser = new JPanel();
 			panelUser.setBorder(new TitledBorder(null, "Datos:", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 
-	        panelUser.setLayout(new GridLayout(2, 1, 5, 5));
+			panelUser.setLayout(new GridLayout(2, 1, 5, 5));
 
-	        JPanel panelDni = new JPanel(new FlowLayout(FlowLayout.LEFT));
-	        panelDni.add(getLbName());
-	        panelDni.add(getTfName());
+			JPanel panelDni = new JPanel(new FlowLayout(FlowLayout.LEFT));
+			panelDni.add(getLbName());
+			panelDni.add(getTfName());
 
-	        JPanel panelPosicion = new JPanel(new FlowLayout(FlowLayout.LEFT));
-	        panelPosicion.add(getLbRol());
-	        panelPosicion.add(getTfRol());
+			JPanel panelPosicion = new JPanel(new FlowLayout(FlowLayout.LEFT));
+			panelPosicion.add(getLbRol());
+			panelPosicion.add(getTfRol());
 
-	        panelUser.add(panelDni);
-	        panelUser.add(panelPosicion);
+			panelUser.add(panelDni);
+			panelUser.add(panelPosicion);
 
 		}
 		return panelUser;
@@ -391,21 +421,33 @@ public class VentanaPrincipal extends JFrame {
 		return tfRol;
 	}
 
-	private JPanel getPanelOpciones() {
+	private JScrollPane getPanelOpciones() {
 		if (panelOpciones == null) {
-			panelOpciones = new JPanel();
-			panelOpciones
-					.setBorder(new TitledBorder(null, "Acciones", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-			panelOpciones.setLayout(new FlowLayout(FlowLayout.LEFT, 15, 15));
+			panelOpciones = new JScrollPane();
+
+			panelOpciones.setLayout(new BoxLayout(panelOpciones, BoxLayout.Y_AXIS));
+			panelOpciones.setBorder(BorderFactory.createCompoundBorder(new TitledBorder("Acciones"),
+					new EmptyBorder(20, 100, 20, 100)));
 		}
 		return panelOpciones;
 	}
 
 	private void actualizarAccionesDisponibles() {
+
 		panelOpciones.removeAll();
 
-		if (usuario.tienePosicion(Posicion.MEDICO)) {
+		if (usuario.esEmpleado()) {
+
 			añadirBoton("Consultar horarios", this::abrirVentanaHorarioSemanal);
+
+		}
+
+		if (usuario.esAccionista()) {
+
+			añadirBoton("Portal accionista", this::abrirVentanaPortalAccionista);
+			añadirBoton("Comprar acciones", this::abrirVentanaCompraAcciones);
+			añadirBoton("Comprar acciones de campaña", this::abrirVentanaCompraCampana);
+
 		}
 
 		if (usuario.tienePosicion(Posicion.ENTRENADOR)) {
@@ -414,15 +456,34 @@ public class VentanaPrincipal extends JFrame {
 		}
 
 		if (usuario.tienePosicion(Posicion.GERENTE)) {
+
 			añadirBoton("Añadir equipo", this::abrirVentanaAñadirEquipo);
+			añadirBoton("Añadir horario periódico", this::abrirVentanaAñadirHorarioPeriodico);
+			añadirBoton("Añadir horario específico", this::abrirVentanaAñadirHorarioEspecifico);
 			añadirBoton("Alta de empleado", this::abrirVentanaAltaEmpleado);
-			añadirBoton("Gestionar empleados", this::abrirVentanaGestionEmpleados);
+			añadirBoton("Modificar/Eliminar empleado", this::abrirVentanaGestionEmpleados);
+			añadirBoton("Historial de ventas", this::abrirVentanaHistorialVentas);
+			añadirBoton("Añadir servicio de mantenimiento", this::abrirVentanaAñadirMantenimiento);
+			añadirBoton("Campañas de acciones", this::abrirVentanaCampanasAcciones);
+			añadirBoton("Planificar partido", this::gestionPlanificarPartido);
 		}
 
-		if (usuario.esAccionista()) {
-			añadirBoton("Portal accionista", this::abrirVentanaPortalAccionista);
-			añadirBoton("Comprar acciones", this::abrirVentanaCompraAcciones);
-			añadirBoton("Comprar acciones de campaña", this::abrirVentanaCompraCampana);
+		if (usuario.tienePosicion(Posicion.DIRECTOR_DE_COMUNICACIONES)) {
+			añadirBoton("Asignar entrevistas", this::abrirVentanaCrearEntrevistas);
+		}
+
+		if (usuario.tienePosicion(Posicion.GESTOR_DE_INSTALACIONES)) {
+			añadirBoton("Reserva de instalaciones", this::abrirVentanaReserva);
+		}
+
+		if (usuario.tienePosicion(Posicion.EMPLEADO_DE_TIENDA)) {
+			añadirBoton("Realizar compra", this::abrirVentanaTienda);
+		}
+
+		if (usuario.tienePosicion(Posicion.VENDEDOR_DE_ENTRADAS)) {
+			añadirBoton("Compra de abonos", this::abrirVentaAbono);
+			añadirBoton("Venta de entradas", this::abrirVentanaVentaEntradas);
+			añadirBoton("Venta de entradas abonados", this::abrirVentanaIdentificacion);
 		}
 
 		panelOpciones.revalidate();
@@ -432,10 +493,16 @@ public class VentanaPrincipal extends JFrame {
 	private void añadirBoton(String texto, Runnable accion) {
 
 		JButton boton = new JButton(texto);
+		boton.setPreferredSize(new Dimension(300, 45));
+		boton.setMaximumSize(new Dimension(300, 45));
+		boton.setAlignmentX(CENTER_ALIGNMENT);
+
 		boton.addActionListener(e -> accion.run());
 
 		panelOpciones.add(boton);
+		panelOpciones.add(Box.createVerticalStrut(12));
 	}
+
 	private JPanel getPanelSalida() {
 		if (panelSalida == null) {
 			panelSalida = new JPanel();

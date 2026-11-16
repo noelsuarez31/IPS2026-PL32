@@ -18,11 +18,7 @@ public abstract class BaseEmpleado extends Miembro{
 	public BaseEmpleado(String dni, String nombre, String apellido, BigDecimal salario, LocalDate fechaDeNacimiento,
 			String numeroTelefono, String usuario, String contrasena) throws EmployeeException {
 		
-		super(usuario, contrasena);
-
-		if(dni == null || dni.isBlank()) {
-			throw new EmployeeException("dni no puede ser null ni blanco");
-		}
+		super(usuario, contrasena, dni);
 		
 		if(nombre == null || nombre.isBlank()) {
 			throw new EmployeeException("nombre no puede ser null ni blanco");
@@ -51,7 +47,6 @@ public abstract class BaseEmpleado extends Miembro{
 		this.fechaNacimiento = fechaDeNacimiento;
 		this.numeroDeTelefono = numeroTelefono;
 		
-		super.setDni(dni);
 	}
 
 	public abstract Posicion getPosicion();
