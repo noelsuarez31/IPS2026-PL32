@@ -1,6 +1,7 @@
 package giis.demo.ui.login;
 
 import java.awt.BorderLayout;
+import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -83,16 +84,23 @@ public class VentanaPrincipal extends JFrame {
 	private JTextField tfName;
 	private JLabel lbRol;
 	private JTextField tfRol;
-	private JScrollPane panelOpciones;
+
+	private JPanel panelOpciones; // antes JScrollPane
+	private CardLayout cardLayout;
 	private JPanel panelBotones;
+	private JPanel panelSubmenu;
+	private JLabel lbTituloSubmenu;
+
+	private static final String CARD_PRINCIPAL = "PRINCIPAL";
+	private static final String CARD_SUBMENU = "SUBMENU";
 
 	private UsuarioAutenticado usuario;
 	private VentanaLogin vl;
-	
+
 	private JPanel panelSalida;
 	private JPanel panelCerrarSesin;
 	private JButton btLogOut;
-	
+
 	private AñadirNoticiaService añadirNoticiaService = new AñadirNoticiaService();
 
 	/**
@@ -153,8 +161,8 @@ public class VentanaPrincipal extends JFrame {
 	}
 
 	private void abrirVentanaCampanasAcciones() {
-		
-	    GestionLogSesion.registrarAccion("Ventana Campañas de Acciones");
+
+		GestionLogSesion.registrarAccion("Ventana Campañas de Acciones");
 
 		VentanaCampanasAcciones ventana = new VentanaCampanasAcciones(this);
 		this.setVisible(false);
@@ -162,7 +170,7 @@ public class VentanaPrincipal extends JFrame {
 	}
 
 	private void abrirVentanaHistorialVentas() {
-		
+
 		GestionLogSesion.registrarAccion("Ventana Historial de Ventas");
 
 		VentanaHistorialVentas ventana = new VentanaHistorialVentas(this, new HistorialVentas());
@@ -171,7 +179,7 @@ public class VentanaPrincipal extends JFrame {
 	}
 
 	private void abrirVentanaAltaEmpleado() {
-		
+
 		GestionLogSesion.registrarAccion("Ventana Alta de Empleado");
 
 		VentanaAltaEmpleado ventana = new VentanaAltaEmpleado(gestorEmpleados);
@@ -186,9 +194,9 @@ public class VentanaPrincipal extends JFrame {
 	}
 
 	private void abrirVentanaGestionEmpleados() {
-		
+
 		GestionLogSesion.registrarAccion("Ventana Gestión de Empleados");
-		
+
 		VentanaGestionEmpleados ventana = new VentanaGestionEmpleados(this, gestorEmpleados);
 		this.setVisible(false);
 		ventana.setVisible(true);
@@ -210,7 +218,7 @@ public class VentanaPrincipal extends JFrame {
 			vve.setVisible(true);
 
 		} catch (SQLException e) {
-			
+
 			GestionLogSesion.registrarAccion("Ventana Venta de Entradas");
 
 			JOptionPane.showMessageDialog(this,
@@ -232,7 +240,7 @@ public class VentanaPrincipal extends JFrame {
 
 	public void abrirVentanaTienda() {
 		try {
-			
+
 			GestionLogSesion.registrarAccion("Ventana Tienda");
 
 			// Instanciar lógica
@@ -256,7 +264,7 @@ public class VentanaPrincipal extends JFrame {
 	}
 
 	private void abrirVentanaAñadirEquipo() {
-		
+
 		GestionLogSesion.registrarAccion("Ventana Añadir Equipo");
 
 		VentanaAñadirEquipo vAñadirEquipo = new VentanaAñadirEquipo(this);
@@ -266,7 +274,7 @@ public class VentanaPrincipal extends JFrame {
 	}
 
 	private void abrirVentanaAñadirHorarioPeriodico() {
-		
+
 		GestionLogSesion.registrarAccion("Ventana Horario Periódico");
 
 		VentanaHorarioPeriodico vHorarioPeriodico = new VentanaHorarioPeriodico(this);
@@ -276,7 +284,7 @@ public class VentanaPrincipal extends JFrame {
 	}
 
 	private void abrirVentanaAñadirHorarioEspecifico() {
-		
+
 		GestionLogSesion.registrarAccion("Ventana Horario Específico");
 
 		VentanaHorarioEspecifico vHorarioEspecifico = new VentanaHorarioEspecifico(this);
@@ -290,7 +298,7 @@ public class VentanaPrincipal extends JFrame {
 	}
 
 	private void abrirVentanaCrearFranjas() {
-		
+
 		GestionLogSesion.registrarAccion("Ventana Crear Franjas");
 
 		VentanaCrearFranjas vFranjas = new VentanaCrearFranjas(this);
@@ -330,7 +338,7 @@ public class VentanaPrincipal extends JFrame {
 	}
 
 	private void abrirVentanaCrearEntrevistas() {
-		
+
 		GestionLogSesion.registrarAccion("Ventana Asignar Entrevistas");
 
 		VentanaCrearEntrevistas vCrearEntrev = new VentanaCrearEntrevistas(this);
@@ -356,7 +364,7 @@ public class VentanaPrincipal extends JFrame {
 	}
 
 	private void abrirVentaAbono() {
-		
+
 		GestionLogSesion.registrarAccion("Ventana Comprar Abono");
 
 		VentanaAbono va = new VentanaAbono(this);
@@ -365,7 +373,7 @@ public class VentanaPrincipal extends JFrame {
 	}
 
 	private void abrirVentanaAñadirMantenimiento() {
-		
+
 		GestionLogSesion.registrarAccion("Ventana Asignar Mantenimiento");
 
 		VentanaAsignarMantenimiento vAsignarMantenimiento = new VentanaAsignarMantenimiento(this);
@@ -374,7 +382,7 @@ public class VentanaPrincipal extends JFrame {
 	}
 
 	private void gestionPlanificarPartido() {
-		
+
 		GestionLogSesion.registrarAccion("Ventana Planificar Partido");
 
 		VentanaPlanificarPartido vpp = new VentanaPlanificarPartido(this);
@@ -397,7 +405,7 @@ public class VentanaPrincipal extends JFrame {
 	}
 
 	private void abrirVentanaCompraCampana() {
-		  
+
 		GestionLogSesion.registrarAccion("Ventana Comprar Acciones de Campaña");
 		VentanaCompraCampana ventana = new VentanaCompraCampana(this);
 		this.setVisible(false);
@@ -405,19 +413,19 @@ public class VentanaPrincipal extends JFrame {
 	}
 
 	private void abrirVentanaPortalAccionista() {
-		
+
 		GestionLogSesion.registrarAccion("Ventana Portal del Accionista");
 		VentanaPortalAccionista vpa = new VentanaPortalAccionista(this);
-		
+
 		this.setVisible(false);
 		vpa.setVisible(true);
 	}
 
 	private void abrirVentanaCompraAcciones() {
-		
+
 		GestionLogSesion.registrarAccion("Ventana Comprar Acciones");
 		VentanaCompraAcciones vca = new VentanaCompraAcciones(this);
-		
+
 		this.setVisible(false);
 		vca.setVisible(true);
 	}
@@ -426,39 +434,39 @@ public class VentanaPrincipal extends JFrame {
 
 		GestionLogSesion.registrarAccion("Ventana Registrar Entrenamiento");
 		VentanaCrearEntrenamiento ces2 = new VentanaCrearEntrenamiento(this);
-		
+
 		this.setVisible(false);
 		ces2.setVisible(true);
 	}
 
 	private void abrirVentanaInformeFinanciero() {
-		
-        GestionLogSesion.registrarAccion("Ventana Informe Financiero");
-	    VentanaInformeFinanciero ventana = new VentanaInformeFinanciero(this, new GestionInformeFinanciero());
-	    this.setVisible(false);
-	    ventana.setVisible(true);
+
+		GestionLogSesion.registrarAccion("Ventana Informe Financiero");
+		VentanaInformeFinanciero ventana = new VentanaInformeFinanciero(this, new GestionInformeFinanciero());
+		this.setVisible(false);
+		ventana.setVisible(true);
 	}
 
 	private void abrirVentanaAñadirNoticia() {
-		
+
 		GestionLogSesion.registrarAccion("Ventana Añadir Noticia");
-	    VentanaAñadirNoticia ventana = new VentanaAñadirNoticia(this);
-	    this.setVisible(false);
-	    ventana.setVisible(true);
+		VentanaAñadirNoticia ventana = new VentanaAñadirNoticia(this);
+		this.setVisible(false);
+		ventana.setVisible(true);
 	}
 
 	private void abrirVentanaLogSesion() {
-		
+
 		GestionLogSesion.registrarAccion("Ventana Consultar Log de la Sesión");
-	    VentanaLogSesion ventana = new VentanaLogSesion(this);
-	    this.setVisible(false);
-	    ventana.setVisible(true);
+		VentanaLogSesion ventana = new VentanaLogSesion(this);
+		this.setVisible(false);
+		ventana.setVisible(true);
 	}
 
 	public AñadirNoticiaService getAñadirNoticiaService() {
-	    return añadirNoticiaService;
+		return añadirNoticiaService;
 	}
-	
+
 	public CrearEntrenamientoService getCrearEntrenamientoService() {
 		return this.crearEntrenoService;
 	}
@@ -520,99 +528,117 @@ public class VentanaPrincipal extends JFrame {
 		return tfRol;
 	}
 
-	private JScrollPane getPanelOpciones() {
-	    if (panelOpciones == null) {
-	        panelBotones = new JPanel();
-	        panelBotones.setLayout(new BoxLayout(panelBotones, BoxLayout.Y_AXIS));
+	private JPanel getPanelOpciones() {
+		if (panelOpciones == null) {
+			cardLayout = new CardLayout();
+			panelOpciones = new JPanel(cardLayout);
+			panelOpciones.setBorder(BorderFactory.createTitledBorder("Acciones"));
 
-	        panelBotones.setBorder(new EmptyBorder(15, 15, 15, 15));
+			panelBotones = new JPanel();
+			panelBotones.setLayout(new BoxLayout(panelBotones, BoxLayout.Y_AXIS));
+			panelBotones.setBorder(new EmptyBorder(15, 15, 15, 15));
+			JScrollPane sp1 = new JScrollPane(panelBotones);
+			sp1.setBorder(null);
+			sp1.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
-	        panelOpciones = new JScrollPane(panelBotones);
-	        panelOpciones.setBorder(
-	                BorderFactory.createTitledBorder("Acciones"));
+			JPanel carta2 = new JPanel(new BorderLayout(0, 5));
 
-	        panelOpciones.setHorizontalScrollBarPolicy(
-	                JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+			JPanel cabecera = new JPanel(new FlowLayout(FlowLayout.LEFT));
+			JButton btVolver = new JButton("← Volver");
+			btVolver.addActionListener(e -> cardLayout.show(panelOpciones, CARD_PRINCIPAL));
+			lbTituloSubmenu = new JLabel();
+			cabecera.add(btVolver);
+			cabecera.add(lbTituloSubmenu);
+			carta2.add(cabecera, BorderLayout.NORTH);
 
-	        panelOpciones.setVerticalScrollBarPolicy(
-	                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-	    }
+			panelSubmenu = new JPanel();
+			panelSubmenu.setLayout(new BoxLayout(panelSubmenu, BoxLayout.Y_AXIS));
+			panelSubmenu.setBorder(new EmptyBorder(15, 15, 15, 15));
+			JScrollPane sp2 = new JScrollPane(panelSubmenu);
+			sp2.setBorder(null);
+			sp2.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+			carta2.add(sp2, BorderLayout.CENTER);
 
-	    return panelOpciones;
+			panelOpciones.add(sp1, CARD_PRINCIPAL);
+			panelOpciones.add(carta2, CARD_SUBMENU);
+		}
+		return panelOpciones;
 	}
 
 	private void actualizarAccionesDisponibles() {
+		
+		panelBotones.removeAll();
+		cardLayout.show(panelOpciones, CARD_PRINCIPAL);
+		
+		if (usuario.esEmpleado()) {
+			añadirBoton("Consultar horarios", this::abrirVentanaHorarioSemanal);
+		}
 
+		if (usuario.esAccionista()) {
+			añadirBoton("Portal accionista", this::abrirVentanaPortalAccionista);
+			añadirBoton("Comprar acciones", this::abrirVentanaCompraAcciones);
+			añadirBoton("Comprar acciones de campaña", this::abrirVentanaCompraCampana);
+		}
 
-	    panelBotones.removeAll();
+		if (usuario.tienePosicion(Posicion.ENTRENADOR)) {
+			añadirBoton("Registrar entrenamiento", this::gestionRegistrarEntrenamiento);
+			añadirBoton("Crear franjas", this::abrirVentanaCrearFranjas);
+		}
 
-	    if (usuario.esEmpleado()) {
-	        añadirBoton("Consultar horarios", this::abrirVentanaHorarioSemanal);
-	    }
+		if (usuario.tienePosicion(Posicion.GERENTE)) {
 
-	    if (usuario.esAccionista()) {
-	        añadirBoton("Portal accionista", this::abrirVentanaPortalAccionista);
-	        añadirBoton("Comprar acciones", this::abrirVentanaCompraAcciones);
-	        añadirBoton("Comprar acciones de campaña", this::abrirVentanaCompraCampana);
-	    }
+			// EQUIPO
+			añadirBoton("Equipo", this::abrirVentanaEquipo);
+			// HORARIOS
+			añadirBoton("Horarios", this::abrirVentanaHorario);
+			// EMPLEADO
+			añadirBoton("Empleado", this::abrirVentanaEmpleado);
+			// FINANZAS
+			añadirBoton("Finanzas", this::abrirVentanaFinanzas);
+			//LOG
+			añadirBoton("Consultar log de sesión", this::abrirVentanaLogSesion);
+		}
 
-	    if (usuario.tienePosicion(Posicion.ENTRENADOR)) {
-	        añadirBoton("Registrar entrenamiento", this::gestionRegistrarEntrenamiento);
-	        añadirBoton("Crear franjas", this::abrirVentanaCrearFranjas);
-	    }
+		if (usuario.tienePosicion(Posicion.DIRECTOR_DE_COMUNICACIONES)) {
+			añadirBoton("Asignar entrevistas", this::abrirVentanaCrearEntrevistas);
+			añadirBoton("Añadir noticia", this::abrirVentanaAñadirNoticia);
+		}
 
-	    if (usuario.tienePosicion(Posicion.GERENTE)) {
-	        añadirBoton("Añadir equipo", this::abrirVentanaAñadirEquipo);
-	        añadirBoton("Añadir horario periódico", this::abrirVentanaAñadirHorarioPeriodico);
-	        añadirBoton("Añadir horario específico", this::abrirVentanaAñadirHorarioEspecifico);
-	        añadirBoton("Alta de empleado", this::abrirVentanaAltaEmpleado);
-	        añadirBoton("Modificar/Eliminar empleado", this::abrirVentanaGestionEmpleados);
-	        añadirBoton("Historial de ventas", this::abrirVentanaHistorialVentas);
-	        añadirBoton("Añadir servicio de mantenimiento", this::abrirVentanaAñadirMantenimiento);
-	        añadirBoton("Campañas de acciones", this::abrirVentanaCampanasAcciones);
-	        añadirBoton("Planificar partido", this::gestionPlanificarPartido);
-	        añadirBoton("Informe financiero", this::abrirVentanaInformeFinanciero);
-	        añadirBoton("Consultar log de sesión", this::abrirVentanaLogSesion);
-	    }
+		if (usuario.tienePosicion(Posicion.GESTOR_DE_INSTALACIONES)) {
+			añadirBoton("Reserva de instalaciones", this::abrirVentanaReserva);
+		}
 
-	    if (usuario.tienePosicion(Posicion.DIRECTOR_DE_COMUNICACIONES)) {
-	        añadirBoton("Asignar entrevistas", this::abrirVentanaCrearEntrevistas);
-	        añadirBoton("Añadir noticia", this::abrirVentanaAñadirNoticia);
-	    }
+		if (usuario.tienePosicion(Posicion.EMPLEADO_DE_TIENDA)) {
+			añadirBoton("Realizar compra", this::abrirVentanaTienda);
+		}
 
-	    if (usuario.tienePosicion(Posicion.GESTOR_DE_INSTALACIONES)) {
-	        añadirBoton("Reserva de instalaciones", this::abrirVentanaReserva);
-	    }
+		if (usuario.tienePosicion(Posicion.VENDEDOR_DE_ENTRADAS)) {
+			añadirBoton("Compra de abonos", this::abrirVentaAbono);
+			añadirBoton("Venta de entradas", this::abrirVentanaVentaEntradas);
+			añadirBoton("Venta de entradas abonados", this::abrirVentanaIdentificacion);
+		}
 
-	    if (usuario.tienePosicion(Posicion.EMPLEADO_DE_TIENDA)) {
-	        añadirBoton("Realizar compra", this::abrirVentanaTienda);
-	    }
+		panelBotones.revalidate();
+		panelBotones.repaint();
 
-	    if (usuario.tienePosicion(Posicion.VENDEDOR_DE_ENTRADAS)) {
-	        añadirBoton("Compra de abonos", this::abrirVentaAbono);
-	        añadirBoton("Venta de entradas", this::abrirVentanaVentaEntradas);
-	        añadirBoton("Venta de entradas abonados", this::abrirVentanaIdentificacion);
-	    }
-
-	    panelBotones.revalidate();
-	    panelBotones.repaint();
-	    
 	}
 
 	private void añadirBoton(String texto, Runnable accion) {
+		añadirBoton(panelBotones, texto, accion);
+	}
 
-	    JButton boton = new JButton(texto);
+	private void añadirBoton(JPanel destino, String texto, Runnable accion) {
+		JButton boton = new JButton(texto);
+		boton.setMaximumSize(new Dimension(Integer.MAX_VALUE, 45));
+		boton.setPreferredSize(new Dimension(500, 45));
+		boton.setAlignmentX(CENTER_ALIGNMENT);
+		boton.addActionListener(e -> accion.run());
 
-	    boton.setMaximumSize(new Dimension(Integer.MAX_VALUE, 45));
-	    boton.setPreferredSize(new Dimension(500, 45));
-	    boton.setAlignmentX(CENTER_ALIGNMENT);
-
-	    boton.addActionListener(e -> accion.run());
-
-	    panelBotones.add(boton);
-	    panelBotones.add(Box.createVerticalStrut(10));
+		destino.add(boton);
+		destino.add(Box.createVerticalStrut(10));
 	}
 	
+
 	private JPanel getPanelSalida() {
 		if (panelSalida == null) {
 			panelSalida = new JPanel();
@@ -621,6 +647,7 @@ public class VentanaPrincipal extends JFrame {
 		}
 		return panelSalida;
 	}
+
 	private JPanel getPanelCerrarSesin() {
 		if (panelCerrarSesin == null) {
 			panelCerrarSesin = new JPanel();
@@ -628,27 +655,68 @@ public class VentanaPrincipal extends JFrame {
 		}
 		return panelCerrarSesin;
 	}
+
 	private JButton getBtLogOut() {
 		if (btLogOut == null) {
 			btLogOut = new JButton("Cerrar sesión");
 			btLogOut.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					
+
 					cerrarSesion();
-					
+
 				}
 			});
 			btLogOut.setBackground(new Color(255, 128, 128));
 		}
 		return btLogOut;
 	}
-	
+
 	private void cerrarSesion() {
-		
+
 		vl.setVisible(true);
 		vl.reiniciar();
-		
+
 		this.dispose();
-		
+
 	}
+	
+	private void abrirSubmenu(String titulo, Runnable rellenar) {
+		panelSubmenu.removeAll();
+		lbTituloSubmenu.setText(titulo);
+		rellenar.run();
+		panelSubmenu.revalidate();
+		panelSubmenu.repaint();
+		cardLayout.show(panelOpciones, CARD_SUBMENU);
+	}
+
+	private void abrirVentanaEquipo() {
+		abrirSubmenu("Equipo", () -> {
+			añadirBoton(panelSubmenu, "Añadir equipo", this::abrirVentanaAñadirEquipo);
+			añadirBoton(panelSubmenu, "Planificar partido", this::gestionPlanificarPartido);
+			añadirBoton(panelSubmenu, "Añadir servicio de mantenimiento", this::abrirVentanaAñadirMantenimiento);
+		});
+	}
+
+	private void abrirVentanaHorario() {
+		abrirSubmenu("Horarios", () -> {
+			añadirBoton(panelSubmenu, "Añadir horario periódico", this::abrirVentanaAñadirHorarioPeriodico);
+			añadirBoton(panelSubmenu, "Añadir horario específico", this::abrirVentanaAñadirHorarioEspecifico);
+		});
+	}
+
+	private void abrirVentanaEmpleado() {
+		abrirSubmenu("Empleados", () -> {
+			añadirBoton(panelSubmenu, "Alta de empleado", this::abrirVentanaAltaEmpleado);
+			añadirBoton(panelSubmenu, "Modificar/Eliminar empleado", this::abrirVentanaGestionEmpleados);
+		});
+	}
+
+	private void abrirVentanaFinanzas() {
+		abrirSubmenu("Finanzas", () -> {
+			añadirBoton(panelSubmenu, "Historial de ventas", this::abrirVentanaHistorialVentas);
+			añadirBoton(panelSubmenu, "Informe financiero", this::abrirVentanaInformeFinanciero);
+			añadirBoton(panelSubmenu, "Campañas de acciones", this::abrirVentanaCampanasAcciones);
+		});
+	}
+	
 }
