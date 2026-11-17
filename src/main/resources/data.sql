@@ -1245,6 +1245,24 @@ INSERT INTO "EmpleadoNoDeportivo" ("dni", "posicion") VALUES
 ('70707070K', 'JARDINERIA'),
 ('70707070L', 'JARDINERIA');
 
+INSERT INTO "EmpleadoDeportivo" ("dni", "posicion") VALUES
+('92000001A', 'ENTRENADOR'), ('92000002B', 'ENTRENADOR'),
+('92000003C', 'ENTRENADOR'), ('92000004D', 'ENTRENADOR');
+
+-- Jugadores equipo 1
+INSERT INTO "EmpleadoDeportivo" ("dni", "posicion") VALUES
+('93000001A', 'JUGADOR'), ('93000002B', 'JUGADOR'), ('93000003C', 'JUGADOR'),
+('93000004D', 'JUGADOR'), ('93000005E', 'JUGADOR'), ('93000006F', 'JUGADOR'),
+('93000007G', 'JUGADOR'), ('93000008H', 'JUGADOR'), ('93000009I', 'JUGADOR'),
+('93000010J', 'JUGADOR');
+
+-- Jugadores equipo 2
+INSERT INTO "EmpleadoDeportivo" ("dni", "posicion") VALUES
+('94000001A', 'JUGADOR'), ('94000002B', 'JUGADOR'), ('94000003C', 'JUGADOR'),
+('94000004D', 'JUGADOR'), ('94000005E', 'JUGADOR'), ('94000006F', 'JUGADOR'),
+('94000007G', 'JUGADOR'), ('94000008H', 'JUGADOR'), ('94000009I', 'JUGADOR'),
+('94000010J', 'JUGADOR');
+
 --------------------------------------------------------------------------------
 -- 8. HORARIOS, INSTALACIONES, RESERVAS Y OTROS
 --------------------------------------------------------------------------------
