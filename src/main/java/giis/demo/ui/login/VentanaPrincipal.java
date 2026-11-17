@@ -171,6 +171,9 @@ public class VentanaPrincipal extends JFrame {
 	}
 
 	private void abrirVentanaAltaEmpleado() {
+		
+		GestionLogSesion.registrarAccion("Ventana Alta de Empleado");
+
 		VentanaAltaEmpleado ventana = new VentanaAltaEmpleado(gestorEmpleados);
 		this.setVisible(false);
 		ventana.addWindowListener(new java.awt.event.WindowAdapter() {
@@ -183,6 +186,9 @@ public class VentanaPrincipal extends JFrame {
 	}
 
 	private void abrirVentanaGestionEmpleados() {
+		
+		GestionLogSesion.registrarAccion("Ventana Gestión de Empleados");
+		
 		VentanaGestionEmpleados ventana = new VentanaGestionEmpleados(this, gestorEmpleados);
 		this.setVisible(false);
 		ventana.setVisible(true);
@@ -204,6 +210,8 @@ public class VentanaPrincipal extends JFrame {
 			vve.setVisible(true);
 
 		} catch (SQLException e) {
+			
+			GestionLogSesion.registrarAccion("Ventana Venta de Entradas");
 
 			JOptionPane.showMessageDialog(this,
 					"No se ha podido abrir la ventana de venta de entradas.\n" + e.getMessage(), "Error",
@@ -224,6 +232,9 @@ public class VentanaPrincipal extends JFrame {
 
 	public void abrirVentanaTienda() {
 		try {
+			
+			GestionLogSesion.registrarAccion("Ventana Tienda");
+
 			// Instanciar lógica
 			VentaMerchandising ventaActiva = new VentaMerchandising();
 
@@ -245,6 +256,9 @@ public class VentanaPrincipal extends JFrame {
 	}
 
 	private void abrirVentanaAñadirEquipo() {
+		
+		GestionLogSesion.registrarAccion("Ventana Añadir Equipo");
+
 		VentanaAñadirEquipo vAñadirEquipo = new VentanaAñadirEquipo(this);
 		this.setVisible(false);
 		vAñadirEquipo.setVisible(true);
@@ -252,6 +266,9 @@ public class VentanaPrincipal extends JFrame {
 	}
 
 	private void abrirVentanaAñadirHorarioPeriodico() {
+		
+		GestionLogSesion.registrarAccion("Ventana Horario Periódico");
+
 		VentanaHorarioPeriodico vHorarioPeriodico = new VentanaHorarioPeriodico(this);
 		this.setVisible(false);
 		vHorarioPeriodico.setVisible(true);
@@ -259,6 +276,9 @@ public class VentanaPrincipal extends JFrame {
 	}
 
 	private void abrirVentanaAñadirHorarioEspecifico() {
+		
+		GestionLogSesion.registrarAccion("Ventana Horario Específico");
+
 		VentanaHorarioEspecifico vHorarioEspecifico = new VentanaHorarioEspecifico(this);
 		this.setVisible(false);
 		vHorarioEspecifico.setVisible(true);
@@ -270,6 +290,9 @@ public class VentanaPrincipal extends JFrame {
 	}
 
 	private void abrirVentanaCrearFranjas() {
+		
+		GestionLogSesion.registrarAccion("Ventana Crear Franjas");
+
 		VentanaCrearFranjas vFranjas = new VentanaCrearFranjas(this);
 		this.setVisible(false);
 		vFranjas.setVisible(true);
@@ -285,6 +308,8 @@ public class VentanaPrincipal extends JFrame {
 	 * @throws SQLException
 	 */
 	private void abrirVentanaReserva() {
+
+		GestionLogSesion.registrarAccion("Ventana Reserva de Instalaciones");
 
 		VentanaReserva vr;
 
@@ -305,6 +330,9 @@ public class VentanaPrincipal extends JFrame {
 	}
 
 	private void abrirVentanaCrearEntrevistas() {
+		
+		GestionLogSesion.registrarAccion("Ventana Asignar Entrevistas");
+
 		VentanaCrearEntrevistas vCrearEntrev = new VentanaCrearEntrevistas(this);
 		this.setVisible(false);
 		vCrearEntrev.setVisible(true);
@@ -315,6 +343,9 @@ public class VentanaPrincipal extends JFrame {
 	}
 
 	private void abrirVentanaHorarioSemanal() {
+
+		GestionLogSesion.registrarAccion("Ventana Horario Semanal");
+
 		VentanaHorarioSemanal vHorarioSemanal = new VentanaHorarioSemanal(this);
 		this.setVisible(false);
 		vHorarioSemanal.setVisible(true);
@@ -325,6 +356,8 @@ public class VentanaPrincipal extends JFrame {
 	}
 
 	private void abrirVentaAbono() {
+		
+		GestionLogSesion.registrarAccion("Ventana Comprar Abono");
 
 		VentanaAbono va = new VentanaAbono(this);
 		this.setVisible(false);
@@ -332,12 +365,18 @@ public class VentanaPrincipal extends JFrame {
 	}
 
 	private void abrirVentanaAñadirMantenimiento() {
+		
+		GestionLogSesion.registrarAccion("Ventana Asignar Mantenimiento");
+
 		VentanaAsignarMantenimiento vAsignarMantenimiento = new VentanaAsignarMantenimiento(this);
 		this.setVisible(false);
 		vAsignarMantenimiento.setVisible(true);
 	}
 
 	private void gestionPlanificarPartido() {
+		
+		GestionLogSesion.registrarAccion("Ventana Planificar Partido");
+
 		VentanaPlanificarPartido vpp = new VentanaPlanificarPartido(this);
 		vpp.setVisible(true);
 		this.setVisible(false);
@@ -349,6 +388,7 @@ public class VentanaPrincipal extends JFrame {
 
 	private void abrirVentanaIdentificacion() {
 
+		GestionLogSesion.registrarAccion("Ventana Venta de Entradas Abonados");
 		VentanaIdentificacion vi = new VentanaIdentificacion(this);
 
 		this.setVisible(false);
@@ -357,43 +397,59 @@ public class VentanaPrincipal extends JFrame {
 	}
 
 	private void abrirVentanaCompraCampana() {
+		  
+		GestionLogSesion.registrarAccion("Ventana Comprar Acciones de Campaña");
 		VentanaCompraCampana ventana = new VentanaCompraCampana(this);
 		this.setVisible(false);
 		ventana.setVisible(true);
 	}
 
 	private void abrirVentanaPortalAccionista() {
+		
+		GestionLogSesion.registrarAccion("Ventana Portal del Accionista");
 		VentanaPortalAccionista vpa = new VentanaPortalAccionista(this);
+		
 		this.setVisible(false);
 		vpa.setVisible(true);
 	}
 
 	private void abrirVentanaCompraAcciones() {
+		
+		GestionLogSesion.registrarAccion("Ventana Comprar Acciones");
 		VentanaCompraAcciones vca = new VentanaCompraAcciones(this);
+		
 		this.setVisible(false);
 		vca.setVisible(true);
 	}
 
 	protected void gestionRegistrarEntrenamiento() {
+
+		GestionLogSesion.registrarAccion("Ventana Registrar Entrenamiento");
 		VentanaCrearEntrenamiento ces2 = new VentanaCrearEntrenamiento(this);
+		
 		this.setVisible(false);
 		ces2.setVisible(true);
 	}
 
 	private void abrirVentanaInformeFinanciero() {
-	    VentanaInformeFinanciero ventana =
-	            new VentanaInformeFinanciero(this, new GestionInformeFinanciero());
+		
+        GestionLogSesion.registrarAccion("Ventana Informe Financiero");
+	    VentanaInformeFinanciero ventana = new VentanaInformeFinanciero(this, new GestionInformeFinanciero());
 	    this.setVisible(false);
 	    ventana.setVisible(true);
 	}
 
 	private void abrirVentanaAñadirNoticia() {
+		
+		GestionLogSesion.registrarAccion("Ventana Añadir Noticia");
 	    VentanaAñadirNoticia ventana = new VentanaAñadirNoticia(this);
 	    this.setVisible(false);
 	    ventana.setVisible(true);
 	}
 
 	private void abrirVentanaLogSesion() {
+		
+		GestionLogSesion.registrarAccion("Ventana Consultar Log de la Sesión");
 	    VentanaLogSesion ventana = new VentanaLogSesion(this);
 	    this.setVisible(false);
 	    ventana.setVisible(true);

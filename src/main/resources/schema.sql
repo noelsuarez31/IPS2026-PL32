@@ -352,13 +352,9 @@ CREATE TABLE IF NOT EXISTS "Miembro" (
     "id_miembro" INTEGER PRIMARY KEY AUTOINCREMENT,
     "dni" TEXT NOT NULL,
     "nombre_usuario" TEXT NOT NULL UNIQUE COLLATE NOCASE,
-<<<<<<< HEAD
     "contrasena" TEXT NOT NULL,
     "tipo" TEXT NOT NULL DEFAULT 'EMPLEADO'
         CHECK("tipo" IN ('EMPLEADO', 'ACCIONISTA')),
     UNIQUE("dni", "tipo")
 );
-=======
-    "contrasena" TEXT NOT NULL
-);
->>>>>>> refs/heads/main
+
