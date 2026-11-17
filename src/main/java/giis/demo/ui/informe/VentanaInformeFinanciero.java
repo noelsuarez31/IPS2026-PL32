@@ -32,8 +32,8 @@ import giis.demo.model.historial.TipoIngreso;
 import giis.demo.model.informe.GestionInformeFinanciero;
 import giis.demo.model.informe.InformeFinanciero;
 import giis.demo.model.informe.TipoPeriodo;
-import giis.demo.ui.VentanaPrincipal;
 import giis.demo.ui.informe.PanelGrafico.TipoGrafico;
+import giis.demo.ui.login.VentanaPrincipal;
 
 public class VentanaInformeFinanciero extends JFrame {
 

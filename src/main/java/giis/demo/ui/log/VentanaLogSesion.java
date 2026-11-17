@@ -27,7 +27,7 @@ import javax.swing.table.DefaultTableModel;
 
 import giis.demo.model.log.EventoLog;
 import giis.demo.model.log.GestionLogSesion;
-import giis.demo.ui.VentanaPrincipal;
+import giis.demo.ui.login.VentanaPrincipal;
 import giis.demo.util.SwingUtil;
 
 /**

@@ -225,49 +225,4 @@ public class MiembroJdbc {
 		}
 		return "MIEMBRO";
 	}
-
-	/**
-	 * Devuelve el rol del miembro a partir de su DNI.
-	 */
-	public static String obtenerRolPorDni(Connection con, String dni) throws SQLException {
-		if (dni == null || dni.isBlank()) {
-			return "SIN_ROL";
-		}
-		try (PreparedStatement ps = con.prepareStatement(QUERY_GET_ROL_POR_DNI)) {
-			ps.setString(1, dni);
-			ps.setString(2, dni);
-			ps.setString(3, dni);
-			ps.setString(4, dni);
-
-			try (ResultSet rs = ps.executeQuery()) {
-				if (rs.next()) {
-					return rs.getString("rol");
-				}
-			}
-		}
-		return "MIEMBRO";
-	}
-
-	/**
-	 * Devuelve el rol del miembro a partir de su DNI.
-	 */
-	public static String obtenerRolPorDni(Connection con, String dni) throws SQLException {
-		if (dni == null || dni.isBlank()) {
-			return "SIN_ROL";
-		}
-		try (PreparedStatement ps = con.prepareStatement(QUERY_GET_ROL_POR_DNI)) {
-			ps.setString(1, dni);
-			ps.setString(2, dni);
-			ps.setString(3, dni);
-			ps.setString(4, dni);
-
-			try (ResultSet rs = ps.executeQuery()) {
-				if (rs.next()) {
-					return rs.getString("rol");
-				}
-			}
-		}
-		return "MIEMBRO";
-	}
-
 }
