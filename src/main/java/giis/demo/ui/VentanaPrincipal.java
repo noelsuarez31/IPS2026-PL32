@@ -1,0 +1,869 @@
+package giis.demo.ui;
+
+import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.sql.SQLException;
+
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
+
+import giis.demo.model.contrataciones.GestorEmpleados;
+import giis.demo.model.entrevistas.CrearEntrevistaService;
+import giis.demo.model.entrevistas.CrearFranjaService;
+import giis.demo.model.equipo.AñadirEquipoService;
+import giis.demo.model.equipo.CrearEntrenamientoService;
+import giis.demo.model.equipo.PlanificarPartidoService;
+import giis.demo.model.historial.HistorialVentas;
+import giis.demo.model.horarios.GestionHorarioSemanal;
+import giis.demo.model.horarios.GestionHorariosEspecificos;
+import giis.demo.model.horarios.GestionHorariosPeriodicos;
+import giis.demo.model.informe.GestionInformeFinanciero;
+import giis.demo.model.log.GestionLogSesion;
+import giis.demo.model.noticias.AñadirNoticiaService;
+import giis.demo.model.tienda.VentaMerchandising;
+import giis.demo.ui.abonos.VentanaAbono;
+import giis.demo.ui.abonos.entradas.VentanaIdentificacion;
+import giis.demo.ui.accion.VentanaCampanasAcciones;
+import giis.demo.ui.accion.VentanaCompraAcciones;
+import giis.demo.ui.accion.VentanaCompraCampana;
+import giis.demo.ui.accion.VentanaPortalAccionista;
+import giis.demo.ui.contrataciones.VentanaAltaEmpleado;
+import giis.demo.ui.contrataciones.VentanaGestionEmpleados;
+import giis.demo.ui.entradas.VentanaVentaEntradas;
+import giis.demo.ui.entrevistas.VentanaCrearEntrevistas;
+import giis.demo.ui.entrevistas.VentanaCrearFranjas;
+import giis.demo.ui.equipo.VentanaAñadirEquipo;
+import giis.demo.ui.equipo.VentanaCrearEntrenamiento;
+import giis.demo.ui.equipo.VentanaPlanificarPartido;
+import giis.demo.ui.historial.VentanaHistorialVentas;
+import giis.demo.ui.horarios.VentanaHorarioEspecifico;
+import giis.demo.ui.horarios.VentanaHorarioPeriodico;
+import giis.demo.ui.horarios.VentanaHorarioSemanal;
+import giis.demo.ui.informe.VentanaInformeFinanciero;
+import giis.demo.ui.log.VentanaLogSesion;
+import giis.demo.ui.login.VentanaLogin;
+import giis.demo.ui.mantenimiento.VentanaAsignarMantenimiento;
+import giis.demo.ui.noticias.VentanaAñadirNoticia;
+import giis.demo.ui.reserva.VentanaReserva;
+import giis.demo.ui.tienda.VentanaTienda;
+
+public class VentanaPrincipal extends JFrame {
+
+	private GestionaTienda gestionaTienda = new GestionaTienda();
+	private AñadirEquipoService añadirEquipo = new AñadirEquipoService();
+	private GestionHorariosPeriodicos ghp = new GestionHorariosPeriodicos();
+	private GestionHorariosEspecificos ghe = new GestionHorariosEspecificos();
+	private GestionHorarioSemanal ghs = new GestionHorarioSemanal();
+	private CrearFranjaService cfs = new CrearFranjaService();
+	private CrearEntrevistaService ces = new CrearEntrevistaService();
+	private GestorEmpleados gestorEmpleados = new GestorEmpleados();
+	private CrearEntrenamientoService crearEntrenoService = new CrearEntrenamientoService();
+	private PlanificarPartidoService pps = new PlanificarPartidoService();
+	private AñadirNoticiaService añadirNoticiaService = new AñadirNoticiaService();
+
+	private static final long serialVersionUID = 1L;
+	private JPanel contentPane;
+	private JMenuBar menuBar;
+	private JMenuItem mntmAñadirNoticia;
+	private JMenu mnEmpleado;
+	private JMenu mnEntrenador;
+	private JMenu mnGerente;
+	private JMenu mnVendedorDeEntradas;
+	private JMenuItem mniVender;
+	private JMenu mnTienda;
+	private JMenuItem mntmVerTienda;
+	private JMenuItem mntmAñadirEquipo;
+	private JMenuItem mntmAltaEmpleado;
+	private JMenuItem mntmGestionEmpleados;
+	private JMenuItem mntmHistorialVentas;
+	private JMenuItem mntmInformeFinanciero;
+	private JMenuItem mntmCampanasAcciones;
+	private JMenuItem mntmAñadirHorarioPeriodico;
+	private JMenuItem mntmAñadirHorarioEspecifico;
+	private JMenuItem mntmVisualizarHorarioSemanal;
+	private JMenu mnGestorDeInstalaciones;
+	private JMenuItem mntmCrearFranjas;
+	private JMenu mnDirectorDeComunicaciones;
+	private JMenuItem mntmAsignarEntrevistas;
+	private JMenu mnAbonado;
+	private JMenu mnAccionista;
+	private JMenuItem mntmPortalAccionista;
+	private JMenuItem mntmComprarAccionesCampana;
+	private JMenuItem mntmComprarAcciones;
+	private JMenuItem mntmComprarAbono;
+	private JMenuItem mntmAñadirMantenimiento;
+	private JMenuItem mniVenderAbonado;
+	private JMenuItem mntmRegistrarEntrenamiento;
+	private JMenuItem mntmAñadirPartido;
+	private JMenuItem mntmConsultarLogSesion;
+	private JMenu mnSesion;
+	private JMenuItem mntmCambiarUsuario;
+	private JMenuItem mntmCerrarSesionNueva;
+
+	/**
+	 * Create the frame.
+	 */
+	public VentanaPrincipal() {
+		setTitle("Ventana Inicial");
+		setResizable(false);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setBounds(100, 100, 820, 420);
+		setJMenuBar(getMenuBar_1());
+		contentPane = new JPanel();
+		contentPane.setBackground(new Color(240, 240, 240));
+		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		setContentPane(contentPane);
+		contentPane.setLayout(null);
+
+		JLabel lbInicio = new JLabel("¡Bienvenido!");
+		lbInicio.setBackground(new Color(240, 240, 240));
+		lbInicio.setBounds(341, 154, 90, 20);
+		contentPane.add(lbInicio);
+
+		this.setLocationRelativeTo(null);
+
+	}
+
+	public AñadirEquipoService getAñadirEquipoService() {
+		return this.añadirEquipo;
+	}
+
+	public GestionaTienda getGestionaTienda() {
+		return this.gestionaTienda;
+	}
+
+	public GestionHorariosPeriodicos getGestionHorariosPeriodicos() {
+		return this.ghp;
+	}
+
+	private JMenuBar getMenuBar_1() {
+		if (menuBar == null) {
+			menuBar = new JMenuBar();
+			menuBar.add(getMnAbonado());
+			menuBar.add(getMnAccionista());
+			menuBar.add(getMnDirectorDeComunicaciones());
+			menuBar.add(getMnEmpleado());
+			menuBar.add(getMnEntrenador());
+			menuBar.add(getMnGerente());
+			menuBar.add(getMnGestorDeInstalaciones());
+			menuBar.add(getMnTienda());
+			menuBar.add(getMnVendedorDeEntradas());
+			menuBar.add(getMnSesion());
+		}
+		return menuBar;
+	}
+
+	private JMenu getMnEmpleado() {
+		if (mnEmpleado == null) {
+			mnEmpleado = new JMenu("Empleado");
+			mnEmpleado.setMnemonic('P');
+			mnEmpleado.add(getMntmVisualizarHorarioSemanal());
+		}
+		return mnEmpleado;
+	}
+
+	private JMenu getMnEntrenador() {
+		if (mnEntrenador == null) {
+			mnEntrenador = new JMenu("Entrenador");
+			mnEntrenador.setMnemonic('T');
+			mnEntrenador.add(getMntmCrearFranjas());
+			mnEntrenador.add(getMntmRegistrarEntrenamiento());
+		}
+		return mnEntrenador;
+	}
+
+	private JMenu getMnGerente() {
+		if (mnGerente == null) {
+			mnGerente = new JMenu("Gerente");
+			mnGerente.setMnemonic('G');
+			mnGerente.add(getMntmAñadirEquipo());
+			mnGerente.add(getMntmAñadirHorarioPeriodico());
+			mnGerente.add(getMntmAñadirHorarioEspecifico());
+			mnGerente.add(getMntmAltaEmpleado());
+			mnGerente.add(getMntmGestionEmpleados());
+			mnGerente.add(getMntmHistorialVentas());
+			mnGerente.add(getMntmInformeFinanciero());
+			mnGerente.add(getMntmAñadirMantenimiento());
+			mnGerente.add(getMntmCampanasAcciones());
+			mnGerente.add(getMntmPlanificarPartido());
+			mnGerente.add(getMntmConsultarLogSesion());
+		}
+		return mnGerente;
+	}
+	
+	private JMenuItem getMntmCampanasAcciones() {
+	    if (mntmCampanasAcciones == null) {
+	        mntmCampanasAcciones = new JMenuItem("Campañas de acciones");
+	        mntmCampanasAcciones.addActionListener(new ActionListener() {
+	            @Override
+	            public void actionPerformed(ActionEvent e) {
+	                abrirVentanaCampanasAcciones();
+	            }
+	        });
+	    }
+	    return mntmCampanasAcciones;
+	}
+
+	private void abrirVentanaCampanasAcciones() {
+	    GestionLogSesion.registrarAccion("Ventana Campañas de Acciones");
+	    VentanaCampanasAcciones ventana = new VentanaCampanasAcciones(this);
+	    this.setVisible(false);
+	    ventana.setVisible(true);
+	}
+
+	private JMenuItem getMntmHistorialVentas() {
+		if (mntmHistorialVentas == null) {
+			mntmHistorialVentas = new JMenuItem("Historial de ventas");
+			mntmHistorialVentas.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					abrirVentanaHistorialVentas();
+				}
+			});
+		}
+		return mntmHistorialVentas;
+	}
+
+	private void abrirVentanaHistorialVentas() {
+		GestionLogSesion.registrarAccion("Ventana Historial de Ventas");
+		VentanaHistorialVentas ventana = new VentanaHistorialVentas(this, new HistorialVentas());
+		this.setVisible(false);
+		ventana.setVisible(true);
+	}
+
+	private JMenuItem getMntmAltaEmpleado() {
+		if (mntmAltaEmpleado == null) {
+			mntmAltaEmpleado = new JMenuItem("Alta de empleado");
+			mntmAltaEmpleado.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					abrirVentanaAltaEmpleado();
+				}
+			});
+		}
+		return mntmAltaEmpleado;
+	}
+	
+	private JMenuItem getMntmInformeFinanciero() {
+        if (mntmInformeFinanciero == null) {
+            mntmInformeFinanciero = new JMenuItem("Informe financiero");
+            mntmInformeFinanciero.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    abrirVentanaInformeFinanciero();
+                }
+            });
+        }
+        return mntmInformeFinanciero;
+    }
+
+    private void abrirVentanaInformeFinanciero() {
+        GestionLogSesion.registrarAccion("Ventana Informe Financiero");
+        VentanaInformeFinanciero ventana = new VentanaInformeFinanciero(this, new GestionInformeFinanciero());
+        this.setVisible(false);
+        ventana.setVisible(true);
+    }
+
+	private void abrirVentanaAltaEmpleado() {
+		GestionLogSesion.registrarAccion("Ventana Alta de Empleado");
+		VentanaAltaEmpleado ventana = new VentanaAltaEmpleado(gestorEmpleados);
+		this.setVisible(false);
+		ventana.addWindowListener(new java.awt.event.WindowAdapter() {
+			@Override
+			public void windowClosed(java.awt.event.WindowEvent e) {
+				VentanaPrincipal.this.setVisible(true);
+			}
+		});
+		ventana.setVisible(true);
+	}
+
+	private JMenuItem getMntmGestionEmpleados() {
+		if (mntmGestionEmpleados == null) {
+			mntmGestionEmpleados = new JMenuItem("Modificar / eliminar empleados");
+			mntmGestionEmpleados.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					abrirVentanaGestionEmpleados();
+				}
+			});
+		}
+		return mntmGestionEmpleados;
+	}
+
+	private void abrirVentanaGestionEmpleados() {
+		GestionLogSesion.registrarAccion("Ventana Gestión de Empleados");
+		VentanaGestionEmpleados ventana = new VentanaGestionEmpleados(this, gestorEmpleados);
+		this.setVisible(false);
+		ventana.setVisible(true);
+	}
+
+	private JMenu getMnVendedorDeEntradas() {
+		if (mnVendedorDeEntradas == null) {
+			mnVendedorDeEntradas = new JMenu("Vendedor de Entradas");
+			mnVendedorDeEntradas.setMnemonic('V');
+			mnVendedorDeEntradas.add(getMniVender());
+			mnVendedorDeEntradas.add(getMniVenderAbonado());
+		}
+		return mnVendedorDeEntradas;
+	}
+
+	private JMenuItem getMniVender() {
+		if (mniVender == null) {
+			mniVender = new JMenuItem("Venta de entradas");
+			mniVender.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+
+					try {
+						abrirVentanaVentaEntradas();
+					} catch (SQLException e1) {
+
+						System.err.print("Se ha producido un error al intentar abrir la ventana de ventas");
+						e1.printStackTrace();
+					}
+
+				}
+			});
+		}
+		return mniVender;
+	}
+
+	/**
+	 * Abre la ventana para vender las entradas
+	 * 
+	 * @throws SQLException
+	 */
+	private void abrirVentanaVentaEntradas() throws SQLException {
+		GestionLogSesion.registrarAccion("Ventana Venta de Entradas");
+		VentanaVentaEntradas vve = new VentanaVentaEntradas(this);
+		this.setVisible(false);
+		vve.setVisible(true);
+
+	}
+
+	private JMenu getMnTienda() {
+		if (mnTienda == null) {
+			mnTienda = new JMenu("Tienda");
+			mnTienda.setMnemonic('T');
+			mnTienda.add(getMntmVerTienda());
+		}
+		return mnTienda;
+	}
+
+	private class GestionaTienda implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			abrirVentanaTienda();
+		}
+
+	}
+
+	public void abrirVentanaTienda() {
+		try {
+			GestionLogSesion.registrarAccion("Ventana Tienda");
+			// Instanciar lógica
+			VentaMerchandising ventaActiva = new VentaMerchandising();
+
+			// Cargar BBDD a memoria
+			ventaActiva.cargarCatalogo();
+
+			// Pasarle el controlador
+			VentanaTienda vT = new VentanaTienda(this, ventaActiva);
+			this.setVisible(false);
+			vT.setVisible(true);
+
+		} catch (SQLException ex) {
+		    
+			javax.swing.JOptionPane.showMessageDialog(this,
+					"Error al conectar con la base de datos para cargar el catálogo:\n" + ex.getMessage(),
+					"Error Crítico", javax.swing.JOptionPane.ERROR_MESSAGE);
+			ex.printStackTrace();
+		}
+	}
+
+	private JMenuItem getMntmVerTienda() {
+		if (mntmVerTienda == null) {
+			mntmVerTienda = new JMenuItem("Ver Tienda");
+			mntmVerTienda.addActionListener(gestionaTienda);
+		}
+		return mntmVerTienda;
+	}
+
+	private JMenuItem getMntmAñadirEquipo() {
+		if (mntmAñadirEquipo == null) {
+			mntmAñadirEquipo = new JMenuItem("Añadir equipo");
+			mntmAñadirEquipo.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					abrirVentanaAñadirEquipo();
+				}
+			});
+		}
+		return mntmAñadirEquipo;
+	}
+
+	private void abrirVentanaAñadirEquipo() {
+		GestionLogSesion.registrarAccion("Ventana Añadir Equipo");
+		VentanaAñadirEquipo vAñadirEquipo = new VentanaAñadirEquipo(this);
+		this.setVisible(false);
+		vAñadirEquipo.setVisible(true);
+
+	}
+
+	private JMenuItem getMntmAñadirHorarioPeriodico() {
+		if (mntmAñadirHorarioPeriodico == null) {
+			mntmAñadirHorarioPeriodico = new JMenuItem("Añadir horario periódico");
+			mntmAñadirHorarioPeriodico.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					abrirVentanaAñadirHorarioPeriodico();
+				}
+			});
+		}
+		return mntmAñadirHorarioPeriodico;
+	}
+
+	private void abrirVentanaAñadirHorarioPeriodico() {
+		GestionLogSesion.registrarAccion("Ventana Horario Periódico");
+		VentanaHorarioPeriodico vHorarioPeriodico = new VentanaHorarioPeriodico(this);
+		this.setVisible(false);
+		vHorarioPeriodico.setVisible(true);
+
+	}
+
+	private JMenuItem getMntmAñadirHorarioEspecifico() {
+		if (mntmAñadirHorarioEspecifico == null) {
+			mntmAñadirHorarioEspecifico = new JMenuItem("Añadir horario específico");
+			mntmAñadirHorarioEspecifico.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					abrirVentanaAñadirHorarioEspecifico();
+				}
+			});
+		}
+		return mntmAñadirHorarioEspecifico;
+	}
+
+	private void abrirVentanaAñadirHorarioEspecifico() {
+		GestionLogSesion.registrarAccion("Ventana Horario Específico");
+		VentanaHorarioEspecifico vHorarioEspecifico = new VentanaHorarioEspecifico(this);
+		this.setVisible(false);
+		vHorarioEspecifico.setVisible(true);
+	}
+
+	public GestionHorariosEspecificos getGestionHorariosEspecificos() {
+
+		return this.ghe;
+	}
+
+	private JMenu getMnGestorDeInstalaciones() {
+		if (mnGestorDeInstalaciones == null) {
+			mnGestorDeInstalaciones = new JMenu("Gestor de Instalaciones");
+			mnGestorDeInstalaciones.setMnemonic('S');
+
+			JMenuItem mntmReservaDeInstalaciones = new JMenuItem("Reserva de Instalaciones");
+			mntmReservaDeInstalaciones.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					try {
+						abrirVentanaReserva();
+					} catch (SQLException e1) {
+
+						System.err.print("Se ha producido un error al intentar abrir la ventana de reserva");
+						e1.printStackTrace();
+					}
+				}
+			});
+			mnGestorDeInstalaciones.add(mntmReservaDeInstalaciones);
+		}
+		return mnGestorDeInstalaciones;
+	}
+
+	private JMenuItem getMntmCrearFranjas() {
+		if (mntmCrearFranjas == null) {
+			mntmCrearFranjas = new JMenuItem("Crear franjas");
+			mntmCrearFranjas.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					abrirVentanaCrearFranjas();
+				}
+			});
+		}
+		return mntmCrearFranjas;
+	}
+
+	private void abrirVentanaCrearFranjas() {
+		GestionLogSesion.registrarAccion("Ventana Crear Franjas");
+		VentanaCrearFranjas vFranjas = new VentanaCrearFranjas(this);
+		this.setVisible(false);
+		vFranjas.setVisible(true);
+	}
+
+	public CrearFranjaService getCrearFranjaService() {
+		return this.cfs;
+	}
+
+	/**
+	 * Abre la ventana para realizar la ventana de la reserva
+	 * 
+	 * @throws SQLException
+	 */
+	private void abrirVentanaReserva() throws SQLException {
+		GestionLogSesion.registrarAccion("Ventana Reserva de Instalaciones");
+		VentanaReserva vr = new VentanaReserva(this);
+		this.setVisible(false);
+		vr.setVisible(true);
+	}
+
+	private JMenu getMnDirectorDeComunicaciones() {
+		if (mnDirectorDeComunicaciones == null) {
+			mnDirectorDeComunicaciones = new JMenu("Director de comunicaciones");
+			mnDirectorDeComunicaciones.add(getMntmAsignarEntrevistas());
+			mnDirectorDeComunicaciones.add(getMntmAñadirNoticia());
+		}
+		return mnDirectorDeComunicaciones;
+	}
+
+	private JMenuItem getMntmAsignarEntrevistas() {
+		if (mntmAsignarEntrevistas == null) {
+			mntmAsignarEntrevistas = new JMenuItem("Asignar entrevistas");
+			mntmAsignarEntrevistas.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					abrirVentanaCrearEntrevistas();
+				}
+			});
+		}
+		return mntmAsignarEntrevistas;
+	}
+
+	private void abrirVentanaCrearEntrevistas() {
+		GestionLogSesion.registrarAccion("Ventana Asignar Entrevistas");
+		VentanaCrearEntrevistas vCrearEntrev = new VentanaCrearEntrevistas(this);
+		this.setVisible(false);
+		vCrearEntrev.setVisible(true);
+	}
+
+	public CrearEntrevistaService getCrearEntrevistaService() {
+		return this.ces;
+	}
+
+	private JMenuItem getMntmVisualizarHorarioSemanal() {
+		if (mntmVisualizarHorarioSemanal == null) {
+			mntmVisualizarHorarioSemanal = new JMenuItem("Consultar horarios semanales");
+			mntmVisualizarHorarioSemanal.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					abrirVentanaHorarioSemanal();
+				}
+			});
+		}
+		return mntmVisualizarHorarioSemanal;
+	}
+
+	private void abrirVentanaHorarioSemanal() {
+		GestionLogSesion.registrarAccion("Ventana Horario Semanal");
+		VentanaHorarioSemanal vHorarioSemanal = new VentanaHorarioSemanal(this);
+		this.setVisible(false);
+		vHorarioSemanal.setVisible(true);
+	}
+
+	public GestionHorarioSemanal getGestionHorarioSemanal() {
+		return this.ghs;
+	}
+	private JMenu getMnAbonado() {
+		if (mnAbonado == null) {
+			mnAbonado = new JMenu("Abonado");
+			mnAbonado.setMnemonic('B');
+			mnAbonado.add(getMntmComprarAbono());
+		}
+		return mnAbonado;
+	}
+	private JMenuItem getMntmComprarAbono() {
+		if (mntmComprarAbono == null) {
+			mntmComprarAbono = new JMenuItem("Comprar abono");
+			mntmComprarAbono.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					
+					abrirVentaAbono();
+					
+				}
+			});
+		}
+		return mntmComprarAbono;
+	}
+	
+	private void abrirVentaAbono() {
+		GestionLogSesion.registrarAccion("Ventana Comprar Abono");
+		VentanaAbono va = new VentanaAbono(this);
+		this.setVisible(false);
+		va.setVisible(true);
+	}
+
+	private JMenuItem getMntmAñadirMantenimiento() {
+		if (mntmAñadirMantenimiento == null) {
+			mntmAñadirMantenimiento = new JMenuItem("Añadir servicio de mantenimiento");
+			mntmAñadirMantenimiento.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					abrirVentanaAñadirMantenimiento();
+				}
+
+				
+			});
+		}
+		return mntmAñadirMantenimiento;
+	}
+	
+	private void abrirVentanaAñadirMantenimiento() {
+		GestionLogSesion.registrarAccion("Ventana Asignar Mantenimiento");
+		VentanaAsignarMantenimiento vAsignarMantenimiento = new VentanaAsignarMantenimiento(this);
+		this.setVisible(false);
+		vAsignarMantenimiento.setVisible(true);
+	}
+		
+	private JMenuItem getMntmPlanificarPartido() {
+		if (mntmAñadirPartido == null) {
+			mntmAñadirPartido = new JMenuItem("Planificar partido");
+			mntmAñadirPartido.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					gestionPlanificarPartido();
+				}
+			});
+		}
+		return mntmAñadirPartido;
+	}
+	
+	private void gestionPlanificarPartido() {
+		GestionLogSesion.registrarAccion("Ventana Planificar Partido");
+		VentanaPlanificarPartido vpp = new VentanaPlanificarPartido(this);
+		vpp.setVisible(true);
+		this.setVisible(false);
+	}
+	
+	public PlanificarPartidoService getPlanificarPartidoService() {
+		return this.pps;
+	}
+	private JMenuItem getMniVenderAbonado() {
+		if (mniVenderAbonado == null) {
+			mniVenderAbonado = new JMenuItem("Venta de entradas abonados");
+			mniVenderAbonado.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					
+					abrirVentanaIdentificacion();
+				}
+			});
+		}
+		return mniVenderAbonado;
+	}
+	
+	private void abrirVentanaIdentificacion() {
+		GestionLogSesion.registrarAccion("Ventana Venta de Entradas Abonados");
+		VentanaIdentificacion vi = new VentanaIdentificacion(this);
+		
+		this.setVisible(false);
+		vi.setVisible(true);
+		
+	}
+	
+	private JMenu getMnAccionista() {
+		if (mnAccionista == null) {
+			mnAccionista = new JMenu("Accionista");
+			mnAccionista.setMnemonic('C');
+			mnAccionista.add(getMntmPortalAccionista());
+			mnAccionista.add(getMntmComprarAcciones());
+			mnAccionista.add(getMntmComprarAccionesCampana());
+		}
+		return mnAccionista;
+	}
+	
+	private JMenuItem getMntmComprarAccionesCampana() {
+	       if (mntmComprarAccionesCampana == null) {
+	           mntmComprarAccionesCampana = new JMenuItem("Comprar acciones de la campaña");
+	           mntmComprarAccionesCampana.addActionListener(new ActionListener() {
+	               @Override
+	               public void actionPerformed(ActionEvent e) {
+	                   abrirVentanaCompraCampana();
+	               }
+	           });
+	       }
+	       return mntmComprarAccionesCampana;
+	   }
+
+	   private void abrirVentanaCompraCampana() {
+	       GestionLogSesion.registrarAccion("Ventana Comprar Acciones de Campaña");
+	       VentanaCompraCampana ventana = new VentanaCompraCampana(this);
+	       this.setVisible(false);
+	       ventana.setVisible(true);
+	   }
+
+	private JMenuItem getMntmPortalAccionista() {
+		if (mntmPortalAccionista == null) {
+			mntmPortalAccionista = new JMenuItem("Portal del accionista");
+			mntmPortalAccionista.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					abrirVentanaPortalAccionista();
+				}
+			});
+		}
+		return mntmPortalAccionista;
+	}
+
+	private void abrirVentanaPortalAccionista() {
+		GestionLogSesion.registrarAccion("Ventana Portal del Accionista");
+		VentanaPortalAccionista vpa = new VentanaPortalAccionista(this);
+		this.setVisible(false);
+		vpa.setVisible(true);
+	}
+
+	private JMenuItem getMntmComprarAcciones() {
+		if (mntmComprarAcciones == null) {
+			mntmComprarAcciones = new JMenuItem("Comprar acciones");
+			mntmComprarAcciones.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					abrirVentanaCompraAcciones();
+				}
+			});
+		}
+		return mntmComprarAcciones;
+	}
+
+	private void abrirVentanaCompraAcciones() {
+		GestionLogSesion.registrarAccion("Ventana Comprar Acciones");
+		VentanaCompraAcciones vca = new VentanaCompraAcciones(this);
+		this.setVisible(false);
+		vca.setVisible(true);
+	}
+	
+	private JMenuItem getMntmRegistrarEntrenamiento() {
+		if (mntmRegistrarEntrenamiento == null) {
+			mntmRegistrarEntrenamiento = new JMenuItem("Registrar entrenamiento");
+			mntmRegistrarEntrenamiento.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					gestionRegistrarEntrenamiento();
+				}
+			});
+		}
+		return mntmRegistrarEntrenamiento;
+	}
+
+	protected void gestionRegistrarEntrenamiento() {
+		GestionLogSesion.registrarAccion("Ventana Registrar Entrenamiento");
+		VentanaCrearEntrenamiento ces2 = new VentanaCrearEntrenamiento(this);
+		this.setVisible(false);
+		ces2.setVisible(true);
+	}
+	
+	public CrearEntrenamientoService getCrearEntrenamientoService() {
+		return this.crearEntrenoService;
+	}
+
+	public AñadirNoticiaService getAñadirNoticiaService() {
+		return añadirNoticiaService;
+	}
+	private JMenuItem getMntmAñadirNoticia() {
+		if (mntmAñadirNoticia == null) {
+			mntmAñadirNoticia = new JMenuItem("Añadir noticia");
+			mntmAñadirNoticia.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					gestionAñadirNoticia();
+				}
+			});
+		}
+		return mntmAñadirNoticia;
+	}
+
+	protected void gestionAñadirNoticia() {
+		GestionLogSesion.registrarAccion("Ventana Añadir Noticia");
+		VentanaAñadirNoticia vAñadirNoticia = new VentanaAñadirNoticia(this);
+		vAñadirNoticia.setVisible(true);
+		this.setVisible(false);
+	}
+
+	private JMenuItem getMntmConsultarLogSesion() {
+		if (mntmConsultarLogSesion == null) {
+			mntmConsultarLogSesion = new JMenuItem("Consultar log de la sesión");
+			mntmConsultarLogSesion.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					abrirVentanaLogSesion();
+				}
+			});
+		}
+		return mntmConsultarLogSesion;
+	}
+
+	private void abrirVentanaLogSesion() {
+		GestionLogSesion.registrarAccion("Ventana Consultar Log de la Sesión");
+		VentanaLogSesion vLog = new VentanaLogSesion(this);
+		this.setVisible(false);
+		vLog.setVisible(true);
+	}
+
+	private JMenu getMnSesion() {
+		if (mnSesion == null) {
+			mnSesion = new JMenu("Sesión");
+			mnSesion.setMnemonic('E');
+			mnSesion.add(getMntmCambiarUsuario());
+			mnSesion.add(getMntmCerrarSesionNueva());
+		}
+		return mnSesion;
+	}
+
+	private JMenuItem getMntmCambiarUsuario() {
+		if (mntmCambiarUsuario == null) {
+			mntmCambiarUsuario = new JMenuItem("Cambiar de usuario");
+			mntmCambiarUsuario.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					cambiarDeUsuario();
+				}
+			});
+		}
+		return mntmCambiarUsuario;
+	}
+
+	private JMenuItem getMntmCerrarSesionNueva() {
+		if (mntmCerrarSesionNueva == null) {
+			mntmCerrarSesionNueva = new JMenuItem("Cerrar sesión (nueva sesión)");
+			mntmCerrarSesionNueva.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					cerrarSesionYNuevaSesion();
+				}
+			});
+		}
+		return mntmCerrarSesionNueva;
+	}
+
+	private void cambiarDeUsuario() {
+		GestionLogSesion.registrarAccion("Cambio de usuario");
+		GestionLogSesion.limpiarUsuarioActivo();
+		VentanaLogin vl = new VentanaLogin();
+		vl.setVisible(true);
+		this.dispose();
+	}
+
+	private void cerrarSesionYNuevaSesion() {
+		GestionLogSesion.registrarAccion("Cierre de sesión");
+		GestionLogSesion.limpiarUsuarioActivo();
+		GestionLogSesion.iniciarNuevaSesion();
+		VentanaLogin vl = new VentanaLogin();
+		vl.setVisible(true);
+		this.dispose();
+	}
+}

@@ -1,5 +1,8 @@
 -- Primero se borran todas las tablas, respetando las claves foráneas.
 
+--Para giis.demo.tkrun:
+drop table if exists Noticia;
+drop table if exists ImagenNoticia;
 DROP TABLE IF EXISTS Entrada;
 DROP TABLE IF EXISTS PrecioSeccion;
 DROP TABLE IF EXISTS Partido;
@@ -329,12 +332,33 @@ CREATE TABLE IF NOT EXISTS "CampanaAccionista" (
 	FOREIGN KEY("dni") REFERENCES "Accionista"("dni")
 );
 
+CREATE TABLE IF NOT EXISTS "Noticia" (
+    "id_noticia" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "titular" TEXT NOT NULL,
+    "subtitulo" TEXT,
+    "fecha" TEXT NOT NULL,
+    "autor" TEXT,
+    "cuerpo" TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS "ImagenNoticia" (
+    "id_imagen" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "id_noticia" INTEGER NOT NULL,
+    "ruta_imagen" TEXT NOT NULL,
+    FOREIGN KEY ("id_noticia") REFERENCES Noticia("id_noticia") ON DELETE CASCADE
+);
+
 CREATE TABLE IF NOT EXISTS "Miembro" (
     "id_miembro" INTEGER PRIMARY KEY AUTOINCREMENT,
     "dni" TEXT NOT NULL,
     "nombre_usuario" TEXT NOT NULL UNIQUE COLLATE NOCASE,
+<<<<<<< HEAD
     "contrasena" TEXT NOT NULL,
     "tipo" TEXT NOT NULL DEFAULT 'EMPLEADO'
         CHECK("tipo" IN ('EMPLEADO', 'ACCIONISTA')),
     UNIQUE("dni", "tipo")
 );
+=======
+    "contrasena" TEXT NOT NULL
+);
+>>>>>>> refs/heads/main
