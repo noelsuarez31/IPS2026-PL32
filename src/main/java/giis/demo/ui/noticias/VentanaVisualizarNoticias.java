@@ -147,7 +147,7 @@ public class VentanaVisualizarNoticias extends JFrame {
 		return pnCards;
 	}
 
-	// Card 1: Listado noticia
+	// Card 1: Lista de noticias
 
 	public JPanel getPnLista() {
 		if (pnLista == null) {
@@ -321,7 +321,7 @@ public class VentanaVisualizarNoticias extends JFrame {
 		return btnLeerNoticia;
 	}
 
-	// Card 2: Detalle Noticia
+	// Card 2: Detalle noticia
 
 	public JPanel getPnDetalle() {
 		if (pnDetalle == null) {
@@ -333,20 +333,24 @@ public class VentanaVisualizarNoticias extends JFrame {
 	}
 
 	public JScrollPane getSpDetalleScroll() {
-		if (spDetalleScroll == null) {
-			spDetalleScroll = new JScrollPane();
-			spDetalleScroll.setBorder(null);
-			spDetalleScroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-			spDetalleScroll.getVerticalScrollBar().setUnitIncrement(16);
-			spDetalleScroll.setViewportView(getPnArticulo());
-		}
-		return spDetalleScroll;
+	    if (spDetalleScroll == null) {
+	        spDetalleScroll = new JScrollPane();
+	        spDetalleScroll.setBorder(null);
+	        spDetalleScroll.setOpaque(false);
+	        spDetalleScroll.getViewport().setOpaque(false);
+	       
+	        spDetalleScroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+	        spDetalleScroll.getVerticalScrollBar().setUnitIncrement(16);
+	        spDetalleScroll.setViewportView(getPnArticulo());
+	    }
+	    return spDetalleScroll;
 	}
 
 	public JPanel getPnArticulo() {
 		if (pnArticulo == null) {
 			pnArticulo = new JPanel();
 			pnArticulo.setLayout(new BoxLayout(pnArticulo, BoxLayout.Y_AXIS));
+			pnArticulo.setOpaque(false);
 			pnArticulo.setBorder(new EmptyBorder(4, 4, 4, 4));
 
 			pnArticulo.add(getPnCabeceraArticulo());
@@ -402,7 +406,7 @@ public class VentanaVisualizarNoticias extends JFrame {
 			taDetalleTitular.setWrapStyleWord(true);
 			taDetalleTitular.setEditable(false);
 			taDetalleTitular.setOpaque(false);
-			taDetalleTitular.setBackground(new Color(240, 240, 240));
+			taDetalleTitular.setBackground(new Color(0,0,0,0));
 			taDetalleTitular.setBorder(null);
 			taDetalleTitular.setAlignmentX(Component.LEFT_ALIGNMENT);
 		}
@@ -420,12 +424,12 @@ public class VentanaVisualizarNoticias extends JFrame {
 				}
 			};
 			taDetalleSubtitulo.setFont(new Font("Segoe UI", Font.ITALIC, 13));
-			taDetalleSubtitulo.setForeground(new Color(60, 60, 60));
+			taDetalleSubtitulo.setForeground(new Color(75, 75, 75));
 			taDetalleSubtitulo.setLineWrap(true);
 			taDetalleSubtitulo.setWrapStyleWord(true);
 			taDetalleSubtitulo.setEditable(false);
 			taDetalleSubtitulo.setOpaque(false);
-			taDetalleSubtitulo.setBackground(new Color(240, 240, 240));
+			taDetalleSubtitulo.setBackground(new Color(0,0,0,0));
 			taDetalleSubtitulo.setBorder(null);
 			taDetalleSubtitulo.setAlignmentX(Component.LEFT_ALIGNMENT);
 		}
@@ -561,7 +565,7 @@ public class VentanaVisualizarNoticias extends JFrame {
 			taDetalleCuerpo.setWrapStyleWord(true);
 			taDetalleCuerpo.setEditable(false);
 			taDetalleCuerpo.setOpaque(false);
-			taDetalleCuerpo.setBackground(new Color(240, 240, 240));
+			taDetalleCuerpo.setBackground(new Color(0,0,0,0));
 			taDetalleCuerpo.setBorder(null);
 			taDetalleCuerpo.setAlignmentX(Component.LEFT_ALIGNMENT);
 		}
@@ -743,8 +747,6 @@ public class VentanaVisualizarNoticias extends JFrame {
 
 	private void volverAVentanaPrincipal() {
 		dispose();
-		if (vPrincipal != null) {
-			vPrincipal.setVisible(true);
-		}
+		this.vPrincipal.setVisible(true);
 	}
 }
