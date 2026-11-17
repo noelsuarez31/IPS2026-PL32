@@ -130,11 +130,7 @@ public class VentanaPrincipal extends JFrame {
 		String posiciones = usuario.getPosiciones().toString();
 
 		if (usuario.esAccionista()) {
-			if (!posiciones.isEmpty()) {
-				posiciones += " - ACCIONISTA";
-			} else {
-				posiciones = "ACCIONISTA";
-			}
+			posiciones = "ACCIONISTA";
 		}
 
 		tfRol.setText(posiciones);
