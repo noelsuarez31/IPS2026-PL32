@@ -74,7 +74,9 @@ public class VentanaPrincipal extends JFrame {
 	private CrearFranjaService cfs = new CrearFranjaService();
 	private CrearEntrevistaService ces = new CrearEntrevistaService();
 	private GestorEmpleados gestorEmpleados = new GestorEmpleados();
+	
 	private CrearEntrenamientoService crearEntrenoService = new CrearEntrenamientoService();
+	
 	private PlanificarPartidoService pps = new PlanificarPartidoService();
 
 	private static final long serialVersionUID = 1L;
