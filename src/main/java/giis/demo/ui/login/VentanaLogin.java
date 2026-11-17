@@ -32,6 +32,7 @@ public class VentanaLogin extends JFrame {
 	private JButton btValidar;
 
 	private Autenticacion autenticacion;
+	private UsuarioAutenticado usuarioAutenticado;
 
 	/**
 	 * Create the frame.
@@ -130,10 +131,10 @@ public class VentanaLogin extends JFrame {
 	            return;
 	        }
 
-	        UsuarioAutenticado usuarioAutenticado =
+	        UsuarioAutenticado usuarioA =
 	                autenticacion.autenticar(usuario, new String(contrasenia));
-
-	        abrirVentanaPrincipal(usuarioAutenticado);
+	        this.usuarioAutenticado = usuarioA;
+	        abrirVentanaPrincipal();
 
 	    } catch (ApplicationException e) {
 	        JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -171,10 +172,25 @@ public class VentanaLogin extends JFrame {
 		return true;
 	}
 	
-	private void abrirVentanaPrincipal(UsuarioAutenticado usuario) {
+	UsuarioAutenticado getUsuarioAutenticado() {
+		return usuarioAutenticado;
+	}
+	
+	private void abrirVentanaPrincipal() {
 		
-		VentanaPrincipal vp = new VentanaPrincipal(usuario);
+		VentanaPrincipal vp = new VentanaPrincipal(this);
 		vp.setVisible(true);
 		this.dispose();
 	}
+	
+	public void reiniciar() {
+		
+		this.tfUsuario.setText("");
+		this.pfContrasenia.setText("");
+		
+		this.btValidar.setEnabled(true);
+		
+	}
+	
+	
 }

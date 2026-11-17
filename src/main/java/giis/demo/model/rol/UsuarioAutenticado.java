@@ -7,11 +7,15 @@ import giis.demo.model.empleado.Posicion;
 public class UsuarioAutenticado {
 	
 	private String dni;
+	private String name;
+	
     private Set<Posicion> posiciones;
     private boolean accionista;
 
-    public UsuarioAutenticado(String dni, Set<Posicion> posiciones, boolean accionista) {
-        this.dni = dni;
+    public UsuarioAutenticado(String dni, String name, Set<Posicion> posiciones, boolean accionista) {
+        
+    	this.dni = dni;
+    	this.name = name;
         this.posiciones = posiciones;
         this.accionista = accionista;
     }
@@ -35,5 +39,11 @@ public class UsuarioAutenticado {
     public boolean esEmpleado() {
         return !posiciones.isEmpty();
     }
+
+	public String getName() {
+		return name;
+	}
+    
+    
 
 }

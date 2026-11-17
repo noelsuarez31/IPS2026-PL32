@@ -78,16 +78,22 @@ public class VentanaPrincipal extends JFrame {
 	private JLabel lbRol;
 	private JTextField tfRol;
 	private JScrollPane panelOpciones;
+	private JPanel panelBotones;
 
 	private UsuarioAutenticado usuario;
+	private VentanaLogin vl;
+	
 	private JPanel panelSalida;
+	private JPanel panelCerrarSesin;
+	private JButton btLogOut;
 
 	/**
 	 * Create the frame.
 	 */
-	public VentanaPrincipal(UsuarioAutenticado user) {
+	public VentanaPrincipal(VentanaLogin vl) {
 
-		this.usuario = user;
+		this.vl = vl;
+		this.usuario = vl.getUsuarioAutenticado();
 
 		setTitle("Ventana Inicial");
 		setResizable(false);
@@ -111,7 +117,7 @@ public class VentanaPrincipal extends JFrame {
 
 	private void actualizarDatosUsuario() {
 
-		tfName.setText(usuario.getDni());
+		tfName.setText(usuario.getName());
 
 		String posiciones = usuario.getPosiciones().toString();
 
@@ -390,14 +396,14 @@ public class VentanaPrincipal extends JFrame {
 
 	private JLabel getLbName() {
 		if (lbName == null) {
-			lbName = new JLabel("DNI: ");
+			lbName = new JLabel("Nombre: ");
 		}
 		return lbName;
 	}
 
 	private JTextField getTfName() {
 		if (tfName == null) {
-			tfName = new JTextField();
+			tfName = new JTextField(75);
 			tfName.setForeground(new Color(255, 0, 0));
 			tfName.setEditable(false);
 		}
@@ -422,92 +428,131 @@ public class VentanaPrincipal extends JFrame {
 	}
 
 	private JScrollPane getPanelOpciones() {
-		if (panelOpciones == null) {
-			panelOpciones = new JScrollPane();
+	    if (panelOpciones == null) {
+	        panelBotones = new JPanel();
+	        panelBotones.setLayout(new BoxLayout(panelBotones, BoxLayout.Y_AXIS));
 
-			panelOpciones.setLayout(new BoxLayout(panelOpciones, BoxLayout.Y_AXIS));
-			panelOpciones.setBorder(BorderFactory.createCompoundBorder(new TitledBorder("Acciones"),
-					new EmptyBorder(20, 100, 20, 100)));
-		}
-		return panelOpciones;
+	        panelBotones.setBorder(new EmptyBorder(15, 15, 15, 15));
+
+	        panelOpciones = new JScrollPane(panelBotones);
+	        panelOpciones.setBorder(
+	                BorderFactory.createTitledBorder("Acciones"));
+
+	        panelOpciones.setHorizontalScrollBarPolicy(
+	                JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+
+	        panelOpciones.setVerticalScrollBarPolicy(
+	                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+	    }
+
+	    return panelOpciones;
 	}
 
 	private void actualizarAccionesDisponibles() {
 
-		panelOpciones.removeAll();
 
-		if (usuario.esEmpleado()) {
+	    panelBotones.removeAll();
 
-			añadirBoton("Consultar horarios", this::abrirVentanaHorarioSemanal);
+	    if (usuario.esEmpleado()) {
+	        añadirBoton("Consultar horarios", this::abrirVentanaHorarioSemanal);
+	    }
 
-		}
+	    if (usuario.esAccionista()) {
+	        añadirBoton("Portal accionista", this::abrirVentanaPortalAccionista);
+	        añadirBoton("Comprar acciones", this::abrirVentanaCompraAcciones);
+	        añadirBoton("Comprar acciones de campaña", this::abrirVentanaCompraCampana);
+	    }
 
-		if (usuario.esAccionista()) {
+	    if (usuario.tienePosicion(Posicion.ENTRENADOR)) {
+	        añadirBoton("Registrar entrenamiento", this::gestionRegistrarEntrenamiento);
+	        añadirBoton("Crear franjas", this::abrirVentanaCrearFranjas);
+	    }
 
-			añadirBoton("Portal accionista", this::abrirVentanaPortalAccionista);
-			añadirBoton("Comprar acciones", this::abrirVentanaCompraAcciones);
-			añadirBoton("Comprar acciones de campaña", this::abrirVentanaCompraCampana);
+	    if (usuario.tienePosicion(Posicion.GERENTE)) {
+	        añadirBoton("Añadir equipo", this::abrirVentanaAñadirEquipo);
+	        añadirBoton("Añadir horario periódico", this::abrirVentanaAñadirHorarioPeriodico);
+	        añadirBoton("Añadir horario específico", this::abrirVentanaAñadirHorarioEspecifico);
+	        añadirBoton("Alta de empleado", this::abrirVentanaAltaEmpleado);
+	        añadirBoton("Modificar/Eliminar empleado", this::abrirVentanaGestionEmpleados);
+	        añadirBoton("Historial de ventas", this::abrirVentanaHistorialVentas);
+	        añadirBoton("Añadir servicio de mantenimiento", this::abrirVentanaAñadirMantenimiento);
+	        añadirBoton("Campañas de acciones", this::abrirVentanaCampanasAcciones);
+	        añadirBoton("Planificar partido", this::gestionPlanificarPartido);
+	    }
 
-		}
+	    if (usuario.tienePosicion(Posicion.DIRECTOR_DE_COMUNICACIONES)) {
+	        añadirBoton("Asignar entrevistas", this::abrirVentanaCrearEntrevistas);
+	    }
 
-		if (usuario.tienePosicion(Posicion.ENTRENADOR)) {
-			añadirBoton("Registrar entrenamiento", this::gestionRegistrarEntrenamiento);
-			añadirBoton("Crear franjas", this::abrirVentanaCrearFranjas);
-		}
+	    if (usuario.tienePosicion(Posicion.GESTOR_DE_INSTALACIONES)) {
+	        añadirBoton("Reserva de instalaciones", this::abrirVentanaReserva);
+	    }
 
-		if (usuario.tienePosicion(Posicion.GERENTE)) {
+	    if (usuario.tienePosicion(Posicion.EMPLEADO_DE_TIENDA)) {
+	        añadirBoton("Realizar compra", this::abrirVentanaTienda);
+	    }
 
-			añadirBoton("Añadir equipo", this::abrirVentanaAñadirEquipo);
-			añadirBoton("Añadir horario periódico", this::abrirVentanaAñadirHorarioPeriodico);
-			añadirBoton("Añadir horario específico", this::abrirVentanaAñadirHorarioEspecifico);
-			añadirBoton("Alta de empleado", this::abrirVentanaAltaEmpleado);
-			añadirBoton("Modificar/Eliminar empleado", this::abrirVentanaGestionEmpleados);
-			añadirBoton("Historial de ventas", this::abrirVentanaHistorialVentas);
-			añadirBoton("Añadir servicio de mantenimiento", this::abrirVentanaAñadirMantenimiento);
-			añadirBoton("Campañas de acciones", this::abrirVentanaCampanasAcciones);
-			añadirBoton("Planificar partido", this::gestionPlanificarPartido);
-		}
+	    if (usuario.tienePosicion(Posicion.VENDEDOR_DE_ENTRADAS)) {
+	        añadirBoton("Compra de abonos", this::abrirVentaAbono);
+	        añadirBoton("Venta de entradas", this::abrirVentanaVentaEntradas);
+	        añadirBoton("Venta de entradas abonados", this::abrirVentanaIdentificacion);
+	    }
 
-		if (usuario.tienePosicion(Posicion.DIRECTOR_DE_COMUNICACIONES)) {
-			añadirBoton("Asignar entrevistas", this::abrirVentanaCrearEntrevistas);
-		}
-
-		if (usuario.tienePosicion(Posicion.GESTOR_DE_INSTALACIONES)) {
-			añadirBoton("Reserva de instalaciones", this::abrirVentanaReserva);
-		}
-
-		if (usuario.tienePosicion(Posicion.EMPLEADO_DE_TIENDA)) {
-			añadirBoton("Realizar compra", this::abrirVentanaTienda);
-		}
-
-		if (usuario.tienePosicion(Posicion.VENDEDOR_DE_ENTRADAS)) {
-			añadirBoton("Compra de abonos", this::abrirVentaAbono);
-			añadirBoton("Venta de entradas", this::abrirVentanaVentaEntradas);
-			añadirBoton("Venta de entradas abonados", this::abrirVentanaIdentificacion);
-		}
-
-		panelOpciones.revalidate();
-		panelOpciones.repaint();
+	    panelBotones.revalidate();
+	    panelBotones.repaint();
+	    
 	}
 
 	private void añadirBoton(String texto, Runnable accion) {
 
-		JButton boton = new JButton(texto);
-		boton.setPreferredSize(new Dimension(300, 45));
-		boton.setMaximumSize(new Dimension(300, 45));
-		boton.setAlignmentX(CENTER_ALIGNMENT);
+	    JButton boton = new JButton(texto);
 
-		boton.addActionListener(e -> accion.run());
+	    boton.setMaximumSize(new Dimension(Integer.MAX_VALUE, 45));
+	    boton.setPreferredSize(new Dimension(500, 45));
+	    boton.setAlignmentX(CENTER_ALIGNMENT);
 
-		panelOpciones.add(boton);
-		panelOpciones.add(Box.createVerticalStrut(12));
+	    boton.addActionListener(e -> accion.run());
+
+	    panelBotones.add(boton);
+	    panelBotones.add(Box.createVerticalStrut(10));
 	}
-
+	
 	private JPanel getPanelSalida() {
 		if (panelSalida == null) {
 			panelSalida = new JPanel();
 			panelSalida.setLayout(new BorderLayout(0, 0));
+			panelSalida.add(getPanelCerrarSesin(), BorderLayout.EAST);
 		}
 		return panelSalida;
+	}
+	private JPanel getPanelCerrarSesin() {
+		if (panelCerrarSesin == null) {
+			panelCerrarSesin = new JPanel();
+			panelCerrarSesin.add(getBtLogOut());
+		}
+		return panelCerrarSesin;
+	}
+	private JButton getBtLogOut() {
+		if (btLogOut == null) {
+			btLogOut = new JButton("Cerrar sesión");
+			btLogOut.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					
+					cerrarSesion();
+					
+				}
+			});
+			btLogOut.setBackground(new Color(255, 128, 128));
+		}
+		return btLogOut;
+	}
+	
+	private void cerrarSesion() {
+		
+		vl.setVisible(true);
+		vl.reiniciar();
+		
+		this.dispose();
+		
 	}
 }
