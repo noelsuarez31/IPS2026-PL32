@@ -33,6 +33,9 @@ import giis.demo.model.historial.HistorialVentas;
 import giis.demo.model.horarios.GestionHorarioSemanal;
 import giis.demo.model.horarios.GestionHorariosEspecificos;
 import giis.demo.model.horarios.GestionHorariosPeriodicos;
+import giis.demo.model.informe.GestionInformeFinanciero;
+import giis.demo.model.log.GestionLogSesion;
+import giis.demo.model.noticias.AñadirNoticiaService;
 import giis.demo.model.rol.UsuarioAutenticado;
 import giis.demo.model.tienda.VentaMerchandising;
 import giis.demo.ui.abonos.VentanaAbono;
@@ -53,7 +56,10 @@ import giis.demo.ui.historial.VentanaHistorialVentas;
 import giis.demo.ui.horarios.VentanaHorarioEspecifico;
 import giis.demo.ui.horarios.VentanaHorarioPeriodico;
 import giis.demo.ui.horarios.VentanaHorarioSemanal;
+import giis.demo.ui.informe.VentanaInformeFinanciero;
+import giis.demo.ui.log.VentanaLogSesion;
 import giis.demo.ui.mantenimiento.VentanaAsignarMantenimiento;
+import giis.demo.ui.noticias.VentanaAñadirNoticia;
 import giis.demo.ui.reserva.VentanaReserva;
 import giis.demo.ui.tienda.VentanaTienda;
 
@@ -86,6 +92,8 @@ public class VentanaPrincipal extends JFrame {
 	private JPanel panelSalida;
 	private JPanel panelCerrarSesin;
 	private JButton btLogOut;
+	
+	private AñadirNoticiaService añadirNoticiaService = new AñadirNoticiaService();
 
 	/**
 	 * Create the frame.
@@ -145,12 +153,18 @@ public class VentanaPrincipal extends JFrame {
 	}
 
 	private void abrirVentanaCampanasAcciones() {
+		
+	    GestionLogSesion.registrarAccion("Ventana Campañas de Acciones");
+
 		VentanaCampanasAcciones ventana = new VentanaCampanasAcciones(this);
 		this.setVisible(false);
 		ventana.setVisible(true);
 	}
 
 	private void abrirVentanaHistorialVentas() {
+		
+		GestionLogSesion.registrarAccion("Ventana Historial de Ventas");
+
 		VentanaHistorialVentas ventana = new VentanaHistorialVentas(this, new HistorialVentas());
 		this.setVisible(false);
 		ventana.setVisible(true);
@@ -366,6 +380,29 @@ public class VentanaPrincipal extends JFrame {
 		ces2.setVisible(true);
 	}
 
+	private void abrirVentanaInformeFinanciero() {
+	    VentanaInformeFinanciero ventana =
+	            new VentanaInformeFinanciero(this, new GestionInformeFinanciero());
+	    this.setVisible(false);
+	    ventana.setVisible(true);
+	}
+
+	private void abrirVentanaAñadirNoticia() {
+	    VentanaAñadirNoticia ventana = new VentanaAñadirNoticia(this);
+	    this.setVisible(false);
+	    ventana.setVisible(true);
+	}
+
+	private void abrirVentanaLogSesion() {
+	    VentanaLogSesion ventana = new VentanaLogSesion(this);
+	    this.setVisible(false);
+	    ventana.setVisible(true);
+	}
+
+	public AñadirNoticiaService getAñadirNoticiaService() {
+	    return añadirNoticiaService;
+	}
+	
 	public CrearEntrenamientoService getCrearEntrenamientoService() {
 		return this.crearEntrenoService;
 	}
@@ -478,10 +515,13 @@ public class VentanaPrincipal extends JFrame {
 	        añadirBoton("Añadir servicio de mantenimiento", this::abrirVentanaAñadirMantenimiento);
 	        añadirBoton("Campañas de acciones", this::abrirVentanaCampanasAcciones);
 	        añadirBoton("Planificar partido", this::gestionPlanificarPartido);
+	        añadirBoton("Informe financiero", this::abrirVentanaInformeFinanciero);
+	        añadirBoton("Consultar log de sesión", this::abrirVentanaLogSesion);
 	    }
 
 	    if (usuario.tienePosicion(Posicion.DIRECTOR_DE_COMUNICACIONES)) {
 	        añadirBoton("Asignar entrevistas", this::abrirVentanaCrearEntrevistas);
+	        añadirBoton("Añadir noticia", this::abrirVentanaAñadirNoticia);
 	    }
 
 	    if (usuario.tienePosicion(Posicion.GESTOR_DE_INSTALACIONES)) {

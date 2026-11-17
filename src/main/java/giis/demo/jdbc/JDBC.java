@@ -1243,4 +1243,17 @@ public class JDBC {
 	public boolean eliminarCredenciales(String dni, String tipo) throws SQLException {
 		return MiembroJdbc.eliminarMiembro(con, dni, tipo);
 	}
+	
+	/**
+	 * Acciones que aun puede comprar un accionista en la fase 1 de la campaña (0 si
+	 * no consta).
+	 */
+	public int getCupoFase1Campana(int idCampana, String dni) throws SQLException {
+		return CompraCampanaJdbc.getCupoFase1(con, idCampana, dni);
+	}
+	
+	public void insertarNoticia(Noticia noticia) throws SQLException {
+		NoticiaJdbc.insertarNoticia(con, noticia);
+		GestionLogSesion.registrarModificacionBBDD("insert", "Noticia (" + noticia.getTitular() + ")");
+	}
 }
