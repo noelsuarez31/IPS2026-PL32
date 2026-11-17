@@ -31,13 +31,15 @@ public class EmpleadoNoDeportivoJdbc {
 	}
 	
 	//consulta los empleados no deportivos
+	
 	private static final String GET_NO_DEPORTIVOS =
 	        "SELECT be.dni, be.nombre, be.apellido, be.salario, "
 	        + "be.fecha_nacimiento, be.numero_de_telefono, "
-	        + "m.nombre_usuario, m.contrasena, end.posicion "
-	        + "FROM EmpleadoNoDeportivo end "
-	        + "JOIN BaseEmpleado be ON end.dni = be.dni "
-	        + "JOIN Miembro m ON be.dni = m.dni";
+	        + "m.nombre_usuario, m.contrasena, nd.posicion "
+	        + "FROM EmpleadoNoDeportivo nd "
+	        + "JOIN BaseEmpleado be ON nd.dni = be.dni "
+	        + "JOIN Miembro m ON be.dni = m.dni AND m.tipo = 'EMPLEADO'";
+	
 		/*
 		 * devuelve una lista de todos los empleados no deportivos
 		 */

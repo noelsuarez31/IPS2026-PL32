@@ -18,8 +18,8 @@ public class BaseEmpleadoJdbc {
 	
 	private static final String QUERY_INSERT_BASE =
 	        "INSERT INTO BaseEmpleado "
-	        + "(dni, nombre, apellido, salario, fecha_nacimiento, numero_de_telefono) "
-	        + "VALUES (?, ?, ?, ?, ?, ?)";
+	        + "(dni, nombre, apellido, id_miembro, salario, fecha_nacimiento, numero_de_telefono) "
+	        + "VALUES (?, ?, ?, (SELECT id_miembro FROM Miembro WHERE dni = ? AND tipo = 'EMPLEADO'), ?, ?, ?)";
 	
 	private static final String QUERY_EXISTE_DNI = "SELECT 1 FROM BaseEmpleado WHERE dni = ?";
 	private static final String QUERY_EXISTE_TELEFONO = "SELECT 1 FROM BaseEmpleado WHERE numero_de_telefono = ?";
@@ -31,7 +31,7 @@ public class BaseEmpleadoJdbc {
 	        + "ed.posicion AS posicion_deportiva, ed.id_equipo, "
 	        + "nd.posicion AS posicion_no_deportiva "
 	        + "FROM BaseEmpleado be "
-	        + "JOIN Miembro m ON m.dni = be.dni "
+	        + "JOIN Miembro m ON m.dni = be.dni AND m.tipo = 'EMPLEADO' "
 	        + "LEFT JOIN EmpleadoDeportivo ed ON ed.dni = be.dni "
 	        + "LEFT JOIN EmpleadoNoDeportivo nd ON nd.dni = be.dni "
 	        + "ORDER BY be.apellido, be.nombre";
@@ -42,12 +42,14 @@ public class BaseEmpleadoJdbc {
 	        + "WHERE dni = ?";
 	
 	private static final String[] QUERIES_UPDATE_DNI_DEPENDIENTES = {
+			"UPDATE Miembro SET dni = ? WHERE dni = ? AND tipo = 'EMPLEADO'",
 			"UPDATE EmpleadoDeportivo SET dni = ? WHERE dni = ?",
 			"UPDATE EmpleadoNoDeportivo SET dni = ? WHERE dni = ?",
 			"UPDATE HorarioPeriodico SET dni_empleado = ? WHERE dni_empleado = ?",
 			"UPDATE HorarioEspecifico SET dni_empleado = ? WHERE dni_empleado = ?",
-			"UPDATE FranjaHoraria SET dni_jugador = ? WHERE dni_jugador = ?" ,
-			"UPDATE TareaMantenimientoJardinero SET dni_jardinero = ? WHERE dni_jardinero = ?"};
+			"UPDATE FranjaHoraria SET dni_jugador = ? WHERE dni_jugador = ?",
+			"UPDATE TareaMantenimientoJardinero SET dni_jardinero = ? WHERE dni_jardinero = ?" };
+	
 	private static final String[] QUERIES_DELETE_EMPLEADO = {
 			"DELETE FROM Entrevista WHERE id_franja IN (SELECT id_franja FROM FranjaHoraria WHERE dni_jugador = ?)",
 			"DELETE FROM FranjaHoraria WHERE dni_jugador = ?",
@@ -65,17 +67,18 @@ public class BaseEmpleadoJdbc {
 	 * @throws SQLException
 	 */
 	public static void insertarBaseEmpleado(Connection con, BaseEmpleado emp) throws SQLException {
-		try (PreparedStatement pst = con.prepareStatement(QUERY_INSERT_BASE)) {
-			pst.setString(1, emp.getDni());
-			pst.setString(2, emp.getNombre());
-			pst.setString(3, emp.getApellido());
-			pst.setBigDecimal(4, emp.getSalario());
-			pst.setString(5, emp.getFechaNacimiento().toString()); // yyyy-MM-dd, igual que en el resto de la BBDD
-			pst.setString(6, emp.getNumeroTelefono());
-			pst.executeUpdate();
-		}
+		
+	    try (PreparedStatement pst = con.prepareStatement(QUERY_INSERT_BASE)) {
+	        pst.setString(1, emp.getDni());
+	        pst.setString(2, emp.getNombre());
+	        pst.setString(3, emp.getApellido());
+	        pst.setString(4, emp.getDni());
+	        pst.setBigDecimal(5, emp.getSalario());
+	        pst.setString(6, emp.getFechaNacimiento().toString());
+	        pst.setString(7, emp.getNumeroTelefono());
+	        pst.executeUpdate();
+	    }
 	}
-
 	/**
 	 * @return true si ya existe un empleado con ese dni
 	 */

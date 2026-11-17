@@ -41,8 +41,10 @@ public class CompraCampanaJdbc {
 
 	private static final String QUERY_EXISTE_ACCIONISTA = "SELECT 1 FROM Accionista WHERE dni = ?";
 
-	private static final String INSERT_ACCIONISTA = "INSERT INTO Accionista (dni, nombre, apellidos, email) VALUES (?, ?, ?, ?)";
-
+	private static final String INSERT_ACCIONISTA =
+	        "INSERT INTO Accionista (dni, id_miembro, nombre, apellidos, email) "
+	        + "VALUES (?, (SELECT id_miembro FROM Miembro WHERE dni = ? AND tipo = 'ACCIONISTA'), ?, ?, ?)";
+	
 	// Guarda el email solo si el accionista no tenia ninguno
 	private static final String UPDATE_EMAIL_SI_VACIO = "UPDATE Accionista SET email = ? WHERE dni = ? AND (email IS NULL OR TRIM(email) = '')";
 
@@ -164,13 +166,14 @@ public class CompraCampanaJdbc {
 	}
 
 	private static void insertarAccionista(Connection con, Accionista a) throws SQLException {
-		try (PreparedStatement ps = con.prepareStatement(INSERT_ACCIONISTA)) {
-			ps.setString(1, a.getDni());
-			ps.setString(2, a.getNombre());
-			ps.setString(3, a.getApellidos());
-			ps.setString(4, a.getEmail());
-			ps.executeUpdate();
-		}
+	    try (PreparedStatement ps = con.prepareStatement(INSERT_ACCIONISTA)) {
+	        ps.setString(1, a.getDni());
+	        ps.setString(2, a.getDni());      // para el subselect de id_miembro
+	        ps.setString(3, a.getNombre());
+	        ps.setString(4, a.getApellidos());
+	        ps.setString(5, a.getEmail());
+	        ps.executeUpdate();
+	    }
 	}
 
 	private static void guardarEmailSiVacio(Connection con, Accionista a) throws SQLException {
