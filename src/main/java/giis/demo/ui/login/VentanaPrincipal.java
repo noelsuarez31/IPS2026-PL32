@@ -567,7 +567,11 @@ public class VentanaPrincipal extends JFrame {
 		panelBotones.removeAll();
 		cardLayout.show(panelOpciones, CARD_PRINCIPAL);
 		
-		if (usuario.esEmpleado()) {
+		if (usuario.esEmpleado() ) {
+			//AÑADIR LO Q PUEDA VER TODO EL MUNDO
+		}
+		
+		if(usuario.esEmpleadoNoDeportivo()) {
 			añadirBoton("Consultar horarios", this::abrirVentanaHorarioSemanal);
 		}
 

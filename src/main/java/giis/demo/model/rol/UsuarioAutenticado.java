@@ -39,6 +39,13 @@ public class UsuarioAutenticado {
     public boolean esEmpleado() {
         return !posiciones.isEmpty();
     }
+    
+    public boolean esEmpleadoNoDeportivo() {
+        return esEmpleado()
+                && !tienePosicion(Posicion.JUGADOR)
+                && !tienePosicion(Posicion.ENTRENADOR)
+                && !tienePosicion(Posicion.TECNICO_ADICIONAL);
+    }
 
 	public String getName() {
 		return name;

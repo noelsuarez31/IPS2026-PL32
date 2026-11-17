@@ -30,6 +30,10 @@ delete from Accion;
 delete from CampanaAccionista;
 delete from Campana;
 delete from Accionista;
+
+delete from Noticia;
+delete from ImagenNoticia;
+
 --------------------------------------------------------------------------------
 -- 2. PRODUCTOS Y BUTACAS
 --------------------------------------------------------------------------------
