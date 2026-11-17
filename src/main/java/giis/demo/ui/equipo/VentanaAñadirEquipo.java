@@ -31,7 +31,7 @@ import javax.swing.border.TitledBorder;
 import giis.demo.model.empleado.EmpleadoDeportivo;
 import giis.demo.model.equipo.AñadirEquipoService;
 import giis.demo.model.equipo.CategoriaEquipo;
-import giis.demo.ui.VentanaPrincipal;
+import giis.demo.ui.login.VentanaPrincipal;
 
 public class VentanaAñadirEquipo extends JFrame {
 

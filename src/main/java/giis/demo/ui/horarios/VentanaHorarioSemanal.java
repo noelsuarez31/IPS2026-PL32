@@ -30,7 +30,8 @@ import com.toedter.calendar.JCalendar;
 import giis.demo.model.empleado.EmpleadoNoDeportivo;
 import giis.demo.model.horarios.GestionHorarioSemanal;
 import giis.demo.model.horarios.HorarioSemanal;
-import giis.demo.ui.VentanaPrincipal;
+import giis.demo.model.log.GestionLogSesion;
+import giis.demo.ui.login.VentanaPrincipal;
 import giis.demo.util.SwingUtil;
 import giis.demo.util.UnexpectedException;
 
@@ -312,6 +313,7 @@ public class VentanaHorarioSemanal extends JFrame {
 			long horas = totalMinutos / 60;
 			long mins = totalMinutos % 60;
 			getLblHorasSemana().setText(String.format("%d h %02d min (máx. 40 h)", horas, mins));
+			GestionLogSesion.registrarAccion("Consulta horario semanal (empleado=" + dni + ", fecha=" + fechaStr + ")");
 
 		} catch (SQLException ex) {
 			throw new UnexpectedException(ex);

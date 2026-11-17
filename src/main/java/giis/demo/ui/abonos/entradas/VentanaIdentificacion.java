@@ -9,7 +9,7 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import giis.demo.model.entradas.VentaDeEntradas;
-import giis.demo.ui.VentanaPrincipal;
+import giis.demo.ui.login.VentanaPrincipal;
 
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;

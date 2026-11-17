@@ -52,7 +52,7 @@ import giis.demo.model.email.ValidadorEmail;
 import giis.demo.model.entradas.enumerados.TipoSeccion;
 import giis.demo.model.entradas.enumerados.TipoTribuna;
 import giis.demo.model.equipo.Equipo;
-import giis.demo.ui.VentanaPrincipal;
+import giis.demo.ui.login.VentanaPrincipal;
 
 /**
  * Create the frame.

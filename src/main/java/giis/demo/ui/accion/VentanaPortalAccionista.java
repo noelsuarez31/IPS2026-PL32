@@ -28,7 +28,8 @@ import giis.demo.model.accion.Accion;
 import giis.demo.model.accion.Accionista;
 import giis.demo.model.accion.GestionAcciones;
 import giis.demo.model.accion.ResumenParticipacion;
-import giis.demo.ui.VentanaPrincipal;
+import giis.demo.model.log.GestionLogSesion;
+import giis.demo.ui.login.VentanaPrincipal;
 import giis.demo.util.SwingUtil;
 import giis.demo.util.UnexpectedException;
 
@@ -211,6 +212,7 @@ public class VentanaPortalAccionista extends JFrame {
 			this.accionistaActual = accionista;
 			cargarDatosAccionista(accionista);
 			actualizarEstadoBotonVender();
+			GestionLogSesion.registrarAccion("Acceso portal accionista (dni=" + accionista.getDni() + ")");
 		} catch (SQLException ex) {
 			throw new UnexpectedException(ex);
 		}

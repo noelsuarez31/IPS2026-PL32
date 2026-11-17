@@ -63,6 +63,7 @@ import giis.demo.model.historial.Ingreso;
 import giis.demo.model.historial.LineaDetalle;
 import giis.demo.model.horarios.HorarioEspecifico;
 import giis.demo.model.horarios.HorarioPeriodico;
+import giis.demo.model.log.GestionLogSesion;
 import giis.demo.model.mantenimiento.TareaMantenimiento;
 import giis.demo.model.noticias.Noticia;
 import giis.demo.model.reserva.Instalacion;
@@ -133,6 +134,8 @@ public class JDBC {
 	public void almacenar(int idPartido, List<Butaca> butacasSeleccionadas) throws SQLException {
 
 		RegistrarVentaJdbc.registrar(con, idPartido, butacasSeleccionadas);
+		GestionLogSesion.registrarModificacionBBDD("insert",
+				"Entrada / Venta (partido=" + idPartido + ", butacas=" + butacasSeleccionadas.size() + ")");
 
 	}
 
@@ -237,6 +240,7 @@ public class JDBC {
 	public void almacenarEquipo(Equipo equipo, List<EmpleadoDeportivo> jugadores, List<EmpleadoDeportivo> entrenadores,
 			List<EmpleadoDeportivo> tecnicosAdicionales) throws SQLException {
 		EquipoJdbc.almacenarEquipo(con, equipo, jugadores, entrenadores, tecnicosAdicionales);
+		GestionLogSesion.registrarModificacionBBDD("insert", "Equipo (" + equipo.getNombre() + ")");
 	}
 
 	/**
@@ -247,6 +251,9 @@ public class JDBC {
 	 */
 	public void añadirHorarioPeriodico(HorarioPeriodico horario) throws SQLException {
 		HorarioPeriodicoJdbc.añadirHorario(con, horario);
+		GestionLogSesion.registrarModificacionBBDD("insert",
+				"HorarioPeriodico (dni=" + horario.getDni_empleado() + ", dia=" + horario.getDia_semana() + ", "
+						+ horario.getHora_inicio() + "-" + horario.getHora_fin() + ")");
 	}
 
 	/**
@@ -265,6 +272,9 @@ public class JDBC {
 
 	public void añadirHorarioEspecifico(HorarioEspecifico horario) throws SQLException {
 		HorarioEspecificoJdbc.añadirHorarioEspecifico(con, horario);
+		GestionLogSesion.registrarModificacionBBDD("insert",
+				"HorarioEspecifico (dni=" + horario.getDni_empleado() + ", fecha=" + horario.getFecha() + ", "
+						+ horario.getHora_inicio() + "-" + horario.getHora_fin() + ")");
 	}
 
 	public boolean tieneHorariosPeriodicos(String dniEmpleado) throws SQLException {
@@ -308,7 +318,11 @@ public class JDBC {
 	 */
 	public void obtenerOCrearUsuario(Usuario user) throws SQLException {
 
+		boolean existia = UsuarioJdbc.checkUserExists(con, user) != -1;
 		UsuarioJdbc.obtenerOCrear(con, user);
+		if (!existia) {
+			GestionLogSesion.registrarModificacionBBDD("insert", "Usuario (" + user.getName() + ")");
+		}
 	}
 
 	/**
@@ -325,20 +339,31 @@ public class JDBC {
 		try {
 			con.setAutoCommit(false);
 
-			if (!MiembroJdbc.existeMiembro(con, empleado.getDni())) {
-				MiembroJdbc.insertarMiembro(con, empleado.getDni(), empleado.getUsuario(), empleado.getContrasena());
+			// Comprobamos si ya existe una cuenta de tipo EMPLEADO
+			if (!MiembroJdbc.existeMiembro(con, empleado.getDni(), "EMPLEADO")) {
+
+				// Si no existe, creamos la cuenta de empleado
+				MiembroJdbc.insertarMiembro(con, empleado.getDni(), empleado.getUsuario(), empleado.getContrasena(),
+						"EMPLEADO");
 			}
 
 			BaseEmpleadoJdbc.insertarBaseEmpleado(con, empleado);
+
 			if (empleado instanceof EmpleadoDeportivo) {
 				EmpleadoDeportivoJdbc.insertarEmpleadoDeportivo(con, (EmpleadoDeportivo) empleado);
 			} else {
 				EmpleadoNoDeportivoJdbc.insertarEmpleadoNoDeportivo(con, (EmpleadoNoDeportivo) empleado);
 			}
+
 			con.commit();
+
+			GestionLogSesion.registrarModificacionBBDD("insert",
+					"BaseEmpleado (dni=" + empleado.getDni() + ", usuario=" + empleado.getUsuario() + ", puesto="
+							+ empleado.getPosicion() + ")");
 		} catch (SQLException e) {
 			con.rollback();
 			throw e;
+
 		} finally {
 			con.setAutoCommit(autoCommitOriginal);
 		}
@@ -387,6 +412,8 @@ public class JDBC {
 	 */
 	public void almacenarFranja(FranjaHoraria nuevaFranja) throws SQLException {
 		FranjaJdbc.almacenarFranja(con, nuevaFranja);
+		GestionLogSesion.registrarModificacionBBDD("insert",
+				"FranjaHoraria (jugador=" + nuevaFranja.getDniJugador() + ", fecha=" + nuevaFranja.getFecha() + ")");
 	}
 
 	/**
@@ -466,6 +493,7 @@ public class JDBC {
 	 */
 	public void almacenarVentaMerchandising(double total, Map<Producto, Integer> lineasCesta) throws SQLException {
 		RegistrarVentaMerchandising.registrar(con, total, lineasCesta);
+		GestionLogSesion.registrarModificacionBBDD("insert", "VentaMerchandising (total=" + total + " €)");
 	}
 
 	/**
@@ -477,7 +505,13 @@ public class JDBC {
 	 */
 	public boolean registrarReserva(Reserva reserva) throws SQLException {
 
-		return ReservaJdbc.registrarReserva(con, reserva) == 1;
+		boolean registrada = ReservaJdbc.registrarReserva(con, reserva) == 1;
+		if (registrada) {
+			GestionLogSesion.registrarModificacionBBDD("insert",
+					"Reserva (instalacion=" + reserva.getInstalacionId() + ", fecha=" + reserva.getFechaReserva()
+							+ ", " + reserva.getHoraInicio() + "-" + reserva.getHoraFin() + ")");
+		}
+		return registrada;
 
 	}
 
@@ -554,6 +588,8 @@ public class JDBC {
 			FranjaHoraria franjaSeleccionada, String nombreMedioCom) throws SQLException {
 		EntrevistaJdbc.crearEntrevistaYEliminarFranjasCoincidentes(con, jugadorSeleccionado, franjaSeleccionada,
 				nombreMedioCom);
+		GestionLogSesion.registrarModificacionBBDD("insert",
+				"Entrevista (jugador=" + jugadorSeleccionado.getDni() + ", medio=" + nombreMedioCom + ")");
 	}
 
 	/**
@@ -649,6 +685,8 @@ public class JDBC {
 			con.setAutoCommit(false);
 			BaseEmpleadoJdbc.actualizarEmpleado(con, dniOriginal, empleado);
 			con.commit();
+			GestionLogSesion.registrarModificacionBBDD("update",
+					"BaseEmpleado (dni=" + dniOriginal + " -> " + empleado.getDni() + ")");
 		} catch (SQLException e) {
 			con.rollback();
 			throw e;
@@ -668,6 +706,7 @@ public class JDBC {
 			con.setAutoCommit(false);
 			BaseEmpleadoJdbc.eliminarEmpleado(con, dni);
 			con.commit();
+			GestionLogSesion.registrarModificacionBBDD("delete", "BaseEmpleado (dni=" + dni + ")");
 		} catch (SQLException e) {
 			con.rollback();
 			throw e;
@@ -742,6 +781,7 @@ public class JDBC {
 	public void insertarAbonado(Abonado abonado, Abono abono) throws SQLException {
 
 		AbonadoJdbc.insertarAbonado(con, abonado);
+		GestionLogSesion.registrarModificacionBBDD("insert", "Abonado (dni=" + abonado.getDni() + ")");
 
 	}
 
@@ -757,6 +797,8 @@ public class JDBC {
 	public void venderAbono(Abonado abonado, Abono abono, int idEquipo) throws SQLException, AbonoNoPermitidoException {
 
 		AbonoJdbc.venderAbono(con, abonado, abono, idEquipo);
+		GestionLogSesion.registrarModificacionBBDD("insert",
+				"Abono (dni=" + abonado.getDni() + ", equipo=" + idEquipo + ")");
 
 	}
 
@@ -809,6 +851,9 @@ public class JDBC {
 	 */
 	public void registrarTareaMantenimiento(TareaMantenimiento tarea, List<String> dnisJardineros) throws SQLException {
 		TareaMantenimientoJdbc.registrarTareaMantenimiento(con, tarea, dnisJardineros);
+		GestionLogSesion.registrarModificacionBBDD("insert",
+				"TareaMantenimiento (instalacion=" + tarea.getIdInstalacion() + ", fecha=" + tarea.getFecha() + ", "
+						+ tarea.getHoraInicio() + "-" + tarea.getHoraFin() + ")");
 	}
 
 	/**
@@ -877,7 +922,10 @@ public class JDBC {
 	 * @throws AbonoNoPermitidoException
 	 */
 	public int registrarEntradaAbonado(String dni, Partido partido) throws SQLException, AbonoNoPermitidoException {
-		return EntradaAbonadoJdbc.registrar(con, dni, partido);
+		int idEntrada = EntradaAbonadoJdbc.registrar(con, dni, partido);
+		GestionLogSesion.registrarModificacionBBDD("insert",
+				"EntradaAbonado (dni=" + dni + ", partido=" + partido.getId_partido() + ")");
+		return idEntrada;
 	}
 
 	/**
@@ -946,6 +994,8 @@ public class JDBC {
 			Map<TipoSeccion, Double> preciosSeccion, List<EventoOcupacion> cancelables) throws SQLException {
 		EquipoJdbc.guardarPartidoCancelandoCoincidentes(con, idLocal, idVisitante, idInstalacion, fecha, horaInicio,
 				horaFin, esDiaClub, precioAbonado, preciosSeccion, cancelables);
+		GestionLogSesion.registrarModificacionBBDD("insert",
+				"Partido (local=" + idLocal + ", visitante=" + idVisitante + ", fecha=" + fecha + ")");
 	}
 
 	public List<EventoOcupacion> obtenerEventosOcupacionPartido(int idEquipoLocal, int idInstalacion, LocalDate fecha)
@@ -1039,6 +1089,8 @@ public class JDBC {
 			int idEquipo, int idInstalacion, List<EventoOcupacion> eventosACancelar) throws SQLException {
 		EntrenamientoJdbc.guardarEntrenamientoCancelandoCoincidentes(con, fecha, horaInicio, horaFin, idEquipo,
 				idInstalacion, eventosACancelar);
+		GestionLogSesion.registrarModificacionBBDD("insert",
+				"Entrenamiento (equipo=" + idEquipo + ", instalacion=" + idInstalacion + ", fecha=" + fecha + ")");
 	}
 
 	/**
@@ -1064,6 +1116,8 @@ public class JDBC {
             int idCampana = CampanaJdbc.insertarCampana(con, precio, numAcciones, LocalDateTime.now());
             CampanaJdbc.insertarAccionesIniciales(con, idCampana);
             con.commit();
+            GestionLogSesion.registrarModificacionBBDD("insert",
+                    "Campana (acciones=" + numAcciones + ", precio=" + precio + " €)");
         } catch (SQLException | RuntimeException e) {
             con.rollback();
             throw e;
@@ -1078,7 +1132,11 @@ public class JDBC {
      * @return false si la campaña ya no estaba en la fase indicada o no se puede avanzar
      */
     public boolean avanzarFaseCampana(int idCampana, int faseActual) throws SQLException {
-        return CampanaJdbc.avanzarFase(con, idCampana, faseActual);
+        boolean avanzada = CampanaJdbc.avanzarFase(con, idCampana, faseActual);
+        if (avanzada) {
+            GestionLogSesion.registrarModificacionBBDD("update", "Campana (avance de fase id=" + idCampana + ")");
+        }
+        return avanzada;
     }
 
 	/**
@@ -1087,7 +1145,11 @@ public class JDBC {
 	 * @return false si la campaña ya no estaba activa o no estaba en la ultima fase
 	 */
 	public boolean cerrarCampana(int idCampana) throws SQLException {
-		return CampanaJdbc.cerrarCampana(con, idCampana);
+		boolean cerrada = CampanaJdbc.cerrarCampana(con, idCampana);
+		if (cerrada) {
+			GestionLogSesion.registrarModificacionBBDD("update", "Campana (cierre id=" + idCampana + ")");
+		}
+		return cerrada;
 	}
 
 	/**
@@ -1095,6 +1157,8 @@ public class JDBC {
 	 */
 	public void ponerAccionEnVenta(int idAccion, BigDecimal precioVenta) throws SQLException {
 		AccionJdbc.ponerAccionEnVenta(con, idAccion, precioVenta);
+		GestionLogSesion.registrarModificacionBBDD("update",
+				"Accion (puesta en venta id=" + idAccion + ", precio=" + precioVenta + " €)");
 	}
 
 	/**
@@ -1102,6 +1166,7 @@ public class JDBC {
 	 */
 	public void retirarAccionDeVenta(int idAccion) throws SQLException {
 		AccionJdbc.retirarAccionDeVenta(con, idAccion);
+		GestionLogSesion.registrarModificacionBBDD("update", "Accion (retirada de venta id=" + idAccion + ")");
 	}
 
 	/**
@@ -1117,6 +1182,8 @@ public class JDBC {
 	 */
 	public void comprarAcciones(String dniComprador, List<Integer> idsAcciones) throws SQLException {
 		AccionJdbc.comprarAcciones(con, dniComprador, idsAcciones);
+		GestionLogSesion.registrarModificacionBBDD("update",
+				"Accion (compra por " + dniComprador + ", cantidad=" + idsAcciones.size() + ")");
 	}
 
 	/**
@@ -1128,29 +1195,62 @@ public class JDBC {
 	public ResultadoCompra comprarAccionesCampana(Campana campana, Accionista comprador, boolean esNuevo, int unidades,
 			String usuario, String hashContrasena) throws SQLException {
 
-		return CompraCampanaJdbc.comprar(con, campana, comprador, esNuevo, unidades, usuario, hashContrasena);
+		ResultadoCompra resultado = CompraCampanaJdbc.comprar(con, campana, comprador, esNuevo, unidades, usuario,
+				hashContrasena);
+		GestionLogSesion.registrarModificacionBBDD("insert",
+				"CampanaAccionista / Accion (comprador=" + comprador.getDni() + ", unidades=" + unidades + ")");
+		return resultado;
 	}
 
 	/**
-	 * Comprueba si existe un miembro con el DNI indicado.
+	 * Comprueba si existe una cuenta de un miembro según su DNI y tipo.
 	 */
-	public boolean existeMiembro(String dni) throws SQLException {
-		return MiembroJdbc.existeMiembro(con, dni);
+	public boolean existeMiembro(String dni, String tipo) throws SQLException {
+		return MiembroJdbc.existeMiembro(con, dni, tipo);
 	}
 
 	/**
-	 * Comprueba si existe el usuario
-	 * @param usuario
-	 * @return
-	 * @throws SQLException
+	 * Comprueba si existe un nombre de usuario.
 	 */
 	public boolean existeUsuarioEmpleado(String usuario) throws SQLException {
 		return MiembroJdbc.existeNombreUsuario(con, usuario);
 	}
 
-	
-	public boolean existeUsuarioEnOtroEmpleado(String usuario, String dniPropio) throws SQLException {
-		return MiembroJdbc.existeNombreUsuarioOtroMiembro(con, usuario, dniPropio);
+	/**
+	 * Comprueba si otro miembro utiliza ese nombre de usuario.
+	 */
+	public boolean existeUsuarioEnOtroEmpleado(String usuario, String dniPropio, String tipo) throws SQLException {
+		return MiembroJdbc.existeNombreUsuarioOtroMiembro(con, usuario, dniPropio, tipo);
+	}
+
+	/**
+	 * Devuelve las credenciales de un usuario. {dni, contrasena, tipo}
+	 */
+	public String[] getCredenciales(String nombreUsuario) throws SQLException {
+		return MiembroJdbc.getCredenciales(con, nombreUsuario);
+	}
+
+	/**
+	 * Devuelve las credenciales de todas las cuentas asociadas a un DNI. Cada
+	 * elemento contiene {nombreUsuario, contrasena, tipo}.
+	 */
+	public List<String[]> getCredencialesPorDni(String dni) throws SQLException {
+		return MiembroJdbc.getCredencialesPorDni(con, dni);
+	}
+
+	/**
+	 * Actualiza las credenciales de una cuenta concreta.
+	 */
+	public boolean actualizarCredenciales(String dni, String tipo, String user, String contrasenia)
+			throws SQLException {
+		return MiembroJdbc.actualizarCredenciales(con, dni, tipo, user, contrasenia);
+	}
+
+	/**
+	 * Elimina las credenciales de una cuenta concreta.
+	 */
+	public boolean eliminarCredenciales(String dni, String tipo) throws SQLException {
+		return MiembroJdbc.eliminarMiembro(con, dni, tipo);
 	}
 	
 	/**
@@ -1160,51 +1260,9 @@ public class JDBC {
 	public int getCupoFase1Campana(int idCampana, String dni) throws SQLException {
 		return CompraCampanaJdbc.getCupoFase1(con, idCampana, dni);
 	}
-
+	
 	public void insertarNoticia(Noticia noticia) throws SQLException {
 		NoticiaJdbc.insertarNoticia(con, noticia);
-	}
-	
-	/**
-	 * Devuelve las credenciales de un usuario
-	 * @param nombreUsuario
-	 * @return
-	 * @throws SQLException
-	 */
-	public String[] getCredenciales(String nombreUsuario) throws SQLException {
-		return MiembroJdbc.getCredenciales(con, nombreUsuario);
-	}
-	
-	/**
-	 * Devuelve las credenciales de un usuario dado un dni
-	 * @param nombreUsuario
-	 * @return
-	 * @throws SQLException
-	 */
-	public String[] getCredencialesPorDni(String dni) throws SQLException {
-	    return MiembroJdbc.getCredencialesPorDni(con, dni);
-	}
-	
-	/**
-	 * Actualiza las credenciales
-	 * @param dni
-	 * @param user
-	 * @param contrasenia
-	 * @return trus si las actualiza, false en caso contrario
-	 * @throws SQLException 
-	 */
-	public boolean actualizarCredenciales(String dni, String user, String contrasenia) throws SQLException {
-		return MiembroJdbc.actualizarCredenciales(con, dni, user, contrasenia);
-	}
-
-	/**
-	 * Elimina las credenciales asociadas a un miembro
-	 * 
-	 * @param dni
-	 * @return
-	 * @throws SQLException
-	 */
-	public boolean eliminarCredenciales(String dni) throws SQLException {
-		return MiembroJdbc.eliminarMiembro(con, dni);
+		GestionLogSesion.registrarModificacionBBDD("insert", "Noticia (" + noticia.getTitular() + ")");
 	}
 }

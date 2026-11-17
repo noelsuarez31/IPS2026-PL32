@@ -43,7 +43,7 @@ import javax.swing.table.DefaultTableModel;
 
 import giis.demo.model.noticias.Noticia;
 import giis.demo.model.noticias.VisualizarNoticiasService;
-import giis.demo.ui.VentanaPrincipal;
+import giis.demo.ui.login.VentanaPrincipal;
 
 public class VentanaVisualizarNoticias extends JFrame {
 

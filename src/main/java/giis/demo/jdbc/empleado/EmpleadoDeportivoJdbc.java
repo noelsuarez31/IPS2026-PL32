@@ -18,12 +18,12 @@ public class EmpleadoDeportivoJdbc {
 	        "SELECT * FROM EmpleadoDeportivo WHERE posicion=? AND id_equipo IS NULL";
 	
 	private static final String QUERY_GET_COMPLETE_ADITIONAL_MANAGERS =
-		        "SELECT be.nombre, be.apellido, be.salario, be.fecha_nacimiento, "
-		        + "be.numero_de_telefono, m.nombre_usuario, m.contrasena "
-		        + "FROM EmpleadoDeportivo ed "
-		        + "JOIN BaseEmpleado be ON ed.dni = be.dni "
-		        + "JOIN Miembro m ON be.dni = m.dni "
-		        + "WHERE ed.dni=?";
+	        "SELECT be.nombre, be.apellido, be.salario, be.fecha_nacimiento, "
+	        + "be.numero_de_telefono, m.nombre_usuario, m.contrasena "
+	        + "FROM EmpleadoDeportivo ed "
+	        + "JOIN BaseEmpleado be ON ed.dni = be.dni "
+	        + "JOIN Miembro m ON be.dni = m.dni AND m.tipo = 'EMPLEADO' "
+	        + "WHERE ed.dni=?";
 	
 	private static final String QUERY_GET_PLAYERS =
 		        "SELECT * FROM EmpleadoDeportivo WHERE posicion = ? AND id_equipo IS NULL";
@@ -34,7 +34,7 @@ public class EmpleadoDeportivoJdbc {
 	        + "m.nombre_usuario, m.contrasena, ed.posicion "
 	        + "FROM BaseEmpleado be "
 	        + "JOIN EmpleadoDeportivo ed ON be.dni = ed.dni "
-	        + "JOIN Miembro m ON be.dni = m.dni "
+	        + "JOIN Miembro m ON be.dni = m.dni AND m.tipo = 'EMPLEADO' "
 	        + "WHERE ed.dni=?";
 	
 	private static final String QUERY_INSERT_DEPORTIVO =
@@ -49,7 +49,7 @@ public class EmpleadoDeportivoJdbc {
 	        + "m.nombre_usuario, m.contrasena, ed.posicion "
 	        + "FROM BaseEmpleado be "
 	        + "JOIN EmpleadoDeportivo ed ON be.dni = ed.dni "
-	        + "JOIN Miembro m ON be.dni = m.dni "
+	        + "JOIN Miembro m ON be.dni = m.dni AND m.tipo = 'EMPLEADO' "
 	        + "WHERE ed.dni=?";
 	
 	/**

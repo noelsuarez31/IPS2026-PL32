@@ -31,7 +31,7 @@ import giis.demo.exceptions.EmployeeException;
 import giis.demo.model.contrataciones.GestorEmpleados;
 import giis.demo.model.empleado.BaseEmpleado;
 import giis.demo.model.empleado.EmpleadoDeportivo;
-import giis.demo.ui.VentanaPrincipal;
+import giis.demo.ui.login.VentanaPrincipal;
 
 /**
  * Permite elegir un empleado existente, modificar sus datos personales y su

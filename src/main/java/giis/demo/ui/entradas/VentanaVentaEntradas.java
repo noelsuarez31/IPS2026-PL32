@@ -41,7 +41,7 @@ import giis.demo.model.entradas.Partido;
 import giis.demo.model.entradas.VentaDeEntradas;
 import giis.demo.model.entradas.enumerados.TipoSeccion;
 import giis.demo.model.entradas.enumerados.TipoTribuna;
-import giis.demo.ui.VentanaPrincipal;
+import giis.demo.ui.login.VentanaPrincipal;
 
 public class VentanaVentaEntradas extends JFrame {
 

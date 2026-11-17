@@ -41,7 +41,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import com.toedter.calendar.JDateChooser;
 
 import giis.demo.model.noticias.AñadirNoticiaService;
-import giis.demo.ui.VentanaPrincipal;
+import giis.demo.ui.login.VentanaPrincipal;
 
 public class VentanaAñadirNoticia extends JFrame {
 

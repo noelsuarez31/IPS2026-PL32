@@ -30,6 +30,10 @@ delete from Accion;
 delete from CampanaAccionista;
 delete from Campana;
 delete from Accionista;
+
+delete from Noticia;
+delete from ImagenNoticia;
+
 --------------------------------------------------------------------------------
 -- 2. PRODUCTOS Y BUTACAS
 --------------------------------------------------------------------------------
@@ -339,219 +343,836 @@ INSERT INTO "Miembro" ("dni", "nombre_usuario", "contrasena") VALUES
 ('71765432C', 'carlos.rodriguez', '$argon2id$v=19$m=65536,t=3,p=4$l4+uPq0StJiyK1kN5NwHug$mbDsMnL35IxPKK0xDeQIRvx97+Bi8DdJotCH7djWxRU'),
 ('71654321D', 'elena.garcia', '$argon2id$v=19$m=65536,t=3,p=4$JknyKtCtfZFqpoUSkUfHWg$x4HkT+pbjUyJU7BHFcE6kxOxR+LEg+Oh8uiCISjeCkE');
 
+UPDATE Miembro
+SET tipo = 'ACCIONISTA'
+WHERE nombre_usuario IN (
+    'lucas.vega2',
+    'lucia.fernandez',
+    'carlos.rodriguez',
+    'elena.garcia'
+);
+
 --------------------------------------------------------------------------------
 -- 6. BASE EMPLEADO
 --------------------------------------------------------------------------------
-INSERT INTO "BaseEmpleado" ("dni", "nombre", "apellido", "salario", "fecha_nacimiento", "numero_de_telefono") VALUES
-('11111111A', 'Borja', 'Bastón', 3000.00, '1992-08-24', '611223344'),
-('22222222B', 'Jimmy', 'Suárez', 2500.00, '1996-12-31', '622334455'),
-('33333333C', 'Javier', 'Calleja', 6000.00, '1978-05-12', '633445566'),
-('44444444D', 'Nacho', 'González', 2200.00, '1985-03-15', '644556677'),
-('55555555E', 'Sergio', 'Tella', 1900.00, '1990-07-20', '655667788'),
-('66666666F', 'Daniel', 'Tellado', 1400.00, '1990-05-05', '632437172'),
-('77777777G', 'Lucas', 'Vázquez', 1500.00, '2008-03-10', '677889900'),
-('88888888H', 'Mateo', 'Alonso', 1200.00, '2009-05-14', '688990011'),
-('99999999I', 'Alejandro', 'Pérez', 1300.00, '2007-01-20', '699001122'),
-('12345678J', 'David', 'Villa', 2800.00, '2000-12-03', '612345678'),
-('87654321K', 'Santi', 'Cazorla', 3200.00, '1990-06-15', '687654321'),
-('11223344L', 'Diego', 'Mariño', 2100.00, '1990-05-09', '611223355'),
-('55667788M', 'Manu', 'García', 2400.00, '1998-01-02', '655667799'),
-('99887766N', 'Pelayo', 'Fernández', 1100.00, '2008-09-18', '699887766'),
-('33445566O', 'Pablo', 'Álvarez', 2000.00, '1995-11-25', '633445577'),
-('77889900P', 'Gaspar', 'Campos', 2600.00, '2000-03-30', '677889911'),
-('10101010X', 'Luis', 'García', 5000.00, '1980-04-10', '600111222'),
-('20202020Y', 'Roberto', 'Martínez', 4000.00, '1983-09-15', '600222333'),
-('30303030Z', 'Alberto', 'López', 4800.00, '1979-01-22', '600333444'),
-('40404040W', 'Carlos', 'Sánchez', 3800.00, '1986-11-05', '600444556'),
-('50505050A', 'Mario', 'Suárez', 2000.00, '1995-02-10', '610111111'),
-('50505050B', 'Jorge', 'Resurrección', 2200.00, '1992-01-08', '610222222'),
-('50505050C', 'Rubén', 'Pardo', 1800.00, '1994-10-22', '610333333'),
-('50505050D', 'Borja', 'Sainz', 1700.00, '2001-02-01', '610444444'),
-('50505050E', 'Abel', 'Bretones', 1900.00, '2000-05-21', '610555555'),
-('50505050F', 'Quentin', 'Braat', 2100.00, '1997-07-06', '610666666'),
-('50505050G', 'Dani', 'Calvo', 2300.00, '1994-04-01', '610777777'),
-('60606060A', 'Jon', 'Bautista', 2000.00, '1995-07-03', '620111111'),
-('60606060B', 'Víctor', 'Campuzano', 1900.00, '1997-05-31', '620222222'),
-('60606060C', 'Luka', 'Romero', 2500.00, '2004-11-18', '620333333'),
-('60606060D', 'Paulino', 'de la Fuente', 2100.00, '1997-06-27', '620444444'),
-('60606060E', 'Jimmy', 'G.', 1800.00, '1999-03-12', '620555555'),
-('60606060F', 'Lucas', 'Ahijado', 2200.00, '1995-01-30', '620666666'),
-('60606060G', 'Oier', 'Luengo', 2000.00, '1996-11-11', '620777777'),
-('70707070A', 'Carlos', 'García', 45000.00, '1980-05-12', '700111222'),
-('70707070B', 'María', 'López', 22000.00, '1995-08-23', '700222333'),
-('70707070C', 'Roberto', 'Martínez', 28000.00, '1988-11-05', '700333444'),
-('70707070D', 'Laura', 'Sánchez', 20000.00, '1998-02-14', '700444555'),
-('70707070E', 'Javier', 'Fernández', 32000.00, '1982-07-30', '700555666'),
-('70707070F', 'Elena', 'Pérez', 19000.00, '1990-09-15', '700666777'),
-('70707070G', 'David', 'Gómez', 21000.00, '1985-04-20', '700777888'),
-('70707070H', 'Ana', 'Ruiz', 35000.00, '1987-12-01', '700888999'),
-('70707070I', 'Miguel', 'Torres', 22000.00, '1996-03-10', '700999000'),
-('70707070J', 'Sofía', 'Díaz', 20000.00, '1999-06-18', '700000111'),
-('70707070K', 'Marcos', 'Vega', 21500.00, '1992-04-10', '700000222'),
-('70707070L', 'Lucía', 'Molina', 21000.00, '1995-11-20', '700000333'),
+INSERT INTO "BaseEmpleado"
+("dni", "nombre", "apellido", "id_miembro", "salario",
+ "fecha_nacimiento", "numero_de_telefono")
+VALUES
+
+('11111111A', 'Borja', 'Bastón',
+ (SELECT id_miembro FROM Miembro WHERE dni = '11111111A' AND tipo = 'EMPLEADO'),
+ 3000.00, '1992-08-24', '611223344'),
+
+('22222222B', 'Jimmy', 'Suárez',
+ (SELECT id_miembro FROM Miembro WHERE dni = '22222222B' AND tipo = 'EMPLEADO'),
+ 2500.00, '1996-12-31', '622334455'),
+
+('33333333C', 'Javier', 'Calleja',
+ (SELECT id_miembro FROM Miembro WHERE dni = '33333333C' AND tipo = 'EMPLEADO'),
+ 6000.00, '1978-05-12', '633445566'),
+
+('44444444D', 'Nacho', 'González',
+ (SELECT id_miembro FROM Miembro WHERE dni = '44444444D' AND tipo = 'EMPLEADO'),
+ 2200.00, '1985-03-15', '644556677'),
+
+('55555555E', 'Sergio', 'Tella',
+ (SELECT id_miembro FROM Miembro WHERE dni = '55555555E' AND tipo = 'EMPLEADO'),
+ 1900.00, '1990-07-20', '655667788'),
+
+('66666666F', 'Daniel', 'Tellado',
+ (SELECT id_miembro FROM Miembro WHERE dni = '66666666F' AND tipo = 'EMPLEADO'),
+ 1400.00, '1990-05-05', '632437172'),
+
+('77777777G', 'Lucas', 'Vázquez',
+ (SELECT id_miembro FROM Miembro WHERE dni = '77777777G' AND tipo = 'EMPLEADO'),
+ 1500.00, '2008-03-10', '677889900'),
+
+('88888888H', 'Mateo', 'Alonso',
+ (SELECT id_miembro FROM Miembro WHERE dni = '88888888H' AND tipo = 'EMPLEADO'),
+ 1200.00, '2009-05-14', '688990011'),
+
+('99999999I', 'Alejandro', 'Pérez',
+ (SELECT id_miembro FROM Miembro WHERE dni = '99999999I' AND tipo = 'EMPLEADO'),
+ 1300.00, '2007-01-20', '699001122'),
+
+('12345678J', 'David', 'Villa',
+ (SELECT id_miembro FROM Miembro WHERE dni = '12345678J' AND tipo = 'EMPLEADO'),
+ 2800.00, '2000-12-03', '612345678'),
+
+('87654321K', 'Santi', 'Cazorla',
+ (SELECT id_miembro FROM Miembro WHERE dni = '87654321K' AND tipo = 'EMPLEADO'),
+ 3200.00, '1990-06-15', '687654321'),
+
+('11223344L', 'Diego', 'Mariño',
+ (SELECT id_miembro FROM Miembro WHERE dni = '11223344L' AND tipo = 'EMPLEADO'),
+ 2100.00, '1990-05-09', '611223355'),
+
+('55667788M', 'Manu', 'García',
+ (SELECT id_miembro FROM Miembro WHERE dni = '55667788M' AND tipo = 'EMPLEADO'),
+ 2400.00, '1998-01-02', '655667799'),
+
+('99887766N', 'Pelayo', 'Fernández',
+ (SELECT id_miembro FROM Miembro WHERE dni = '99887766N' AND tipo = 'EMPLEADO'),
+ 1100.00, '2008-09-18', '699887766'),
+
+('33445566O', 'Pablo', 'Álvarez',
+ (SELECT id_miembro FROM Miembro WHERE dni = '33445566O' AND tipo = 'EMPLEADO'),
+ 2000.00, '1995-11-25', '633445577'),
+
+('77889900P', 'Gaspar', 'Campos',
+ (SELECT id_miembro FROM Miembro WHERE dni = '77889900P' AND tipo = 'EMPLEADO'),
+ 2600.00, '2000-03-30', '677889911'),
+
+('10101010X', 'Luis', 'García',
+ (SELECT id_miembro FROM Miembro WHERE dni = '10101010X' AND tipo = 'EMPLEADO'),
+ 5000.00, '1980-04-10', '600111222'),
+
+('20202020Y', 'Roberto', 'Martínez',
+ (SELECT id_miembro FROM Miembro WHERE dni = '20202020Y' AND tipo = 'EMPLEADO'),
+ 4000.00, '1983-09-15', '600222333'),
+
+('30303030Z', 'Alberto', 'López',
+ (SELECT id_miembro FROM Miembro WHERE dni = '30303030Z' AND tipo = 'EMPLEADO'),
+ 4800.00, '1979-01-22', '600333444'),
+
+('40404040W', 'Carlos', 'Sánchez',
+ (SELECT id_miembro FROM Miembro WHERE dni = '40404040W' AND tipo = 'EMPLEADO'),
+ 3800.00, '1986-11-05', '600444556'),
+
+('50505050A', 'Mario', 'Suárez',
+ (SELECT id_miembro FROM Miembro WHERE dni = '50505050A' AND tipo = 'EMPLEADO'),
+ 2000.00, '1995-02-10', '610111111'),
+
+('50505050B', 'Jorge', 'Resurrección',
+ (SELECT id_miembro FROM Miembro WHERE dni = '50505050B' AND tipo = 'EMPLEADO'),
+ 2200.00, '1992-01-08', '610222222'),
+
+('50505050C', 'Rubén', 'Pardo',
+ (SELECT id_miembro FROM Miembro WHERE dni = '50505050C' AND tipo = 'EMPLEADO'),
+ 1800.00, '1994-10-22', '610333333'),
+
+('50505050D', 'Borja', 'Sainz',
+ (SELECT id_miembro FROM Miembro WHERE dni = '50505050D' AND tipo = 'EMPLEADO'),
+ 1700.00, '2001-02-01', '610444444'),
+
+('50505050E', 'Abel', 'Bretones',
+ (SELECT id_miembro FROM Miembro WHERE dni = '50505050E' AND tipo = 'EMPLEADO'),
+ 1900.00, '2000-05-21', '610555555'),
+
+('50505050F', 'Quentin', 'Braat',
+ (SELECT id_miembro FROM Miembro WHERE dni = '50505050F' AND tipo = 'EMPLEADO'),
+ 2100.00, '1997-07-06', '610666666'),
+
+('50505050G', 'Dani', 'Calvo',
+ (SELECT id_miembro FROM Miembro WHERE dni = '50505050G' AND tipo = 'EMPLEADO'),
+ 2300.00, '1994-04-01', '610777777'),
+ 
+('60606060A', 'Jon', 'Bautista',
+ (SELECT id_miembro FROM Miembro WHERE dni = '60606060A' AND tipo = 'EMPLEADO'),
+ 2000.00, '1995-07-03', '620111111'),
+
+('60606060B', 'Víctor', 'Campuzano',
+ (SELECT id_miembro FROM Miembro WHERE dni = '60606060B' AND tipo = 'EMPLEADO'),
+ 1900.00, '1997-05-31', '620222222'),
+
+('60606060C', 'Luka', 'Romero',
+ (SELECT id_miembro FROM Miembro WHERE dni = '60606060C' AND tipo = 'EMPLEADO'),
+ 2500.00, '2004-11-18', '620333333'),
+
+('60606060D', 'Paulino', 'de la Fuente',
+ (SELECT id_miembro FROM Miembro WHERE dni = '60606060D' AND tipo = 'EMPLEADO'),
+ 2100.00, '1997-06-27', '620444444'),
+
+('60606060E', 'Jimmy', 'G.',
+ (SELECT id_miembro FROM Miembro WHERE dni = '60606060E' AND tipo = 'EMPLEADO'),
+ 1800.00, '1999-03-12', '620555555'),
+
+('60606060F', 'Lucas', 'Ahijado',
+ (SELECT id_miembro FROM Miembro WHERE dni = '60606060F' AND tipo = 'EMPLEADO'),
+ 2200.00, '1995-01-30', '620666666'),
+
+('60606060G', 'Oier', 'Luengo',
+ (SELECT id_miembro FROM Miembro WHERE dni = '60606060G' AND tipo = 'EMPLEADO'),
+ 2000.00, '1996-11-11', '620777777'),
+
+('70707070A', 'Carlos', 'García',
+ (SELECT id_miembro FROM Miembro WHERE dni = '70707070A' AND tipo = 'EMPLEADO'),
+ 45000.00, '1980-05-12', '700111222'),
+
+('70707070B', 'María', 'López',
+ (SELECT id_miembro FROM Miembro WHERE dni = '70707070B' AND tipo = 'EMPLEADO'),
+ 22000.00, '1995-08-23', '700222333'),
+
+('70707070C', 'Roberto', 'Martínez',
+ (SELECT id_miembro FROM Miembro WHERE dni = '70707070C' AND tipo = 'EMPLEADO'),
+ 28000.00, '1988-11-05', '700333444'),
+
+('70707070D', 'Laura', 'Sánchez',
+ (SELECT id_miembro FROM Miembro WHERE dni = '70707070D' AND tipo = 'EMPLEADO'),
+ 20000.00, '1998-02-14', '700444555'),
+
+('70707070E', 'Javier', 'Fernández',
+ (SELECT id_miembro FROM Miembro WHERE dni = '70707070E' AND tipo = 'EMPLEADO'),
+ 32000.00, '1982-07-30', '700555666'),
+
+('70707070F', 'Elena', 'Pérez',
+ (SELECT id_miembro FROM Miembro WHERE dni = '70707070F' AND tipo = 'EMPLEADO'),
+ 19000.00, '1990-09-15', '700666777'),
+
+('70707070G', 'David', 'Gómez',
+ (SELECT id_miembro FROM Miembro WHERE dni = '70707070G' AND tipo = 'EMPLEADO'),
+ 21000.00, '1985-04-20', '700777888'),
+
+('70707070H', 'Ana', 'Ruiz',
+ (SELECT id_miembro FROM Miembro WHERE dni = '70707070H' AND tipo = 'EMPLEADO'),
+ 35000.00, '1987-12-01', '700888999'),
+
+('70707070I', 'Miguel', 'Torres',
+ (SELECT id_miembro FROM Miembro WHERE dni = '70707070I' AND tipo = 'EMPLEADO'),
+ 22000.00, '1996-03-10', '700999000'),
+
+('70707070J', 'Sofía', 'Díaz',
+ (SELECT id_miembro FROM Miembro WHERE dni = '70707070J' AND tipo = 'EMPLEADO'),
+ 20000.00, '1999-06-18', '700000111'),
+
+('70707070K', 'Marcos', 'Vega',
+ (SELECT id_miembro FROM Miembro WHERE dni = '70707070K' AND tipo = 'EMPLEADO'),
+ 21500.00, '1992-04-10', '700000222'),
+
+('70707070L', 'Lucía', 'Molina',
+ (SELECT id_miembro FROM Miembro WHERE dni = '70707070L' AND tipo = 'EMPLEADO'),
+ 21000.00, '1995-11-20', '700000333'),
+
 -- Juveniles Base
-('81000001A', 'Hugo', 'Álvarez', 1000.00, '2008-01-15', '681000001'),
-('81000002B', 'Marcos', 'Fernández', 1000.00, '2008-03-20', '681000002'),
-('81000003C', 'Adrián', 'Gómez', 1000.00, '2008-05-10', '681000003'),
-('81000004D', 'Iker', 'López', 1000.00, '2009-01-12', '681000004'),
-('81000005E', 'Rodrigo', 'Martín', 1000.00, '2009-02-18', '681000005'),
-('81000006F', 'Álvaro', 'García', 1000.00, '2009-04-25', '681000006'),
-('81000007G', 'Nicolás', 'Díaz', 1000.00, '2009-06-30', '681000007'),
-('81000008H', 'Pablo', 'Sánchez', 1000.00, '2010-01-10', '681000008'),
-('81000009I', 'Samuel', 'Romero', 1000.00, '2010-02-14', '681000009'),
-('81000010J', 'Diego', 'Navarro', 1000.00, '2010-03-22', '681000010'),
-('81000011K', 'Darío', 'Benítez', 1000.00, '2008-02-14', '681000011'),
-('81000012L', 'Joel', 'Cano', 1000.00, '2008-06-18', '681000012'),
-('81000013M', 'Saúl', 'Vázquez', 1000.00, '2008-08-22', '681000013'),
-('81000014N', 'Víctor', 'Ramos', 1000.00, '2009-01-25', '681000014'),
-('81000015O', 'Guillermo', 'Blanco', 1000.00, '2009-05-14', '681000015'),
-('81000016P', 'Pau', 'Gil', 1000.00, '2009-09-03', '681000016'),
-('81000017Q', 'Aitor', 'Serrano', 1000.00, '2010-03-12', '681000017'),
-('81000018R', 'Rubén', 'Castro', 1000.00, '2010-07-19', '681000018'),
+
+('81000001A', 'Hugo', 'Álvarez',
+ (SELECT id_miembro FROM Miembro WHERE dni = '81000001A' AND tipo = 'EMPLEADO'),
+ 1000.00, '2008-01-15', '681000001'),
+
+('81000002B', 'Marcos', 'Fernández',
+ (SELECT id_miembro FROM Miembro WHERE dni = '81000002B' AND tipo = 'EMPLEADO'),
+ 1000.00, '2008-03-20', '681000002'),
+
+('81000003C', 'Adrián', 'Gómez',
+ (SELECT id_miembro FROM Miembro WHERE dni = '81000003C' AND tipo = 'EMPLEADO'),
+ 1000.00, '2008-05-10', '681000003'),
+
+('81000004D', 'Iker', 'López',
+ (SELECT id_miembro FROM Miembro WHERE dni = '81000004D' AND tipo = 'EMPLEADO'),
+ 1000.00, '2009-01-12', '681000004'),
+
+('81000005E', 'Rodrigo', 'Martín',
+ (SELECT id_miembro FROM Miembro WHERE dni = '81000005E' AND tipo = 'EMPLEADO'),
+ 1000.00, '2009-02-18', '681000005'),
+
+('81000006F', 'Álvaro', 'García',
+ (SELECT id_miembro FROM Miembro WHERE dni = '81000006F' AND tipo = 'EMPLEADO'),
+ 1000.00, '2009-04-25', '681000006'),
+
+('81000007G', 'Nicolás', 'Díaz',
+ (SELECT id_miembro FROM Miembro WHERE dni = '81000007G' AND tipo = 'EMPLEADO'),
+ 1000.00, '2009-06-30', '681000007'),
+
+('81000008H', 'Pablo', 'Sánchez',
+ (SELECT id_miembro FROM Miembro WHERE dni = '81000008H' AND tipo = 'EMPLEADO'),
+ 1000.00, '2010-01-10', '681000008'),
+
+('81000009I', 'Samuel', 'Romero',
+ (SELECT id_miembro FROM Miembro WHERE dni = '81000009I' AND tipo = 'EMPLEADO'),
+ 1000.00, '2010-02-14', '681000009'),
+
+('81000010J', 'Diego', 'Navarro',
+ (SELECT id_miembro FROM Miembro WHERE dni = '81000010J' AND tipo = 'EMPLEADO'),
+ 1000.00, '2010-03-22', '681000010'),
+
+('81000011K', 'Darío', 'Benítez',
+ (SELECT id_miembro FROM Miembro WHERE dni = '81000011K' AND tipo = 'EMPLEADO'),
+ 1000.00, '2008-02-14', '681000011'),
+
+('81000012L', 'Joel', 'Cano',
+ (SELECT id_miembro FROM Miembro WHERE dni = '81000012L' AND tipo = 'EMPLEADO'),
+ 1000.00, '2008-06-18', '681000012'),
+
+('81000013M', 'Saúl', 'Vázquez',
+ (SELECT id_miembro FROM Miembro WHERE dni = '81000013M' AND tipo = 'EMPLEADO'),
+ 1000.00, '2008-08-22', '681000013'),
+
+('81000014N', 'Víctor', 'Ramos',
+ (SELECT id_miembro FROM Miembro WHERE dni = '81000014N' AND tipo = 'EMPLEADO'),
+ 1000.00, '2009-01-25', '681000014'),
+
+('81000015O', 'Guillermo', 'Blanco',
+ (SELECT id_miembro FROM Miembro WHERE dni = '81000015O' AND tipo = 'EMPLEADO'),
+ 1000.00, '2009-05-14', '681000015'),
+
+('81000016P', 'Pau', 'Gil',
+ (SELECT id_miembro FROM Miembro WHERE dni = '81000016P' AND tipo = 'EMPLEADO'),
+ 1000.00, '2009-09-03', '681000016'),
+
+('81000017Q', 'Aitor', 'Serrano',
+ (SELECT id_miembro FROM Miembro WHERE dni = '81000017Q' AND tipo = 'EMPLEADO'),
+ 1000.00, '2010-03-12', '681000017'),
+
+('81000018R', 'Rubén', 'Castro',
+ (SELECT id_miembro FROM Miembro WHERE dni = '81000018R' AND tipo = 'EMPLEADO'),
+ 1000.00, '2010-07-19', '681000018'),
+
 -- Cadetes Base
-('82000001A', 'Mario', 'Serrano', 800.00, '2011-01-15', '682000001'),
-('82000002B', 'Daniel', 'Molina', 800.00, '2011-02-20', '682000002'),
-('82000003C', 'David', 'Morales', 800.00, '2011-03-12', '682000003'),
-('82000004D', 'Javier', 'Ortega', 800.00, '2011-04-18', '682000004'),
-('82000005E', 'Alejandro', 'Delgado', 800.00, '2011-05-22', '682000005'),
-('82000006F', 'Manuel', 'Castro', 800.00, '2012-01-10', '682000006'),
-('82000007G', 'Rubén', 'Ortiz', 800.00, '2012-02-14', '682000007'),
-('82000008H', 'Carlos', 'Rubio', 800.00, '2012-03-19', '682000008'),
-('82000009I', 'Jorge', 'Marín', 800.00, '2012-04-25', '682000009'),
-('82000010J', 'Iván', 'Sanz', 800.00, '2012-05-30', '682000010'),
-('82000011K', 'Óscar', 'Mendoza', 800.00, '2011-01-20', '682000011'),
-('82000012L', 'Jaime', 'Guerrero', 800.00, '2011-03-15', '682000012'),
-('82000013M', 'Gabriel', 'Reyes', 800.00, '2011-06-10', '682000013'),
-('82000014N', 'Marcos', 'Cortes', 800.00, '2011-08-05', '682000014'),
-('82000015O', 'Lucas', 'Paredes', 800.00, '2012-02-12', '682000015'),
-('82000016P', 'Adrián', 'Suárez', 800.00, '2012-04-18', '682000016'),
-('82000017Q', 'Eric', 'Vargas', 800.00, '2012-07-22', '682000017'),
-('82000018R', 'Samuel', 'Lara', 800.00, '2012-09-11', '682000018'),
+
+('82000001A', 'Mario', 'Serrano',
+ (SELECT id_miembro FROM Miembro WHERE dni = '82000001A' AND tipo = 'EMPLEADO'),
+ 800.00, '2011-01-15', '682000001'),
+
+('82000002B', 'Daniel', 'Molina',
+ (SELECT id_miembro FROM Miembro WHERE dni = '82000002B' AND tipo = 'EMPLEADO'),
+ 800.00, '2011-02-20', '682000002'),
+
+('82000003C', 'David', 'Morales',
+ (SELECT id_miembro FROM Miembro WHERE dni = '82000003C' AND tipo = 'EMPLEADO'),
+ 800.00, '2011-03-12', '682000003'),
+
+('82000004D', 'Javier', 'Ortega',
+ (SELECT id_miembro FROM Miembro WHERE dni = '82000004D' AND tipo = 'EMPLEADO'),
+ 800.00, '2011-04-18', '682000004'),
+
+('82000005E', 'Alejandro', 'Delgado',
+ (SELECT id_miembro FROM Miembro WHERE dni = '82000005E' AND tipo = 'EMPLEADO'),
+ 800.00, '2011-05-22', '682000005'),
+
+('82000006F', 'Manuel', 'Castro',
+ (SELECT id_miembro FROM Miembro WHERE dni = '82000006F' AND tipo = 'EMPLEADO'),
+ 800.00, '2012-01-10', '682000006'),
+
+('82000007G', 'Rubén', 'Ortiz',
+ (SELECT id_miembro FROM Miembro WHERE dni = '82000007G' AND tipo = 'EMPLEADO'),
+ 800.00, '2012-02-14', '682000007'),
+
+('82000008H', 'Carlos', 'Rubio',
+ (SELECT id_miembro FROM Miembro WHERE dni = '82000008H' AND tipo = 'EMPLEADO'),
+ 800.00, '2012-03-19', '682000008'),
+
+('82000009I', 'Jorge', 'Marín',
+ (SELECT id_miembro FROM Miembro WHERE dni = '82000009I' AND tipo = 'EMPLEADO'),
+ 800.00, '2012-04-25', '682000009'),
+
+('82000010J', 'Iván', 'Sanz',
+ (SELECT id_miembro FROM Miembro WHERE dni = '82000010J' AND tipo = 'EMPLEADO'),
+ 800.00, '2012-05-30', '682000010'),
+
+('82000011K', 'Óscar', 'Mendoza',
+ (SELECT id_miembro FROM Miembro WHERE dni = '82000011K' AND tipo = 'EMPLEADO'),
+ 800.00, '2011-01-20', '682000011'),
+
+('82000012L', 'Jaime', 'Guerrero',
+ (SELECT id_miembro FROM Miembro WHERE dni = '82000012L' AND tipo = 'EMPLEADO'),
+ 800.00, '2011-03-15', '682000012'),
+
+('82000013M', 'Gabriel', 'Reyes',
+ (SELECT id_miembro FROM Miembro WHERE dni = '82000013M' AND tipo = 'EMPLEADO'),
+ 800.00, '2011-06-10', '682000013'),
+
+('82000014N', 'Marcos', 'Cortes',
+ (SELECT id_miembro FROM Miembro WHERE dni = '82000014N' AND tipo = 'EMPLEADO'),
+ 800.00, '2011-08-05', '682000014'),
+
+('82000015O', 'Lucas', 'Paredes',
+ (SELECT id_miembro FROM Miembro WHERE dni = '82000015O' AND tipo = 'EMPLEADO'),
+ 800.00, '2012-02-12', '682000015'),
+
+('82000016P', 'Adrián', 'Suárez',
+ (SELECT id_miembro FROM Miembro WHERE dni = '82000016P' AND tipo = 'EMPLEADO'),
+ 800.00, '2012-04-18', '682000016'),
+
+('82000017Q', 'Eric', 'Vargas',
+ (SELECT id_miembro FROM Miembro WHERE dni = '82000017Q' AND tipo = 'EMPLEADO'),
+ 800.00, '2012-07-22', '682000017'),
+
+('82000018R', 'Samuel', 'Lara',
+ (SELECT id_miembro FROM Miembro WHERE dni = '82000018R' AND tipo = 'EMPLEADO'),
+ 800.00, '2012-09-11', '682000018'),
+
 -- Infantiles Base
-('83000001A', 'Gonzalo', 'Iglesias', 600.00, '2013-01-15', '683000001'),
-('83000002B', 'Héctor', 'Medina', 600.00, '2013-02-20', '683000002'),
-('83000003C', 'Guillermo', 'Cortés', 600.00, '2013-03-11', '683000003'),
-('83000004D', 'Jaime', 'Castillo', 600.00, '2013-04-16', '683000004'),
-('83000005E', 'Raúl', 'Santos', 600.00, '2013-05-21', '683000005'),
-('83000006F', 'Víctor', 'Lozano', 600.00, '2014-01-12', '683000006'),
-('83000007G', 'Martín', 'Guerrero', 600.00, '2014-02-18', '683000007'),
-('83000008H', 'César', 'Cano', 600.00, '2014-03-24', '683000008'),
-('83000009I', 'Ángel', 'Prieto', 600.00, '2014-04-09', '683000009'),
-('83000010J', 'Leo', 'Méndez', 600.00, '2014-05-14', '683000010'),
-('83000011K', 'Ismael', 'Medina', 600.00, '2013-01-22', '683000011'),
-('83000012L', 'Bruno', 'Navas', 600.00, '2013-03-30', '683000012'),
-('83000013M', 'Fabián', 'Rojas', 600.00, '2013-05-18', '683000013'),
-('83000014N', 'Oliver', 'Santana', 600.00, '2013-08-14', '683000014'),
-('83000015O', 'Nicolás', 'Aguilar', 600.00, '2014-02-10', '683000015'),
-('83000016P', 'Mateo', 'Bravo', 600.00, '2014-04-20', '683000016'),
-('83000017Q', 'Daniel', 'Pacheco', 600.00, '2014-06-15', '683000017'),
-('83000018R', 'Hugo', 'Morán', 600.00, '2014-09-01', '683000018'),
+
+('83000001A', 'Gonzalo', 'Iglesias',
+ (SELECT id_miembro FROM Miembro WHERE dni = '83000001A' AND tipo = 'EMPLEADO'),
+ 600.00, '2013-01-15', '683000001'),
+
+('83000002B', 'Héctor', 'Medina',
+ (SELECT id_miembro FROM Miembro WHERE dni = '83000002B' AND tipo = 'EMPLEADO'),
+ 600.00, '2013-02-20', '683000002'),
+
+('83000003C', 'Guillermo', 'Cortés',
+ (SELECT id_miembro FROM Miembro WHERE dni = '83000003C' AND tipo = 'EMPLEADO'),
+ 600.00, '2013-03-11', '683000003'),
+
+('83000004D', 'Jaime', 'Castillo',
+ (SELECT id_miembro FROM Miembro WHERE dni = '83000004D' AND tipo = 'EMPLEADO'),
+ 600.00, '2013-04-16', '683000004'),
+
+('83000005E', 'Raúl', 'Santos',
+ (SELECT id_miembro FROM Miembro WHERE dni = '83000005E' AND tipo = 'EMPLEADO'),
+ 600.00, '2013-05-21', '683000005'),
+
+('83000006F', 'Víctor', 'Lozano',
+ (SELECT id_miembro FROM Miembro WHERE dni = '83000006F' AND tipo = 'EMPLEADO'),
+ 600.00, '2014-01-12', '683000006'),
+
+('83000007G', 'Martín', 'Guerrero',
+ (SELECT id_miembro FROM Miembro WHERE dni = '83000007G' AND tipo = 'EMPLEADO'),
+ 600.00, '2014-02-18', '683000007'),
+
+('83000008H', 'César', 'Cano',
+ (SELECT id_miembro FROM Miembro WHERE dni = '83000008H' AND tipo = 'EMPLEADO'),
+ 600.00, '2014-03-24', '683000008'),
+
+('83000009I', 'Ángel', 'Prieto',
+ (SELECT id_miembro FROM Miembro WHERE dni = '83000009I' AND tipo = 'EMPLEADO'),
+ 600.00, '2014-04-09', '683000009'),
+
+('83000010J', 'Leo', 'Méndez',
+ (SELECT id_miembro FROM Miembro WHERE dni = '83000010J' AND tipo = 'EMPLEADO'),
+ 600.00, '2014-05-14', '683000010'),
+
+('83000011K', 'Ismael', 'Medina',
+ (SELECT id_miembro FROM Miembro WHERE dni = '83000011K' AND tipo = 'EMPLEADO'),
+ 600.00, '2013-01-22', '683000011'),
+
+('83000012L', 'Bruno', 'Navas',
+ (SELECT id_miembro FROM Miembro WHERE dni = '83000012L' AND tipo = 'EMPLEADO'),
+ 600.00, '2013-03-30', '683000012'),
+
+('83000013M', 'Fabián', 'Rojas',
+ (SELECT id_miembro FROM Miembro WHERE dni = '83000013M' AND tipo = 'EMPLEADO'),
+ 600.00, '2013-05-18', '683000013'),
+
+('83000014N', 'Oliver', 'Santana',
+ (SELECT id_miembro FROM Miembro WHERE dni = '83000014N' AND tipo = 'EMPLEADO'),
+ 600.00, '2013-08-14', '683000014'),
+
+('83000015O', 'Nicolás', 'Aguilar',
+ (SELECT id_miembro FROM Miembro WHERE dni = '83000015O' AND tipo = 'EMPLEADO'),
+ 600.00, '2014-02-10', '683000015'),
+
+('83000016P', 'Mateo', 'Bravo',
+ (SELECT id_miembro FROM Miembro WHERE dni = '83000016P' AND tipo = 'EMPLEADO'),
+ 600.00, '2014-04-20', '683000016'),
+
+('83000017Q', 'Daniel', 'Pacheco',
+ (SELECT id_miembro FROM Miembro WHERE dni = '83000017Q' AND tipo = 'EMPLEADO'),
+ 600.00, '2014-06-15', '683000017'),
+
+('83000018R', 'Hugo', 'Morán',
+ (SELECT id_miembro FROM Miembro WHERE dni = '83000018R' AND tipo = 'EMPLEADO'),
+ 600.00, '2014-09-01', '683000018'),
+
 -- Alevines Base
-('84000001A', 'Enzo', 'Cruz', 500.00, '2015-01-10', '684000001'),
-('84000002B', 'Bruno', 'Calvo', 500.00, '2015-02-15', '684000002'),
-('84000003C', 'Oliver', 'Gallego', 500.00, '2015-03-20', '684000003'),
-('84000004D', 'Mateo', 'Vidal', 500.00, '2015-04-25', '684000004'),
-('84000005E', 'Lucas', 'León', 500.00, '2015-05-30', '684000005'),
-('84000006F', 'Hugo', 'Herrera', 500.00, '2016-01-14', '684000006'),
-('84000007G', 'Dylan', 'Márquez', 500.00, '2016-02-19', '684000007'),
-('84000008H', 'Thiago', 'Peña', 500.00, '2016-03-23', '684000008'),
-('84000009I', 'Gael', 'Flores', 500.00, '2016-04-28', '684000009'),
-('84000010J', 'Ian', 'Cabrera', 500.00, '2016-05-15', '684000010'),
-('84000011K', 'Alonso', 'Valero', 500.00, '2015-01-18', '684000011'),
-('84000012L', 'Marcos', 'Cifuentes', 500.00, '2015-03-25', '684000012'),
-('84000013M', 'Biel', 'Carreño', 500.00, '2015-06-12', '684000013'),
-('84000014N', 'Rodrigo', 'Pallarés', 500.00, '2015-08-20', '684000014'),
-('84000015O', 'Leo', 'Salas', 500.00, '2016-02-14', '684000015'),
-('84000016P', 'Iker', 'Soler', 500.00, '2016-04-10', '684000016'),
-('84000017Q', 'Alex', 'Moya', 500.00, '2016-07-05', '684000017'),
-('84000018R', 'Luca', 'Bermejo', 500.00, '2016-09-15', '684000018'),
+
+('84000001A', 'Enzo', 'Cruz',
+ (SELECT id_miembro FROM Miembro WHERE dni = '84000001A' AND tipo = 'EMPLEADO'),
+ 500.00, '2015-01-10', '684000001'),
+
+('84000002B', 'Bruno', 'Calvo',
+ (SELECT id_miembro FROM Miembro WHERE dni = '84000002B' AND tipo = 'EMPLEADO'),
+ 500.00, '2015-02-15', '684000002'),
+
+('84000003C', 'Oliver', 'Gallego',
+ (SELECT id_miembro FROM Miembro WHERE dni = '84000003C' AND tipo = 'EMPLEADO'),
+ 500.00, '2015-03-20', '684000003'),
+
+('84000004D', 'Mateo', 'Vidal',
+ (SELECT id_miembro FROM Miembro WHERE dni = '84000004D' AND tipo = 'EMPLEADO'),
+ 500.00, '2015-04-25', '684000004'),
+
+('84000005E', 'Lucas', 'León',
+ (SELECT id_miembro FROM Miembro WHERE dni = '84000005E' AND tipo = 'EMPLEADO'),
+ 500.00, '2015-05-30', '684000005'),
+
+('84000006F', 'Hugo', 'Herrera',
+ (SELECT id_miembro FROM Miembro WHERE dni = '84000006F' AND tipo = 'EMPLEADO'),
+ 500.00, '2016-01-14', '684000006'),
+
+('84000007G', 'Dylan', 'Márquez',
+ (SELECT id_miembro FROM Miembro WHERE dni = '84000007G' AND tipo = 'EMPLEADO'),
+ 500.00, '2016-02-19', '684000007'),
+
+('84000008H', 'Thiago', 'Peña',
+ (SELECT id_miembro FROM Miembro WHERE dni = '84000008H' AND tipo = 'EMPLEADO'),
+ 500.00, '2016-03-23', '684000008'),
+
+('84000009I', 'Gael', 'Flores',
+ (SELECT id_miembro FROM Miembro WHERE dni = '84000009I' AND tipo = 'EMPLEADO'),
+ 500.00, '2016-04-28', '684000009'),
+
+('84000010J', 'Ian', 'Cabrera',
+ (SELECT id_miembro FROM Miembro WHERE dni = '84000010J' AND tipo = 'EMPLEADO'),
+ 500.00, '2016-05-15', '684000010'),
+
+('84000011K', 'Alonso', 'Valero',
+ (SELECT id_miembro FROM Miembro WHERE dni = '84000011K' AND tipo = 'EMPLEADO'),
+ 500.00, '2015-01-18', '684000011'),
+
+('84000012L', 'Marcos', 'Cifuentes',
+ (SELECT id_miembro FROM Miembro WHERE dni = '84000012L' AND tipo = 'EMPLEADO'),
+ 500.00, '2015-03-25', '684000012'),
+
+('84000013M', 'Biel', 'Carreño',
+ (SELECT id_miembro FROM Miembro WHERE dni = '84000013M' AND tipo = 'EMPLEADO'),
+ 500.00, '2015-06-12', '684000013'),
+
+('84000014N', 'Rodrigo', 'Pallarés',
+ (SELECT id_miembro FROM Miembro WHERE dni = '84000014N' AND tipo = 'EMPLEADO'),
+ 500.00, '2015-08-20', '684000014'),
+
+('84000015O', 'Leo', 'Salas',
+ (SELECT id_miembro FROM Miembro WHERE dni = '84000015O' AND tipo = 'EMPLEADO'),
+ 500.00, '2016-02-14', '684000015'),
+
+('84000016P', 'Iker', 'Soler',
+ (SELECT id_miembro FROM Miembro WHERE dni = '84000016P' AND tipo = 'EMPLEADO'),
+ 500.00, '2016-04-10', '684000016'),
+
+('84000017Q', 'Alex', 'Moya',
+ (SELECT id_miembro FROM Miembro WHERE dni = '84000017Q' AND tipo = 'EMPLEADO'),
+ 500.00, '2016-07-05', '684000017'),
+
+('84000018R', 'Luca', 'Bermejo',
+ (SELECT id_miembro FROM Miembro WHERE dni = '84000018R' AND tipo = 'EMPLEADO'),
+ 500.00, '2016-09-15', '684000018'),
+
 -- Benjamines Base
-('85000001A', 'Eric', 'Campos', 400.00, '2017-01-12', '685000001'),
-('85000002B', 'Luca', 'Vega', 400.00, '2017-02-17', '685000002'),
-('85000003C', 'Liam', 'Fuentes', 400.00, '2017-03-22', '685000003'),
-('85000004D', 'Noah', 'Carrasco', 400.00, '2017-04-27', '685000004'),
-('85000005E', 'Marc', 'Díez', 400.00, '2017-05-18', '685000005'),
-('85000006F', 'Pau', 'Caballero', 400.00, '2018-01-11', '685000006'),
-('85000007G', 'Biel', 'Reyes', 400.00, '2018-02-16', '685000007'),
-('85000008H', 'Nil', 'Nieto', 400.00, '2018-03-21', '685000008'),
-('85000009I', 'Pol', 'Aguilar', 400.00, '2018-04-26', '685000009'),
-('85000010J', 'Arnau', 'Pascual', 400.00, '2018-05-31', '685000010'),
-('85000011K', 'Jan', 'Calero', 400.00, '2017-01-20', '685000011'),
-('85000012L', 'Teo', 'Bernal', 400.00, '2017-03-15', '685000012'),
-('85000013M', 'Max', 'Gimeno', 400.00, '2017-05-22', '685000013'),
-('85000014N', 'Martí', 'Roldán', 400.00, '2017-08-10', '685000014'),
-('85000015O', 'Pol', 'Esteban', 400.00, '2018-02-18', '685000015'),
-('85000016P', 'Roc', 'Chaves', 400.00, '2018-04-12', '685000016'),
-('85000017Q', 'Nil', 'Montes', 400.00, '2018-06-25', '685000017'),
-('85000018R', 'Unai', 'Casas', 400.00, '2018-09-08', '685000018'),
+
+('85000001A', 'Eric', 'Campos',
+ (SELECT id_miembro FROM Miembro WHERE dni = '85000001A' AND tipo = 'EMPLEADO'),
+ 400.00, '2017-01-12', '685000001'),
+
+('85000002B', 'Luca', 'Vega',
+ (SELECT id_miembro FROM Miembro WHERE dni = '85000002B' AND tipo = 'EMPLEADO'),
+ 400.00, '2017-02-17', '685000002'),
+
+('85000003C', 'Liam', 'Fuentes',
+ (SELECT id_miembro FROM Miembro WHERE dni = '85000003C' AND tipo = 'EMPLEADO'),
+ 400.00, '2017-03-22', '685000003'),
+
+('85000004D', 'Noah', 'Carrasco',
+ (SELECT id_miembro FROM Miembro WHERE dni = '85000004D' AND tipo = 'EMPLEADO'),
+ 400.00, '2017-04-27', '685000004'),
+
+('85000005E', 'Marc', 'Díez',
+ (SELECT id_miembro FROM Miembro WHERE dni = '85000005E' AND tipo = 'EMPLEADO'),
+ 400.00, '2017-05-18', '685000005'),
+
+('85000006F', 'Pau', 'Caballero',
+ (SELECT id_miembro FROM Miembro WHERE dni = '85000006F' AND tipo = 'EMPLEADO'),
+ 400.00, '2018-01-11', '685000006'),
+
+('85000007G', 'Biel', 'Reyes',
+ (SELECT id_miembro FROM Miembro WHERE dni = '85000007G' AND tipo = 'EMPLEADO'),
+ 400.00, '2018-02-16', '685000007'),
+
+('85000008H', 'Nil', 'Nieto',
+ (SELECT id_miembro FROM Miembro WHERE dni = '85000008H' AND tipo = 'EMPLEADO'),
+ 400.00, '2018-03-21', '685000008'),
+
+('85000009I', 'Pol', 'Aguilar',
+ (SELECT id_miembro FROM Miembro WHERE dni = '85000009I' AND tipo = 'EMPLEADO'),
+ 400.00, '2018-04-26', '685000009'),
+
+('85000010J', 'Arnau', 'Pascual',
+ (SELECT id_miembro FROM Miembro WHERE dni = '85000010J' AND tipo = 'EMPLEADO'),
+ 400.00, '2018-05-31', '685000010'),
+
+('85000011K', 'Jan', 'Calero',
+ (SELECT id_miembro FROM Miembro WHERE dni = '85000011K' AND tipo = 'EMPLEADO'),
+ 400.00, '2017-01-20', '685000011'),
+
+('85000012L', 'Teo', 'Bernal',
+ (SELECT id_miembro FROM Miembro WHERE dni = '85000012L' AND tipo = 'EMPLEADO'),
+ 400.00, '2017-03-15', '685000012'),
+
+('85000013M', 'Max', 'Gimeno',
+ (SELECT id_miembro FROM Miembro WHERE dni = '85000013M' AND tipo = 'EMPLEADO'),
+ 400.00, '2017-05-22', '685000013'),
+
+('85000014N', 'Martí', 'Roldán',
+ (SELECT id_miembro FROM Miembro WHERE dni = '85000014N' AND tipo = 'EMPLEADO'),
+ 400.00, '2017-08-10', '685000014'),
+
+('85000015O', 'Pol', 'Esteban',
+ (SELECT id_miembro FROM Miembro WHERE dni = '85000015O' AND tipo = 'EMPLEADO'),
+ 400.00, '2018-02-18', '685000015'),
+
+('85000016P', 'Roc', 'Chaves',
+ (SELECT id_miembro FROM Miembro WHERE dni = '85000016P' AND tipo = 'EMPLEADO'),
+ 400.00, '2018-04-12', '685000016'),
+
+('85000017Q', 'Nil', 'Montes',
+ (SELECT id_miembro FROM Miembro WHERE dni = '85000017Q' AND tipo = 'EMPLEADO'),
+ 400.00, '2018-06-25', '685000017'),
+
+('85000018R', 'Unai', 'Casas',
+ (SELECT id_miembro FROM Miembro WHERE dni = '85000018R' AND tipo = 'EMPLEADO'),
+ 400.00, '2018-09-08', '685000018'),
+
 -- Prebenjamines Base
-('86000001A', 'Teo', 'Santana', 300.00, '2019-01-10', '686000001'),
-('86000002B', 'Jan', 'Herrero', 300.00, '2019-02-15', '686000002'),
-('86000003C', 'Alex', 'Lorenzo', 300.00, '2019-03-20', '686000003'),
-('86000004D', 'Jon', 'Montero', 300.00, '2019-04-25', '686000004'),
-('86000005E', 'Max', 'Hidalgo', 300.00, '2019-05-30', '686000005'),
-('86000006F', 'Roc', 'Giménez', 300.00, '2020-01-12', '686000006'),
-('86000007G', 'Martí', 'Ibáñez', 300.00, '2020-02-18', '686000007'),
-('86000008H', 'Aleix', 'Ferrer', 300.00, '2020-03-24', '686000008'),
-('86000009I', 'Brais', 'Durán', 300.00, '2020-04-19', '686000009'),
-('86000010J', 'Unai', 'Santiago', 300.00, '2020-05-15', '686000010'),
-('86000011K', 'Brais', 'Salguero', 300.00, '2019-01-15', '686000011'),
-('86000012L', 'Aleix', 'Vergara', 300.00, '2019-03-18', '686000012'),
-('86000013M', 'Enzo', 'Noguera', 300.00, '2019-05-20', '686000013'),
-('86000014N', 'Gael', 'Pineda', 300.00, '2019-08-12', '686000014'),
-('86000015O', 'Thiago', 'Godoy', 300.00, '2020-02-14', '686000015'),
-('86000016P', 'Noah', 'Beltrán', 300.00, '2020-04-16', '686000016'),
-('86000017Q', 'Liam', 'Alcaide', 300.00, '2020-06-22', '686000017'),
-('86000018R', 'Eric', 'Castaño', 300.00, '2020-09-10', '686000018'),
+
+('86000001A', 'Teo', 'Santana',
+ (SELECT id_miembro FROM Miembro WHERE dni = '86000001A' AND tipo = 'EMPLEADO'),
+ 300.00, '2019-01-10', '686000001'),
+
+('86000002B', 'Jan', 'Herrero',
+ (SELECT id_miembro FROM Miembro WHERE dni = '86000002B' AND tipo = 'EMPLEADO'),
+ 300.00, '2019-02-15', '686000002'),
+
+('86000003C', 'Alex', 'Lorenzo',
+ (SELECT id_miembro FROM Miembro WHERE dni = '86000003C' AND tipo = 'EMPLEADO'),
+ 300.00, '2019-03-20', '686000003'),
+
+('86000004D', 'Jon', 'Montero',
+ (SELECT id_miembro FROM Miembro WHERE dni = '86000004D' AND tipo = 'EMPLEADO'),
+ 300.00, '2019-04-25', '686000004'),
+
+('86000005E', 'Max', 'Hidalgo',
+ (SELECT id_miembro FROM Miembro WHERE dni = '86000005E' AND tipo = 'EMPLEADO'),
+ 300.00, '2019-05-30', '686000005'),
+
+('86000006F', 'Roc', 'Giménez',
+ (SELECT id_miembro FROM Miembro WHERE dni = '86000006F' AND tipo = 'EMPLEADO'),
+ 300.00, '2020-01-12', '686000006'),
+
+('86000007G', 'Martí', 'Ibáñez',
+ (SELECT id_miembro FROM Miembro WHERE dni = '86000007G' AND tipo = 'EMPLEADO'),
+ 300.00, '2020-02-18', '686000007'),
+
+('86000008H', 'Aleix', 'Ferrer',
+ (SELECT id_miembro FROM Miembro WHERE dni = '86000008H' AND tipo = 'EMPLEADO'),
+ 300.00, '2020-03-24', '686000008'),
+
+('86000009I', 'Brais', 'Durán',
+ (SELECT id_miembro FROM Miembro WHERE dni = '86000009I' AND tipo = 'EMPLEADO'),
+ 300.00, '2020-04-19', '686000009'),
+
+('86000010J', 'Unai', 'Santiago',
+ (SELECT id_miembro FROM Miembro WHERE dni = '86000010J' AND tipo = 'EMPLEADO'),
+ 300.00, '2020-05-15', '686000010'),
+
+('86000011K', 'Brais', 'Salguero',
+ (SELECT id_miembro FROM Miembro WHERE dni = '86000011K' AND tipo = 'EMPLEADO'),
+ 300.00, '2019-01-15', '686000011'),
+
+('86000012L', 'Aleix', 'Vergara',
+ (SELECT id_miembro FROM Miembro WHERE dni = '86000012L' AND tipo = 'EMPLEADO'),
+ 300.00, '2019-03-18', '686000012'),
+
+('86000013M', 'Enzo', 'Noguera',
+ (SELECT id_miembro FROM Miembro WHERE dni = '86000013M' AND tipo = 'EMPLEADO'),
+ 300.00, '2019-05-20', '686000013'),
+
+('86000014N', 'Gael', 'Pineda',
+ (SELECT id_miembro FROM Miembro WHERE dni = '86000014N' AND tipo = 'EMPLEADO'),
+ 300.00, '2019-08-12', '686000014'),
+
+('86000015O', 'Thiago', 'Godoy',
+ (SELECT id_miembro FROM Miembro WHERE dni = '86000015O' AND tipo = 'EMPLEADO'),
+ 300.00, '2020-02-14', '686000015'),
+
+('86000016P', 'Noah', 'Beltrán',
+ (SELECT id_miembro FROM Miembro WHERE dni = '86000016P' AND tipo = 'EMPLEADO'),
+ 300.00, '2020-04-16', '686000016'),
+
+('86000017Q', 'Liam', 'Alcaide',
+ (SELECT id_miembro FROM Miembro WHERE dni = '86000017Q' AND tipo = 'EMPLEADO'),
+ 300.00, '2020-06-22', '686000017'),
+
+('86000018R', 'Eric', 'Castaño',
+ (SELECT id_miembro FROM Miembro WHERE dni = '86000018R' AND tipo = 'EMPLEADO'),
+ 300.00, '2020-09-10', '686000018'),
+
 -- Técnicos adicionales Base
-('91000001A', 'Raúl', 'Hernández', 2100.00, '1984-03-12', '691000001'),
-('91000002B', 'Marcos', 'Iglesias', 1950.00, '1988-07-25', '691000002'),
-('91000003C', 'Adrián', 'Cano', 2200.00, '1982-11-14', '691000003'),
-('91000004D', 'David', 'Giménez', 1900.00, '1991-05-09', '691000004'),
-('91000005E', 'Pablo', 'Vidal', 2300.00, '1986-09-30', '691000005'),
-('91000006F', 'Fernando', 'Romero', 2050.00, '1989-01-17', '691000006'),
-('91000007G', 'Javier', 'Santos', 2150.00, '1985-06-22', '691000007'),
-('91000008H', 'Álvaro', 'Morales', 2000.00, '1993-10-05', '691000008'),
-('91000009I', 'Gonzalo', 'Molina', 2250.00, '1980-04-18', '691000009'),
-('91000010J', 'Santiago', 'Delgado', 1950.00, '1995-12-08', '691000010'),
+
+('91000001A', 'Raúl', 'Hernández',
+ (SELECT id_miembro FROM Miembro WHERE dni = '91000001A' AND tipo = 'EMPLEADO'),
+ 2100.00, '1984-03-12', '691000001'),
+
+('91000002B', 'Marcos', 'Iglesias',
+ (SELECT id_miembro FROM Miembro WHERE dni = '91000002B' AND tipo = 'EMPLEADO'),
+ 1950.00, '1988-07-25', '691000002'),
+
+('91000003C', 'Adrián', 'Cano',
+ (SELECT id_miembro FROM Miembro WHERE dni = '91000003C' AND tipo = 'EMPLEADO'),
+ 2200.00, '1982-11-14', '691000003'),
+
+('91000004D', 'David', 'Giménez',
+ (SELECT id_miembro FROM Miembro WHERE dni = '91000004D' AND tipo = 'EMPLEADO'),
+ 1900.00, '1991-05-09', '691000004'),
+
+('91000005E', 'Pablo', 'Vidal',
+ (SELECT id_miembro FROM Miembro WHERE dni = '91000005E' AND tipo = 'EMPLEADO'),
+ 2300.00, '1986-09-30', '691000005'),
+
+('91000006F', 'Fernando', 'Romero',
+ (SELECT id_miembro FROM Miembro WHERE dni = '91000006F' AND tipo = 'EMPLEADO'),
+ 2050.00, '1989-01-17', '691000006'),
+
+('91000007G', 'Javier', 'Santos',
+ (SELECT id_miembro FROM Miembro WHERE dni = '91000007G' AND tipo = 'EMPLEADO'),
+ 2150.00, '1985-06-22', '691000007'),
+
+('91000008H', 'Álvaro', 'Morales',
+ (SELECT id_miembro FROM Miembro WHERE dni = '91000008H' AND tipo = 'EMPLEADO'),
+ 2000.00, '1993-10-05', '691000008'),
+
+('91000009I', 'Gonzalo', 'Molina',
+ (SELECT id_miembro FROM Miembro WHERE dni = '91000009I' AND tipo = 'EMPLEADO'),
+ 2250.00, '1980-04-18', '691000009'),
+
+('91000010J', 'Santiago', 'Delgado',
+ (SELECT id_miembro FROM Miembro WHERE dni = '91000010J' AND tipo = 'EMPLEADO'),
+ 1950.00, '1995-12-08', '691000010'),
+
 -- Nuevos entrenadores Base
-('92000001A', 'Álvaro', 'Cervera', 5000.00, '1975-09-20', '692000001'),
-('92000002B', 'Roberto', 'Perera', 3500.00, '1980-04-12', '692000002'),
-('92000003C', 'Jaime', 'Álvarez', 3000.00, '1986-02-28', '692000003'),
-('92000004D', 'Andrés', 'Vallina', 2500.00, '1988-10-15', '692000004'),
+
+('92000001A', 'Álvaro', 'Cervera',
+ (SELECT id_miembro FROM Miembro WHERE dni = '92000001A' AND tipo = 'EMPLEADO'),
+ 5000.00, '1975-09-20', '692000001'),
+
+('92000002B', 'Roberto', 'Perera',
+ (SELECT id_miembro FROM Miembro WHERE dni = '92000002B' AND tipo = 'EMPLEADO'),
+ 3500.00, '1980-04-12', '692000002'),
+
+('92000003C', 'Jaime', 'Álvarez',
+ (SELECT id_miembro FROM Miembro WHERE dni = '92000003C' AND tipo = 'EMPLEADO'),
+ 3000.00, '1986-02-28', '692000003'),
+
+('92000004D', 'Andrés', 'Vallina',
+ (SELECT id_miembro FROM Miembro WHERE dni = '92000004D' AND tipo = 'EMPLEADO'),
+ 2500.00, '1988-10-15', '692000004'),
+
 -- Jugadores equipo 1 Base
-('93000001A', 'Carlos', 'Martínez', 2800.00, '1998-04-12', '693000001'),
-('93000002B', 'David', 'Costas', 3000.00, '1995-03-26', '693000002'),
-('93000003C', 'Dani', 'Calvo', 2900.00, '1994-04-01', '693000003'),
-('93000004D', 'Rodri', 'Tarín', 2600.00, '1996-07-05', '693000004'),
-('93000005E', 'Lucas', 'Ahijado', 2400.00, '1995-01-30', '693000005'),
-('93000006F', 'Luismi', 'Sánchez', 2700.00, '1992-05-05', '693000006'),
-('93000007G', 'Víctor', 'Camarasa', 3100.00, '1994-05-28', '693000007'),
-('93000008H', 'Hugo', 'Rama', 2500.00, '1996-11-22', '693000008'),
-('93000009I', 'Viti', 'Rozada', 2600.00, '1997-09-16', '693000009'),
-('93000010J', 'Masca', 'Gómez', 2300.00, '2000-07-10', '693000010'),
+
+('93000001A', 'Carlos', 'Martínez',
+ (SELECT id_miembro FROM Miembro WHERE dni = '93000001A' AND tipo = 'EMPLEADO'),
+ 2800.00, '1998-04-12', '693000001'),
+
+('93000002B', 'David', 'Costas',
+ (SELECT id_miembro FROM Miembro WHERE dni = '93000002B' AND tipo = 'EMPLEADO'),
+ 3000.00, '1995-03-26', '693000002'),
+
+('93000003C', 'Dani', 'Calvo',
+ (SELECT id_miembro FROM Miembro WHERE dni = '93000003C' AND tipo = 'EMPLEADO'),
+ 2900.00, '1994-04-01', '693000003'),
+
+('93000004D', 'Rodri', 'Tarín',
+ (SELECT id_miembro FROM Miembro WHERE dni = '93000004D' AND tipo = 'EMPLEADO'),
+ 2600.00, '1996-07-05', '693000004'),
+
+('93000005E', 'Lucas', 'Ahijado',
+ (SELECT id_miembro FROM Miembro WHERE dni = '93000005E' AND tipo = 'EMPLEADO'),
+ 2400.00, '1995-01-30', '693000005'),
+
+('93000006F', 'Luismi', 'Sánchez',
+ (SELECT id_miembro FROM Miembro WHERE dni = '93000006F' AND tipo = 'EMPLEADO'),
+ 2700.00, '1992-05-05', '693000006'),
+
+('93000007G', 'Víctor', 'Camarasa',
+ (SELECT id_miembro FROM Miembro WHERE dni = '93000007G' AND tipo = 'EMPLEADO'),
+ 3100.00, '1994-05-28', '693000007'),
+
+('93000008H', 'Hugo', 'Rama',
+ (SELECT id_miembro FROM Miembro WHERE dni = '93000008H' AND tipo = 'EMPLEADO'),
+ 2500.00, '1996-11-22', '693000008'),
+
+('93000009I', 'Viti', 'Rozada',
+ (SELECT id_miembro FROM Miembro WHERE dni = '93000009I' AND tipo = 'EMPLEADO'),
+ 2600.00, '1997-09-16', '693000009'),
+
+('93000010J', 'Masca', 'Gómez',
+ (SELECT id_miembro FROM Miembro WHERE dni = '93000010J' AND tipo = 'EMPLEADO'),
+ 2300.00, '2000-07-10', '693000010'),
+
 -- Jugadores equipo 2 Base
-('94000001A', 'Marco', 'Suárez', 1500.00, '2004-06-15', '694000001'),
-('94000002B', 'Charbel', 'Gómez', 1400.00, '2004-01-20', '694000002'),
-('94000003C', 'Jaime', 'Vázquez', 1400.00, '2005-02-14', '694000003'),
-('94000004D', 'Osky', 'Menéndez', 1300.00, '2004-08-30', '694000004'),
-('94000005E', 'Yayo', 'González', 1600.00, '2004-07-18', '694000005'),
-('94000006F', 'Víctor', 'Blanco', 1400.00, '2003-04-10', '694000006'),
-('94000007G', 'Nacho', 'Estrada', 1350.00, '2004-11-25', '694000007'),
-('94000008H', 'Mario', 'Fuente', 1500.00, '2004-03-08', '694000008'),
-('94000009I', 'Enric', 'Baquero', 1450.00, '2002-09-12', '694000009'),
-('94000010J', 'Pelayo', 'Rey', 1350.00, '2004-05-19', '694000010'),
+
+('94000001A', 'Marco', 'Suárez',
+ (SELECT id_miembro FROM Miembro WHERE dni = '94000001A' AND tipo = 'EMPLEADO'),
+ 1500.00, '2004-06-15', '694000001'),
+
+('94000002B', 'Charbel', 'Gómez',
+ (SELECT id_miembro FROM Miembro WHERE dni = '94000002B' AND tipo = 'EMPLEADO'),
+ 1400.00, '2004-01-20', '694000002'),
+
+('94000003C', 'Jaime', 'Vázquez',
+ (SELECT id_miembro FROM Miembro WHERE dni = '94000003C' AND tipo = 'EMPLEADO'),
+ 1400.00, '2005-02-14', '694000003'),
+
+('94000004D', 'Osky', 'Menéndez',
+ (SELECT id_miembro FROM Miembro WHERE dni = '94000004D' AND tipo = 'EMPLEADO'),
+ 1300.00, '2004-08-30', '694000004'),
+
+('94000005E', 'Yayo', 'González',
+ (SELECT id_miembro FROM Miembro WHERE dni = '94000005E' AND tipo = 'EMPLEADO'),
+ 1600.00, '2004-07-18', '694000005'),
+
+('94000006F', 'Víctor', 'Blanco',
+ (SELECT id_miembro FROM Miembro WHERE dni = '94000006F' AND tipo = 'EMPLEADO'),
+ 1400.00, '2003-04-10', '694000006'),
+
+('94000007G', 'Nacho', 'Estrada',
+ (SELECT id_miembro FROM Miembro WHERE dni = '94000007G' AND tipo = 'EMPLEADO'),
+ 1350.00, '2004-11-25', '694000007'),
+
+('94000008H', 'Mario', 'Fuente',
+ (SELECT id_miembro FROM Miembro WHERE dni = '94000008H' AND tipo = 'EMPLEADO'),
+ 1500.00, '2004-03-08', '694000008'),
+
+('94000009I', 'Enric', 'Baquero',
+ (SELECT id_miembro FROM Miembro WHERE dni = '94000009I' AND tipo = 'EMPLEADO'),
+ 1450.00, '2002-09-12', '694000009'),
+
+('94000010J', 'Pelayo', 'Rey',
+ (SELECT id_miembro FROM Miembro WHERE dni = '94000010J' AND tipo = 'EMPLEADO'),
+ 1350.00, '2004-05-19', '694000010'),
+
 -- Jugadores adicionales Base
-('95000001A', 'Adrián', 'López', 2200.00, '1998-02-10', '695000001'),
-('95000002B', 'Cristian', 'Rivera', 2300.00, '1997-07-09', '695000002'),
-('95000003C', 'Carlos', 'Dotor', 2100.00, '2001-03-15', '695000003'),
-('95000004D', 'Sebas', 'Moyano', 2400.00, '1997-03-23', '695000004'),
-('95000005E', 'Alemao', 'Silva', 2500.00, '1998-04-01', '695000005'),
-('95000006F', 'Paulino', 'Guerra', 2200.00, '1997-06-27', '695000006'),
-('95000007G', 'Álex', 'Millán', 2100.00, '1999-11-07', '695000007'),
-('95000008H', 'Ilyas', 'Chaira', 2000.00, '2001-02-02', '695000008'),
-('95000009I', 'Rahim', 'Alhassan', 2100.00, '2002-04-26', '695000009'),
-('95000010J', 'Kwasi', 'Sibo', 2200.00, '1998-06-24', '695000010');
+
+('95000001A', 'Adrián', 'López',
+ (SELECT id_miembro FROM Miembro WHERE dni = '95000001A' AND tipo = 'EMPLEADO'),
+ 2200.00, '1998-02-10', '695000001'),
+
+('95000002B', 'Cristian', 'Rivera',
+ (SELECT id_miembro FROM Miembro WHERE dni = '95000002B' AND tipo = 'EMPLEADO'),
+ 2300.00, '1997-07-09', '695000002'),
+
+('95000003C', 'Carlos', 'Dotor',
+ (SELECT id_miembro FROM Miembro WHERE dni = '95000003C' AND tipo = 'EMPLEADO'),
+ 2100.00, '2001-03-15', '695000003'),
+
+('95000004D', 'Sebas', 'Moyano',
+ (SELECT id_miembro FROM Miembro WHERE dni = '95000004D' AND tipo = 'EMPLEADO'),
+ 2400.00, '1997-03-23', '695000004'),
+
+('95000005E', 'Alemao', 'Silva',
+ (SELECT id_miembro FROM Miembro WHERE dni = '95000005E' AND tipo = 'EMPLEADO'),
+ 2500.00, '1998-04-01', '695000005'),
+
+('95000006F', 'Paulino', 'Guerra',
+ (SELECT id_miembro FROM Miembro WHERE dni = '95000006F' AND tipo = 'EMPLEADO'),
+ 2200.00, '1997-06-27', '695000006'),
+
+('95000007G', 'Álex', 'Millán',
+ (SELECT id_miembro FROM Miembro WHERE dni = '95000007G' AND tipo = 'EMPLEADO'),
+ 2100.00, '1999-11-07', '695000007'),
+
+('95000008H', 'Ilyas', 'Chaira',
+ (SELECT id_miembro FROM Miembro WHERE dni = '95000008H' AND tipo = 'EMPLEADO'),
+ 2000.00, '2001-02-02', '695000008'),
+
+('95000009I', 'Rahim', 'Alhassan',
+ (SELECT id_miembro FROM Miembro WHERE dni = '95000009I' AND tipo = 'EMPLEADO'),
+ 2100.00, '2002-04-26', '695000009'),
+
+('95000010J', 'Kwasi', 'Sibo',
+ (SELECT id_miembro FROM Miembro WHERE dni = '95000010J' AND tipo = 'EMPLEADO'),
+ 2200.00, '1998-06-24', '695000010');
 
 --------------------------------------------------------------------------------
 -- 7. ROL EMPLEADOS (Deportivos y No Deportivos)
@@ -627,6 +1248,24 @@ INSERT INTO "EmpleadoNoDeportivo" ("dni", "posicion") VALUES
 ('70707070J', 'EMPLEADO_DE_TIENDA'),
 ('70707070K', 'JARDINERIA'),
 ('70707070L', 'JARDINERIA');
+
+INSERT INTO "EmpleadoDeportivo" ("dni", "posicion") VALUES
+('92000001A', 'ENTRENADOR'), ('92000002B', 'ENTRENADOR'),
+('92000003C', 'ENTRENADOR'), ('92000004D', 'ENTRENADOR');
+
+-- Jugadores equipo 1
+INSERT INTO "EmpleadoDeportivo" ("dni", "posicion") VALUES
+('93000001A', 'JUGADOR'), ('93000002B', 'JUGADOR'), ('93000003C', 'JUGADOR'),
+('93000004D', 'JUGADOR'), ('93000005E', 'JUGADOR'), ('93000006F', 'JUGADOR'),
+('93000007G', 'JUGADOR'), ('93000008H', 'JUGADOR'), ('93000009I', 'JUGADOR'),
+('93000010J', 'JUGADOR');
+
+-- Jugadores equipo 2
+INSERT INTO "EmpleadoDeportivo" ("dni", "posicion") VALUES
+('94000001A', 'JUGADOR'), ('94000002B', 'JUGADOR'), ('94000003C', 'JUGADOR'),
+('94000004D', 'JUGADOR'), ('94000005E', 'JUGADOR'), ('94000006F', 'JUGADOR'),
+('94000007G', 'JUGADOR'), ('94000008H', 'JUGADOR'), ('94000009I', 'JUGADOR'),
+('94000010J', 'JUGADOR');
 
 --------------------------------------------------------------------------------
 -- 8. HORARIOS, INSTALACIONES, RESERVAS Y OTROS
@@ -730,11 +1369,23 @@ VALUES
         '2026-07-01', '2027-06-30','2026-10-25 09:15', 'JUBILADO', 250.00
     );
 
-INSERT INTO "Accionista" ("dni", "nombre", "apellidos", "email") VALUES
-('71987654A', 'Lucas', 'Vega Fernández', 'lucas.vega@correo.es'),
-('71876543B', 'Lucía', 'Fernández González', 'lucia.fernandez@correo.es'),
-('71765432C', 'Carlos', 'Rodríguez Menéndez', 'carlos.rodriguez@correo.es'),
-('71654321D', 'Elena', 'García Suárez', 'elena.garcia@correo.es');
+INSERT INTO "Accionista" ("dni", "id_miembro", "nombre", "apellidos", "email") VALUES
+
+('71987654A',
+ (SELECT "id_miembro" FROM "Miembro" WHERE "dni" = '71987654A' AND "tipo" = 'ACCIONISTA'),
+ 'Adrián', 'Martínez Alonso', 'adrian.martinez@correo.es'),
+
+('71876543B',
+ (SELECT "id_miembro" FROM "Miembro" WHERE "dni" = '71876543B' AND "tipo" = 'ACCIONISTA'),
+ 'Paula', 'Sánchez Iglesias', 'paula.sanchez@correo.es'),
+
+('71765432C',
+ (SELECT "id_miembro" FROM "Miembro" WHERE "dni" = '71765432C' AND "tipo" = 'ACCIONISTA'),
+ 'Daniel', 'Álvarez Fernández', 'daniel.alvarez@correo.es'),
+
+('71654321D',
+ (SELECT "id_miembro" FROM "Miembro" WHERE "dni" = '71654321D' AND "tipo" = 'ACCIONISTA'),
+ 'Marta', 'Pérez Rodríguez', 'marta.perez@correo.es');
 
 INSERT INTO "Campana" ("id_campana", "nombre", "fase", "precio_emision", "num_acciones", "acciones_vendidas", "estado", "fecha_lanzamiento") VALUES
 (1, 'Campaña 2024', 1, 10.00, 7, 7, 'CERRADA', '2024-01-01 09:00'),

@@ -65,17 +65,19 @@ CREATE TABLE IF NOT EXISTS "venta" (
 );
 
 CREATE TABLE IF NOT EXISTS "BaseEmpleado" (
+	
     "dni" TEXT NOT NULL,
     "nombre" TEXT NOT NULL,
     "apellido" TEXT NOT NULL,
+    "id_miembro" INTEGER NOT NULL UNIQUE,
     "salario" NUMERIC NOT NULL CHECK(salario > 0),
     "fecha_nacimiento" DATE NOT NULL,
     "numero_de_telefono" TEXT NOT NULL UNIQUE,
-
     PRIMARY KEY("dni"),
-    FOREIGN KEY("dni") REFERENCES Miembro(dni)
-		    ON DELETE CASCADE
-		    ON UPDATE CASCADE
+    FOREIGN KEY(id_miembro) REFERENCES Miembro(id_miembro)
+		ON DELETE CASCADE
+        ON UPDATE CASCADE
+    
 
 );
 
@@ -279,10 +281,11 @@ CREATE TABLE IF NOT EXISTS "TareaMantenimientoJardinero" (
 
 CREATE TABLE IF NOT EXISTS "Accionista" (
 	"dni" TEXT PRIMARY KEY,
+	"id_miembro" INTEGER NOT NULL UNIQUE,
 	"nombre" TEXT NOT NULL,
 	"apellidos" TEXT NOT NULL,
 	"email" TEXT,
-	FOREIGN KEY(dni) REFERENCES Miembro(dni)
+	FOREIGN KEY(id_miembro) REFERENCES Miembro(id_miembro)
 		ON DELETE CASCADE
         ON UPDATE CASCADE
 
@@ -346,7 +349,12 @@ CREATE TABLE IF NOT EXISTS "ImagenNoticia" (
 );
 
 CREATE TABLE IF NOT EXISTS "Miembro" (
-    "dni" TEXT PRIMARY KEY,
+    "id_miembro" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "dni" TEXT NOT NULL,
     "nombre_usuario" TEXT NOT NULL UNIQUE COLLATE NOCASE,
-    "contrasena" TEXT NOT NULL
+    "contrasena" TEXT NOT NULL,
+    "tipo" TEXT NOT NULL DEFAULT 'EMPLEADO'
+        CHECK("tipo" IN ('EMPLEADO', 'ACCIONISTA')),
+    UNIQUE("dni", "tipo")
 );
+
