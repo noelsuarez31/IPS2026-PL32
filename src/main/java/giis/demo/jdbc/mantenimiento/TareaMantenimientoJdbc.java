@@ -19,9 +19,10 @@ public class TareaMantenimientoJdbc {
 	// 1. Obtener empleados que son exclusivamente JARDINEROS
 	private static final String QUERY_GET_JARDINEROS = 
 			"SELECT be.dni, be.nombre, be.apellido, be.salario, be.fecha_nacimiento, be.numero_de_telefono, end.posicion, "
-			+" be.nombre_usuario, be.contrasena "
+			+ "m.nombre_usuario, m.contrasena "
 			+ "FROM EmpleadoNoDeportivo end "
 			+ "JOIN BaseEmpleado be ON end.dni = be.dni "
+			+ "JOIN Miembro m ON be.id_miembro = m.id_miembro "
 			+ "WHERE end.posicion = 'JARDINERIA' "
 			+ "ORDER BY be.apellido, be.nombre";
 
@@ -50,10 +51,11 @@ public class TareaMantenimientoJdbc {
 
 	// 5. Obtener los jardineros asignados a una tarea concreta
 	private static final String QUERY_GET_JARDINEROS_DE_TAREA = 
-			"SELECT be.dni, be.nombre, be.apellido, be.salario, be.fecha_nacimiento, be.numero_de_telefono, end.posicion, be.nombre_usuario, be.contrasena "
+			"SELECT be.dni, be.nombre, be.apellido, be.salario, be.fecha_nacimiento, be.numero_de_telefono, end.posicion, m.nombre_usuario, m.contrasena "
 			+ "FROM TareaMantenimientoJardinero tmj "
 			+ "JOIN EmpleadoNoDeportivo end ON tmj.dni_jardinero = end.dni "
 			+ "JOIN BaseEmpleado be ON end.dni = be.dni "
+			+ "JOIN Miembro m ON be.id_miembro = m.id_miembro "
 			+ "WHERE tmj.id_tarea = ? "
 			+ "ORDER BY be.apellido, be.nombre";
 
