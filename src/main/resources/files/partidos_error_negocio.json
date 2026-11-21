@@ -1,0 +1,18 @@
+[
+  {
+    "equipoLocal": "Real Oviedo",
+    "equipoVisitante": "Real Oviedo",
+    "fecha": "2026-12-20",
+    "horaInicio": "16:00",
+    "horaFin": "18:00",
+    "instalacion": "Campo de fútbol 1"
+  },
+  {
+    "equipoLocal": "Real Oviedo",
+    "equipoVisitante": "FC Barcelona",
+    "fecha": "2026-12-21",
+    "horaInicio": "18:00",
+    "horaFin": "20:00",
+    "instalacion": "Campo de fútbol 1"
+  }
+]
