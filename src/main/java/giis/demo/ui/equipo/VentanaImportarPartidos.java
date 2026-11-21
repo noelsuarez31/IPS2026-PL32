@@ -60,7 +60,6 @@ public class VentanaImportarPartidos extends JFrame {
 		this.vPrincipal = vPrincipal;
 		this.service = vPrincipal.getImportarPartidosService();
 		
-		
 		setTitle("Importar Partidos desde Archivo Externo (Gerente)");
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 950, 580);

@@ -29,6 +29,7 @@ import giis.demo.model.entrevistas.CrearEntrevistaService;
 import giis.demo.model.entrevistas.CrearFranjaService;
 import giis.demo.model.equipo.AñadirEquipoService;
 import giis.demo.model.equipo.CrearEntrenamientoService;
+import giis.demo.model.equipo.ImportarPartidosService;
 import giis.demo.model.equipo.PlanificarPartidoService;
 import giis.demo.model.historial.HistorialVentas;
 import giis.demo.model.horarios.GestionHorarioSemanal;
@@ -53,6 +54,7 @@ import giis.demo.ui.entrevistas.VentanaCrearEntrevistas;
 import giis.demo.ui.entrevistas.VentanaCrearFranjas;
 import giis.demo.ui.equipo.VentanaAñadirEquipo;
 import giis.demo.ui.equipo.VentanaCrearEntrenamiento;
+import giis.demo.ui.equipo.VentanaImportarPartidos;
 import giis.demo.ui.equipo.VentanaPlanificarPartido;
 import giis.demo.ui.historial.VentanaHistorialVentas;
 import giis.demo.ui.horarios.VentanaHorarioEspecifico;
@@ -107,6 +109,7 @@ public class VentanaPrincipal extends JFrame {
 
 	private AñadirNoticiaService añadirNoticiaService = new AñadirNoticiaService();
 	private VisualizarNoticiasService visualizarNoticiaService = new VisualizarNoticiasService();
+	private ImportarPartidosService importarPartidosService = new ImportarPartidosService();
 
 	/**
 	 * Create the frame.
@@ -469,6 +472,13 @@ public class VentanaPrincipal extends JFrame {
 		this.setVisible(false);
 		ventana.setVisible(true);
 	}
+	
+	private void abrirVentanaImportarPartidos() {
+		GestionLogSesion.registrarAccion("Ventana Importar Partidos");
+		VentanaImportarPartidos vImpPartidos = new VentanaImportarPartidos(this);
+		this.setVisible(false);
+		vImpPartidos.setVisible(true);
+	}
 
 	public AñadirNoticiaService getAñadirNoticiaService() {
 		return añadirNoticiaService;
@@ -480,6 +490,10 @@ public class VentanaPrincipal extends JFrame {
 
 	public CrearEntrenamientoService getCrearEntrenamientoService() {
 		return this.crearEntrenoService;
+	}
+	
+	public ImportarPartidosService getImportarPartidosService() {
+		return this.importarPartidosService;
 	}
 
 	private JPanel getPanelUser() {
@@ -711,6 +725,7 @@ public class VentanaPrincipal extends JFrame {
 			añadirBoton(panelSubmenu, "Añadir equipo", this::abrirVentanaAñadirEquipo);
 			añadirBoton(panelSubmenu, "Planificar partido", this::gestionPlanificarPartido);
 			añadirBoton(panelSubmenu, "Añadir servicio de mantenimiento", this::abrirVentanaAñadirMantenimiento);
+			añadirBoton(panelSubmenu, "Importar partidos", this::abrirVentanaImportarPartidos);
 		});
 	}
 
