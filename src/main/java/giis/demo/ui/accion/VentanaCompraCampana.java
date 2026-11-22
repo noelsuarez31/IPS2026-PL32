@@ -33,7 +33,7 @@ import giis.demo.model.accion.InfoCompra;
 import giis.demo.model.accion.ResultadoCompra;
 import giis.demo.model.email.ResumenCompra;
 import giis.demo.model.email.ServicioEmail;
-import giis.demo.ui.VentanaPrincipal;
+import giis.demo.ui.login.VentanaPrincipal;
 import giis.demo.util.ApplicationException;
 import javax.swing.JPasswordField;
 

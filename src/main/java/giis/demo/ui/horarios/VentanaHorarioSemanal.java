@@ -31,7 +31,7 @@ import giis.demo.model.empleado.EmpleadoNoDeportivo;
 import giis.demo.model.horarios.GestionHorarioSemanal;
 import giis.demo.model.horarios.HorarioSemanal;
 import giis.demo.model.log.GestionLogSesion;
-import giis.demo.ui.VentanaPrincipal;
+import giis.demo.ui.login.VentanaPrincipal;
 import giis.demo.util.SwingUtil;
 import giis.demo.util.UnexpectedException;
 

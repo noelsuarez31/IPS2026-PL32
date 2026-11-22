@@ -35,6 +35,7 @@ import giis.demo.jdbc.horarios.HorarioEspecificoJdbc;
 import giis.demo.jdbc.horarios.HorarioPeriodicoJdbc;
 import giis.demo.jdbc.login.MiembroJdbc;
 import giis.demo.jdbc.mantenimiento.TareaMantenimientoJdbc;
+import giis.demo.jdbc.medico.LesionJdbc;
 import giis.demo.jdbc.noticias.NoticiaJdbc;
 import giis.demo.jdbc.reservas.ComprobarDisponibilidadJdbc;
 import giis.demo.jdbc.reservas.InstalacionJdbc;
@@ -65,6 +66,8 @@ import giis.demo.model.horarios.HorarioEspecifico;
 import giis.demo.model.horarios.HorarioPeriodico;
 import giis.demo.model.log.GestionLogSesion;
 import giis.demo.model.mantenimiento.TareaMantenimiento;
+import giis.demo.model.medico.EvolucionLesion;
+import giis.demo.model.medico.Lesion;
 import giis.demo.model.noticias.Noticia;
 import giis.demo.model.reserva.Instalacion;
 import giis.demo.model.reserva.Intervalo;
@@ -339,23 +342,31 @@ public class JDBC {
 		try {
 			con.setAutoCommit(false);
 
-			if (!MiembroJdbc.existeMiembro(con, empleado.getDni())) {
-				MiembroJdbc.insertarMiembro(con, empleado.getDni(), empleado.getUsuario(), empleado.getContrasena());
+			// Comprobamos si ya existe una cuenta de tipo EMPLEADO
+			if (!MiembroJdbc.existeMiembro(con, empleado.getDni(), "EMPLEADO")) {
+
+				// Si no existe, creamos la cuenta de empleado
+				MiembroJdbc.insertarMiembro(con, empleado.getDni(), empleado.getUsuario(), empleado.getContrasena(),
+						"EMPLEADO");
 			}
 
 			BaseEmpleadoJdbc.insertarBaseEmpleado(con, empleado);
+
 			if (empleado instanceof EmpleadoDeportivo) {
 				EmpleadoDeportivoJdbc.insertarEmpleadoDeportivo(con, (EmpleadoDeportivo) empleado);
 			} else {
 				EmpleadoNoDeportivoJdbc.insertarEmpleadoNoDeportivo(con, (EmpleadoNoDeportivo) empleado);
 			}
+
 			con.commit();
+
 			GestionLogSesion.registrarModificacionBBDD("insert",
 					"BaseEmpleado (dni=" + empleado.getDni() + ", usuario=" + empleado.getUsuario() + ", puesto="
 							+ empleado.getPosicion() + ")");
 		} catch (SQLException e) {
 			con.rollback();
 			throw e;
+
 		} finally {
 			con.setAutoCommit(autoCommitOriginal);
 		}
@@ -1027,6 +1038,15 @@ public class JDBC {
 	public int obtenerIdEquipoPorDniEntrenador(String dniEntrenador) throws SQLException {
 		return EntrenamientoJdbc.obtenerIdEquipoPorDniEntrenador(con, dniEntrenador);
 	}
+	
+	/**
+	 * Devuelve la lista de noticias almacenadas en la BBDD
+	 * @return
+	 * @throws SQLException
+	 */
+	public List<Noticia> getNoticias() throws SQLException {
+		return NoticiaJdbc.getNoticias(con);
+	}
 
 	/**
 	 * Devuelve una lista de eventos que ocupan las instalaciones. Incluye: Tareas
@@ -1186,96 +1206,78 @@ public class JDBC {
 	}
 
 	/**
-	 * Comprueba si existe un miembro con el DNI indicado.
+	 * Comprueba si existe una cuenta de un miembro según su DNI y tipo.
 	 */
-	public boolean existeMiembro(String dni) throws SQLException {
-		return MiembroJdbc.existeMiembro(con, dni);
+	public boolean existeMiembro(String dni, String tipo) throws SQLException {
+		return MiembroJdbc.existeMiembro(con, dni, tipo);
 	}
 
 	/**
-	 * Comprueba si existe el usuario
-	 * @param usuario
-	 * @return
-	 * @throws SQLException
+	 * Comprueba si existe un nombre de usuario.
 	 */
 	public boolean existeUsuarioEmpleado(String usuario) throws SQLException {
 		return MiembroJdbc.existeNombreUsuario(con, usuario);
 	}
 
-	
-	public boolean existeUsuarioEnOtroEmpleado(String usuario, String dniPropio) throws SQLException {
-		return MiembroJdbc.existeNombreUsuarioOtroMiembro(con, usuario, dniPropio);
+	/**
+	 * Comprueba si otro miembro utiliza ese nombre de usuario.
+	 */
+	public boolean existeUsuarioEnOtroEmpleado(String usuario, String dniPropio, String tipo) throws SQLException {
+		return MiembroJdbc.existeNombreUsuarioOtroMiembro(con, usuario, dniPropio, tipo);
+	}
+
+	/**
+	 * Devuelve las credenciales de un usuario. {dni, contrasena, tipo}
+	 */
+	public String[] getCredenciales(String nombreUsuario) throws SQLException {
+		return MiembroJdbc.getCredenciales(con, nombreUsuario);
+	}
+
+	/**
+	 * Devuelve las credenciales de todas las cuentas asociadas a un DNI. Cada
+	 * elemento contiene {nombreUsuario, contrasena, tipo}.
+	 */
+	public List<String[]> getCredencialesPorDni(String dni) throws SQLException {
+		return MiembroJdbc.getCredencialesPorDni(con, dni);
+	}
+
+	/**
+	 * Actualiza las credenciales de una cuenta concreta.
+	 */
+	public boolean actualizarCredenciales(String dni, String tipo, String user, String contrasenia)
+			throws SQLException {
+		return MiembroJdbc.actualizarCredenciales(con, dni, tipo, user, contrasenia);
+	}
+
+	/**
+	 * Elimina las credenciales de una cuenta concreta.
+	 */
+	public boolean eliminarCredenciales(String dni, String tipo) throws SQLException {
+		return MiembroJdbc.eliminarMiembro(con, dni, tipo);
 	}
 	
 	/**
 	 * Acciones que aun puede comprar un accionista en la fase 1 de la campaña (0 si
-	 * no consta).
+	 * no consta).a
 	 */
 	public int getCupoFase1Campana(int idCampana, String dni) throws SQLException {
 		return CompraCampanaJdbc.getCupoFase1(con, idCampana, dni);
 	}
-
+	
 	public void insertarNoticia(Noticia noticia) throws SQLException {
 		NoticiaJdbc.insertarNoticia(con, noticia);
 		GestionLogSesion.registrarModificacionBBDD("insert", "Noticia (" + noticia.getTitular() + ")");
 	}
 	
-	/**
-	 * Devuelve las credenciales de un usuario
-	 * @param nombreUsuario
-	 * @return
-	 * @throws SQLException
-	 */
-	public String[] getCredenciales(String nombreUsuario) throws SQLException {
-		return MiembroJdbc.getCredenciales(con, nombreUsuario);
+	public List<EmpleadoDeportivo> getJugadores() throws SQLException {
+		return EmpleadoDeportivoJdbc.getJugadores(con);
 	}
 	
-	/**
-	 * Devuelve las credenciales de un usuario dado un dni
-	 * @param nombreUsuario
-	 * @return
-	 * @throws SQLException
-	 */
-	public String[] getCredencialesPorDni(String dni) throws SQLException {
-	    return MiembroJdbc.getCredencialesPorDni(con, dni);
+	public List<Lesion> getLesionesJugador(String dniJugador) throws SQLException {
+		return LesionJdbc.getLesionesJugador(con, dniJugador);
 	}
 	
-	/**
-	 * Actualiza las credenciales
-	 * @param dni
-	 * @param user
-	 * @param contrasenia
-	 * @return trus si las actualiza, false en caso contrario
-	 * @throws SQLException 
-	 */
-	public boolean actualizarCredenciales(String dni, String user, String contrasenia) throws SQLException {
-		boolean actualizada = MiembroJdbc.actualizarCredenciales(con, dni, user, contrasenia);
-		if (actualizada) {
-			GestionLogSesion.registrarModificacionBBDD("update",
-					"Miembro (credenciales dni=" + dni + ", usuario=" + user + ")");
-		}
-		return actualizada;
-	}
-
-	/**
-	 * Elimina las credenciales asociadas a un miembro
-	 * 
-	 * @param dni
-	 * @return
-	 * @throws SQLException
-	 */
-	public boolean eliminarCredenciales(String dni) throws SQLException {
-		boolean eliminada = MiembroJdbc.eliminarMiembro(con, dni);
-		if (eliminada) {
-			GestionLogSesion.registrarModificacionBBDD("delete", "Miembro (credenciales dni=" + dni + ")");
-		}
-		return eliminada;
-	}
-
-	/**
-	 * Devuelve el rol asociado a un miembro a partir de su DNI.
-	 */
-	public String obtenerRolPorDni(String dni) throws SQLException {
-		return MiembroJdbc.obtenerRolPorDni(con, dni);
+	public List<EvolucionLesion> getEvolucionLesion(int idLesion) throws SQLException {
+		return LesionJdbc.getEvolucionLesion(con, idLesion);
 	}
 }

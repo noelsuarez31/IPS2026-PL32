@@ -2,7 +2,6 @@ package giis.demo.ui.login;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Arrays;
@@ -17,7 +16,7 @@ import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
 import giis.demo.model.login.Autenticacion;
-import giis.demo.ui.VentanaPrincipal;
+import giis.demo.model.rol.UsuarioAutenticado;
 import giis.demo.util.ApplicationException;
 
 public class VentanaLogin extends JFrame {
@@ -33,21 +32,7 @@ public class VentanaLogin extends JFrame {
 	private JButton btValidar;
 
 	private Autenticacion autenticacion;
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					VentanaLogin frame = new VentanaLogin();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
+	private UsuarioAutenticado usuarioAutenticado;
 
 	/**
 	 * Create the frame.
@@ -138,25 +123,26 @@ public class VentanaLogin extends JFrame {
 	}
 	
 	private void validar() {
-		
-		String usuario = tfUsuario.getText().toLowerCase();
-		char[] contrasenia = pfContrasenia.getPassword();
-		 
-		try {
-			if (!checkCredentials(usuario, contrasenia)) {
-				return;
-			}
- 
-			String dni = autenticacion.autenticar(usuario, new String(contrasenia));
- 
-			abrirVentanaPrincipal();
-			
-		} catch (ApplicationException e) {
-			JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-			pfContrasenia.setText("");
-		} finally {
-			Arrays.fill(contrasenia, ' ');
-		}
+	    String usuario = tfUsuario.getText().trim().toLowerCase();
+	    char[] contrasenia = pfContrasenia.getPassword();
+
+	    try {
+	        if (!checkCredentials(usuario, contrasenia)) {
+	            return;
+	        }
+
+	        UsuarioAutenticado usuarioA =
+	                autenticacion.autenticar(usuario, new String(contrasenia));
+	        this.usuarioAutenticado = usuarioA;
+	        abrirVentanaPrincipal();
+
+	    } catch (ApplicationException e) {
+	        JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+	        pfContrasenia.setText("");
+
+	    } finally {
+	        Arrays.fill(contrasenia, ' ');
+	    }
 	}
 	
 	private boolean checkCredentials(String usuario, char[] contrasenia) {
@@ -186,10 +172,25 @@ public class VentanaLogin extends JFrame {
 		return true;
 	}
 	
+	UsuarioAutenticado getUsuarioAutenticado() {
+		return usuarioAutenticado;
+	}
+	
 	private void abrirVentanaPrincipal() {
 		
-		VentanaPrincipal vp = new VentanaPrincipal();
+		VentanaPrincipal vp = new VentanaPrincipal(this);
 		vp.setVisible(true);
 		this.dispose();
 	}
+	
+	public void reiniciar() {
+		
+		this.tfUsuario.setText("");
+		this.pfContrasenia.setText("");
+		
+		this.btValidar.setEnabled(true);
+		
+	}
+	
+	
 }

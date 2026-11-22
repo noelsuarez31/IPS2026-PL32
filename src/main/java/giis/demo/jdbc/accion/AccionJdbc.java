@@ -20,7 +20,7 @@ public class AccionJdbc {
 	        "SELECT a.dni, a.nombre, a.apellidos, a.email, "
 	        + "m.nombre_usuario, m.contrasena "
 	        + "FROM Accionista a "
-	        + "JOIN Miembro m ON a.dni = m.dni "
+	        + "JOIN Miembro m ON a.dni = m.dni AND m.tipo = 'ACCIONISTA' "
 	        + "ORDER BY a.apellidos, a.nombre";
 	
 	// 2. Comprobar si existe un accionista por DNI y obtener sus datos
@@ -28,7 +28,7 @@ public class AccionJdbc {
 	        "SELECT a.dni, a.nombre, a.apellidos, a.email, "
 	        + "m.nombre_usuario, m.contrasena "
 	        + "FROM Accionista a "
-	        + "JOIN Miembro m ON a.dni = m.dni "
+	        + "JOIN Miembro m ON a.dni = m.dni AND m.tipo = 'ACCIONISTA' "
 	        + "WHERE UPPER(a.dni) = UPPER(?)";
 	
 	// 3. Obtener el número total de acciones emitidas por el club

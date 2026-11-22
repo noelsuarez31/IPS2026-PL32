@@ -46,7 +46,7 @@ import giis.demo.exceptions.TrainingException;
 import giis.demo.model.equipo.CrearEntrenamientoService;
 import giis.demo.model.equipo.EventoOcupacion;
 import giis.demo.model.reserva.Instalacion;
-import giis.demo.ui.VentanaPrincipal;
+import giis.demo.ui.login.VentanaPrincipal;
 
 public class VentanaCrearEntrenamiento extends JFrame {
 

@@ -31,10 +31,11 @@ import giis.demo.model.accion.Accion;
 import giis.demo.model.accion.Accionista;
 import giis.demo.model.accion.GestionAcciones;
 import giis.demo.model.accion.ResumenParticipacion;
-import giis.demo.model.log.GestionLogSesion;
-import giis.demo.ui.VentanaPrincipal;
+import giis.demo.ui.login.VentanaPrincipal;
 import giis.demo.util.SwingUtil;
 import giis.demo.util.UnexpectedException;
+import giis.demo.model.log.GestionLogSesion;
+
 
 /**
  * Ventana para la compra de acciones puestas a la venta por otros accionistas.

@@ -6,6 +6,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import giis.demo.model.noticias.Noticia;
@@ -18,6 +20,12 @@ public class NoticiaJdbc {
 	private static final String SQL_INSERT_IMAGEN = 
 			"INSERT INTO ImagenNoticia (id_noticia, ruta_imagen) VALUES (?, ?)";
 
+	/**
+	 * Almacena la noticia en la BBDD
+	 * @param con
+	 * @param noticia
+	 * @throws SQLException
+	 */
 	public static void insertarNoticia(Connection con, Noticia noticia) throws SQLException {
 		boolean autoCommitOriginal = con.getAutoCommit();
 		con.setAutoCommit(false);
@@ -77,5 +85,43 @@ public class NoticiaJdbc {
 		} finally {
 			con.setAutoCommit(autoCommitOriginal);
 		}
+	}
+	
+	/**
+	 * Devuelve la lista de noticias almacenadas en la BBDD
+	 * @param con
+	 * @return
+	 * @throws SQLException
+	 */
+	public static List<Noticia> getNoticias(Connection con) throws SQLException {
+		List<Noticia> lista = new ArrayList<>();
+		String sqlNoticias = "SELECT id_noticia, titular, subtitulo, fecha, autor, cuerpo FROM Noticia ORDER BY fecha DESC, id_noticia DESC";
+		String sqlImagenes = "SELECT ruta_imagen FROM ImagenNoticia WHERE id_noticia = ? ORDER BY id_imagen ASC";
+
+		try (PreparedStatement pst = con.prepareStatement(sqlNoticias);
+			 ResultSet rs = pst.executeQuery()) {
+			while (rs.next()) {
+				int id = rs.getInt("id_noticia");
+				String titular = rs.getString("titular");
+				String subtitulo = rs.getString("subtitulo");
+				String fechaStr = rs.getString("fecha");
+				LocalDate fecha = LocalDate.parse(fechaStr);
+				String autor = rs.getString("autor");
+				String cuerpo = rs.getString("cuerpo");
+
+				List<String> imagenes = new ArrayList<>();
+				try (PreparedStatement pstImg = con.prepareStatement(sqlImagenes)) {
+					pstImg.setInt(1, id);
+					try (ResultSet rsImg = pstImg.executeQuery()) {
+						while (rsImg.next()) {
+							imagenes.add(rsImg.getString("ruta_imagen"));
+						}
+					}
+				}
+
+				lista.add(new Noticia(id, titular, subtitulo, fecha, autor, cuerpo, imagenes));
+			}
+		}
+		return lista;
 	}
 }

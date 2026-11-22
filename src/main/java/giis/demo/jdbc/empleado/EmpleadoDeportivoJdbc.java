@@ -18,12 +18,12 @@ public class EmpleadoDeportivoJdbc {
 	        "SELECT * FROM EmpleadoDeportivo WHERE posicion=? AND id_equipo IS NULL";
 	
 	private static final String QUERY_GET_COMPLETE_ADITIONAL_MANAGERS =
-		        "SELECT be.nombre, be.apellido, be.salario, be.fecha_nacimiento, "
-		        + "be.numero_de_telefono, m.nombre_usuario, m.contrasena "
-		        + "FROM EmpleadoDeportivo ed "
-		        + "JOIN BaseEmpleado be ON ed.dni = be.dni "
-		        + "JOIN Miembro m ON be.dni = m.dni "
-		        + "WHERE ed.dni=?";
+	        "SELECT be.nombre, be.apellido, be.salario, be.fecha_nacimiento, "
+	        + "be.numero_de_telefono, m.nombre_usuario, m.contrasena "
+	        + "FROM EmpleadoDeportivo ed "
+	        + "JOIN BaseEmpleado be ON ed.dni = be.dni "
+	        + "JOIN Miembro m ON be.dni = m.dni AND m.tipo = 'EMPLEADO' "
+	        + "WHERE ed.dni=?";
 	
 	private static final String QUERY_GET_PLAYERS =
 		        "SELECT * FROM EmpleadoDeportivo WHERE posicion = ? AND id_equipo IS NULL";
@@ -34,7 +34,7 @@ public class EmpleadoDeportivoJdbc {
 	        + "m.nombre_usuario, m.contrasena, ed.posicion "
 	        + "FROM BaseEmpleado be "
 	        + "JOIN EmpleadoDeportivo ed ON be.dni = ed.dni "
-	        + "JOIN Miembro m ON be.dni = m.dni "
+	        + "JOIN Miembro m ON be.dni = m.dni AND m.tipo = 'EMPLEADO' "
 	        + "WHERE ed.dni=?";
 	
 	private static final String QUERY_INSERT_DEPORTIVO =
@@ -49,8 +49,18 @@ public class EmpleadoDeportivoJdbc {
 	        + "m.nombre_usuario, m.contrasena, ed.posicion "
 	        + "FROM BaseEmpleado be "
 	        + "JOIN EmpleadoDeportivo ed ON be.dni = ed.dni "
-	        + "JOIN Miembro m ON be.dni = m.dni "
+	        + "JOIN Miembro m ON be.dni = m.dni AND m.tipo = 'EMPLEADO' "
 	        + "WHERE ed.dni=?";
+	
+	private static final String QUERY_GET_ALL_PLAYERS =
+			"SELECT be.dni, be.nombre, be.apellido, be.salario, "
+			+ "be.fecha_nacimiento, be.numero_de_telefono, "
+			+ "m.nombre_usuario, m.contrasena, ed.posicion "
+			+ "FROM BaseEmpleado be "
+			+ "JOIN EmpleadoDeportivo ed ON be.dni = ed.dni "
+			+ "JOIN Miembro m ON be.dni = m.dni AND m.tipo = 'EMPLEADO' "
+			+ "WHERE ed.posicion = ? "
+			+ "ORDER BY be.apellido, be.nombre";
 	
 	/**
 	 * Devuelve una lista de los empleados deportivos que no tienen asignado 
@@ -202,4 +212,27 @@ public class EmpleadoDeportivoJdbc {
 		}
 	}
 
+	public static List<EmpleadoDeportivo> getJugadores(Connection con) throws SQLException {
+		List<EmpleadoDeportivo> jugadores = new ArrayList<>();
+
+		try (PreparedStatement pst = con.prepareStatement(QUERY_GET_ALL_PLAYERS)) {
+			pst.setString(1, Posicion.JUGADOR.name());
+
+			try (ResultSet rs = pst.executeQuery()) {
+				while (rs.next()) {
+					jugadores.add(new EmpleadoDeportivo(
+							rs.getString("dni"),
+							rs.getString("nombre"),
+							rs.getString("apellido"),
+							rs.getBigDecimal("salario"),
+							LocalDate.parse(rs.getString("fecha_nacimiento")),
+							rs.getString("numero_de_telefono"),
+							Posicion.valueOf(rs.getString("posicion")),
+							rs.getString("nombre_usuario"),
+							rs.getString("contrasena")));
+				}
+			}
+		}
+		return jugadores;
+	}
 }

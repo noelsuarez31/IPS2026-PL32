@@ -44,7 +44,7 @@ public class CampanaJdbc {
     private static final String UPDATE_CERRAR_CAMPANA = 
             "UPDATE Campana SET estado = 'CERRADA' "
             + "WHERE id_campana = ? AND estado = 'ACTIVA' AND fase = " + Campana.ULTIMA_FASE;
-
+    
     /**
      * Devuelve la campaña activa o null si no hay ninguna.
      */
@@ -117,4 +117,6 @@ public class CampanaJdbc {
             return ps.executeUpdate() == 1;
         }
     }
+    
+    
 }

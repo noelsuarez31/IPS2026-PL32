@@ -33,7 +33,7 @@ import javax.swing.border.TitledBorder;
 
 import giis.demo.model.accion.Campana;
 import giis.demo.model.accion.GestionCampanas;
-import giis.demo.ui.VentanaPrincipal;
+import giis.demo.ui.login.VentanaPrincipal;
 import giis.demo.util.ApplicationException;
 
 /**
