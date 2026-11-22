@@ -193,6 +193,4 @@ public class GestorEmpleados {
 			throw new EmployeeException("Error al eliminar las credenciales del empleado de la BBDD: " + e.getMessage());
 		}
 	}
-	
-	
 }

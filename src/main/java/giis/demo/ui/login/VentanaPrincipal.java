@@ -481,31 +481,46 @@ public class VentanaPrincipal extends JFrame {
 	public CrearEntrenamientoService getCrearEntrenamientoService() {
 		return this.crearEntrenoService;
 	}
-
 	private JPanel getPanelUser() {
-
 		if (panelUser == null) {
+			panelUser = new JPanel(new GridLayout(2, 1, 5, 10));
+			panelUser.setBorder(BorderFactory.createCompoundBorder(
+					new TitledBorder(null, "Datos:", TitledBorder.LEADING, TitledBorder.TOP, null, null),
+					new EmptyBorder(8, 8, 8, 8)));
 
-			panelUser = new JPanel();
-			panelUser.setBorder(new TitledBorder(null, "Datos:", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+			JPanel panelNombre = new JPanel(new BorderLayout(5, 0));
+			panelNombre.add(getLbName(), BorderLayout.WEST);
+			panelNombre.add(getTfName(), BorderLayout.CENTER);
 
-			panelUser.setLayout(new GridLayout(2, 1, 5, 5));
+			JPanel panelPosicion = new JPanel(new BorderLayout(5, 0));
+			panelPosicion.add(getLbRol(), BorderLayout.WEST);
+			panelPosicion.add(getTfRol(), BorderLayout.CENTER);
 
-			JPanel panelDni = new JPanel(new FlowLayout(FlowLayout.LEFT));
-			panelDni.add(getLbName());
-			panelDni.add(getTfName());
-
-			JPanel panelPosicion = new JPanel(new FlowLayout(FlowLayout.LEFT));
-			panelPosicion.add(getLbRol());
-			panelPosicion.add(getTfRol());
-
-			panelUser.add(panelDni);
+			panelUser.add(panelNombre);
 			panelUser.add(panelPosicion);
 
+			panelUser.setPreferredSize(new Dimension(0, 120));
 		}
 		return panelUser;
 	}
 
+	private JTextField getTfName() {
+		if (tfName == null) {
+			tfName = new JTextField();
+			tfName.setForeground(Color.RED);
+			tfName.setEditable(false);
+		}
+		return tfName;
+	}
+
+	private JTextField getTfRol() {
+		if (tfRol == null) {
+			tfRol = new JTextField();
+			tfRol.setForeground(Color.RED);
+			tfRol.setEditable(false);
+		}
+		return tfRol;
+	}
 	private JLabel getLbName() {
 		if (lbName == null) {
 			lbName = new JLabel("Nombre: ");
@@ -513,14 +528,6 @@ public class VentanaPrincipal extends JFrame {
 		return lbName;
 	}
 
-	private JTextField getTfName() {
-		if (tfName == null) {
-			tfName = new JTextField(75);
-			tfName.setForeground(new Color(255, 0, 0));
-			tfName.setEditable(false);
-		}
-		return tfName;
-	}
 
 	private JLabel getLbRol() {
 		if (lbRol == null) {
@@ -528,17 +535,7 @@ public class VentanaPrincipal extends JFrame {
 		}
 		return lbRol;
 	}
-
-	private JTextField getTfRol() {
-		if (tfRol == null) {
-
-			tfRol = new JTextField();
-			tfRol.setForeground(new Color(255, 0, 0));
-			tfRol.setEditable(false);
-		}
-		return tfRol;
-	}
-
+	
 	private JPanel getPanelOpciones() {
 		if (panelOpciones == null) {
 			cardLayout = new CardLayout();
