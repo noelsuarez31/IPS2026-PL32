@@ -2,7 +2,6 @@ package giis.demo.ui.medico;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.EventQueue;
 import java.awt.FlowLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -20,7 +19,6 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 
 import giis.demo.model.medico.EvolucionLesion;
-import giis.demo.model.medico.GestionLesiones;
 import giis.demo.model.medico.Lesion;
 import giis.demo.util.ApplicationException;
 
