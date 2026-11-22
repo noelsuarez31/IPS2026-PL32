@@ -3,6 +3,7 @@ package giis.demo.model.informe;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
@@ -41,19 +42,50 @@ public class GestionInformeFinanciero {
     }
 
     /**
-     * Suma los ingresos por tipo y los salarios anuales de los empleados. No accede a la BBDD
+     * Suma los ingresos por tipo y los salarios anuales de los empleados, en total y por cada tramo del periodo. No
+     * accede a la BBDD
      */
     public static InformeFinanciero calcular(PeriodoInforme periodo, List<Ingreso> ingresos,
             List<BaseEmpleado> empleados) {
+        double salarios = sumarSalarios(empleados);
+        List<GrupoInforme> grupos = new ArrayList<>();
+        for (TramoInforme tramo : periodo.dividir()) {
+            grupos.add(new GrupoInforme(tramo, sumarPorTipo(ingresos, tramo), gastosDelTramo(periodo, tramo, salarios)));
+        }
+        return new InformeFinanciero(periodo, sumarPorTipo(ingresos, null), empleados.size(), salarios, grupos);
+    }
+
+    /**
+     * Parte de los salarios que le toca a un tramo. Los meses del año cuentan todos igual (la doceava parte); dentro
+     * de un mes o de una semana se reparte por dias, para que la suma de los tramos sea el gasto del periodo.
+     */
+    static double gastosDelTramo(PeriodoInforme periodo, TramoInforme tramo, double salariosAnual) {
+        double gastosPeriodo = salariosAnual / periodo.getTipo().getPeriodosPorAnio();
+        if (periodo.getTipo() == TipoPeriodo.ANIO) {
+            return gastosPeriodo / 12;
+        }
+        return gastosPeriodo * tramo.getDias() / periodo.getDias();
+    }
+
+    /**
+     * @param tramo solo se suman los ingresos de sus dias; null para sumarlos todos
+     */
+    private static Map<TipoIngreso, Double> sumarPorTipo(List<Ingreso> ingresos, TramoInforme tramo) {
         Map<TipoIngreso, Double> porTipo = new EnumMap<>(TipoIngreso.class);
         for (Ingreso ingreso : ingresos) {
-            porTipo.merge(ingreso.getTipo(), ingreso.getImporte(), Double::sum);
+            if (tramo == null || tramo.contiene(ingreso.getFecha().toLocalDate())) {
+                porTipo.merge(ingreso.getTipo(), ingreso.getImporte(), Double::sum);
+            }
         }
+        return porTipo;
+    }
+
+    private static double sumarSalarios(List<BaseEmpleado> empleados) {
         BigDecimal salarios = BigDecimal.ZERO;
         for (BaseEmpleado empleado : empleados) {
             salarios = salarios.add(empleado.getSalario());
         }
-        return new InformeFinanciero(periodo, porTipo, empleados.size(), salarios.doubleValue());
+        return salarios.doubleValue();
     }
 
     public void close() throws SQLException {

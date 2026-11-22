@@ -2,6 +2,7 @@ package giis.demo.model.informe;
 
 import java.util.Collections;
 import java.util.EnumMap;
+import java.util.List;
 import java.util.Map;
 
 import giis.demo.model.historial.TipoIngreso;
@@ -16,12 +17,15 @@ public class InformeFinanciero {
     private final double totalIngresos;
     private final int numEmpleados;
     private final double gastos;
+    private final List<GrupoInforme> grupos;
 
     /**
      * @param ingresos      importe de cada tipo de ingreso; los tipos que falten cuentan como 0
      * @param salariosAnual suma de los salarios anuales brutos de todos los empleados
+     * @param grupos        el periodo dividido en tramos para los graficos
      */
-    public InformeFinanciero(PeriodoInforme periodo, Map<TipoIngreso, Double> ingresos, int numEmpleados, double salariosAnual) {
+    public InformeFinanciero(PeriodoInforme periodo, Map<TipoIngreso, Double> ingresos, int numEmpleados,
+            double salariosAnual, List<GrupoInforme> grupos) {
         this.periodo = periodo;
         double total = 0.0;
         for (TipoIngreso tipo : TipoIngreso.values()) {
@@ -32,6 +36,7 @@ public class InformeFinanciero {
         this.totalIngresos = redondear(total);
         this.numEmpleados = numEmpleados;
         this.gastos = redondear(salariosAnual / periodo.getTipo().getPeriodosPorAnio());
+        this.grupos = List.copyOf(grupos);
     }
 
     public PeriodoInforme getPeriodo() {
@@ -62,11 +67,15 @@ public class InformeFinanciero {
         return redondear(totalIngresos - gastos);
     }
 
+    public List<GrupoInforme> getGrupos() {
+        return grupos;
+    }
+
     public boolean tieneIngresos() {
         return totalIngresos > 0;
     }
 
-    private static double redondear(double importe) {
+    static double redondear(double importe) {
         return Math.round(importe * 100.0) / 100.0;
     }
 }
