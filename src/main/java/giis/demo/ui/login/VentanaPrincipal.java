@@ -61,6 +61,7 @@ import giis.demo.ui.horarios.VentanaHorarioSemanal;
 import giis.demo.ui.informe.VentanaInformeFinanciero;
 import giis.demo.ui.log.VentanaLogSesion;
 import giis.demo.ui.mantenimiento.VentanaAsignarMantenimiento;
+import giis.demo.ui.medico.VentanaVisualizacionLesiones;
 import giis.demo.ui.noticias.VentanaAñadirNoticia;
 import giis.demo.ui.noticias.VentanaVisualizarNoticias;
 import giis.demo.ui.reserva.VentanaReserva;
@@ -304,6 +305,15 @@ public class VentanaPrincipal extends JFrame {
 		VentanaCrearFranjas vFranjas = new VentanaCrearFranjas(this);
 		this.setVisible(false);
 		vFranjas.setVisible(true);
+	}
+	
+	private void abrirVentanaLesiones() {
+
+		GestionLogSesion.registrarAccion("Ventana Visualización de lesiones");
+
+		VentanaVisualizacionLesiones vLesiones = new VentanaVisualizacionLesiones(this);
+		this.setVisible(false);
+		vLesiones.setVisible(true);
 	}
 
 	public CrearFranjaService getCrearFranjaService() {
@@ -596,6 +606,10 @@ public class VentanaPrincipal extends JFrame {
 		if (usuario.tienePosicion(Posicion.ENTRENADOR)) {
 			añadirBoton("Registrar entrenamiento", this::gestionRegistrarEntrenamiento);
 			añadirBoton("Crear franjas", this::abrirVentanaCrearFranjas);
+		}
+		
+		if (usuario.tienePosicion(Posicion.MEDICO)) {
+			añadirBoton("Visualizar lesiones", this::abrirVentanaLesiones);
 		}
 
 		if (usuario.tienePosicion(Posicion.GERENTE)) {
