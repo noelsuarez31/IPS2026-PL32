@@ -358,3 +358,27 @@ CREATE TABLE IF NOT EXISTS "Miembro" (
     UNIQUE("dni", "tipo")
 );
 
+CREATE TABLE IF NOT EXISTS "Lesion" (
+	
+	"id" INTEGER PRIMARY KEY AUTOINCREMENT,
+	"dni_jugador" TEXT NOT NULL,
+	"fecha" TEXT NOT NULL,
+	"tipo" TEXT NOT NULL,
+	"origen" TEXT NOT NULL,
+	"estado" TEXT NOT NULL,
+	
+	FOREIGN KEY ("dni_jugador") REFERENCES BaseEmpleado("dni")
+	
+);
+
+CREATE TABLE IF NOT EXISTS "EvolucionLesion" (
+	
+	"id" INTEGER PRIMARY KEY AUTOINCREMENT,
+	"id_lesion" INTEGER NOT NULL,
+	"fecha" TEXT NOT NULL,
+	"valoracion" TEXT NOT NULL,
+	"actualizacion" TEXT NOT NULL,
+	
+	FOREIGN KEY ("id_lesion") REFERENCES Lesion("id")
+);
+

@@ -1538,3 +1538,11 @@ INSERT INTO ImagenNoticia (id_noticia, ruta_imagen) VALUES
 (22, 'src/main/resources/img/noticia_estadio.png'),
 (24, 'src/main/resources/img/ansu_momento.png'),
 (24, 'src/main/resources/img/segunda_estrella.png');
+
+INSERT INTO Lesion (dni_jugador, fecha, tipo, origen, estado)
+VALUES ('93000001A', '2026-09-12', 'Esguince tobillo', 'Entrenamiento: entrada', 'En tratamiento');
+
+INSERT INTO EvolucionLesion (id_lesion, fecha, valoracion, actualizacion) VALUES
+(1, '2026-09-12', 'Grave', 'Inflamación importante'),
+(1, '2026-09-19', 'Moderada', 'Baja la inflamación'),
+(1, '2026-09-30', 'Leve', 'Empieza rehabilitación');

@@ -1265,4 +1265,8 @@ public class JDBC {
 		NoticiaJdbc.insertarNoticia(con, noticia);
 		GestionLogSesion.registrarModificacionBBDD("insert", "Noticia (" + noticia.getTitular() + ")");
 	}
+	
+	public List<EmpleadoDeportivo> getJugadores() throws SQLException {
+		return EmpleadoDeportivoJdbc.getJugadores(con);
+	}
 }
