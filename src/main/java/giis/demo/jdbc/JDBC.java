@@ -35,6 +35,7 @@ import giis.demo.jdbc.horarios.HorarioEspecificoJdbc;
 import giis.demo.jdbc.horarios.HorarioPeriodicoJdbc;
 import giis.demo.jdbc.login.MiembroJdbc;
 import giis.demo.jdbc.mantenimiento.TareaMantenimientoJdbc;
+import giis.demo.jdbc.medico.LesionJdbc;
 import giis.demo.jdbc.noticias.NoticiaJdbc;
 import giis.demo.jdbc.reservas.ComprobarDisponibilidadJdbc;
 import giis.demo.jdbc.reservas.InstalacionJdbc;
@@ -65,6 +66,8 @@ import giis.demo.model.horarios.HorarioEspecifico;
 import giis.demo.model.horarios.HorarioPeriodico;
 import giis.demo.model.log.GestionLogSesion;
 import giis.demo.model.mantenimiento.TareaMantenimiento;
+import giis.demo.model.medico.EvolucionLesion;
+import giis.demo.model.medico.Lesion;
 import giis.demo.model.noticias.Noticia;
 import giis.demo.model.reserva.Instalacion;
 import giis.demo.model.reserva.Intervalo;
@@ -1255,7 +1258,7 @@ public class JDBC {
 	
 	/**
 	 * Acciones que aun puede comprar un accionista en la fase 1 de la campaña (0 si
-	 * no consta).
+	 * no consta).a
 	 */
 	public int getCupoFase1Campana(int idCampana, String dni) throws SQLException {
 		return CompraCampanaJdbc.getCupoFase1(con, idCampana, dni);
@@ -1268,5 +1271,13 @@ public class JDBC {
 	
 	public List<EmpleadoDeportivo> getJugadores() throws SQLException {
 		return EmpleadoDeportivoJdbc.getJugadores(con);
+	}
+	
+	public List<Lesion> getLesionesJugador(String dniJugador) throws SQLException {
+		return LesionJdbc.getLesionesJugador(con, dniJugador);
+	}
+	
+	public List<EvolucionLesion> getEvolucionLesion(int idLesion) throws SQLException {
+		return LesionJdbc.getEvolucionLesion(con, idLesion);
 	}
 }

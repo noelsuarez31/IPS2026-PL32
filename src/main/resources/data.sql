@@ -34,6 +34,9 @@ delete from Accionista;
 delete from Noticia;
 delete from ImagenNoticia;
 
+delete from EvolucionLesion;
+delete from Lesion;
+
 --------------------------------------------------------------------------------
 -- 2. PRODUCTOS Y BUTACAS
 --------------------------------------------------------------------------------
@@ -1247,7 +1250,7 @@ INSERT INTO "EmpleadoNoDeportivo" ("dni", "posicion") VALUES
 ('70707070I', 'VENDEDOR_DE_ENTRADAS'),
 ('70707070J', 'EMPLEADO_DE_TIENDA'),
 ('70707070K', 'JARDINERIA'),
-('70707070L', 'JARDINERIA');
+('70707070L', 'MEDICO');
 
 INSERT INTO "EmpleadoDeportivo" ("dni", "posicion") VALUES
 ('92000001A', 'ENTRENADOR'), ('92000002B', 'ENTRENADOR'),
@@ -1543,6 +1546,68 @@ INSERT INTO Lesion (dni_jugador, fecha, tipo, origen, estado)
 VALUES ('93000001A', '2026-09-12', 'Esguince tobillo', 'Entrenamiento: entrada', 'En tratamiento');
 
 INSERT INTO EvolucionLesion (id_lesion, fecha, valoracion, actualizacion) VALUES
-(1, '2026-09-12', 'Grave', 'Inflamación importante'),
-(1, '2026-09-19', 'Moderada', 'Baja la inflamación'),
-(1, '2026-09-30', 'Leve', 'Empieza rehabilitación');
+((SELECT id FROM Lesion WHERE dni_jugador = '93000001A' AND fecha = '2026-09-12' ORDER BY id LIMIT 1),
+ '2026-09-12', 'Grave', 'Inflamación importante'),
+((SELECT id FROM Lesion WHERE dni_jugador = '93000001A' AND fecha = '2026-09-12' ORDER BY id LIMIT 1),
+ '2026-09-19', 'Moderada', 'Baja la inflamación'),
+((SELECT id FROM Lesion WHERE dni_jugador = '93000001A' AND fecha = '2026-09-12' ORDER BY id LIMIT 1),
+ '2026-09-30', 'Leve', 'Empieza rehabilitación');
+ 
+ -- David Costas (93000002B): dos lesiones, una reciente en rehabilitación y otra antigua recuperada
+INSERT INTO Lesion (dni_jugador, fecha, tipo, origen, estado)
+VALUES ('93000002B', '2026-10-03', 'Rotura fibrilar isquiotibial', 'Partido: sprint', 'En rehabilitación');
+INSERT INTO EvolucionLesion (id_lesion, fecha, valoracion, actualizacion) VALUES
+((SELECT last_insert_rowid()), '2026-10-03', 'Grave', 'Rotura de 2 cm, reposo absoluto'),
+((SELECT last_insert_rowid()), '2026-10-17', 'Moderada', 'Cicatrización correcta, inicia trabajo en piscina'),
+((SELECT last_insert_rowid()), '2026-11-05', 'Leve', 'Carrera continua sin dolor'),
+((SELECT last_insert_rowid()), '2026-11-18', 'Leve', 'Readaptación con balón');
+
+INSERT INTO Lesion (dni_jugador, fecha, tipo, origen, estado)
+VALUES ('93000002B', '2026-08-20', 'Contusión muslo', 'Entrenamiento: golpe', 'Recuperado');
+INSERT INTO EvolucionLesion (id_lesion, fecha, valoracion, actualizacion) VALUES
+((SELECT last_insert_rowid()), '2026-08-20', 'Moderada', 'Hematoma importante'),
+((SELECT last_insert_rowid()), '2026-08-27', 'Leve', 'Hematoma reabsorbido'),
+((SELECT last_insert_rowid()), '2026-09-02', 'Leve', 'Alta médica');
+
+-- Dani Calvo (93000003C)
+INSERT INTO Lesion (dni_jugador, fecha, tipo, origen, estado)
+VALUES ('93000003C', '2026-11-10', 'Sobrecarga gemelo', 'Entrenamiento: carga excesiva', 'En tratamiento');
+INSERT INTO EvolucionLesion (id_lesion, fecha, valoracion, actualizacion) VALUES
+((SELECT last_insert_rowid()), '2026-11-10', 'Moderada', 'Dolor al correr, reposo relativo'),
+((SELECT last_insert_rowid()), '2026-11-17', 'Leve', 'Mejora con fisioterapia');
+
+-- Víctor Camarasa (93000007G)
+INSERT INTO Lesion (dni_jugador, fecha, tipo, origen, estado)
+VALUES ('93000007G', '2026-09-28', 'Esguince rodilla grado II', 'Partido: choque con rival', 'En rehabilitación');
+INSERT INTO EvolucionLesion (id_lesion, fecha, valoracion, actualizacion) VALUES
+((SELECT last_insert_rowid()), '2026-09-28', 'Grave', 'Inflamación y derrame articular'),
+((SELECT last_insert_rowid()), '2026-10-12', 'Moderada', 'Baja el derrame, uso de ortesis'),
+((SELECT last_insert_rowid()), '2026-10-30', 'Moderada', 'Inicia fortalecimiento'),
+((SELECT last_insert_rowid()), '2026-11-15', 'Leve', 'Trabajo de gimnasio sin molestias');
+
+-- Borja Bastón (11111111A): lesión SIN evolución, para probar el aviso de la segunda ventana
+INSERT INTO Lesion (dni_jugador, fecha, tipo, origen, estado)
+VALUES ('11111111A', '2026-11-19', 'Tendinitis rotuliana', 'Entrenamiento: sobreuso', 'En tratamiento');
+
+-- Jimmy Suárez (22222222B)
+INSERT INTO Lesion (dni_jugador, fecha, tipo, origen, estado)
+VALUES ('22222222B', '2026-07-15', 'Esguince tobillo grado I', 'Partido: pisada', 'Recuperado');
+INSERT INTO EvolucionLesion (id_lesion, fecha, valoracion, actualizacion) VALUES
+((SELECT last_insert_rowid()), '2026-07-15', 'Moderada', 'Inflamación leve, vendaje funcional'),
+((SELECT last_insert_rowid()), '2026-07-22', 'Leve', 'Sin dolor al caminar'),
+((SELECT last_insert_rowid()), '2026-07-29', 'Leve', 'Alta médica');
+
+-- Santi Cazorla (87654321K)
+INSERT INTO Lesion (dni_jugador, fecha, tipo, origen, estado)
+VALUES ('87654321K', '2026-10-08', 'Pubalgia', 'Entrenamiento: sobrecarga', 'En rehabilitación');
+INSERT INTO EvolucionLesion (id_lesion, fecha, valoracion, actualizacion) VALUES
+((SELECT last_insert_rowid()), '2026-10-08', 'Moderada', 'Dolor inguinal al disparar'),
+((SELECT last_insert_rowid()), '2026-10-22', 'Moderada', 'Tratamiento con ondas de choque'),
+((SELECT last_insert_rowid()), '2026-11-12', 'Leve', 'Vuelve al trabajo con el grupo');
+
+-- Marco Suárez (94000001A)
+INSERT INTO Lesion (dni_jugador, fecha, tipo, origen, estado)
+VALUES ('94000001A', '2026-11-14', 'Contusión costillas', 'Partido: choque', 'En tratamiento');
+INSERT INTO EvolucionLesion (id_lesion, fecha, valoracion, actualizacion) VALUES
+((SELECT last_insert_rowid()), '2026-11-14', 'Moderada', 'Dolor al respirar hondo'),
+((SELECT last_insert_rowid()), '2026-11-20', 'Leve', 'Mejora, vuelve a correr suave');
