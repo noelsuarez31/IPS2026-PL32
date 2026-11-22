@@ -1,0 +1,34 @@
+[
+  {
+    "equipoLocal": "Real Oviedo",
+    "equipoVisitante": "Sporting",
+    "fecha": "2026-11-20",
+    "horaInicio": "08:30",
+    "horaFin": "10:00",
+    "instalacion": "Campo de fútbol 1"
+  },
+  {
+    "equipoLocal": "Real Oviedo",
+    "equipoVisitante": "Racing",
+    "fecha": "2026-11-20",
+    "horaInicio": "10:30",
+    "horaFin": "12:00",
+    "instalacion": "Campo de fútbol 1"
+  },
+  {
+    "equipoLocal": "Real Oviedo",
+    "equipoVisitante": "Levante",
+    "fecha": "2026-11-20",
+    "horaInicio": "16:30",
+    "horaFin": "18:00",
+    "instalacion": "Campo de fútbol 1"
+  },
+  {
+    "equipoLocal": "Real Oviedo",
+    "equipoVisitante": "Alavés",
+    "fecha": "2026-11-20",
+    "horaInicio": "20:00",
+    "horaFin": "22:00",
+    "instalacion": "Campo de fútbol 1"
+  }
+]

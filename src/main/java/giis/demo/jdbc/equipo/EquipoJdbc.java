@@ -18,6 +18,7 @@ import giis.demo.model.empleado.EmpleadoDeportivo;
 import giis.demo.model.entradas.enumerados.TipoSeccion;
 import giis.demo.model.equipo.Equipo;
 import giis.demo.model.equipo.EventoOcupacion;
+import giis.demo.model.log.GestionLogSesion;
 
 public class EquipoJdbc {
 
@@ -517,6 +518,28 @@ public class EquipoJdbc {
 		}
 		return LocalTime.parse(hStr,
 				DateTimeFormatter.ofPattern(hStr.length() == 5 ? "HH:mm" : "HH:mm:ss"));
+	}
+	
+	/**
+	 * Inserta un partido importado desde archivo externo en la base de datos.
+	 */
+	public static void insertarPartidoImportado(Connection con, int idLocal, int idVisitante, int idInstalacion,
+			LocalDate fecha, LocalTime horaInicio, LocalTime horaFin) throws SQLException {
+		String sql = "INSERT INTO Partido(fecha, hora_inicio, hora_fin, id_local, id_visitante, id_instalacion, dia_del_club) "
+				+ "VALUES (?, ?, ?, ?, ?, ?, 0)";
+
+		try (PreparedStatement ps = con.prepareStatement(sql)) {
+			ps.setString(1, fecha.toString());
+			ps.setString(2, horaInicio.toString());
+			ps.setString(3, horaFin.toString());
+			ps.setInt(4, idLocal);
+			ps.setInt(5, idVisitante);
+			ps.setInt(6, idInstalacion);
+			ps.executeUpdate();
+		}
+
+		GestionLogSesion.registrarModificacionBBDD("insert", 
+				"Partido (local=" + idLocal + ", visitante=" + idVisitante + ", fecha=" + fecha + ")");
 	}
 
 }

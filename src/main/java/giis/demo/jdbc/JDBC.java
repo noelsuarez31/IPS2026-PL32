@@ -1201,6 +1201,18 @@ public class JDBC {
 				"CampanaAccionista / Accion (comprador=" + comprador.getDni() + ", unidades=" + unidades + ")");
 		return resultado;
 	}
+	
+	/**
+	 * Inserta un partido importado desde archivo externo en la base de datos.
+	 */
+	public void insertarPartidoImportado(int idLocal, int idVisitante, int idInstalacion,
+			LocalDate fecha, LocalTime horaInicio, LocalTime horaFin) throws SQLException {
+		EquipoJdbc.insertarPartidoImportado(con, idLocal, idVisitante, idInstalacion, fecha,
+				horaInicio, horaFin);
+
+		GestionLogSesion.registrarModificacionBBDD("insert", 
+				"Partido (local=" + idLocal + ", visitante=" + idVisitante + ", fecha=" + fecha + ")");
+	}
 
 	/**
 	 * Comprueba si existe una cuenta de un miembro según su DNI y tipo.

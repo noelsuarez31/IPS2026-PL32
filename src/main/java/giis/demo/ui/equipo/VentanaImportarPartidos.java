@@ -9,6 +9,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -25,6 +27,8 @@ import javax.swing.border.TitledBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 
+import giis.demo.model.equipo.ImportarPartidosService;
+import giis.demo.model.equipo.PartidoImportadoDTO;
 import giis.demo.ui.login.VentanaPrincipal;
 
 public class VentanaImportarPartidos extends JFrame {
@@ -32,7 +36,7 @@ public class VentanaImportarPartidos extends JFrame {
 	private static final long serialVersionUID = 1L;
 
 	private VentanaPrincipal vPrincipal;
-	private ImportarPartidoService service;
+	private ImportarPartidosService service;
 
 	// Componentes principales
 	private JPanel contentPane;
@@ -53,6 +57,8 @@ public class VentanaImportarPartidos extends JFrame {
 	private JPanel pnBotonesSur;
 	private JButton btnVolver;
 	private JButton btnImportar;
+	
+	private List<PartidoImportadoDTO> partidosCargados = new ArrayList<>();
 
 	private File archivoSeleccionado;
 
@@ -258,6 +264,15 @@ public class VentanaImportarPartidos extends JFrame {
 	// Metodos adicionales
 	private void seleccionarArchivo() {
 		JFileChooser chooser = new JFileChooser();
+		
+		// Abre directamente la carpeta de recursos del proyecto
+		File dirFiles = new File("src/main/resources/files");
+		if (dirFiles.exists()) {
+			chooser.setCurrentDirectory(dirFiles);
+		} else {
+			chooser.setCurrentDirectory(new File("src/main/resources"));
+		}
+
 		chooser.setDialogTitle("Seleccionar archivo de partidos");
 		chooser.setFileFilter(new FileNameExtensionFilter("Archivos de partidos (*.csv, *.json)", "csv", "json"));
 		chooser.setAcceptAllFileFilterUsed(false);
@@ -266,22 +281,44 @@ public class VentanaImportarPartidos extends JFrame {
 		if (resultado == JFileChooser.APPROVE_OPTION) {
 			archivoSeleccionado = chooser.getSelectedFile();
 			getTxRutaArchivo().setText(archivoSeleccionado.getAbsolutePath());
-			getLbEstado().setText("Archivo cargado: " + archivoSeleccionado.getName());
-			getBtnImportar().setEnabled(true);
+
+			try {
+				partidosCargados = service.cargarPartidosDesdeArchivo(archivoSeleccionado);
+				actualizarTablaPartidos();
+				getLbEstado().setText("Archivo cargado: " + archivoSeleccionado.getName());
+				getBtnImportar().setEnabled(!partidosCargados.isEmpty());
+			} catch (Exception ex) {
+				JOptionPane.showMessageDialog(this, "Error al leer el archivo:\n" + ex.getMessage(), 
+						"Error de formato", JOptionPane.ERROR_MESSAGE);
+				getBtnImportar().setEnabled(false);
+			}
 		}
+	}
+	
+	private void actualizarTablaPartidos() {
+	    DefaultTableModel modelo = getModeloTabla();
+	    modelo.setRowCount(0);
+	    for (PartidoImportadoDTO p : partidosCargados) {
+	        modelo.addRow(new Object[] {
+	            p.getEquipoLocal(), p.getEquipoVisitante(), 
+	            p.getFechaFormateada(), p.getHoraInicioFormateada(), 
+	            p.getHoraFinFormateada(), p.getInstalacion()
+	        });
+	    }
+	    getLbTotalPartidos().setText("Partidos leídos: " + partidosCargados.size());
 	}
 
 	private void ejecutarImportacion() {
-		if (archivoSeleccionado == null || !archivoSeleccionado.exists()) {
-			JOptionPane.showMessageDialog(this, "Debe seleccionar un archivo válido antes de importar.", 
-					"Archivo no encontrado", JOptionPane.WARNING_MESSAGE);
-			return;
-		}
-
-		// Aquí se conectará el servicio de negocio en el siguiente paso
-		JOptionPane.showMessageDialog(this, 
-				"Se iniciará la importación del archivo:\n" + archivoSeleccionado.getName(), 
-				"Importación", JOptionPane.INFORMATION_MESSAGE);
+	    try {
+	        int total = service.importarPartidos(partidosCargados);
+	        JOptionPane.showMessageDialog(this, 
+	                "¡Se han importado " + total + " partidos correctamente a la base de datos!", 
+	                "Importación completada", JOptionPane.INFORMATION_MESSAGE);
+	        volver();
+	    } catch (Exception ex) {
+	        JOptionPane.showMessageDialog(this, "Error durante la importación:\n" + ex.getMessage(), 
+	                "Error de importación", JOptionPane.ERROR_MESSAGE);
+	    }
 	}
 
 	private void volver() {
