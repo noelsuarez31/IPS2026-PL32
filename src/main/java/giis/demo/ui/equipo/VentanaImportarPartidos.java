@@ -22,6 +22,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
+import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -64,7 +65,7 @@ public class VentanaImportarPartidos extends JFrame {
 
 	public VentanaImportarPartidos(VentanaPrincipal vPrincipal) {
 		this.vPrincipal = vPrincipal;
-		this.service = vPrincipal.getImportarPartidosService();
+		this.service = (vPrincipal != null) ? vPrincipal.getImportarPartidosService() : new ImportarPartidosService();
 		
 		setTitle("Importar Partidos desde Archivo Externo (Gerente)");
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -97,9 +98,11 @@ public class VentanaImportarPartidos extends JFrame {
 	private JPanel getPnNorte() {
 		if (pnNorte == null) {
 			pnNorte = new JPanel();
-			pnNorte.setBorder(new TitledBorder(null, "Origen de Datos (.csv / .json)", 
-					TitledBorder.LEADING, TitledBorder.TOP, new Font("Tahoma", Font.BOLD, 12), null));
-			pnNorte.setLayout(new BorderLayout(8, 0));
+			pnNorte.setBorder(new CompoundBorder(
+					new TitledBorder(null, "Origen de Datos (.csv / .json)", 
+							TitledBorder.LEADING, TitledBorder.TOP, new Font("Tahoma", Font.BOLD, 12), null),
+					new EmptyBorder(6, 10, 6, 10)));
+			pnNorte.setLayout(new BorderLayout(10, 0));
 			pnNorte.add(getLbArchivo(), BorderLayout.WEST);
 			pnNorte.add(getTxRutaArchivo(), BorderLayout.CENTER);
 			pnNorte.add(getBtnExaminar(), BorderLayout.EAST);
@@ -111,6 +114,7 @@ public class VentanaImportarPartidos extends JFrame {
 		if (lbArchivo == null) {
 			lbArchivo = new JLabel("Archivo seleccionado:");
 			lbArchivo.setFont(new Font("Tahoma", Font.PLAIN, 12));
+			lbArchivo.setPreferredSize(new Dimension(140, 28));
 		}
 		return lbArchivo;
 	}
@@ -120,6 +124,7 @@ public class VentanaImportarPartidos extends JFrame {
 			txRutaArchivo = new JTextField();
 			txRutaArchivo.setEditable(false);
 			txRutaArchivo.setFont(new Font("Tahoma", Font.PLAIN, 12));
+			txRutaArchivo.setPreferredSize(new Dimension(200, 28));
 			txRutaArchivo.setColumns(10);
 		}
 		return txRutaArchivo;
@@ -127,8 +132,9 @@ public class VentanaImportarPartidos extends JFrame {
 
 	public JButton getBtnExaminar() {
 		if (btnExaminar == null) {
-			btnExaminar = new JButton("Examinar...");
+			btnExaminar = new JButton("Examinar");
 			btnExaminar.setFont(new Font("Tahoma", Font.PLAIN, 12));
+			btnExaminar.setPreferredSize(new Dimension(110, 28));
 			btnExaminar.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
@@ -166,6 +172,16 @@ public class VentanaImportarPartidos extends JFrame {
 			tablaPartidos.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 			tablaPartidos.setRowHeight(22);
 			tablaPartidos.getTableHeader().setReorderingAllowed(false);
+			if (tablaPartidos.getColumnModel().getColumnCount() >= 8) {
+				tablaPartidos.getColumnModel().getColumn(0).setPreferredWidth(125);
+				tablaPartidos.getColumnModel().getColumn(1).setPreferredWidth(125);
+				tablaPartidos.getColumnModel().getColumn(2).setPreferredWidth(85);
+				tablaPartidos.getColumnModel().getColumn(3).setPreferredWidth(75);
+				tablaPartidos.getColumnModel().getColumn(4).setPreferredWidth(75);
+				tablaPartidos.getColumnModel().getColumn(5).setPreferredWidth(130);
+				tablaPartidos.getColumnModel().getColumn(6).setPreferredWidth(60);
+				tablaPartidos.getColumnModel().getColumn(7).setPreferredWidth(250);
+			}
 		}
 		return tablaPartidos;
 	}
@@ -173,7 +189,7 @@ public class VentanaImportarPartidos extends JFrame {
 	public DefaultTableModel getModeloTabla() {
 		if (modeloTabla == null) {
 			String[] columnas = {
-				"Equipo Local", "Equipo Visitante", "Fecha", "Hora Inicio", "Hora Fin", "Instalación"
+				"Equipo Local", "Equipo Visitante", "Fecha", "Hora Inicio", "Hora Fin", "Instalación", "Válido", "Motivo"
 			};
 			modeloTabla = new DefaultTableModel(columnas, 0) {
 				private static final long serialVersionUID = 1L;
@@ -217,6 +233,7 @@ public class VentanaImportarPartidos extends JFrame {
 		if (lbEstado == null) {
 			lbEstado = new JLabel("Seleccione un archivo .csv o .json para comenzar.");
 			lbEstado.setFont(new Font("Tahoma", Font.PLAIN, 12));
+			lbEstado.setPreferredSize(new Dimension(500, 28));
 		}
 		return lbEstado;
 	}
@@ -285,40 +302,78 @@ public class VentanaImportarPartidos extends JFrame {
 			try {
 				partidosCargados = service.cargarPartidosDesdeArchivo(archivoSeleccionado);
 				actualizarTablaPartidos();
-				getLbEstado().setText("Archivo cargado: " + archivoSeleccionado.getName());
-				getBtnImportar().setEnabled(!partidosCargados.isEmpty());
+				int validos = 0;
+				for (PartidoImportadoDTO p : partidosCargados) {
+					if (p.isValido()) {
+						validos++;
+					}
+				}
+				getLbEstado().setText("Archivo cargado: " + archivoSeleccionado.getName() 
+						+ " (" + validos + " de " + partidosCargados.size() + " válidos)");
 			} catch (Exception ex) {
-				JOptionPane.showMessageDialog(this, "Error al leer el archivo:\n" + ex.getMessage(), 
+				partidosCargados.clear();
+				actualizarTablaPartidos();
+				JOptionPane.showMessageDialog(this, ex.getMessage(), 
 						"Error de formato", JOptionPane.ERROR_MESSAGE);
+				getLbEstado().setText("Error al cargar el archivo seleccionado.");
 				getBtnImportar().setEnabled(false);
 			}
 		}
 	}
 	
 	private void actualizarTablaPartidos() {
-	    DefaultTableModel modelo = getModeloTabla();
-	    modelo.setRowCount(0);
-	    for (PartidoImportadoDTO p : partidosCargados) {
-	        modelo.addRow(new Object[] {
-	            p.getEquipoLocal(), p.getEquipoVisitante(), 
-	            p.getFechaFormateada(), p.getHoraInicioFormateada(), 
-	            p.getHoraFinFormateada(), p.getInstalacion()
-	        });
-	    }
-	    getLbTotalPartidos().setText("Partidos leídos: " + partidosCargados.size());
+		DefaultTableModel modelo = getModeloTabla();
+		modelo.setRowCount(0);
+		int validosCount = 0;
+		for (PartidoImportadoDTO p : partidosCargados) {
+			if (p.isValido()) {
+				validosCount++;
+			}
+			modelo.addRow(new Object[] {
+				p.getEquipoLocal(), p.getEquipoVisitante(), 
+				p.getFechaFormateada(), p.getHoraInicioFormateada(), 
+				p.getHoraFinFormateada(), p.getInstalacion(),
+				p.getValidoTexto(), p.getMotivo()
+			});
+		}
+		getLbTotalPartidos().setText("Partidos leídos: " + partidosCargados.size() + " (" + validosCount + " válidos)");
+		getBtnImportar().setEnabled(validosCount > 0);
 	}
 
 	private void ejecutarImportacion() {
-	    try {
-	        int total = service.importarPartidos(partidosCargados);
-	        JOptionPane.showMessageDialog(this, 
-	                "¡Se han importado " + total + " partidos correctamente a la base de datos!", 
-	                "Importación completada", JOptionPane.INFORMATION_MESSAGE);
-	        volver();
-	    } catch (Exception ex) {
-	        JOptionPane.showMessageDialog(this, "Error durante la importación:\n" + ex.getMessage(), 
-	                "Error de importación", JOptionPane.ERROR_MESSAGE);
-	    }
+		try {
+			List<PartidoImportadoDTO> importados = service.importarPartidosValidos(partidosCargados);
+			int totalImportados = importados.size();
+			
+			if (totalImportados == 0) {
+				JOptionPane.showMessageDialog(this, 
+						"No se ha importado ningún partido porque ninguno de los partidos cargados es válido.", 
+						"Sin partidos válidos", JOptionPane.WARNING_MESSAGE);
+				return;
+			}
+
+			// Dejar solo los inválidos en la lista y en la tabla
+			partidosCargados.removeAll(importados);
+			actualizarTablaPartidos();
+
+			if (partidosCargados.isEmpty()) {
+				JOptionPane.showMessageDialog(this, 
+						"¡Se han importado los " + totalImportados + " partidos válidos correctamente a la base de datos!", 
+						"Importación completada", JOptionPane.INFORMATION_MESSAGE);
+				getBtnImportar().setEnabled(false);
+				getLbEstado().setText("Importación completada: " + totalImportados + " partidos importados.");
+			} else {
+				JOptionPane.showMessageDialog(this, 
+						"Se han importado " + totalImportados + " partidos válidos correctamente.\n"
+						+ "Permanecen en la tabla " + partidosCargados.size() + " partidos no válidos debido a colisiones o errores.", 
+						"Importación parcial", JOptionPane.INFORMATION_MESSAGE);
+				getBtnImportar().setEnabled(false);
+				getLbEstado().setText("Importados " + totalImportados + " partidos. Quedan " + partidosCargados.size() + " partidos no válidos.");
+			}
+		} catch (Exception ex) {
+			JOptionPane.showMessageDialog(this, "Error durante la importación:\n" + ex.getMessage(), 
+					"Error de importación", JOptionPane.ERROR_MESSAGE);
+		}
 	}
 
 	private void volver() {

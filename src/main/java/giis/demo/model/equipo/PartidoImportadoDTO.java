@@ -15,6 +15,8 @@ public class PartidoImportadoDTO {
 	private LocalTime horaInicio;
 	private LocalTime horaFin;
 	private String instalacion;
+	private boolean valido = true;
+	private String motivo = "Correcto";
 
 	public PartidoImportadoDTO() {
 	}
@@ -87,5 +89,25 @@ public class PartidoImportadoDTO {
 
 	public String getHoraFinFormateada() {
 		return horaFin != null ? horaFin.format(FORMATO_HORA) : "";
+	}
+
+	public boolean isValido() {
+		return valido;
+	}
+
+	public void setValido(boolean valido) {
+		this.valido = valido;
+	}
+
+	public String getMotivo() {
+		return motivo;
+	}
+
+	public void setMotivo(String motivo) {
+		this.motivo = motivo;
+	}
+
+	public String getValidoTexto() {
+		return valido ? "Sí" : "No";
 	}
 }
