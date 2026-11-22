@@ -81,10 +81,10 @@ public class ImportarPartidosService {
 				if (!linea.isEmpty()) {
 					String[] tokens = linea.split(separador);
 					if (tokens.length < 6) {
-						if (linea.contains("|") || linea.contains("\t") || linea.contains(":")) {
+						if (linea.contains("|") || linea.contains("\t")) {
 							throw new IllegalArgumentException("Error en la importación: separador incorrecto");
 						}
-						throw new IllegalArgumentException("Error en la importación: formato inválido");
+						throw new IllegalArgumentException("Error en la importación: número de datos incorrectos");
 					}
 
 					String local = tokens[0].trim().replace("\"", "");
@@ -95,7 +95,7 @@ public class ImportarPartidosService {
 					String instalacion = tokens[5].trim().replace("\"", "");
 
 					if (local.isEmpty() || visitante.isEmpty() || instalacion.isEmpty()) {
-						throw new IllegalArgumentException("Error en la importación: formato inválido");
+						throw new IllegalArgumentException("Error en la importación: número de datos incorrectos");
 					}
 
 					partidos.add(new PartidoImportadoDTO(local, visitante, fecha, hIni, hFin, instalacion));
@@ -150,7 +150,7 @@ public class ImportarPartidosService {
 			String instalacion = obtenerTextoNodo(node, "instalacion");
 
 			if (local.isEmpty() || visitante.isEmpty() || fechaStr.isEmpty() || hIniStr.isEmpty() || hFinStr.isEmpty() || instalacion.isEmpty()) {
-				throw new IllegalArgumentException("Error en la importación: formato inválido");
+				throw new IllegalArgumentException("Error en la importación: número de datos incorrectos");
 			}
 
 			try {
