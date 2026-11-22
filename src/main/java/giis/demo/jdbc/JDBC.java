@@ -1213,6 +1213,13 @@ public class JDBC {
 		GestionLogSesion.registrarModificacionBBDD("insert", 
 				"Partido (local=" + idLocal + ", visitante=" + idVisitante + ", fecha=" + fecha + ")");
 	}
+	
+	/**
+	 * Obtiene el ID del equipo visitante o lo registra si no existe en la base de datos.
+	 */
+	public int obtenerOCrearEquipoVisitante(String nombreVisitante, int idLocal) throws SQLException {
+		return EquipoJdbc.obtenerOCrearEquipoVisitante(con, nombreVisitante, idLocal);
+	}
 
 	/**
 	 * Comprueba si existe una cuenta de un miembro según su DNI y tipo.

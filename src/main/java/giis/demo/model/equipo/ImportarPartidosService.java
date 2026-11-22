@@ -211,8 +211,10 @@ public class ImportarPartidosService {
 
 		Map<String, Integer> mapaEquipos;
 		Map<String, Integer> mapaInstalaciones;
+		Map<String, Integer> mapaEquiposPropios;
 		try {
 			mapaEquipos = cargarMapaEquipos();
+			mapaEquiposPropios = cargarMapaEquiposPropios();
 			mapaInstalaciones = cargarMapaInstalaciones();
 		} catch (SQLException e) {
 			for (PartidoImportadoDTO dto : partidos) {
@@ -247,24 +249,17 @@ public class ImportarPartidosService {
 				continue;
 			}
 
-			// 3. Validar existencia del equipo local
-			Integer idLocal = mapaEquipos.get(dto.getEquipoLocal().toLowerCase());
+			// 3. Validar existencia del equipo local (debe ser un equipo propio de la organización)
+			Integer idLocal = mapaEquiposPropios.get(dto.getEquipoLocal().toLowerCase());
 			if (idLocal == null) {
 				dto.setValido(false);
 				dto.setMotivo("Equipo local no registrado: " + dto.getEquipoLocal());
 				continue;
 			}
 
-			// 4. Validar existencia del equipo visitante
+			// 4. Si el visitante ya está registrado en BBDD, validar que no coincida con el local
 			Integer idVisitante = mapaEquipos.get(dto.getEquipoVisitante().toLowerCase());
-			if (idVisitante == null) {
-				dto.setValido(false);
-				dto.setMotivo("Equipo visitante no registrado: " + dto.getEquipoVisitante());
-				continue;
-			}
-
-			// 5. Validar que los identificadores de equipo sean distintos
-			if (idLocal.equals(idVisitante)) {
+			if (idVisitante != null && idLocal.equals(idVisitante)) {
 				dto.setValido(false);
 				dto.setMotivo("Equipo local y visitante son el mismo");
 				continue;
@@ -337,15 +332,20 @@ public class ImportarPartidosService {
 
 		Map<String, Integer> mapaEquipos = cargarMapaEquipos();
 		Map<String, Integer> mapaInstalaciones = cargarMapaInstalaciones();
+		Map<String, Integer> mapaEquiposPropios = cargarMapaEquiposPropios();
 
 		List<PartidoImportadoDTO> importados = new ArrayList<>();
 
 		for (PartidoImportadoDTO dto : partidos) {
 			if (dto.isValido()) {
-				Integer idLocal = mapaEquipos.get(dto.getEquipoLocal().toLowerCase());
+				Integer idLocal = mapaEquiposPropios.get(dto.getEquipoLocal().toLowerCase());
 				Integer idVisitante = mapaEquipos.get(dto.getEquipoVisitante().toLowerCase());
+				// Si el equipo visitante no estaba registrado, se da de alta automáticamente con su nombre
+				if (idVisitante == null) {
+					idVisitante = jdbc.obtenerOCrearEquipoVisitante(dto.getEquipoVisitante(), idLocal);
+					mapaEquipos.put(dto.getEquipoVisitante().toLowerCase(), idVisitante);
+				}
 				Integer idInstalacion = mapaInstalaciones.get(dto.getInstalacion().toLowerCase());
-
 				jdbc.insertarPartidoImportado(idLocal, idVisitante, idInstalacion, 
 						dto.getFecha(), dto.getHoraInicio(), dto.getHoraFin());
 				importados.add(dto);
@@ -368,6 +368,14 @@ public class ImportarPartidosService {
 			mapa.put(e.getNombre().toLowerCase(), e.getIdEquipo());
 		}
 		for (Equipo e : jdbc.getEquiposVisitantes()) {
+			mapa.put(e.getNombre().toLowerCase(), e.getIdEquipo());
+		}
+		return mapa;
+	}
+	
+	private Map<String, Integer> cargarMapaEquiposPropios() throws SQLException {
+		Map<String, Integer> mapa = new HashMap<>();
+		for (Equipo e : jdbc.getEquiposPropios()) {
 			mapa.put(e.getNombre().toLowerCase(), e.getIdEquipo());
 		}
 		return mapa;

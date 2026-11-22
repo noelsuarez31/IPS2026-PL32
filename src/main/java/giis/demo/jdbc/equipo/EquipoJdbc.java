@@ -541,5 +541,40 @@ public class EquipoJdbc {
 		GestionLogSesion.registrarModificacionBBDD("insert", 
 				"Partido (local=" + idLocal + ", visitante=" + idVisitante + ", fecha=" + fecha + ")");
 	}
+	
+	/**
+	 * Obtiene el ID del equipo visitante por nombre. Si no existe en la base de datos,
+	 * lo inserta automáticamente con su nombre (es_propio = 0) asignándole la categoría y tipo
+	 * del equipo local con el que compite, y devuelve el ID autogenerado.
+	 */
+	public static int obtenerOCrearEquipoVisitante(Connection con, String nombreVisitante, int idLocal) throws SQLException {
+		String sqlSelect = "SELECT id_equipo FROM Equipo WHERE LOWER(nombre) = LOWER(?)";
+		try (PreparedStatement ps = con.prepareStatement(sqlSelect)) {
+			ps.setString(1, nombreVisitante.trim());
+			try (ResultSet rs = ps.executeQuery()) {
+				if (rs.next()) {
+					return rs.getInt("id_equipo");
+				}
+			}
+		}
+
+		String sqlInsert = "INSERT INTO Equipo (nombre, es_propio, tipo_equipo, id_categoria) "
+				+ "VALUES (?, 0, (SELECT tipo_equipo FROM Equipo WHERE id_equipo = ?), (SELECT id_categoria FROM Equipo WHERE id_equipo = ?))";
+		try (PreparedStatement ps = con.prepareStatement(sqlInsert, Statement.RETURN_GENERATED_KEYS)) {
+			ps.setString(1, nombreVisitante.trim());
+			ps.setInt(2, idLocal);
+			ps.setInt(3, idLocal);
+			ps.executeUpdate();
+			try (ResultSet rs = ps.getGeneratedKeys()) {
+				if (rs.next()) {
+					int idGenerado = rs.getInt(1);
+					GestionLogSesion.registrarModificacionBBDD("insert", 
+							"Equipo visitante (id=" + idGenerado + ", nombre=" + nombreVisitante.trim() + ")");
+					return idGenerado;
+				}
+			}
+		}
+		throw new SQLException("No se pudo obtener el ID del equipo visitante insertado: " + nombreVisitante);
+	}
 
 }
