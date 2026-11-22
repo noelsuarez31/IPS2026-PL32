@@ -115,7 +115,6 @@ public class VentanaVisualizacionLesiones extends JFrame {
 			cbJugador.setToolTipText("Seleccione un jugador o escriba para buscar");
 			cbJugador.setBounds(15, 52, 507, 28);
 
-			// Cómo se ve cada jugador en la lista desplegable
 			cbJugador.setRenderer(new DefaultListCellRenderer() {
 				private static final long serialVersionUID = 1L;
 
@@ -129,7 +128,6 @@ public class VentanaVisualizacionLesiones extends JFrame {
 				}
 			});
 
-			// Cómo se ve el jugador elegido en la caja de texto
 			cbJugador.setEditor(new BasicComboBoxEditor() {
 				@Override
 				public void setItem(Object item) {
@@ -140,8 +138,8 @@ public class VentanaVisualizacionLesiones extends JFrame {
 				}
 			});
 
-			// Filtrar mientras se escribe
 			JTextField campo = (JTextField) cbJugador.getEditor().getEditorComponent();
+			
 			campo.addKeyListener(new KeyAdapter() {
 				@Override
 				public void keyReleased(KeyEvent e) {
@@ -154,7 +152,7 @@ public class VentanaVisualizacionLesiones extends JFrame {
 				}
 			});
 
-			cbJugador.setSelectedItem(null); // empieza vacío
+			cbJugador.setSelectedItem(null);
 		}
 		return cbJugador;
 	}
@@ -319,8 +317,7 @@ public class VentanaVisualizacionLesiones extends JFrame {
 	}
 	
 	private void consultar() {
-		
-		
+				
 		modelo.setRowCount(0);
 		btVer.setEnabled(true);
 		
@@ -337,14 +334,11 @@ public class VentanaVisualizacionLesiones extends JFrame {
 		getLbLesionesJugador().setText("Lesiones de " + jugador.getNombre() + jugador.getApellido() + ":");
 		
 		try {
-			
 			lesiones = gl.getLesiones(jugador);
-			
 		} catch (ApplicationException ape){
 			
 			JOptionPane.showMessageDialog(null, "Se ha producido un error al buscar las lesiones del jugador",
 					"Error", JOptionPane.ERROR_MESSAGE);
-			
 			return;
 		}
 		
@@ -357,6 +351,7 @@ public class VentanaVisualizacionLesiones extends JFrame {
 					lesion.getEstado()
 			});
 		}
+		
 	}
 	
 	private void verEvolucion() {
