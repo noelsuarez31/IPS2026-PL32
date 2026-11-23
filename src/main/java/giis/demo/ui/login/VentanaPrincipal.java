@@ -8,7 +8,10 @@ import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -20,6 +23,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 
@@ -39,6 +43,8 @@ import giis.demo.model.log.GestionLogSesion;
 import giis.demo.model.noticias.AñadirNoticiaService;
 import giis.demo.model.noticias.VisualizarNoticiasService;
 import giis.demo.model.rol.UsuarioAutenticado;
+import giis.demo.model.tienda.AvisoVendedores;
+import giis.demo.model.tienda.GestionVendedores;
 import giis.demo.model.tienda.VentaMerchandising;
 import giis.demo.ui.abonos.VentanaAbono;
 import giis.demo.ui.abonos.entradas.VentanaIdentificacion;
@@ -65,6 +71,7 @@ import giis.demo.ui.medico.VentanaVisualizacionLesiones;
 import giis.demo.ui.noticias.VentanaAñadirNoticia;
 import giis.demo.ui.noticias.VentanaVisualizarNoticias;
 import giis.demo.ui.reserva.VentanaReserva;
+import giis.demo.ui.tienda.DialogoAvisoVendedores;
 import giis.demo.ui.tienda.VentanaTienda;
 
 public class VentanaPrincipal extends JFrame {
@@ -134,6 +141,45 @@ public class VentanaPrincipal extends JFrame {
 
 		this.setLocationRelativeTo(null);
 
+		// cuando la ventana ya este visible
+		SwingUtilities.invokeLater(this::comprobarVendedoresTienda);
+	}
+
+	/**
+	 * HU 36817: al entrar el gerente se le avisa si faltan vendedores en la tienda, ahora mismo o en lo que queda de
+	 * semana. Tambien se llama al volver de asignar horarios desde el aviso, para que desaparezca si ya esta cubierto.
+	 */
+	private void comprobarVendedoresTienda() {
+		if (!usuario.tienePosicion(Posicion.GERENTE)) {
+			return;
+		}
+		try {
+			AvisoVendedores aviso = new GestionVendedores(ghs).comprobar(LocalDateTime.now());
+			if (aviso.hayAviso()) {
+				new DialogoAvisoVendedores(this, aviso, () -> asignarHorarioDesdeAviso(true),
+						() -> asignarHorarioDesdeAviso(false)).setVisible(true);
+			}
+		} catch (SQLException e) {
+			JOptionPane.showMessageDialog(this, "No se han podido comprobar los vendedores de la tienda.", "Error",
+					JOptionPane.ERROR_MESSAGE);
+		}
+	}
+
+	/**
+	 * Abre la ventana de horarios desde el aviso de vendedores y, al cerrarla, vuelve a comprobar
+	 */
+	private void asignarHorarioDesdeAviso(boolean periodico) {
+		GestionLogSesion.registrarAccion(periodico ? "Ventana Horario Periódico" : "Ventana Horario Específico");
+		JFrame ventana = periodico ? new VentanaHorarioPeriodico(this) : new VentanaHorarioEspecifico(this);
+		ventana.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosed(WindowEvent e) {
+				setVisible(true);
+				comprobarVendedoresTienda();
+			}
+		});
+		setVisible(false);
+		ventana.setVisible(true);
 	}
 
 	private void actualizarDatosUsuario() {
