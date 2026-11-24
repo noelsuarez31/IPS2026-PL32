@@ -848,6 +848,7 @@ public class VentanaPrincipal extends JFrame {
 
 	}
 
+	
 	private void abrirVentanaHorario() {
 		abrirSubmenu("Horarios", () -> {
 			añadirBoton(panelSubmenu, "Añadir horario periódico", this::abrirVentanaAñadirHorarioPeriodico);
