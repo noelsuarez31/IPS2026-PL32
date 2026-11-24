@@ -24,53 +24,73 @@ public class GenerarFacturaService {
 	private static final DateTimeFormatter FORMATO_FECHA = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 	private static final DateTimeFormatter FORMATO_HORA = DateTimeFormatter.ofPattern("HH:mm:ss");
 
-	private final String numeroFactura;
-	private final LocalDate fecha;
-	private final LocalTime hora;
-	private final String emisor;
-	private final String nifVendedor;
-	private final String domicilioVendedor;
-	private final String rutaPdfDestino;
+	private String numeroFactura;
+	private LocalDate fecha;
+	private LocalTime hora;
+	private String emisor;
+	private String nifVendedor;
+	private String domicilioVendedor;
+	private String rutaPdfDestino;
 
-	private final List<LineaFacturaDTO> lineasVenta;
-	private final int unidadesTotales;
-	private final double totalFactura;
-	private final double precioBase;
-	private final double iva;
+	private List<LineaFacturaDTO> lineasVenta;
+	private int unidadesTotales;
+	private double totalFactura;
+	private double precioBase;
+	private double iva;
+	
+	public GenerarFacturaService() {
+		this.nifVendedor = NIF_CLUB;
+		this.domicilioVendedor = DOMICILIO_CLUB;
+	}
 
 	public GenerarFacturaService(Map<Producto, Integer> productosVendidos) {
-		this(convertirProductosALineas(productosVendidos), obtenerEmisorPorDefecto());
+		this();
+		prepararFactura(productosVendidos);
 	}
 
 	public GenerarFacturaService(Map<Producto, Integer> productosVendidos, String nombreVendedor) {
-		this(convertirProductosALineas(productosVendidos), nombreVendedor);
+		this();
+		prepararFactura(convertirProductosALineas(productosVendidos), nombreVendedor);
 	}
 
 	public GenerarFacturaService(List<LineaFacturaDTO> lineasVendidas, String nombreVendedor) {
+		this();
+		prepararFactura(lineasVendidas, nombreVendedor);
+	}
+
+	/**
+	 * Carga en el servicio los productos de la venta recién realizada y genera
+	 * un nuevo número de factura, fecha, hora y totales.
+	 */
+	public void prepararFactura(Map<Producto, Integer> productosVendidos) {
+		prepararFactura(convertirProductosALineas(productosVendidos), obtenerEmisorPorDefecto());
+	}
+	public void prepararFactura(List<LineaFacturaDTO> lineasVendidas, String nombreVendedor) {
 		this.fecha = LocalDate.now();
 		this.hora = LocalTime.now();
 		this.numeroFactura = generarSiguienteNumeroFactura();
 		this.rutaPdfDestino = DIRECTORIO_FACTURAS + "/" + numeroFactura + ".pdf";
+		
 		this.emisor = (nombreVendedor != null && !nombreVendedor.isBlank())
 				? nombreVendedor
 				: obtenerEmisorPorDefecto();
 		this.nifVendedor = NIF_CLUB;
 		this.domicilioVendedor = DOMICILIO_CLUB;
-
+		
 		this.lineasVenta = (lineasVendidas != null) ? new ArrayList<>(lineasVendidas) : new ArrayList<>();
-
 		int uds = 0;
 		double total = 0.0;
 		for (LineaFacturaDTO linea : this.lineasVenta) {
 			uds += linea.getUnidades();
 			total += linea.getSubtotal();
 		}
+		
 		this.unidadesTotales = uds;
 		this.totalFactura = total;
 		this.precioBase = totalFactura / (1.0 + TIPO_IVA);
 		this.iva = totalFactura - this.precioBase;
 	}
-
+	
 	private static List<LineaFacturaDTO> convertirProductosALineas(Map<Producto, Integer> productosVendidos) {
 		List<LineaFacturaDTO> lineas = new ArrayList<>();
 		if (productosVendidos != null) {
@@ -161,54 +181,54 @@ public class GenerarFacturaService {
 		StringBuilder stream = new StringBuilder();
 		stream.append("BT\n");
 		stream.append("/F1 18 Tf\n");
-		stream.append("50 780 Td\n");
+		stream.append("50 785 Td\n");
 		stream.append("(FACTURA DE VENTA) Tj\n");
-		stream.append("0 -24 Td\n");
+		stream.append("0 -28 Td\n");
 		stream.append("/F1 11 Tf\n");
 		stream.append("(")
 			.append(escaparPdf("N. Factura: " + numeroFactura + "    Fecha: " + getFechaFormateada() + "    Hora: " + getHoraFormateada()))
 			.append(") Tj\n");
 
 		// Emisor / Vendedor
-		stream.append("0 -22 Td\n");
+		stream.append("0 -34 Td\n");
 		stream.append("/F1 12 Tf\n");
 		stream.append("(DATOS DE LA FACTURA Y VENDEDOR:) Tj\n");
-		stream.append("0 -15 Td\n");
+		stream.append("0 -20 Td\n");
 		stream.append("/F1 10 Tf\n");
 		stream.append("(").append(escaparPdf("Emisor / Vendedor: " + emisor + "    NIF: " + nifVendedor)).append(") Tj\n");
-		stream.append("0 -14 Td\n");
+		stream.append("0 -18 Td\n");
 		stream.append("(").append(escaparPdf("Domicilio fiscal: " + domicilioVendedor)).append(") Tj\n");
 
 		// Comprador
-		stream.append("0 -22 Td\n");
+		stream.append("0 -34 Td\n");
 		stream.append("/F1 12 Tf\n");
 		stream.append("(DATOS DEL COMPRADOR:) Tj\n");
-		stream.append("0 -15 Td\n");
+		stream.append("0 -20 Td\n");
 		stream.append("/F1 10 Tf\n");
 		stream.append("(").append(escaparPdf("DNI/NIF: " + dniComprador + "    Nombre y Apellidos: " + nombreComprador)).append(") Tj\n");
 		if (!usuarioComprador.isEmpty()) {
-			stream.append("0 -14 Td\n");
+			stream.append("0 -18 Td\n");
 			stream.append("(").append(escaparPdf("Nombre de usuario: " + usuarioComprador)).append(") Tj\n");
 		}
 		if (!domicilioComprador.isEmpty()) {
-			stream.append("0 -14 Td\n");
+			stream.append("0 -18 Td\n");
 			stream.append("(").append(escaparPdf("Domicilio fiscal: " + domicilioComprador)).append(") Tj\n");
 		}
 
 		// Líneas de la venta
-		stream.append("0 -26 Td\n");
+		stream.append("0 -36 Td\n");
 		stream.append("/F1 12 Tf\n");
 		stream.append("(LINEAS DE LA VENTA:) Tj\n");
-		stream.append("0 -16 Td\n");
+		stream.append("0 -20 Td\n");
 		stream.append("/F1 10 Tf\n");
 		stream.append("(----------------------------------------------------------------------------------------------) Tj\n");
-		stream.append("0 -14 Td\n");
+		stream.append("0 -16 Td\n");
 		stream.append("(Producto                                    Uds.    Precio Unit.       Subtotal) Tj\n");
-		stream.append("0 -12 Td\n");
+		stream.append("0 -14 Td\n");
 		stream.append("(----------------------------------------------------------------------------------------------) Tj\n");
 
 		for (LineaFacturaDTO linea : lineasVenta) {
-			stream.append("0 -14 Td\n");
+			stream.append("0 -18 Td\n");
 			String fila = String.format("%-42s   %3d      %7.2f EUR      %7.2f EUR",
 					truncar(linea.getProducto(), 40),
 					linea.getUnidades(),
@@ -217,14 +237,14 @@ public class GenerarFacturaService {
 			stream.append("(").append(escaparPdf(fila)).append(") Tj\n");
 		}
 
-		stream.append("0 -12 Td\n");
+		stream.append("0 -16 Td\n");
 		stream.append("(----------------------------------------------------------------------------------------------) Tj\n");
-		stream.append("0 -22 Td\n");
+		stream.append("0 -28 Td\n");
 		stream.append("/F1 11 Tf\n");
 		stream.append("(").append(escaparPdf(String.format("Precio Base: %.2f EUR", precioBase))).append(") Tj\n");
-		stream.append("0 -15 Td\n");
+		stream.append("0 -18 Td\n");
 		stream.append("(").append(escaparPdf(String.format("IVA (21%%):   %.2f EUR", iva))).append(") Tj\n");
-		stream.append("0 -17 Td\n");
+		stream.append("0 -24 Td\n");
 		stream.append("/F1 13 Tf\n");
 		stream.append("(").append(escaparPdf(String.format("TOTAL FACTURA: %.2f EUR", totalFactura))).append(") Tj\n");
 		stream.append("ET\n");

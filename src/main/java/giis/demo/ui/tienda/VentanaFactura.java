@@ -26,24 +26,25 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
 import giis.demo.model.tienda.GenerarFacturaService;
-import giis.demo.ui.tienda.VentanaFactura.LineaFacturaDTO;
+import giis.demo.model.tienda.LineaFacturaDTO;
+import giis.demo.ui.login.VentanaPrincipal;
 
 /**
  * HU-36813: Ventana para la generación de factura de venta en PDF.
- * Construida con inicialización Lazy (WindowBuilder) y delegando toda
- * la lógica de negocio y generación de PDF en GenerarFacturaService.
  */
 public class VentanaFactura extends JDialog {
 
 	private static final long serialVersionUID = 1L;
+	private static final Color COLOR_FONDO = new Color(240, 240, 240);
+	private static final Color COLOR_SOLO_LECTURA = new Color(228, 228, 228);
 
-	private final GenerarFacturaService service;
+	private VentanaPrincipal vPrincipal;
+	private GenerarFacturaService service;
 
 	// Contenedores principales
 	private JPanel contentPane;
@@ -98,17 +99,27 @@ public class VentanaFactura extends JDialog {
 	private JButton btnCancelar;
 	private JButton btnGenerar;
 
-	public VentanaFactura(GenerarFacturaService service) {
-		this(null, service);
+	public VentanaFactura(VentanaPrincipal vPrincipal) {
+		super(vPrincipal, "Generar Factura de Venta", true);
+		this.vPrincipal = vPrincipal;
+		this.service = vPrincipal.getGenerarFacturaService();
+
+		setSize(850, 790);
+		setMinimumSize(new Dimension(780, 730));
+		setLocationRelativeTo(vPrincipal);
+		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+		setContentPane(getContentPane());
+
+		cargarDatosDesdeServicio();
 	}
 
 	@Override
 	public JPanel getContentPane() {
 		if (contentPane == null) {
 			contentPane = new JPanel();
-			contentPane.setLayout(new BorderLayout(10, 10));
-			contentPane.setBorder(new EmptyBorder(12, 14, 12, 14));
-			contentPane.setBackground(new Color(245, 247, 250));
+			contentPane.setLayout(new BorderLayout(12, 14));
+			contentPane.setBorder(new EmptyBorder(16, 18, 16, 18));
+			contentPane.setBackground(COLOR_FONDO);
 			contentPane.add(getPnCentral(), BorderLayout.CENTER);
 			contentPane.add(getPnSur(), BorderLayout.SOUTH);
 		}
@@ -119,26 +130,25 @@ public class VentanaFactura extends JDialog {
 		if (pnCentral == null) {
 			pnCentral = new JPanel();
 			pnCentral.setLayout(new BoxLayout(pnCentral, BoxLayout.Y_AXIS));
-			pnCentral.setOpaque(false);
+			pnCentral.setBackground(COLOR_FONDO);
 			pnCentral.add(getPnDatosFactura());
-			pnCentral.add(Box.createVerticalStrut(10));
+			pnCentral.add(Box.createVerticalStrut(16));
 			pnCentral.add(getPnDatosComprador());
-			pnCentral.add(Box.createVerticalStrut(10));
+			pnCentral.add(Box.createVerticalStrut(16));
 			pnCentral.add(getPnLineasVenta());
 		}
 		return pnCentral;
 	}
 
-	// Datos de la factura
+	// Datos de la factura y vendedor
 	private JPanel getPnDatosFactura() {
 		if (pnDatosFactura == null) {
 			pnDatosFactura = new JPanel(new GridBagLayout());
-			pnDatosFactura.setOpaque(true);
-			pnDatosFactura.setBackground(Color.WHITE);
+			pnDatosFactura.setBackground(COLOR_FONDO);
 			pnDatosFactura.setBorder(crearBordeSeccion("DATOS DE LA FACTURA Y VENDEDOR"));
 
 			GridBagConstraints gbc = new GridBagConstraints();
-			gbc.insets = new Insets(4, 6, 4, 6);
+			gbc.insets = new Insets(7, 8, 7, 8);
 			gbc.fill = GridBagConstraints.HORIZONTAL;
 
 			// Fila 0: Nº factura, Fecha, Hora
@@ -275,12 +285,11 @@ public class VentanaFactura extends JDialog {
 	private JPanel getPnDatosComprador() {
 		if (pnDatosComprador == null) {
 			pnDatosComprador = new JPanel(new GridBagLayout());
-			pnDatosComprador.setOpaque(true);
-			pnDatosComprador.setBackground(Color.WHITE);
+			pnDatosComprador.setBackground(COLOR_FONDO);
 			pnDatosComprador.setBorder(crearBordeSeccion("DATOS DEL COMPRADOR"));
 
 			GridBagConstraints gbc = new GridBagConstraints();
-			gbc.insets = new Insets(4, 6, 4, 6);
+			gbc.insets = new Insets(7, 8, 7, 8);
 			gbc.fill = GridBagConstraints.HORIZONTAL;
 
 			// Fila 0: DNI/NIF, Nombre y Apellidos
@@ -321,7 +330,7 @@ public class VentanaFactura extends JDialog {
 
 	private JTextField getTxDniComprador() {
 		if (txDniComprador == null) {
-			txDniComprador = new JTextField();
+			txDniComprador = crearCampoEditable();
 		}
 		return txDniComprador;
 	}
@@ -335,7 +344,7 @@ public class VentanaFactura extends JDialog {
 
 	private JTextField getTxNombreComprador() {
 		if (txNombreComprador == null) {
-			txNombreComprador = new JTextField();
+			txNombreComprador = crearCampoEditable();
 		}
 		return txNombreComprador;
 	}
@@ -349,7 +358,7 @@ public class VentanaFactura extends JDialog {
 
 	private JTextField getTxUsuarioComprador() {
 		if (txUsuarioComprador == null) {
-			txUsuarioComprador = new JTextField();
+			txUsuarioComprador = crearCampoEditable();
 		}
 		return txUsuarioComprador;
 	}
@@ -363,17 +372,16 @@ public class VentanaFactura extends JDialog {
 
 	private JTextField getTxDomicilioComprador() {
 		if (txDomicilioComprador == null) {
-			txDomicilioComprador = new JTextField();
+			txDomicilioComprador = crearCampoEditable();
 		}
 		return txDomicilioComprador;
 	}
 
-	// Lineas de venta
+	// Lineas de la venta
 	private JPanel getPnLineasVenta() {
 		if (pnLineasVenta == null) {
-			pnLineasVenta = new JPanel(new BorderLayout(6, 6));
-			pnLineasVenta.setOpaque(true);
-			pnLineasVenta.setBackground(Color.WHITE);
+			pnLineasVenta = new JPanel(new BorderLayout(8, 10));
+			pnLineasVenta.setBackground(COLOR_FONDO);
 			pnLineasVenta.setBorder(crearBordeSeccion("LINEAS DE LA VENTA"));
 			pnLineasVenta.add(getLbUnidadesCesta(), BorderLayout.NORTH);
 			pnLineasVenta.add(getSpTabla(), BorderLayout.CENTER);
@@ -385,8 +393,7 @@ public class VentanaFactura extends JDialog {
 	private JLabel getLbUnidadesCesta() {
 		if (lbUnidadesCesta == null) {
 			lbUnidadesCesta = new JLabel("0 unidades en cesta");
-			lbUnidadesCesta.setFont(new Font("Segoe UI", Font.BOLD, 12));
-			lbUnidadesCesta.setForeground(new Color(40, 70, 110));
+			lbUnidadesCesta.setFont(new Font("Tahoma", Font.BOLD, 12));
 			lbUnidadesCesta.setBorder(new EmptyBorder(2, 4, 4, 4));
 		}
 		return lbUnidadesCesta;
@@ -395,7 +402,7 @@ public class VentanaFactura extends JDialog {
 	private JScrollPane getSpTabla() {
 		if (spTabla == null) {
 			spTabla = new JScrollPane(getTablaLineas());
-			spTabla.setPreferredSize(new Dimension(spTabla.getPreferredSize().width, 160));
+			spTabla.setPreferredSize(new Dimension(spTabla.getPreferredSize().width, 165));
 		}
 		return spTabla;
 	}
@@ -403,10 +410,9 @@ public class VentanaFactura extends JDialog {
 	private JTable getTablaLineas() {
 		if (tablaLineas == null) {
 			tablaLineas = new JTable(getModeloTabla());
-			tablaLineas.setRowHeight(24);
-			tablaLineas.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-			tablaLineas.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 12));
-			tablaLineas.getTableHeader().setBackground(new Color(235, 240, 245));
+			tablaLineas.setRowHeight(26);
+			tablaLineas.setFont(new Font("Tahoma", Font.PLAIN, 12));
+			tablaLineas.getTableHeader().setFont(new Font("Tahoma", Font.BOLD, 12));
 			tablaLineas.getTableHeader().setReorderingAllowed(false);
 
 			DefaultTableCellRenderer centro = new DefaultTableCellRenderer();
@@ -441,9 +447,9 @@ public class VentanaFactura extends JDialog {
 
 	private JPanel getPnPieLineas() {
 		if (pnPieLineas == null) {
-			pnPieLineas = new JPanel(new BorderLayout(10, 5));
-			pnPieLineas.setOpaque(false);
-			pnPieLineas.setBorder(new EmptyBorder(6, 4, 2, 4));
+			pnPieLineas = new JPanel(new BorderLayout(12, 8));
+			pnPieLineas.setBackground(COLOR_FONDO);
+			pnPieLineas.setBorder(new EmptyBorder(10, 4, 4, 4));
 			pnPieLineas.add(getPnDestinoPdf(), BorderLayout.WEST);
 			pnPieLineas.add(getPnTotales(), BorderLayout.EAST);
 		}
@@ -452,8 +458,8 @@ public class VentanaFactura extends JDialog {
 
 	private JPanel getPnDestinoPdf() {
 		if (pnDestinoPdf == null) {
-			pnDestinoPdf = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 8));
-			pnDestinoPdf.setOpaque(false);
+			pnDestinoPdf = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 14));
+			pnDestinoPdf.setBackground(COLOR_FONDO);
 			pnDestinoPdf.add(getLbPrefijoDestino());
 			pnDestinoPdf.add(getLbDestinoPdf());
 		}
@@ -463,7 +469,7 @@ public class VentanaFactura extends JDialog {
 	private JLabel getLbPrefijoDestino() {
 		if (lbPrefijoDestino == null) {
 			lbPrefijoDestino = new JLabel("Destino PDF: ");
-			lbPrefijoDestino.setFont(new Font("Segoe UI", Font.BOLD, 12));
+			lbPrefijoDestino.setFont(new Font("Tahoma", Font.BOLD, 12));
 		}
 		return lbPrefijoDestino;
 	}
@@ -472,19 +478,17 @@ public class VentanaFactura extends JDialog {
 		if (lbDestinoPdf == null) {
 			lbDestinoPdf = new JLabel();
 			lbDestinoPdf.setFont(new Font("Monospaced", Font.PLAIN, 12));
-			lbDestinoPdf.setForeground(new Color(20, 80, 160));
 		}
 		return lbDestinoPdf;
 	}
 
 	private JPanel getPnTotales() {
 		if (pnTotales == null) {
-			pnTotales = new JPanel(new GridLayout(3, 2, 10, 4));
-			pnTotales.setOpaque(true);
-			pnTotales.setBackground(new Color(248, 250, 252));
+			pnTotales = new JPanel(new GridLayout(3, 2, 20, 8));
+			pnTotales.setBackground(new Color(232, 232, 232));
 			pnTotales.setBorder(new CompoundBorder(
-					new LineBorder(new Color(203, 213, 225), 1, true),
-					new EmptyBorder(6, 12, 6, 12)
+					BorderFactory.createEtchedBorder(),
+					new EmptyBorder(10, 16, 10, 16)
 			));
 			pnTotales.add(getLbTxtBase());
 			pnTotales.add(getLbPrecioBase());
@@ -499,7 +503,7 @@ public class VentanaFactura extends JDialog {
 	private JLabel getLbTxtBase() {
 		if (lbTxtBase == null) {
 			lbTxtBase = new JLabel("Precio Base:");
-			lbTxtBase.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+			lbTxtBase.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		}
 		return lbTxtBase;
 	}
@@ -507,7 +511,7 @@ public class VentanaFactura extends JDialog {
 	private JLabel getLbPrecioBase() {
 		if (lbPrecioBase == null) {
 			lbPrecioBase = new JLabel("0.00 €", SwingConstants.RIGHT);
-			lbPrecioBase.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+			lbPrecioBase.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		}
 		return lbPrecioBase;
 	}
@@ -515,7 +519,7 @@ public class VentanaFactura extends JDialog {
 	private JLabel getLbTxtIva() {
 		if (lbTxtIva == null) {
 			lbTxtIva = new JLabel("IVA (21%):");
-			lbTxtIva.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+			lbTxtIva.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		}
 		return lbTxtIva;
 	}
@@ -523,7 +527,7 @@ public class VentanaFactura extends JDialog {
 	private JLabel getLbIva() {
 		if (lbIva == null) {
 			lbIva = new JLabel("0.00 €", SwingConstants.RIGHT);
-			lbIva.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+			lbIva.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		}
 		return lbIva;
 	}
@@ -531,7 +535,7 @@ public class VentanaFactura extends JDialog {
 	private JLabel getLbTxtTotal() {
 		if (lbTxtTotal == null) {
 			lbTxtTotal = new JLabel("Total factura:");
-			lbTxtTotal.setFont(new Font("Segoe UI", Font.BOLD, 13));
+			lbTxtTotal.setFont(new Font("Tahoma", Font.BOLD, 13));
 		}
 		return lbTxtTotal;
 	}
@@ -539,8 +543,7 @@ public class VentanaFactura extends JDialog {
 	private JLabel getLbTotalFactura() {
 		if (lbTotalFactura == null) {
 			lbTotalFactura = new JLabel("0.00 €", SwingConstants.RIGHT);
-			lbTotalFactura.setFont(new Font("Segoe UI", Font.BOLD, 14));
-			lbTotalFactura.setForeground(new Color(20, 80, 160));
+			lbTotalFactura.setFont(new Font("Tahoma", Font.BOLD, 14));
 		}
 		return lbTotalFactura;
 	}
@@ -548,8 +551,8 @@ public class VentanaFactura extends JDialog {
 	// Panel sur
 	private JPanel getPnSur() {
 		if (pnSur == null) {
-			pnSur = new JPanel(new FlowLayout(FlowLayout.CENTER, 16, 6));
-			pnSur.setOpaque(false);
+			pnSur = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 8));
+			pnSur.setBackground(COLOR_FONDO);
 			pnSur.add(getBtnCancelar());
 			pnSur.add(getBtnGenerar());
 		}
@@ -559,8 +562,8 @@ public class VentanaFactura extends JDialog {
 	private JButton getBtnCancelar() {
 		if (btnCancelar == null) {
 			btnCancelar = new JButton("Cancelar");
-			btnCancelar.setFont(new Font("Segoe UI", Font.PLAIN, 13));
-			btnCancelar.setPreferredSize(new Dimension(110, 32));
+			btnCancelar.setFont(new Font("Tahoma", Font.PLAIN, 12));
+			btnCancelar.setPreferredSize(new Dimension(120, 32));
 			btnCancelar.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
@@ -574,10 +577,8 @@ public class VentanaFactura extends JDialog {
 	private JButton getBtnGenerar() {
 		if (btnGenerar == null) {
 			btnGenerar = new JButton("Generar");
-			btnGenerar.setFont(new Font("Segoe UI", Font.BOLD, 13));
-			btnGenerar.setPreferredSize(new Dimension(110, 32));
-			btnGenerar.setBackground(new Color(30, 110, 200));
-			btnGenerar.setForeground(Color.WHITE);
+			btnGenerar.setFont(new Font("Tahoma", Font.BOLD, 12));
+			btnGenerar.setPreferredSize(new Dimension(120, 32));
 			btnGenerar.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
@@ -588,7 +589,7 @@ public class VentanaFactura extends JDialog {
 		return btnGenerar;
 	}
 
-	// Metodos adicionales 
+	// Metodos adicionales
 	private void cargarDatosDesdeServicio() {
 		getTxNumFactura().setText(service.getNumeroFactura());
 		getTxFecha().setText(service.getFechaFormateada());
@@ -642,26 +643,32 @@ public class VentanaFactura extends JDialog {
 	private JTextField crearCampoSoloLectura() {
 		JTextField tf = new JTextField();
 		tf.setEditable(false);
-		tf.setBackground(new Color(240, 243, 246));
+		tf.setBackground(COLOR_SOLO_LECTURA);
+		tf.setPreferredSize(new Dimension(0, 26));
+		return tf;
+	}
+
+	private JTextField crearCampoEditable() {
+		JTextField tf = new JTextField();
+		tf.setPreferredSize(new Dimension(0, 26));
 		return tf;
 	}
 
 	private CompoundBorder crearBordeSeccion(String titulo) {
 		TitledBorder titled = BorderFactory.createTitledBorder(
-				new LineBorder(new Color(180, 195, 210), 1, true),
+				null,
 				titulo,
 				TitledBorder.LEADING,
 				TitledBorder.TOP,
-				new Font("Segoe UI", Font.BOLD, 12),
-				new Color(25, 60, 110)
+				new Font("Tahoma", Font.BOLD, 12),
+				null
 		);
-		return new CompoundBorder(titled, new EmptyBorder(8, 10, 8, 10));
+		return new CompoundBorder(titled, new EmptyBorder(12, 14, 12, 14));
 	}
 
 	private JLabel crearEtiquetaNegrita(String texto) {
 		JLabel label = new JLabel(texto);
-		label.setFont(new Font("Segoe UI", Font.BOLD, 12));
-		label.setForeground(new Color(50, 60, 70));
+		label.setFont(new Font("Tahoma", Font.BOLD, 12));
 		return label;
 	}
 }

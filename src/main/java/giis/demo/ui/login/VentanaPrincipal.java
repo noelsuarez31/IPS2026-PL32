@@ -45,6 +45,7 @@ import giis.demo.model.noticias.AñadirNoticiaService;
 import giis.demo.model.noticias.VisualizarNoticiasService;
 import giis.demo.model.rol.UsuarioAutenticado;
 import giis.demo.model.tienda.AvisoVendedores;
+import giis.demo.model.tienda.GenerarFacturaService;
 import giis.demo.model.tienda.GestionVendedores;
 import giis.demo.model.tienda.VentaMerchandising;
 import giis.demo.ui.abonos.VentanaAbono;
@@ -77,7 +78,7 @@ import giis.demo.ui.tienda.DialogoAvisoVendedores;
 import giis.demo.ui.tienda.VentanaTienda;
 
 public class VentanaPrincipal extends JFrame {
-
+	private GenerarFacturaService generarFacturaService = new GenerarFacturaService();
 	private GestionaTienda gestionaTienda = new GestionaTienda();
 	private AñadirEquipoService añadirEquipo = new AñadirEquipoService();
 	private GestionHorariosPeriodicos ghp = new GestionHorariosPeriodicos();
@@ -540,6 +541,10 @@ public class VentanaPrincipal extends JFrame {
 		return añadirNoticiaService;
 	}
 	
+	public GenerarFacturaService getGenerarFacturaService() {
+		return this.generarFacturaService;
+	}
+	
 	public VisualizarNoticiasService getVisualizarNoticiasService() {
 		return this.visualizarNoticiaService;
 	}
@@ -811,6 +816,5 @@ public class VentanaPrincipal extends JFrame {
 	
 	public UsuarioAutenticado getUsuario() {
 		return usuario;
-	}
-	
+	}	
 }

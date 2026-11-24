@@ -54,6 +54,7 @@ public class VentanaTienda extends JFrame {
     private static final Color FONDO_FUERA_HORARIO = new Color(247, 225, 225);
     private static final Color TEXTO_FUERA_HORARIO = new Color(110, 20, 20);
     private VentaMerchandising controladorVenta;
+    private VentanaPrincipal vPrincipal;
 
     private JPanel contentPane;
     private JPanel pnArticulos;
@@ -69,6 +70,7 @@ public class VentanaTienda extends JFrame {
 
     public VentanaTienda(VentanaPrincipal ventanaPrincipal, VentaMerchandising venta) {
         this.controladorVenta = venta;
+        this.vPrincipal = ventanaPrincipal;
 
         setTitle("Venta de Merchandising");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // Evita cerrar toda la app
@@ -360,7 +362,11 @@ public class VentanaTienda extends JFrame {
                                         + email + ".\nInforme al cliente.",
                                 "Email no enviado", JOptionPane.WARNING_MESSAGE);
             }
-
+            
+            vPrincipal.getGenerarFacturaService().prepararFactura(controladorVenta.getCesta().getLineas());
+            VentanaFactura vFactura = new VentanaFactura(this.vPrincipal);
+            vFactura.setVisible(true);
+            
             // Limpiar la vista
             controladorVenta.getCesta().vaciar();
             actualizarVistaCesta();
