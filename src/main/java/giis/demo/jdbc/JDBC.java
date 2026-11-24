@@ -989,6 +989,13 @@ public class JDBC {
 	}
 
 	/**
+	 * Cancela y elimina de la base de datos las actividades sobreescritas (reservas, jardinería, franjas, entrevistas).
+	 */
+	public void cancelarEventosSobreescritos(List<EventoOcupacion> cancelables) throws SQLException {
+		EquipoJdbc.cancelarEventosSobreescritos(con, cancelables);
+	}
+
+	/**
 	 * Registra el partido, sus precios de sección y cancela atómicamente los
 	 * eventos sobreescritos.
 	 */
@@ -1203,6 +1210,25 @@ public class JDBC {
 		GestionLogSesion.registrarModificacionBBDD("insert",
 				"CampanaAccionista / Accion (comprador=" + comprador.getDni() + ", unidades=" + unidades + ")");
 		return resultado;
+	}
+	
+	/**
+	 * Inserta un partido importado desde archivo externo en la base de datos.
+	 */
+	public void insertarPartidoImportado(int idLocal, int idVisitante, int idInstalacion,
+			LocalDate fecha, LocalTime horaInicio, LocalTime horaFin) throws SQLException {
+		EquipoJdbc.insertarPartidoImportado(con, idLocal, idVisitante, idInstalacion, fecha,
+				horaInicio, horaFin);
+
+		GestionLogSesion.registrarModificacionBBDD("insert", 
+				"Partido (local=" + idLocal + ", visitante=" + idVisitante + ", fecha=" + fecha + ")");
+	}
+	
+	/**
+	 * Obtiene el ID del equipo visitante o lo registra si no existe en la base de datos.
+	 */
+	public int obtenerOCrearEquipoVisitante(String nombreVisitante, int idLocal) throws SQLException {
+		return EquipoJdbc.obtenerOCrearEquipoVisitante(con, nombreVisitante, idLocal);
 	}
 
 	/**
