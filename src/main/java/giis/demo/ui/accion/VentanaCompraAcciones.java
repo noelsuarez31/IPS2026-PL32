@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Locale;
 
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -31,14 +30,14 @@ import giis.demo.model.accion.Accion;
 import giis.demo.model.accion.Accionista;
 import giis.demo.model.accion.GestionAcciones;
 import giis.demo.model.accion.ResumenParticipacion;
+import giis.demo.model.log.GestionLogSesion;
 import giis.demo.ui.login.VentanaPrincipal;
 import giis.demo.util.SwingUtil;
 import giis.demo.util.UnexpectedException;
-import giis.demo.model.log.GestionLogSesion;
-
 
 /**
- * Ventana para la compra de acciones puestas a la venta por otros accionistas.
+ * Ventana para la compra de acciones puestas a la venta por otros accionistas,
+ * adaptada al accionista autenticado en el sistema.
  */
 public class VentanaCompraAcciones extends JFrame {
 
@@ -49,9 +48,9 @@ public class VentanaCompraAcciones extends JFrame {
 	private Accionista accionistaActual;
 	private List<Accion> listaAccionesEnVenta;
 
-	// Zona Norte: Identificación del comprador
+	// Zona Norte: Identificación del comprador autenticado
+	private JLabel lblDniCompradorTexto;
 	private JLabel lblDniComprador;
-	private JComboBox<String> cbDniComprador;
 	private JLabel lblCompradorTexto;
 	private JLabel lblNombreComprador;
 
@@ -61,7 +60,7 @@ public class VentanaCompraAcciones extends JFrame {
 	private DefaultTableModel modeloAcciones;
 	private JScrollPane scrollPaneAcciones;
 
-	// Zona Sur: Métricas del comprador y botones de navegación / acción
+	// Zona Sur: Métricas del comprador y botones
 	private JLabel lblTotalAccionesTexto;
 	private JLabel lblTotalAcciones;
 	private JLabel lblTotalClubTexto;
@@ -94,10 +93,10 @@ public class VentanaCompraAcciones extends JFrame {
 		contentPane.setBorder(new EmptyBorder(10, 15, 10, 15));
 		setContentPane(contentPane);
 
-		// 1. ZONA NORTE: Barra de identificación del comprador
-		JPanel panelNorte = new JPanel(new FlowLayout(FlowLayout.LEFT, 12, 5));
+		// 1. ZONA NORTE: Barra de identificación del comprador autenticado
+		JPanel panelNorte = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 5));
+		panelNorte.add(getLblDniCompradorTexto());
 		panelNorte.add(getLblDniComprador());
-		panelNorte.add(getCbDniComprador());
 		panelNorte.add(getLblCompradorTexto());
 		panelNorte.add(getLblNombreComprador());
 		contentPane.add(panelNorte, BorderLayout.NORTH);
@@ -155,13 +154,6 @@ public class VentanaCompraAcciones extends JFrame {
 			}
 		});
 
-		// Cargar lista inicial de DNIs de accionistas
-		cargarDnisAccionistas();
-
-		// Evento al seleccionar un DNI del ComboBox
-		getCbDniComprador().addActionListener(e -> SwingUtil.exceptionWrapper(() -> ejecutarSeleccionComprador()));
-		getCbDniComprador().getEditor().addActionListener(e -> SwingUtil.exceptionWrapper(() -> ejecutarSeleccionComprador()));
-
 		// Botón Comprar
 		getBtnComprar().addActionListener(e -> SwingUtil.exceptionWrapper(() -> ejecutarCompraAcciones()));
 
@@ -179,43 +171,27 @@ public class VentanaCompraAcciones extends JFrame {
 				cerrarVentana();
 			}
 		});
+
+		// Cargar automáticamente el comprador autenticado
+		cargarCompradorAutenticado();
 	}
 
 	/**
-	 * Puebla el desplegable con los DNIs de todos los accionistas.
+	 * Identifica al accionista logueado y carga sus métricas y las acciones disponibles para comprar.
 	 */
-	private void cargarDnisAccionistas() {
-		try {
-			List<Accionista> lista = gestionAcciones.obtenerAccionistas();
-			getCbDniComprador().removeAllItems();
-			for (Accionista a : lista) {
-				getCbDniComprador().addItem(a.getDni());
+	private void cargarCompradorAutenticado() {
+		if (vp != null && vp.getUsuario() != null) {
+			String dni = vp.getUsuario().getDni();
+			try {
+				Accionista accionista = gestionAcciones.validarYObtenerAccionista(dni);
+				this.accionistaActual = accionista;
+				getLblDniComprador().setText(accionista.getDni());
+				getLblNombreComprador().setText(accionista.getNombreCompleto());
+				recargarDatos();
+				GestionLogSesion.registrarAccion("Consulta mercado de acciones (comprador=" + accionista.getDni() + ")");
+			} catch (SQLException ex) {
+				throw new UnexpectedException(ex);
 			}
-			getCbDniComprador().setSelectedIndex(-1);
-		} catch (SQLException ex) {
-			throw new UnexpectedException(ex);
-		}
-	}
-
-	/**
-	 * Identifica al accionista comprador y carga sus métricas y las acciones disponibles a la venta.
-	 */
-	private void ejecutarSeleccionComprador() {
-		Object item = getCbDniComprador().getEditor().getItem();
-		String dni = (item != null) ? item.toString().trim() : "";
-		if (dni.isEmpty()) {
-			limpiarDatos();
-			return;
-		}
-
-		try {
-			Accionista accionista = gestionAcciones.validarYObtenerAccionista(dni);
-			this.accionistaActual = accionista;
-			getLblNombreComprador().setText(accionista.getNombreCompleto());
-			recargarDatos();
-			GestionLogSesion.registrarAccion("Consulta mercado de acciones (comprador=" + accionista.getDni() + ")");
-		} catch (SQLException ex) {
-			throw new UnexpectedException(ex);
 		}
 	}
 
@@ -262,6 +238,7 @@ public class VentanaCompraAcciones extends JFrame {
 	private void limpiarDatos() {
 		this.accionistaActual = null;
 		this.listaAccionesEnVenta.clear();
+		getLblDniComprador().setText("-");
 		getLblNombreComprador().setText("-");
 		getLblTotalAcciones().setText("0");
 		getLblTotalClub().setText("0");
@@ -270,17 +247,11 @@ public class VentanaCompraAcciones extends JFrame {
 		actualizarEstadoBotonComprar();
 	}
 
-	/**
-	 * El botón Comprar solo se activa si hay al menos una acción seleccionada en la tabla.
-	 */
 	private void actualizarEstadoBotonComprar() {
 		int seleccionadas = getTablaAcciones().getSelectedRowCount();
 		getBtnComprar().setEnabled(seleccionadas > 0 && accionistaActual != null);
 	}
 
-	/**
-	 * Prepara el resumen de la compra, abre el diálogo modal de confirmación y procesa la adquisición.
-	 */
 	private void ejecutarCompraAcciones() {
 		int[] filasSeleccionadas = getTablaAcciones().getSelectedRows();
 		if (filasSeleccionadas == null || filasSeleccionadas.length == 0 || accionistaActual == null) {
@@ -294,8 +265,6 @@ public class VentanaCompraAcciones extends JFrame {
 			int idAccion = Integer.parseInt(String.valueOf(modeloAcciones.getValueAt(fila, 0)));
 			idsAcciones.add(idAccion);
 
-
-			// Localizar precio exacto de la acción en la lista
 			for (Accion a : listaAccionesEnVenta) {
 				if (a.getIdAccion() == idAccion && a.getPrecioVenta() != null) {
 					importeTotal = importeTotal.add(a.getPrecioVenta());
@@ -304,8 +273,6 @@ public class VentanaCompraAcciones extends JFrame {
 			}
 		}
 
-
-		// Abrir diálogo modal de confirmación
 		DialogoConfirmarCompra dialogo = new DialogoConfirmarCompra(
 				this, idsAcciones.size(), importeTotal);
 		dialogo.setVisible(true);
@@ -330,23 +297,22 @@ public class VentanaCompraAcciones extends JFrame {
 		}
 	}
 
-	// ==================== GETTERS COMPONENTES VISUALES ====================
+	// ==================== COMPONENTES VISUALES ====================
+
+	private JLabel getLblDniCompradorTexto() {
+		if (lblDniCompradorTexto == null) {
+			lblDniCompradorTexto = new JLabel("DNI comprador :");
+			lblDniCompradorTexto.setFont(new Font("Tahoma", Font.BOLD, 12));
+		}
+		return lblDniCompradorTexto;
+	}
 
 	private JLabel getLblDniComprador() {
 		if (lblDniComprador == null) {
-			lblDniComprador = new JLabel("Dni comprador :");
+			lblDniComprador = new JLabel("-");
 			lblDniComprador.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		}
 		return lblDniComprador;
-	}
-
-	private JComboBox<String> getCbDniComprador() {
-		if (cbDniComprador == null) {
-			cbDniComprador = new JComboBox<>();
-			cbDniComprador.setEditable(true);
-			cbDniComprador.setPreferredSize(new Dimension(130, 26));
-		}
-		return cbDniComprador;
 	}
 
 	private JLabel getLblCompradorTexto() {
@@ -417,7 +383,6 @@ public class VentanaCompraAcciones extends JFrame {
 		if (lblTotalClub == null) {
 			lblTotalClub = new JLabel("0");
 			lblTotalClub.setFont(new Font("Tahoma", Font.BOLD, 12));
-			lblTotalClub.setForeground(new Color(0, 102, 204));
 		}
 		return lblTotalClub;
 	}

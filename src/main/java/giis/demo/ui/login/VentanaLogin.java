@@ -34,6 +34,24 @@ public class VentanaLogin extends JFrame {
 	private Autenticacion autenticacion;
 	private UsuarioAutenticado usuarioAutenticado;
 
+	private JFrame ventanaPadre;
+	private JButton btnCerrar;
+	
+	public VentanaLogin(JFrame vPadre) {
+		this();
+		this.ventanaPadre = vPadre;
+		
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		addWindowListener(new java.awt.event.WindowAdapter() {
+			@Override
+			public void windowClosing(java.awt.event.WindowEvent e) {
+				if (ventanaPadre != null) {
+					ventanaPadre.setVisible(true);
+				}
+			}
+		});
+	}
+	
 	/**
 	 * Create the frame.
 	 */
@@ -63,6 +81,7 @@ public class VentanaLogin extends JFrame {
 			panelLoggin.add(getTfUsuario());
 			panelLoggin.add(getPfContrasenia());
 			panelLoggin.add(getBtValidar());
+			panelLoggin.add(getBtnCerrar());
 		}
 		return panelLoggin;
 	}
@@ -117,7 +136,7 @@ public class VentanaLogin extends JFrame {
 			});
 			btValidar.setBackground(new Color(128, 255, 128));
 			btValidar.setMnemonic('V');
-			btValidar.setBounds(413, 265, 115, 29);
+			btValidar.setBounds(285, 272, 115, 29);
 		}
 		return btValidar;
 	}
@@ -193,4 +212,25 @@ public class VentanaLogin extends JFrame {
 	}
 	
 	
+	private JButton getBtnCerrar() {
+		if (btnCerrar == null) {
+			btnCerrar = new JButton("Cerrar");
+			btnCerrar.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					cerrar();
+				}
+			});
+			btnCerrar.setMnemonic('C');
+			btnCerrar.setBackground(new Color(255, 128, 128));
+			btnCerrar.setBounds(407, 272, 115, 29);
+		}
+		return btnCerrar;
+	}
+	
+	private void cerrar() {
+		
+		ventanaPadre.setVisible(true);
+		this.dispose();
+		
+	}
 }

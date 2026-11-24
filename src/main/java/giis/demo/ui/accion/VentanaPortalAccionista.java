@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Locale;
 
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -34,8 +33,7 @@ import giis.demo.util.SwingUtil;
 import giis.demo.util.UnexpectedException;
 
 /**
- * Ventana del Portal del Accionista para la consulta de acciones en propiedad,
- * origen, estado de venta, puesta en venta y porcentaje de participación en el club.
+ * Ventana del Portal del Accionista adaptada al usuario autenticado en la sesión.
  */
 public class VentanaPortalAccionista extends JFrame {
 
@@ -45,10 +43,9 @@ public class VentanaPortalAccionista extends JFrame {
 	private GestionAcciones gestionAcciones;
 	private Accionista accionistaActual;
 
-	// Zona Norte: Autenticación / Selección del DNI del accionista
+	// Zona Norte: Datos del accionista autenticado
+	private JLabel lblDniAccionistaTexto;
 	private JLabel lblDniAccionista;
-	private JComboBox<String> cbDni;
-	private JButton btnAcceder;
 	private JLabel lblTitularTexto;
 	private JLabel lblTitular;
 
@@ -69,7 +66,7 @@ public class VentanaPortalAccionista extends JFrame {
 	private JButton btnAtras;
 
 	/**
-	 * Constructor para integración con la VentanaPrincipal.
+	 * Constructor para integración con la VentanaPrincipal (usuario logueado).
 	 */
 	public VentanaPortalAccionista(VentanaPrincipal vp) {
 		this.vp = vp;
@@ -78,7 +75,7 @@ public class VentanaPortalAccionista extends JFrame {
 	}
 
 	/**
-	 * Constructor por defecto para pruebas unitarias o WindowBuilder.
+	 * Constructor por defecto para pruebas o WindowBuilder.
 	 */
 	public VentanaPortalAccionista() {
 		this.gestionAcciones = new GestionAcciones();
@@ -95,11 +92,10 @@ public class VentanaPortalAccionista extends JFrame {
 		contentPane.setBorder(new EmptyBorder(10, 15, 10, 15));
 		setContentPane(contentPane);
 
-		// 1. ZONA NORTE: Barra de identificación y titular
-		JPanel panelNorte = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 5));
+		// 1. ZONA NORTE: Identificación fija del accionista autenticado
+		JPanel panelNorte = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 5));
+		panelNorte.add(getLblDniAccionistaTexto());
 		panelNorte.add(getLblDniAccionista());
-		panelNorte.add(getCbDni());
-		panelNorte.add(getBtnAcceder());
 		panelNorte.add(getLblTitularTexto());
 		panelNorte.add(getLblTitular());
 		contentPane.add(panelNorte, BorderLayout.NORTH);
@@ -154,15 +150,6 @@ public class VentanaPortalAccionista extends JFrame {
 			}
 		});
 
-		// Cargar lista inicial de DNIs de accionistas en el ComboBox
-		cargarDnisAccionistas();
-
-		// Acción al pulsar el botón Acceder
-		getBtnAcceder().addActionListener(e -> SwingUtil.exceptionWrapper(() -> ejecutarAcceso()));
-
-		// Acción al pulsar ENTER en el editor del ComboBox
-		getCbDni().getEditor().addActionListener(e -> SwingUtil.exceptionWrapper(() -> ejecutarAcceso()));
-
 		// Botón Vender
 		getBtnVender().addActionListener(e -> SwingUtil.exceptionWrapper(() -> ejecutarVentaAccion()));
 
@@ -180,41 +167,27 @@ public class VentanaPortalAccionista extends JFrame {
 				cerrarVentana();
 			}
 		});
+
+		// Cargar automáticamente los datos del accionista logueado
+		cargarAccionistaAutenticado();
 	}
 
 	/**
-	 * Puebla el ComboBox con los DNIs de todos los accionistas registrados.
+	 * Carga automáticamente la información del accionista autenticado en la sesión.
 	 */
-	private void cargarDnisAccionistas() {
-		try {
-			List<Accionista> lista = gestionAcciones.obtenerAccionistas();
-			getCbDni().removeAllItems();
-			for (Accionista a : lista) {
-				getCbDni().addItem(a.getDni());
+	private void cargarAccionistaAutenticado() {
+		if (vp != null && vp.getUsuario() != null) {
+			String dni = vp.getUsuario().getDni();
+			try {
+				Accionista accionista = gestionAcciones.validarYObtenerAccionista(dni);
+				this.accionistaActual = accionista;
+				getLblDniAccionista().setText(accionista.getDni());
+				cargarDatosAccionista(accionista);
+				actualizarEstadoBotonVender();
+				GestionLogSesion.registrarAccion("Acceso portal accionista (dni=" + accionista.getDni() + ")");
+			} catch (SQLException ex) {
+				throw new UnexpectedException(ex);
 			}
-			getCbDni().setSelectedIndex(-1);
-		} catch (SQLException ex) {
-			throw new UnexpectedException(ex);
-		}
-	}
-
-	/**
-	 * Valida el DNI seleccionado o introducido y carga los datos del portal.
-	 */
-	private void ejecutarAcceso() {
-		Object item = getCbDni().getEditor().getItem();
-		String dni = (item != null) ? item.toString().trim() : "";
-
-		// Validación de negocio (lanza ApplicationException si no es accionista o está en blanco)
-		Accionista accionista = null;
-		try {
-			accionista = gestionAcciones.validarYObtenerAccionista(dni);
-			this.accionistaActual = accionista;
-			cargarDatosAccionista(accionista);
-			actualizarEstadoBotonVender();
-			GestionLogSesion.registrarAccion("Acceso portal accionista (dni=" + accionista.getDni() + ")");
-		} catch (SQLException ex) {
-			throw new UnexpectedException(ex);
 		}
 	}
 
@@ -252,10 +225,6 @@ public class VentanaPortalAccionista extends JFrame {
 		}
 	}
 
-	/**
-	 * Actualiza el estado habilitado/deshabilitado del botón Vender en base a la fila seleccionada.
-	 * Solo se habilita si hay una acción seleccionada y dicha acción no está ya en venta ("No").
-	 */
 	private void actualizarEstadoBotonVender() {
 		int fila = getTablaAcciones().getSelectedRow();
 		if (fila == -1) {
@@ -266,9 +235,6 @@ public class VentanaPortalAccionista extends JFrame {
 		getBtnVender().setEnabled("No".equalsIgnoreCase(String.valueOf(enVenta)));
 	}
 
-	/**
-	 * Gestiona el proceso de puesta en venta de la acción seleccionada abriendo el diálogo modal.
-	 */
 	private void ejecutarVentaAccion() {
 		int fila = getTablaAcciones().getSelectedRow();
 		if (fila == -1) {
@@ -295,16 +261,12 @@ public class VentanaPortalAccionista extends JFrame {
 		}
 	}
 
-	/**
-	 * Recarga los datos del accionista actual y vuelve a seleccionar la fila de la acción indicada.
-	 */
 	private void recargarDatosAccionista(int idAccionSeleccionar) {
 		if (accionistaActual == null) {
 			return;
 		}
 		try {
 			cargarDatosAccionista(accionistaActual);
-			// Buscar la fila de la acción para mantenerla seleccionada
 			for (int i = 0; i < modeloAcciones.getRowCount(); i++) {
 				if (Integer.parseInt(String.valueOf(modeloAcciones.getValueAt(i, 0))) == idAccionSeleccionar) {
 					getTablaAcciones().setRowSelectionInterval(i, i);
@@ -324,31 +286,22 @@ public class VentanaPortalAccionista extends JFrame {
 		}
 	}
 
-	// ==================== GETTERS COMPONENTES VISUALES ====================
+	// ==================== COMPONENTES VISUALES ====================
+
+	private JLabel getLblDniAccionistaTexto() {
+		if (lblDniAccionistaTexto == null) {
+			lblDniAccionistaTexto = new JLabel("DNI :");
+			lblDniAccionistaTexto.setFont(new Font("Tahoma", Font.BOLD, 12));
+		}
+		return lblDniAccionistaTexto;
+	}
 
 	private JLabel getLblDniAccionista() {
 		if (lblDniAccionista == null) {
-			lblDniAccionista = new JLabel("Dni accionista :");
+			lblDniAccionista = new JLabel("-");
 			lblDniAccionista.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		}
 		return lblDniAccionista;
-	}
-
-	private JComboBox<String> getCbDni() {
-		if (cbDni == null) {
-			cbDni = new JComboBox<>();
-			cbDni.setEditable(true);
-			cbDni.setPreferredSize(new Dimension(130, 26));
-		}
-		return cbDni;
-	}
-
-	private JButton getBtnAcceder() {
-		if (btnAcceder == null) {
-			btnAcceder = new JButton("Acceder");
-			btnAcceder.setPreferredSize(new Dimension(100, 26));
-		}
-		return btnAcceder;
 	}
 
 	private JLabel getLblTitularTexto() {
