@@ -795,12 +795,9 @@ public class VentanaPrincipal extends JFrame {
 		abrirSubmenu("Equipo", () -> {
 			añadirBoton(panelSubmenu, "Añadir equipo", this::abrirVentanaAñadirEquipo);
 			añadirBoton(panelSubmenu, "Planificar partido", this::gestionPlanificarPartido);
-<<<<<<< HEAD
-=======
 			añadirBoton(panelSubmenu, "Añadir servicio de mantenimiento", this::abrirVentanaAñadirMantenimiento);
-			añadirBoton(panelSubmenu, "Importar partidos", this::abrirVentanaImportarPartidos);
->>>>>>> refs/heads/main
-		});
+			añadirBoton(panelSubmenu, "Importar partidos", this::abrirVentanaImportarPartidos);});
+
 	}
 
 	private void abrirVentanaHorario() {
