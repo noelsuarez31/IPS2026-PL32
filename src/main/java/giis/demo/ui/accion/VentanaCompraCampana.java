@@ -157,13 +157,22 @@ public class VentanaCompraCampana extends JFrame {
 			reiniciarComprador();
 	}
 
-	/** Al abrir: si no hay campaña activa se avisa; si la hay, se espera el DNI. */
+	/** Al abrir: si no hay campaña activa se avisa; si la hay, se carga el comprador autenticado. */
 	private void cargarEstadoInicial() {
 		try {
-			if (gestion.obtenerCampanaActiva() == null)
+			if (gestion.obtenerCampanaActiva() == null) {
 				mostrarSinCampana();
-			else
+			} else {
 				reiniciarComprador();
+				
+				// Si se accede desde la sesión de un usuario autenticado, identificarlo directamente
+				
+				if (vp != null && vp.getUsuario() != null && vp.getUsuario().getDni() != null) {
+					cargarComprador(vp.getUsuario().getDni());
+					txDni.setEditable(false);
+					btnIdentificar.setEnabled(false);
+				}
+			}
 		} catch (SQLException e) {
 			mostrarErrorBaseDatos(e);
 			mostrarSinCampana();
