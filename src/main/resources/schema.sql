@@ -33,6 +33,9 @@ DROP TABLE IF EXISTS CategoriaEquipo;
 DROP TABLE IF EXISTS Campana;
 DROP TABLE IF EXISTS Usuario;
 
+DROP TABLE IF EXISTS EvolucionLesion;
+DROP TABLE IF EXISTS Lesion;
+
 CREATE TABLE IF NOT EXISTS "butaca" (
 	"id_butaca"	INTEGER,
 	"tribuna"	TEXT NOT NULL CHECK("tribuna" IN ('A', 'B', 'C', 'D')),
@@ -359,16 +362,17 @@ CREATE TABLE IF NOT EXISTS "Miembro" (
 );
 
 CREATE TABLE IF NOT EXISTS "Lesion" (
-	
+
 	"id" INTEGER PRIMARY KEY AUTOINCREMENT,
 	"dni_jugador" TEXT NOT NULL,
 	"fecha" TEXT NOT NULL,
 	"tipo" TEXT NOT NULL,
 	"origen" TEXT NOT NULL,
 	"estado" TEXT NOT NULL,
-	
+	"fecha_alta" TEXT,
+
 	FOREIGN KEY ("dni_jugador") REFERENCES BaseEmpleado("dni")
-	
+
 );
 
 CREATE TABLE IF NOT EXISTS "EvolucionLesion" (

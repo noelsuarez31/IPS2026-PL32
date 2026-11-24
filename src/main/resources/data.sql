@@ -1611,3 +1611,6 @@ VALUES ('94000001A', '2026-11-14', 'Contusión costillas', 'Partido: choque', 'E
 INSERT INTO EvolucionLesion (id_lesion, fecha, valoracion, actualizacion) VALUES
 ((SELECT last_insert_rowid()), '2026-11-14', 'Moderada', 'Dolor al respirar hondo'),
 ((SELECT last_insert_rowid()), '2026-11-20', 'Leve', 'Mejora, vuelve a correr suave');
+
+UPDATE Lesion SET fecha_alta = '2026-07-29' WHERE dni_jugador = '22222222B' AND fecha = '2026-07-15';
+UPDATE Lesion SET fecha_alta = '2026-09-02' WHERE dni_jugador = '93000002B' AND fecha = '2026-08-20';
