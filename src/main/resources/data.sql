@@ -1614,3 +1614,45 @@ INSERT INTO EvolucionLesion (id_lesion, fecha, valoracion, actualizacion) VALUES
 
 UPDATE Lesion SET fecha_alta = '2026-07-29' WHERE dni_jugador = '22222222B' AND fecha = '2026-07-15';
 UPDATE Lesion SET fecha_alta = '2026-09-02' WHERE dni_jugador = '93000002B' AND fecha = '2026-08-20';
+--------------------------------------------------------------------------------
+-- NUEVOS JUGADORES PARA REAL OVIEDO A (id_equipo = 1)
+--------------------------------------------------------------------------------
+-- 1. Miembro
+INSERT INTO "Miembro" ("dni", "nombre_usuario", "contrasena") VALUES 
+('61111111A', 'david.costas.a', '$argon2id$v=19$m=65536,t=3,p=4$q8J7v1M2k4L9p0X3y5Z7wA$w5V7k2m9P4x1L8z0Y3b6C7d8E9f0A1B2C3D4E5F6G7H'),
+('61111112B', 'dani.calvo.a', '$argon2id$v=19$m=65536,t=3,p=4$q8J7v1M2k4L9p0X3y5Z7wA$w5V7k2m9P4x1L8z0Y3b6C7d8E9f0A1B2C3D4E5F6G7H'),
+('61111113C', 'santiago.colombatto.a', '$argon2id$v=19$m=65536,t=3,p=4$q8J7v1M2k4L9p0X3y5Z7wA$w5V7k2m9P4x1L8z0Y3b6C7d8E9f0A1B2C3D4E5F6G7H'),
+('61111114D', 'sebas.moyano.a', '$argon2id$v=19$m=65536,t=3,p=4$q8J7v1M2k4L9p0X3y5Z7wA$w5V7k2m9P4x1L8z0Y3b6C7d8E9f0A1B2C3D4E5F6G7H');
+-- 2. BaseEmpleado
+INSERT INTO "BaseEmpleado" ("dni", "nombre", "apellido", "id_miembro", "salario", "fecha_nacimiento", "numero_de_telefono") VALUES 
+('61111111A', 'David', 'Costas', (SELECT id_miembro FROM Miembro WHERE dni = '61111111A' AND tipo = 'EMPLEADO'), 85000.0, '1995-03-26', '600111001'),
+('61111112B', 'Dani', 'Calvo', (SELECT id_miembro FROM Miembro WHERE dni = '61111112B' AND tipo = 'EMPLEADO'), 80000.0, '1994-04-01', '600111002'),
+('61111113C', 'Santiago', 'Colombatto', (SELECT id_miembro FROM Miembro WHERE dni = '61111113C' AND tipo = 'EMPLEADO'), 95000.0, '1997-01-17', '600111003'),
+('61111114D', 'Sebas', 'Moyano', (SELECT id_miembro FROM Miembro WHERE dni = '61111114D' AND tipo = 'EMPLEADO'), 90000.0, '1997-03-23', '600111004');
+-- 3. EmpleadoDeportivo (directamente asignados a id_equipo = 1)
+INSERT INTO "EmpleadoDeportivo" ("dni", "posicion", "id_equipo") VALUES 
+('61111111A', 'JUGADOR', 1),
+('61111112B', 'JUGADOR', 1),
+('61111113C', 'JUGADOR', 1),
+('61111114D', 'JUGADOR', 1);
+--------------------------------------------------------------------------------
+-- NUEVOS JUGADORES PARA REAL OVIEDO B (id_equipo = 2)
+--------------------------------------------------------------------------------
+-- 1. Miembro
+INSERT INTO "Miembro" ("dni", "nombre_usuario", "contrasena") VALUES 
+('62222221A', 'pelayo.rey.b', '$argon2id$v=19$m=65536,t=3,p=4$q8J7v1M2k4L9p0X3y5Z7wA$w5V7k2m9P4x1L8z0Y3b6C7d8E9f0A1B2C3D4E5F6G7H'),
+('62222222B', 'marco.esteban.b', '$argon2id$v=19$m=65536,t=3,p=4$q8J7v1M2k4L9p0X3y5Z7wA$w5V7k2m9P4x1L8z0Y3b6C7d8E9f0A1B2C3D4E5F6G7H'),
+('62222223C', 'alex.cardero.b', '$argon2id$v=19$m=65536,t=3,p=4$q8J7v1M2k4L9p0X3y5Z7wA$w5V7k2m9P4x1L8z0Y3b6C7d8E9f0A1B2C3D4E5F6G7H'),
+('62222224D', 'enol.rodriguez.b', '$argon2id$v=19$m=65536,t=3,p=4$q8J7v1M2k4L9p0X3y5Z7wA$w5V7k2m9P4x1L8z0Y3b6C7d8E9f0A1B2C3D4E5F6G7H');
+-- 2. BaseEmpleado
+INSERT INTO "BaseEmpleado" ("dni", "nombre", "apellido", "id_miembro", "salario", "fecha_nacimiento", "numero_de_telefono") VALUES 
+('62222221A', 'Pelayo', 'Rey', (SELECT id_miembro FROM Miembro WHERE dni = '62222221A' AND tipo = 'EMPLEADO'), 25000.0, '2004-02-15', '600222001'),
+('62222222B', 'Marco', 'Esteban', (SELECT id_miembro FROM Miembro WHERE dni = '62222222B' AND tipo = 'EMPLEADO'), 24000.0, '2005-06-10', '600222002'),
+('62222223C', 'Alex', 'Cardero', (SELECT id_miembro FROM Miembro WHERE dni = '62222223C' AND tipo = 'EMPLEADO'), 28000.0, '2003-08-25', '600222003'),
+('62222224D', 'Enol', 'Rodriguez', (SELECT id_miembro FROM Miembro WHERE dni = '62222224D' AND tipo = 'EMPLEADO'), 26000.0, '2004-11-05', '600222004');
+-- 3. EmpleadoDeportivo (directamente asignados a id_equipo = 2)
+INSERT INTO "EmpleadoDeportivo" ("dni", "posicion", "id_equipo") VALUES 
+('62222221A', 'JUGADOR', 2),
+('62222222B', 'JUGADOR', 2),
+('62222223C', 'JUGADOR', 2),
+('62222224D', 'JUGADOR', 2);

@@ -13,10 +13,12 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.text.Normalizer;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
+import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -29,10 +31,10 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
-import javax.swing.plaf.basic.BasicComboBoxEditor;
 import javax.swing.table.DefaultTableModel;
 
 import giis.demo.model.empleado.EmpleadoDeportivo;
+import giis.demo.model.equipo.Equipo;
 import giis.demo.model.medico.GestionLesiones;
 import giis.demo.model.medico.Lesion;
 import giis.demo.ui.login.VentanaPrincipal;
@@ -43,38 +45,54 @@ public class VentanaVisualizacionLesiones extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	private JPanel panelUser;
+
+	// Filtro de Equipo
+	private JLabel lbEquipo;
+	private JComboBox<Equipo> cbEquipo;
+
+	// Filtro y Lista de Jugadores
 	private JLabel lbJugador;
-	private JComboBox<EmpleadoDeportivo> cbJugador;
+	private JTextField txFiltroJugador;
+	private JList<EmpleadoDeportivo> listJugadores;
+	private DefaultListModel<EmpleadoDeportivo> modeloListaJugadores;
+	private JScrollPane scrollListaJugadores;
 	private JButton btConsultar;
+
+	// Zona Centro: Tabla
 	private JPanel panel;
+	private JLabel lbLesionesJugador;
+	private JTable tableLesiones;
+	private DefaultTableModel modelo;
+
+	// Zona Sur: Botones
 	private JPanel panelOpciones;
 	private JPanel panelBotones;
 	private JButton btVer;
 	private JButton btCerrar;
-	private JTable tableLesiones;
-	private JLabel lbLesionesJugador;
-	
-	private DefaultTableModel modelo;
+
 	private List<Lesion> lesiones;
 	private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-	
+
 	private GestionLesiones gl;
 	private VentanaPrincipal vp;
 	private CerrarVentana cv;
-	
+
 	private EmpleadoDeportivo[] todosJugadores;
+	private EmpleadoDeportivo[] jugadoresDelEquipo;
+	private JButton btActualizar;
+	private JButton btNuevaLesion;
+
 	/**
 	 * Create the frame.
 	 */
 	public VentanaVisualizacionLesiones(VentanaPrincipal vprin) {
-		
 		gl = new GestionLesiones();
 		vp = vprin;
 		cv = new CerrarVentana();
-		
+
 		setTitle("Portal Médico : Ver Lesiones");
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setBounds(100, 100, 841, 496);
+		setBounds(100, 100, 841, 560);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -85,37 +103,204 @@ public class VentanaVisualizacionLesiones extends JFrame {
 
 		setLocationRelativeTo(null);
 		this.addWindowListener(cv);
+
+		cargarDatosIniciales();
 	}
 
 	private JPanel getPanelUser() {
 		if (panelUser == null) {
 			panelUser = new JPanel();
-			panelUser.setPreferredSize(new Dimension(0, 120));
+			panelUser.setPreferredSize(new Dimension(0, 150));
 			panelUser.setLayout(null);
+
+			panelUser.add(getLbEquipo());
+			panelUser.add(getCbEquipo());
+
 			panelUser.add(getLbJugador());
-			panelUser.add(getCbJugador());
+			panelUser.add(getTxFiltroJugador());
+			panelUser.add(getScrollListaJugadores());
+
 			panelUser.add(getBtConsultar());
 		}
 		return panelUser;
 	}
+
+	// ==================== ZONA EQUIPO ====================
+
+	private JLabel getLbEquipo() {
+		if (lbEquipo == null) {
+			lbEquipo = new JLabel("Equipo:");
+			lbEquipo.setBounds(15, 16, 69, 20);
+		}
+		return lbEquipo;
+	}
+
+	private JComboBox<Equipo> getCbEquipo() {
+		
+		if (cbEquipo == null) {
+
+			DefaultComboBoxModel<Equipo> modelEquipo = new DefaultComboBoxModel<>();
+			Equipo opcionTodos = new Equipo("-- Todos los equipos --", null, null);
+			opcionTodos.setIdEquipo(-1);
+			modelEquipo.addElement(opcionTodos);
+			Equipo[] equipos = gl.getEquipos();
+			if (equipos != null) {
+				for (Equipo eq : equipos) {
+					modelEquipo.addElement(eq);
+				}
+			}
+
+			cbEquipo = new JComboBox<>(modelEquipo);
+			cbEquipo.setBounds(85, 12, 450, 28);
+
+			cbEquipo.setRenderer(new DefaultListCellRenderer() {
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				public Component getListCellRendererComponent(JList<?> list, Object value, int index,
+						boolean isSelected, boolean cellHasFocus) {
+					if (value instanceof Equipo) {
+						value = ((Equipo) value).getNombre();
+					}
+					return super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+				}
+			});
+
+			cbEquipo.addItemListener(e -> {
+				if (e.getStateChange() == java.awt.event.ItemEvent.SELECTED) {
+					filtrarPorEquipo();
+				}
+			});
+		}
+		return cbEquipo;
+	}
+	// ==================== ZONA JUGADOR (LISTA FILTRABLE) ====================
+
 	private JLabel getLbJugador() {
 		if (lbJugador == null) {
 			lbJugador = new JLabel("Jugador:");
-			lbJugador.setBounds(15, 16, 69, 20);
+			lbJugador.setBounds(15, 52, 69, 20);
 		}
 		return lbJugador;
 	}
+
+	private JTextField getTxFiltroJugador() {
+		if (txFiltroJugador == null) {
+			txFiltroJugador = new JTextField();
+			txFiltroJugador.setToolTipText("Escriba para filtrar jugadores");
+			txFiltroJugador.setBounds(85, 48, 450, 26);
+
+			// Filtra la lista en tiempo real mientras escribe
+			txFiltroJugador.addKeyListener(new KeyAdapter() {
+				@Override
+				public void keyReleased(KeyEvent e) {
+					filtrarListaPorTexto(txFiltroJugador.getText());
+				}
+			});
+		}
+		return txFiltroJugador;
+	}
+
+	private JButton getBtConsultar() {
+		if (btConsultar == null) {
+			btConsultar = new JButton("Consultar");
+			btConsultar.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					consultar();
+				}
+			});
+			btConsultar.setMnemonic('N');
+			btConsultar.setBackground(new Color(128, 255, 128));
+			btConsultar.setBounds(685, 48, 115, 29);
+		}
+		return btConsultar;
+	}
+
+	// ==================== LÓGICA DE FILTRADO ====================
+
+	private void cargarDatosIniciales() {
+		
+		todosJugadores = gl.getJugadores();
+		jugadoresDelEquipo = todosJugadores;
+
+		filtrarPorEquipo();
+	}
+
+	private void filtrarPorEquipo() {
+		
+		Equipo equipoSel = (Equipo)getCbEquipo().getSelectedItem();
+		
+		if (equipoSel == null) {
+			return;
+		}
+
+		if (equipoSel.getIdEquipo() < 0) {
+			
+			jugadoresDelEquipo = todosJugadores;
+			
+		} else {
+			
+			List<EmpleadoDeportivo> filtrados = new ArrayList<>();
+			
+			if (todosJugadores != null) {
+				for (EmpleadoDeportivo j : todosJugadores) {
+
+					if (j.getIdEquipo() == equipoSel.getIdEquipo()) {
+						filtrados.add(j);
+					}
+				}
+			}
+			jugadoresDelEquipo = filtrados.toArray(new EmpleadoDeportivo[0]);
+		}
+
+		getTxFiltroJugador().setText("");
+		filtrarListaPorTexto("");
+
+		if (modelo != null) {
+			modelo.setRowCount(0);
+		}
+		getLbLesionesJugador().setText("Lesiones de");
+		getBtVer().setEnabled(false);
+		getBtActualizar().setEnabled(false);
+	}
+
 	
-	private JComboBox<EmpleadoDeportivo> getCbJugador() {
-		if (cbJugador == null) {
-			todosJugadores = gl.getJugadores();
+	private void filtrarListaPorTexto(String texto) {
+		
+		String buscado = normalizar(texto == null ? "" : texto.trim());
+		
+		DefaultListModel<EmpleadoDeportivo> nuevoModelo = new DefaultListModel<>();
+		
+		EmpleadoDeportivo[] base = (jugadoresDelEquipo != null) ? jugadoresDelEquipo : todosJugadores;
+		
+		if (base != null) {
+			
+			for (EmpleadoDeportivo j : base) {
+				
+				if (normalizar(nombreCompleto(j)).contains(buscado)) {
+					nuevoModelo.addElement(j);
+				}
+			}
+		}
+		
+		getListJugadores().setModel(nuevoModelo);
+		
+		getListJugadores().revalidate();
+		getListJugadores().repaint();
+	}
 
-			cbJugador = new JComboBox<EmpleadoDeportivo>(new DefaultComboBoxModel<EmpleadoDeportivo>(todosJugadores));
-			cbJugador.setEditable(true);
-			cbJugador.setToolTipText("Seleccione un jugador o escriba para buscar");
-			cbJugador.setBounds(15, 52, 507, 28);
+	private DefaultListModel<EmpleadoDeportivo> getModeloListaJugadores() {
+		if (modeloListaJugadores == null) {
+			modeloListaJugadores = new DefaultListModel<>();
+		}
+		return modeloListaJugadores;
+	}
 
-			cbJugador.setRenderer(new DefaultListCellRenderer() {
+	private JList<EmpleadoDeportivo> getListJugadores() {
+		if (listJugadores == null) {
+			listJugadores = new JList<>(getModeloListaJugadores());
+			listJugadores.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+			listJugadores.setCellRenderer(new DefaultListCellRenderer() {
 				private static final long serialVersionUID = 1L;
 
 				@Override
@@ -127,36 +312,18 @@ public class VentanaVisualizacionLesiones extends JFrame {
 					return super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 				}
 			});
-
-			cbJugador.setEditor(new BasicComboBoxEditor() {
-				@Override
-				public void setItem(Object item) {
-					if (item instanceof EmpleadoDeportivo) {
-						item = nombreCompleto((EmpleadoDeportivo) item);
-					}
-					super.setItem(item);
-				}
-			});
-
-			JTextField campo = (JTextField) cbJugador.getEditor().getEditorComponent();
-			
-			campo.addKeyListener(new KeyAdapter() {
-				@Override
-				public void keyReleased(KeyEvent e) {
-					int k = e.getKeyCode();
-					if (k == KeyEvent.VK_UP || k == KeyEvent.VK_DOWN || k == KeyEvent.VK_ENTER
-							|| k == KeyEvent.VK_ESCAPE || k == KeyEvent.VK_LEFT || k == KeyEvent.VK_RIGHT) {
-						return;
-					}
-					filtrarJugadores(campo);
-				}
-			});
-
-			cbJugador.setSelectedItem(null);
 		}
-		return cbJugador;
+		return listJugadores;
 	}
-	
+
+	private JScrollPane getScrollListaJugadores() {
+		if (scrollListaJugadores == null) {
+			scrollListaJugadores = new JScrollPane(getListJugadores());
+			scrollListaJugadores.setBounds(85, 76, 450, 65);
+		}
+		return scrollListaJugadores;
+	}
+
 	private String nombreCompleto(EmpleadoDeportivo j) {
 		return j.getNombre() + " " + j.getApellido();
 	}
@@ -165,62 +332,12 @@ public class VentanaVisualizacionLesiones extends JFrame {
 		return Normalizer.normalize(s, Normalizer.Form.NFD).replaceAll("\\p{M}", "").toLowerCase();
 	}
 
-	private void filtrarJugadores(JTextField campo) {
-		String texto = campo.getText();
-		int cursor = campo.getCaretPosition();
-		String buscado = normalizar(texto.trim());
-
-		DefaultComboBoxModel<EmpleadoDeportivo> nuevo = new DefaultComboBoxModel<>();
-		for (EmpleadoDeportivo j : todosJugadores) {
-			if (normalizar(nombreCompleto(j)).contains(buscado)) {
-				nuevo.addElement(j);
-			}
-		}
-		nuevo.setSelectedItem(null);
-
-		cbJugador.setModel(nuevo);
-		campo.setText(texto);
-		campo.setCaretPosition(Math.min(cursor, texto.length()));
-
-		if (nuevo.getSize() > 0) {
-			cbJugador.showPopup();
-		} else {
-			cbJugador.hidePopup();
-		}
-	}
-
 	private EmpleadoDeportivo getJugadorSeleccionado() {
-		
-		Object sel = cbJugador.getSelectedItem();
-		if (sel instanceof EmpleadoDeportivo) {
-			return (EmpleadoDeportivo) sel;
-		}
-		if (sel instanceof String) {
-			String texto = normalizar(((String) sel).trim());
-			for (EmpleadoDeportivo j : todosJugadores) {
-				if (normalizar(nombreCompleto(j)).equals(texto)) {
-					return j;
-				}
-			}
-		}
-		return null;
+		return listJugadores.getSelectedValue();
 	}
-	
-	private JButton getBtConsultar() {
-		
-		if (btConsultar == null) {
-			btConsultar = new JButton("Consultar");
-			btConsultar.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					consultar();
-				}
-			});
-			btConsultar.setMnemonic('N');
-			btConsultar.setBackground(new Color(128, 255, 128));
-			btConsultar.setBounds(685, 52, 115, 29);
-		}
-		return btConsultar;
-	}
+
+	// ==================== ZONA CENTRO Y SUR ====================
+
 	private JPanel getPanel_1() {
 		if (panel == null) {
 			panel = new JPanel();
@@ -230,6 +347,7 @@ public class VentanaVisualizacionLesiones extends JFrame {
 		}
 		return panel;
 	}
+
 	private JPanel getPanel_1_1() {
 		if (panelOpciones == null) {
 			panelOpciones = new JPanel();
@@ -238,15 +356,19 @@ public class VentanaVisualizacionLesiones extends JFrame {
 		}
 		return panelOpciones;
 	}
+
 	private JPanel getPanel_1_2() {
 		if (panelBotones == null) {
 			panelBotones = new JPanel();
-			panelBotones.setLayout(new GridLayout(1, 2, 0, 0));
+			panelBotones.setLayout(new GridLayout(0, 4, 4, 0));
+			panelBotones.add(getBtNuevaLesion());
+			panelBotones.add(getBtActualizar());
 			panelBotones.add(getBtVer());
 			panelBotones.add(getBtCerrar());
 		}
 		return panelBotones;
 	}
+
 	private JButton getBtVer() {
 		if (btVer == null) {
 			btVer = new JButton("Ver");
@@ -261,6 +383,7 @@ public class VentanaVisualizacionLesiones extends JFrame {
 		}
 		return btVer;
 	}
+
 	private JButton getBtCerrar() {
 		if (btCerrar == null) {
 			btCerrar = new JButton("Cerrar");
@@ -274,9 +397,8 @@ public class VentanaVisualizacionLesiones extends JFrame {
 		}
 		return btCerrar;
 	}
-	
+
 	private JTable getTableLesiones() {
-				
 		if (tableLesiones == null) {
 			modelo = new DefaultTableModel(new String[] { "Fecha", "Lesión", "Origen", "Estado" }, 0) {
 				private static final long serialVersionUID = 1L;
@@ -296,94 +418,122 @@ public class VentanaVisualizacionLesiones extends JFrame {
 			tableLesiones.getSelectionModel().addListSelectionListener(e -> {
 				if (!e.getValueIsAdjusting()) {
 					getBtVer().setEnabled(tableLesiones.getSelectedRow() >= 0);
+					getBtActualizar().setEnabled(tableLesiones.getSelectedRow() >= 0);
 				}
 			});
 		}
 		return tableLesiones;
 	}
-	
+
 	private JLabel getLbLesionesJugador() {
 		if (lbLesionesJugador == null) {
 			lbLesionesJugador = new JLabel("Lesiones de");
 		}
 		return lbLesionesJugador;
 	}
-	
+
 	private void volverPrincipal() {
-		
 		VentanaVisualizacionLesiones.this.vp.setVisible(true);
-		
 		this.dispose();
 	}
-	
+
 	private void consultar() {
-				
 		modelo.setRowCount(0);
-		btVer.setEnabled(true);
-		
+		btVer.setEnabled(false);
+
 		EmpleadoDeportivo jugador = getJugadorSeleccionado();
-		
-		if(jugador == null) {
-			
+
+		if (jugador == null) {
 			getLbLesionesJugador().setText("");
-			
-			JOptionPane.showMessageDialog(null, "Debes seleccionar un jugador primero", "Aviso", JOptionPane.WARNING_MESSAGE);
+			JOptionPane.showMessageDialog(null, "Debes seleccionar un jugador de la lista primero", "Aviso",
+					JOptionPane.WARNING_MESSAGE);
 			return;
 		}
-		
-		getLbLesionesJugador().setText("Lesiones de " + jugador.getNombre() + jugador.getApellido() + ":");
-		
+
+		getLbLesionesJugador().setText("Lesiones de " + jugador.getNombre() + " " + jugador.getApellido() + ":");
+
 		try {
 			lesiones = gl.getLesiones(jugador);
-		} catch (ApplicationException ape){
-			
-			JOptionPane.showMessageDialog(null, "Se ha producido un error al buscar las lesiones del jugador",
-					"Error", JOptionPane.ERROR_MESSAGE);
+		} catch (ApplicationException ape) {
+			JOptionPane.showMessageDialog(null, "Se ha producido un error al buscar las lesiones del jugador", "Error",
+					JOptionPane.ERROR_MESSAGE);
 			return;
 		}
-		
-		for(Lesion lesion: lesiones) {
-			modelo.addRow(new Object[] {
-					
-					lesion.getFecha().format(formatter),
-					lesion.getTipo(),
-					lesion.getOrigen(),
-					lesion.getEstado()
-			});
+
+		if (lesiones != null) {
+			for (Lesion lesion : lesiones) {
+				modelo.addRow(new Object[] { lesion.getFecha().format(formatter), lesion.getTipo(), lesion.getOrigen(),
+						lesion.getEstado() });
+			}
 		}
-		
 	}
-	
+
 	private void verEvolucion() {
-		
 		int fila = tableLesiones.getSelectedRow();
-		
-		if(fila<0) {
-			
+		if (fila < 0 || lesiones == null || fila >= lesiones.size()) {
 			JOptionPane.showMessageDialog(null, "Debes seleccionar una lesion", "Error", JOptionPane.ERROR_MESSAGE);
 			return;
 		}
-		
+
 		VentanaEvolucionLesiones ventana = new VentanaEvolucionLesiones(this, lesiones.get(fila));
-		
 		this.setVisible(false);
 		ventana.setVisible(true);
 	}
-	
+
 	GestionLesiones getGestionLesiones() {
 		return gl;
 	}
-	
-	private class CerrarVentana extends WindowAdapter{
-		
+
+	private class CerrarVentana extends WindowAdapter {
 		@Override
 		public void windowClosed(WindowEvent we) {
 			volverPrincipal();
 		}
 	}
-	
+
 	public DateTimeFormatter getFormatter() {
 		return formatter;
 	}
-
+	private JButton getBtActualizar() {
+		if (btActualizar == null) {
+			btActualizar = new JButton("Actualizar");
+			btActualizar.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					abrirVentanaregistrarEvolucion();
+				}
+			});
+			btActualizar.setMnemonic('A');
+			btActualizar.setEnabled(false);
+			btActualizar.setBackground(new Color(128, 255, 128));
+		}
+		return btActualizar;
+	}
+	private JButton getBtNuevaLesion() {
+		if (btNuevaLesion == null) {
+			btNuevaLesion = new JButton("Nueva Lesion");
+			btNuevaLesion.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+				}
+			});
+			btNuevaLesion.setMnemonic('N');
+			btNuevaLesion.setEnabled(false);
+			btNuevaLesion.setBackground(new Color(128, 255, 128));
+		}
+		return btNuevaLesion;
+	}
+	
+	private void abrirVentanaregistrarEvolucion() {
+		
+		int fila = tableLesiones.getSelectedRow();
+		if (fila < 0 || lesiones == null || fila >= lesiones.size()) {
+			JOptionPane.showMessageDialog(null, "Debes seleccionar una lesion", "Error", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+		
+		Lesion lesion = lesiones.get(fila);
+		
+		VentanaRegistrarEvolucion ventanaRegistro = new VentanaRegistrarEvolucion(this,lesion);
+		ventanaRegistro.setVisible(true);
+		
+	}
 }

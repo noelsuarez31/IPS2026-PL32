@@ -1280,4 +1280,8 @@ public class JDBC {
 	public List<EvolucionLesion> getEvolucionLesion(int idLesion) throws SQLException {
 		return LesionJdbc.getEvolucionLesion(con, idLesion);
 	}
+	
+	public List<EmpleadoDeportivo> getJugadoresConEquipo() throws SQLException {
+		return EmpleadoDeportivoJdbc.getJugadoresConEquipo(con);
+	}
 }
