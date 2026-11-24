@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -120,7 +121,7 @@ public class ImportarPartidosService {
 		JsonNode root;
 		try {
 			root = mapper.readTree(archivo);
-		} catch (com.fasterxml.jackson.core.JsonParseException e) {
+		} catch (JsonParseException e) {
 			String msg = e.getMessage() != null ? e.getMessage().toLowerCase() : "";
 			if (msg.contains("code 59") || msg.contains("';'") || msg.contains("unexpected character (';'")
 					|| msg.contains("was expecting comma to separate")) {
