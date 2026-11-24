@@ -47,6 +47,8 @@ import giis.demo.model.rol.UsuarioAutenticado;
 import giis.demo.model.tienda.AvisoVendedores;
 import giis.demo.model.tienda.GestionVendedores;
 import giis.demo.model.tienda.VentaMerchandising;
+import giis.demo.model.vacaciones.AlertaGerente;
+import giis.demo.model.vacaciones.GestionVacaciones;
 import giis.demo.ui.abonos.VentanaAbono;
 import giis.demo.ui.abonos.entradas.VentanaIdentificacion;
 import giis.demo.ui.accion.VentanaCampanasAcciones;
@@ -75,6 +77,7 @@ import giis.demo.ui.noticias.VentanaVisualizarNoticias;
 import giis.demo.ui.reserva.VentanaReserva;
 import giis.demo.ui.tienda.DialogoAvisoVendedores;
 import giis.demo.ui.tienda.VentanaTienda;
+import giis.demo.ui.vacaciones.VentanaSeleccionarVacaciones;
 
 public class VentanaPrincipal extends JFrame {
 
@@ -83,6 +86,7 @@ public class VentanaPrincipal extends JFrame {
 	private GestionHorariosPeriodicos ghp = new GestionHorariosPeriodicos();
 	private GestionHorariosEspecificos ghe = new GestionHorariosEspecificos();
 	private GestionHorarioSemanal ghs = new GestionHorarioSemanal();
+	private GestionVacaciones gv = new GestionVacaciones();
 	private CrearFranjaService cfs = new CrearFranjaService();
 	private CrearEntrevistaService ces = new CrearEntrevistaService();
 	private GestorEmpleados gestorEmpleados = new GestorEmpleados();
@@ -143,6 +147,7 @@ public class VentanaPrincipal extends JFrame {
 		actualizarAccionesDisponibles();
 
 		this.setLocationRelativeTo(null);
+		javax.swing.SwingUtilities.invokeLater(this::comprobarYMostrarAlertasGerente);
 
 		// cuando la ventana ya este visible
 		SwingUtilities.invokeLater(this::comprobarVendedoresTienda);
@@ -422,6 +427,48 @@ public class VentanaPrincipal extends JFrame {
 		return this.ghs;
 	}
 
+	public GestionVacaciones getGestionVacaciones() {
+		return this.gv;
+	}
+
+	public UsuarioAutenticado getUsuarioAutenticado() {
+		return this.usuario;
+	}
+
+	private void abrirVentanaSeleccionarVacaciones() {
+		GestionLogSesion.registrarAccion("Ventana Seleccionar Vacaciones");
+		VentanaSeleccionarVacaciones ventana = new VentanaSeleccionarVacaciones(this);
+		this.setVisible(false);
+		ventana.setVisible(true);
+	}
+
+	private void comprobarYMostrarAlertasGerente() {
+		if (usuario == null || !usuario.tienePosicion(Posicion.GERENTE)) {
+			return;
+		}
+		try {
+			java.util.List<AlertaGerente> alertas = gv.obtenerAlertasPendientesGerente();
+			if (alertas != null && !alertas.isEmpty()) {
+				StringBuilder sb = new StringBuilder();
+				sb.append("Se han registrado nuevas solicitudes de vacaciones con turnos/tareas invalidados:\n\n");
+				for (AlertaGerente a : alertas) {
+					sb.append("[").append(a.getFechaCreacion()).append("] ")
+							.append(a.getMensaje()).append("\n\n");
+				}
+				gv.marcarAlertasGerenteComoLeidas();
+				GestionLogSesion.registrarAccion(
+						"Notificación de alertas de vacaciones al gerente (" + alertas.size() + ")");
+				JOptionPane.showMessageDialog(
+						this,
+						sb.toString().trim(),
+						"Alerta al Gerente - Turnos y Tareas Invalidados por Vacaciones",
+						JOptionPane.WARNING_MESSAGE);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
 	private void abrirVentaAbono() {
 
 		GestionLogSesion.registrarAccion("Ventana Comprar Abono");
@@ -666,6 +713,7 @@ public class VentanaPrincipal extends JFrame {
 		
 		if(usuario.esEmpleadoNoDeportivo()) {
 			añadirBoton("Consultar horarios", this::abrirVentanaHorarioSemanal);
+			añadirBoton("Seleccionar vacaciones", this::abrirVentanaSeleccionarVacaciones);
 		}
 
 		if (usuario.esAccionista()) {

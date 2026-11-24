@@ -36,6 +36,9 @@ delete from ImagenNoticia;
 
 delete from EvolucionLesion;
 delete from Lesion;
+delete from AlertaGerente;
+delete from ElementoInvalidadoVacacion;
+delete from VacacionEmpleado;
 
 --------------------------------------------------------------------------------
 -- 2. PRODUCTOS Y BUTACAS
@@ -3100,3 +3103,24 @@ INSERT INTO "HorarioEspecifico" ("dni_empleado", "fecha", "hora_inicio", "hora_f
 
 UPDATE Lesion SET fecha_alta = '2026-07-29' WHERE dni_jugador = '22222222B' AND fecha = '2026-07-15';
 UPDATE Lesion SET fecha_alta = '2026-09-02' WHERE dni_jugador = '93000002B' AND fecha = '2026-08-20';
+
+-- Horarios periódicos para el resto de empleados no deportivos (Lunes a Viernes)
+INSERT INTO "HorarioPeriodico" ("dni_empleado", "dia_semana", "hora_inicio", "hora_fin") VALUES
+('70707070A', 1, '09:00', '17:00'), ('70707070A', 2, '09:00', '17:00'), ('70707070A', 3, '09:00', '17:00'), ('70707070A', 4, '09:00', '17:00'), ('70707070A', 5, '09:00', '17:00'),
+('70707070B', 1, '09:00', '17:00'), ('70707070B', 2, '09:00', '17:00'), ('70707070B', 3, '09:00', '17:00'), ('70707070B', 4, '09:00', '17:00'), ('70707070B', 5, '09:00', '17:00'),
+('70707070C', 1, '10:00', '14:00'), ('70707070C', 2, '10:00', '14:00'), ('70707070C', 3, '10:00', '14:00'), ('70707070C', 4, '10:00', '14:00'), ('70707070C', 5, '10:00', '14:00'),
+('70707070E', 1, '09:00', '17:00'), ('70707070E', 2, '09:00', '17:00'), ('70707070E', 3, '09:00', '17:00'), ('70707070E', 4, '09:00', '17:00'), ('70707070E', 5, '09:00', '17:00'),
+('70707070G', 1, '08:00', '16:00'), ('70707070G', 2, '08:00', '16:00'), ('70707070G', 3, '08:00', '16:00'), ('70707070G', 4, '08:00', '16:00'), ('70707070G', 5, '08:00', '16:00'),
+('70707070H', 1, '09:00', '17:00'), ('70707070H', 2, '09:00', '17:00'), ('70707070H', 3, '09:00', '17:00'), ('70707070H', 4, '09:00', '17:00'), ('70707070H', 5, '09:00', '17:00'),
+('70707070I', 1, '09:00', '17:00'), ('70707070I', 2, '09:00', '17:00'), ('70707070I', 3, '09:00', '17:00'), ('70707070I', 4, '09:00', '17:00'), ('70707070I', 5, '09:00', '17:00');
+
+-- Tareas de mantenimiento futuras para pruebas de invalidación en vacaciones
+INSERT INTO "TareaMantenimiento" ("id_instalacion", "fecha", "hora_inicio", "hora_fin", "descripcion")
+VALUES (1, '2026-11-25', '09:00', '10:30', 'Corte y riego de césped');
+INSERT INTO "TareaMantenimientoJardinero" ("id_tarea", "dni_jardinero")
+VALUES ((SELECT last_insert_rowid()), '70707070F');
+
+INSERT INTO "TareaMantenimiento" ("id_instalacion", "fecha", "hora_inicio", "hora_fin", "descripcion")
+VALUES (2, '2026-11-26', '10:00', '11:30', 'Mantenimiento de césped');
+INSERT INTO "TareaMantenimientoJardinero" ("id_tarea", "dni_jardinero")
+VALUES ((SELECT last_insert_rowid()), '70707070F');
