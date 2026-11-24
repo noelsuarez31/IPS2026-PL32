@@ -18,10 +18,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -60,7 +58,6 @@ public class VentanaCrearEntrenamiento extends JFrame {
 	private JPanel pnCentro;
 	private JPanel pnInferior;
 	private JLabel lbDniEntrenador;
-	private JComboBox<String> cbDniEntrenador;
 	private JLabel lbEquipo;
 	private JLabel lbNombreEquipo;
 	private JPanel pnIzquierda;
@@ -89,10 +86,15 @@ public class VentanaCrearEntrenamiento extends JFrame {
 	private JPanel pnBotonCrear;
 	private JButton btnCrearEntrenamiento;
 	private JButton btnAtras;
+	
+	private JLabel lbDniUsuario;
+	private String dniEntrenador;
 
 	public VentanaCrearEntrenamiento(VentanaPrincipal vPrincipal) {
+		
 		this.vPrincipal = vPrincipal;
 		this.service = this.vPrincipal.getCrearEntrenamientoService();
+		this.dniEntrenador = vPrincipal.getUsuario().getDni();
 
 		setTitle("Planificar Entrenamiento");
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -129,7 +131,7 @@ public class VentanaCrearEntrenamiento extends JFrame {
 					"Datos del Entrenador", TitledBorder.LEADING, TitledBorder.TOP,
 					new Font("Tahoma", Font.BOLD, 13), new Color(0, 0, 0)));
 			pnSuperior.add(getLbDniEntrenador());
-			pnSuperior.add(getCbDniEntrenador());
+			pnSuperior.add(getLbDniUsuario());
 			pnSuperior.add(getLbEquipo());
 			pnSuperior.add(getLbNombreEquipo());
 		}
@@ -144,20 +146,13 @@ public class VentanaCrearEntrenamiento extends JFrame {
 		return lbDniEntrenador;
 	}
 
-	private JComboBox<String> getCbDniEntrenador() {
-		if (cbDniEntrenador == null) {
-			cbDniEntrenador = new JComboBox<String>();
-			cbDniEntrenador.setFont(new Font("Tahoma", Font.PLAIN, 14));
-			cbDniEntrenador.setPreferredSize(new Dimension(140, 26));
-			cbDniEntrenador.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					actualizarEquipoEntrenador();
-					actualizarEventosYOcupacion();
-				}
-			});
+	private JLabel getLbDniUsuario() {
+		if (lbDniUsuario == null) {
+			lbDniUsuario = new JLabel(dniEntrenador);
+			lbDniUsuario.setFont(new Font("Tahoma", Font.BOLD, 14));
+			lbDniUsuario.setForeground(new Color(0, 70, 140));
 		}
-		return cbDniEntrenador;
+		return lbDniUsuario;
 	}
 
 	private JLabel getLbEquipo() {
@@ -499,8 +494,6 @@ public class VentanaCrearEntrenamiento extends JFrame {
 	}
 
 	private void cargarDatosIniciales() {
-		List<String> dnis = service.obtenerDnisEntrenadores();
-		getCbDniEntrenador().setModel(new DefaultComboBoxModel<>(dnis.toArray(new String[0])));
 		actualizarEquipoEntrenador();
 
 		modeloInstalaciones.clear();
@@ -513,9 +506,8 @@ public class VentanaCrearEntrenamiento extends JFrame {
 	}
 
 	private void actualizarEquipoEntrenador() {
-		String dni = (String) getCbDniEntrenador().getSelectedItem();
-		String nombreEquipo = service.obtenerNombreEquipoDeEntrenador(dni);
-		getLbNombreEquipo().setText(nombreEquipo);
+		getLbNombreEquipo().setText(service.obtenerNombreEquipoDeEntrenador(dniEntrenador));
+		getBtnCrearEntrenamiento().setEnabled(service.obtenerIdEquipoDeEntrenador(dniEntrenador) > 0);
 	}
 
 	private void actualizarEventosYOcupacion() {
@@ -527,7 +519,7 @@ public class VentanaCrearEntrenamiento extends JFrame {
 		Instalacion instalacionSel = getListInstalaciones().getSelectedValue();
 		int idInstalacion = (instalacionSel != null) ? instalacionSel.getInstalacionId() : 0;
 		String nombreInstalacion = (instalacionSel != null) ? instalacionSel.getName() : "Instalación";
-		String dni = (String) getCbDniEntrenador().getSelectedItem();
+		String dni = dniEntrenador;
 		int idEquipo = service.obtenerIdEquipoDeEntrenador(dni);
 
 		getPnOcupacion().setBorder(new TitledBorder(
@@ -572,7 +564,7 @@ public class VentanaCrearEntrenamiento extends JFrame {
 				return;
 			}
 
-			String dni = (String) getCbDniEntrenador().getSelectedItem();
+			String dni = dniEntrenador;
 			int idEquipo = service.obtenerIdEquipoDeEntrenador(dni);
 			DateTimeFormatter formatoHora = DateTimeFormatter.ofPattern("HH:mm");
 

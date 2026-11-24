@@ -2,24 +2,24 @@ package giis.demo.ui.entrevistas;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Date;
 import java.util.List;
-import java.awt.Dimension;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
+
 import javax.swing.BoxLayout;
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -39,16 +39,16 @@ import giis.demo.model.empleado.EmpleadoDeportivo;
 import giis.demo.model.entrevistas.CrearFranjaService;
 import giis.demo.ui.login.VentanaPrincipal;
 
-import java.time.ZoneId;
-
 public class VentanaCrearFranjas extends JFrame{
 	private VentanaPrincipal vPrincipal;
 	private CrearFranjaService crearFranjaService;
 	
+	private JLabel lbDniEntrenador;
+	private String dniEntrenador;
+	
+	
 	private static final long serialVersionUID = 1L;
 	private JPanel pnSuperior;
-	private JLabel lbSeleccionDni;
-	private JComboBox<String> cbDniEntrenadores;
 	private JPanel pnCentral;
 	private JPanel pnListaJugadores;
 	private JPanel pnFormularioFranja;
@@ -75,10 +75,14 @@ public class VentanaCrearFranjas extends JFrame{
 	private JList<String> listOcupacionEquipo;
 	private DefaultListModel<String> modeloOcupacion;
 	
+	private JLabel lbSeleccionDni;
+
+	
 	public VentanaCrearFranjas(VentanaPrincipal vPrincipal) {
 		this.vPrincipal = vPrincipal;
 		this.crearFranjaService = vPrincipal.getCrearFranjaService();
-		
+		this.dniEntrenador = vPrincipal.getUsuario().getDni();
+
 		setTitle("Añadir franjas horarias a jugadores");
 		pack();
 		setSize(800,600);
@@ -86,47 +90,57 @@ public class VentanaCrearFranjas extends JFrame{
 		getContentPane().add(getPnSuperior(), BorderLayout.NORTH);
 		getContentPane().add(getPnCentral(), BorderLayout.CENTER);
 		getContentPane().add(getPnInferior(), BorderLayout.SOUTH);
-		
+
 		setLocationRelativeTo(null);
 
 		habilitarFormularioFranja(false);
-		cargarEntrenadoresEnCombo();
+		cargarJugadoresDelEntrenador();
 	}
+	
+	private void cargarJugadoresDelEntrenador() {
 
+		if (!crearFranjaService.obtenerDnisEntrenadoresDeEquiposProfesionales().contains(dniEntrenador)) {
+			JOptionPane.showMessageDialog(this,
+					"Solo los entrenadores de equipos profesionales pueden crear franjas.",
+					"Aviso", JOptionPane.WARNING_MESSAGE);
+			getListJugadores().setEnabled(false);
+			return;
+		}
+
+		int idEquipo = crearFranjaService.getIdEquipo(dniEntrenador);
+		modelo = new DefaultListModel<EmpleadoDeportivo>();
+		for (EmpleadoDeportivo jugador : crearFranjaService.obtenerJugadoresEquipoProfesional(idEquipo)) {
+			modelo.addElement(jugador);
+		}
+		getListJugadores().setModel(modelo);
+	}
+	
 	private JPanel getPnSuperior() {
 		if(pnSuperior == null) {
 			pnSuperior = new JPanel();
 			pnSuperior.add(getLbSeleccionDni());
-			pnSuperior.add(getCbDniEntrenadores());
+			pnSuperior.add(getLbDniEntrenador());
 		}
-		
 		return pnSuperior;
 	}
-	
+
 	private JLabel getLbSeleccionDni() {
+		
 		if(lbSeleccionDni == null) {
-			lbSeleccionDni = new JLabel("Seleccione su DNI para añadir franjas a sus jugadores:");
+			lbSeleccionDni = new JLabel("Entrenador (DNI):");
 			lbSeleccionDni.setFont(new Font("Tahoma", Font.PLAIN, 16));
 		}
-		
 		return lbSeleccionDni;
 	}
-	
-	// SI HAY QUE COGER EL ENTRENADOR, CONSULTA ADICIONAL
-	private JComboBox<String> getCbDniEntrenadores() {
-		if(cbDniEntrenadores == null) {
-			cbDniEntrenadores = new JComboBox<String>();
-			cbDniEntrenadores.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					mostrarJugadoresEnLista();
-				}
-			});
-			cbDniEntrenadores.setFont(new Font("Tahoma", Font.PLAIN, 16));
-		}
-		
-		return cbDniEntrenadores;
-	}
 
+	private JLabel getLbDniEntrenador() {
+		if(lbDniEntrenador == null) {
+			lbDniEntrenador = new JLabel(dniEntrenador);
+			lbDniEntrenador.setFont(new Font("Tahoma", Font.BOLD, 16));
+		}
+		return lbDniEntrenador;
+	}
+	
 	private JPanel getPnCentral() {
 		if (pnCentral == null) {
 			pnCentral = new JPanel();
@@ -359,29 +373,6 @@ public class VentanaCrearFranjas extends JFrame{
 	}
 	
 	// METODOS AUXILIARES
-	private void cargarEntrenadoresEnCombo() {
-		List<String> dnis = crearFranjaService.obtenerDnisEntrenadoresDeEquiposProfesionales();
-		DefaultComboBoxModel<String> modeloCombo = new DefaultComboBoxModel<>(dnis.toArray(new String[0]));
-		cbDniEntrenadores.setModel(modeloCombo);
-		
-		mostrarJugadoresEnLista();
-	}
-	
-	private void mostrarJugadoresEnLista() {
-		// SI EL COMBO NO TIENE DNI SELECCIONADO, DEJA LISTA VACIA
-		int idEquipo = 0;
-		String nifEntrenador;
-		if((nifEntrenador = (String) getCbDniEntrenadores().getSelectedItem()) != null) {
-			idEquipo = crearFranjaService.getIdEquipo(nifEntrenador);
-			
-			modelo = new DefaultListModel<EmpleadoDeportivo>();
-			for(EmpleadoDeportivo jugador : crearFranjaService.obtenerJugadoresEquipoProfesional(idEquipo)) {
-				modelo.addElement(jugador);
-			}
-			
-			listJugadores.setModel(modelo);
-		}
-	}
 	
 	private void habilitarFormularioFranja(boolean flag) {
 	    getCalendarioFecha().setEnabled(flag);
@@ -441,9 +432,11 @@ public class VentanaCrearFranjas extends JFrame{
 				.atZone(ZoneId.systemDefault())
 				.toLocalDate();
 		int idEquipo = jugador.getIdEquipo();
-		if (idEquipo == 0 && getCbDniEntrenadores().getSelectedItem() != null) {
-			idEquipo = crearFranjaService.getIdEquipo((String) getCbDniEntrenadores().getSelectedItem());
+
+		if (idEquipo == 0) {
+			idEquipo = crearFranjaService.getIdEquipo(dniEntrenador);
 		}
+		
 		getLbOcupacionEquipo().setText("Partidos y entrenamientos (" + fecha.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + "):");
 		List<String> eventos = crearFranjaService.obtenerPartidosYEntrenamientos(idEquipo, fecha);
 		if (modeloOcupacion != null) {
