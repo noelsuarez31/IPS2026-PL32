@@ -72,8 +72,12 @@ public class GestionTareaMantenimiento {
 		LocalDate fecha = LocalDate.parse(fechaStr);
 		int numDiaSemana = fecha.getDayOfWeek().getValue(); // 1 = Lunes, 7 = Domingo
 
-		List<HorarioEspecifico> especificos = jdbc.getHorariosEspecificosFecha(dniJardinero, fechaStr);
 		List<HorarioSemanal> turnosEfectivos = new ArrayList<>();
+		if (jdbc.tieneVacacionEnFecha(dniJardinero, fechaStr)) {
+			return turnosEfectivos;
+		}
+
+		List<HorarioEspecifico> especificos = jdbc.getHorariosEspecificosFecha(dniJardinero, fechaStr);
 
 		if (!especificos.isEmpty()) {
 			// Si tiene específicos para esa fecha, sustituyen por completo a los periódicos
