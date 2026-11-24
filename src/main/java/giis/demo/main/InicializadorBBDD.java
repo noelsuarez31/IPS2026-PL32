@@ -17,6 +17,7 @@ import giis.demo.util.Database;
 
 public class InicializadorBBDD {
 	
+	
 	private JFrame frame;
 
     /**
