@@ -124,7 +124,7 @@ public class VentanaPrincipal extends JFrame {
 		this.vl = vl;
 		this.usuario = vl.getUsuarioAutenticado();
 
-		setTitle("Ventana Inicial");
+		setTitle("Inicio de sesión");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 820, 420);
 		contentPane = new JPanel();
@@ -628,6 +628,15 @@ public class VentanaPrincipal extends JFrame {
 		}
 		return panelOpciones;
 	}
+	
+	private boolean esCampanaFase3() {
+		try {
+			giis.demo.model.accion.Campana c = new giis.demo.model.accion.GestionCompraCampana().obtenerCampanaActiva();
+			return c != null && c.getFase() == giis.demo.model.accion.Campana.ULTIMA_FASE;
+		} catch (SQLException e) {
+			return false;
+		}
+	}
 
 	private void actualizarAccionesDisponibles() {
 		
@@ -637,6 +646,7 @@ public class VentanaPrincipal extends JFrame {
 		if (usuario.esEmpleado() ) {
 			//AÑADIR LO Q PUEDA VER TODO EL MUNDO
 			añadirBoton("Panel de noticias", this::abrirVentanaVisualizarNoticia);
+
 		}
 		
 		if(usuario.esEmpleadoNoDeportivo()) {
@@ -646,6 +656,9 @@ public class VentanaPrincipal extends JFrame {
 		if (usuario.esAccionista()) {
 			añadirBoton("Portal accionista", this::abrirVentanaPortalAccionista);
 			añadirBoton("Comprar acciones", this::abrirVentanaCompraAcciones);
+			añadirBoton("Comprar acciones de campaña", this::abrirVentanaCompraCampana);
+		} else if (esCampanaFase3()) {
+			// En fase 3 cualquier persona puede comprar acciones
 			añadirBoton("Comprar acciones de campaña", this::abrirVentanaCompraCampana);
 		}
 
@@ -767,7 +780,6 @@ public class VentanaPrincipal extends JFrame {
 		abrirSubmenu("Equipo", () -> {
 			añadirBoton(panelSubmenu, "Añadir equipo", this::abrirVentanaAñadirEquipo);
 			añadirBoton(panelSubmenu, "Planificar partido", this::gestionPlanificarPartido);
-			añadirBoton(panelSubmenu, "Añadir servicio de mantenimiento", this::abrirVentanaAñadirMantenimiento);
 		});
 	}
 
@@ -782,6 +794,7 @@ public class VentanaPrincipal extends JFrame {
 		abrirSubmenu("Empleados", () -> {
 			añadirBoton(panelSubmenu, "Alta de empleado", this::abrirVentanaAltaEmpleado);
 			añadirBoton(panelSubmenu, "Modificar/Eliminar empleado", this::abrirVentanaGestionEmpleados);
+			añadirBoton(panelSubmenu, "Añadir servicio de mantenimiento", this::abrirVentanaAñadirMantenimiento);
 		});
 	}
 

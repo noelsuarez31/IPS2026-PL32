@@ -20,6 +20,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
@@ -33,15 +34,10 @@ import giis.demo.model.accion.InfoCompra;
 import giis.demo.model.accion.ResultadoCompra;
 import giis.demo.model.email.ResumenCompra;
 import giis.demo.model.email.ServicioEmail;
+import giis.demo.ui.login.VentanaInicio;
 import giis.demo.ui.login.VentanaPrincipal;
 import giis.demo.util.ApplicationException;
-import javax.swing.JPasswordField;
 
-/**
- * Ventana para comprar acciones de la campaña activa. El comprador se
- * identifica con su DNI; si no es accionista y la campaña está en la última
- * fase, se registra con sus datos.
- */
 public class VentanaCompraCampana extends JFrame {
 
 	private static final long serialVersionUID = 1L;
@@ -50,10 +46,11 @@ public class VentanaCompraCampana extends JFrame {
 	private static final String CARTA_INFO = "info";
 	private static final Color COLOR_DESTACADO = new Color(198, 40, 40);
 
+	private JFrame ventanaPadre;
 	private VentanaPrincipal vp;
 	private GestionCompraCampana gestion;
-	private InfoCompra infoActual; // comprador identificado (null si todavia no hay)
-	private boolean ajustandoDni; // true mientras el DNI se escribe por codigo, no el usuario
+	private InfoCompra infoActual;
+	private boolean ajustandoDni;
 
 	// Comprador
 	private JTextField txDni;
@@ -87,9 +84,20 @@ public class VentanaCompraCampana extends JFrame {
 	private JButton btnComprar;
 
 	public VentanaCompraCampana(VentanaPrincipal vp) {
-		this.vp = vp;
+		this((JFrame) vp);
+	}
+
+	public VentanaCompraCampana(JFrame ventanaPadre) {
+		this.ventanaPadre = ventanaPadre;
+		if (ventanaPadre instanceof VentanaPrincipal) {
+			this.vp = (VentanaPrincipal) ventanaPadre;
+		}
 		this.gestion = new GestionCompraCampana();
 		inicializarComponentes();
+	}
+
+	public VentanaCompraCampana() {
+		this((JFrame) null);
 	}
 
 	private void inicializarComponentes() {
@@ -104,21 +112,20 @@ public class VentanaCompraCampana extends JFrame {
 		contentPane.add(crearPanelCampana(), BorderLayout.CENTER);
 		contentPane.add(crearPanelCompra(), BorderLayout.SOUTH);
 
-		// El tamaño se calcula con el caso mas alto (comprador nuevo, con todos sus
-		// campos) para que nunca se corte
-		// nada, sea cual sea el tamaño de letra de la pantalla
 		mostrarDatosComprador(true, true, true);
 		pack();
 		setMinimumSize(getSize());
 
 		setLocationRelativeTo(null);
 
-		// Al cerrar la ventana se vuelve a mostrar la ventana principal
+		// Al cerrar vuelve a mostrar la ventana padre (sea VentanaInicio o VentanaPrincipal)
 		addWindowListener(new WindowAdapter() {
+			
 			@Override
 			public void windowClosed(WindowEvent e) {
-				if (vp != null)
-					vp.setVisible(true);
+				if (ventanaPadre != null) {
+					ventanaPadre.setVisible(true);
+				}
 			}
 		});
 
@@ -126,14 +133,11 @@ public class VentanaCompraCampana extends JFrame {
 		cargarEstadoInicial();
 	}
 
-	// Eventos y acceso a la logica
-
 	private void configurarEventos() {
 		btnIdentificar.addActionListener(e -> cargarComprador(txDni.getText()));
 		txDni.addActionListener(e -> cargarComprador(txDni.getText()));
 		btnComprar.addActionListener(e -> comprar());
 
-		// Si se cambia el DNI despues de identificar, hay que volver a identificar
 		txDni.getDocument().addDocumentListener(new DocumentListener() {
 			@Override
 			public void insertUpdate(DocumentEvent e) {
@@ -157,16 +161,13 @@ public class VentanaCompraCampana extends JFrame {
 			reiniciarComprador();
 	}
 
-	/** Al abrir: si no hay campaña activa se avisa; si la hay, se carga el comprador autenticado. */
 	private void cargarEstadoInicial() {
 		try {
 			if (gestion.obtenerCampanaActiva() == null) {
 				mostrarSinCampana();
 			} else {
 				reiniciarComprador();
-				
-				// Si se accede desde la sesión de un usuario autenticado, identificarlo directamente
-				
+				// Si venimos de un usuario ya autenticado (en VentanaPrincipal), lo identificamos automáticamente
 				if (vp != null && vp.getUsuario() != null && vp.getUsuario().getDni() != null) {
 					cargarComprador(vp.getUsuario().getDni());
 					txDni.setEditable(false);
@@ -179,14 +180,11 @@ public class VentanaCompraCampana extends JFrame {
 		}
 	}
 
-	/** Identifica al comprador por su DNI y muestra la campaña y su maximo. */
 	private void cargarComprador(String dni) {
 		try {
-
 			InfoCompra info = gestion.identificar(dni);
 
-			if (info.tieneMiembro()) {
-
+			if (info.tieneMiembro() && (vp == null || vp.getUsuario() == null)) {
 				int respuesta = JOptionPane.showConfirmDialog(this,
 						"Este DNI ya tiene una cuenta registrada.\n"
 								+ "Se utilizarán los datos de la cuenta existente.\n\n" + "¿Desea continuar?",
@@ -215,7 +213,6 @@ public class VentanaCompraCampana extends JFrame {
 			return;
 		InfoCompra info = infoActual;
 
-		// Comprobar lo escrito antes de pedir confirmacion
 		int unidades;
 		try {
 			unidades = GestionCompraCampana.validarCantidad(info, txCantidad.getText());
@@ -230,7 +227,6 @@ public class VentanaCompraCampana extends JFrame {
 			return;
 		}
 
-		// Resumen y confirmacion
 		double precio = info.getCampana().getPrecio();
 		double total = Math.round(unidades * precio * 100.0) / 100.0;
 		int respuesta = JOptionPane.showConfirmDialog(this,
@@ -240,7 +236,6 @@ public class VentanaCompraCampana extends JFrame {
 		if (respuesta != JOptionPane.YES_OPTION)
 			return;
 
-		// Registrar la compra
 		String emailDestino = GestionCompraCampana.emailDestino(info, txEmail.getText());
 		try {
 			ResultadoCompra resultado = gestion.comprar(info, unidades, txNombre.getText(), txApellidos.getText(),
@@ -248,8 +243,6 @@ public class VentanaCompraCampana extends JFrame {
 
 			compraRealizada(info, resultado, emailDestino);
 		} catch (ApplicationException e) {
-			// La campaña ha cambiado o el DNI ya estaba registrado: se avisa y se actualiza
-			// la informacion
 			JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 			cargarComprador(info.getDni());
 		} catch (SQLException e) {
@@ -261,10 +254,6 @@ public class VentanaCompraCampana extends JFrame {
 		}
 	}
 
-	/**
-	 * La compra ya esta guardada: se envia el email, se informa y se limpia la
-	 * ventana.
-	 */
 	private void compraRealizada(InfoCompra info, ResultadoCompra resultado, String emailDestino) {
 		boolean enviado = enviarEmail(emailDestino, info.getCampana(), resultado);
 
@@ -314,8 +303,6 @@ public class VentanaCompraCampana extends JFrame {
 				"Error Crítico", JOptionPane.ERROR_MESSAGE);
 		e.printStackTrace();
 	}
-
-	// Construccion de la interfaz
 
 	private JPanel crearPanelComprador() {
 		JPanel panel = new JPanel(new GridBagLayout());
@@ -407,8 +394,6 @@ public class VentanaCompraCampana extends JFrame {
 		pnCentro.add(pnDatos);
 		carta.add(pnCentro, BorderLayout.CENTER);
 
-		// texto de dos lineas desde el principio para que el tamaño de la ventana lo
-		// tenga en cuenta
 		lbDescripcionFase = new JLabel(descripcionFase(Campana.PRIMERA_FASE), SwingConstants.CENTER);
 		lbDescripcionFase.setForeground(COLOR_DESTACADO);
 		carta.add(lbDescripcionFase, BorderLayout.SOUTH);
@@ -454,12 +439,6 @@ public class VentanaCompraCampana extends JFrame {
 		panel.add(campo, gbc);
 	}
 
-	// Cambios de estado de la vista
-
-	/**
-	 * Espera el DNI: no se muestran datos del comprador ni de la campaña y no se
-	 * puede comprar.
-	 */
 	private void reiniciarComprador() {
 		infoActual = null;
 		txDni.setEnabled(true);
@@ -471,7 +450,6 @@ public class VentanaCompraCampana extends JFrame {
 		btnComprar.setEnabled(false);
 	}
 
-	/** No hay campaña activa: no es posible comprar. */
 	private void mostrarSinCampana() {
 		reiniciarComprador();
 		txDni.setEnabled(false);
@@ -479,7 +457,6 @@ public class VentanaCompraCampana extends JFrame {
 		mostrarMensaje("No hay ninguna campaña activa.\nNo es posible comprar acciones.", COLOR_DESTACADO);
 	}
 
-	/** Comprador identificado: se muestran sus datos, la campaña y su maximo. */
 	private void mostrarInfo(InfoCompra info) {
 		infoActual = info;
 		ajustandoDni = true;
@@ -487,10 +464,10 @@ public class VentanaCompraCampana extends JFrame {
 		ajustandoDni = false;
 
 		boolean nuevo = info.esNuevo();
-	    boolean necesitaCredenciales = !info.tieneMiembro();
+		boolean necesitaCredenciales = !info.tieneMiembro();
 
 		mostrarDatosComprador(true, nuevo, necesitaCredenciales);
-		
+
 		if (nuevo) {
 			txNombre.setText("");
 			txApellidos.setText("");
@@ -517,42 +494,37 @@ public class VentanaCompraCampana extends JFrame {
 		txCantidad.requestFocus();
 	}
 
-	/**
-	 * Muestra u oculta los datos del comprador. Si es nuevo se piden nombre,
-	 * apellidos y email; si ya es accionista se muestra su nombre y su email (solo
-	 * se pide si no tiene uno guardado).
-	 */
 	private void mostrarDatosComprador(boolean visibles, boolean nuevo, boolean necesita) {
 		lbAvisoNuevo.setVisible(visibles && nuevo);
 
-	    lbNombre.setVisible(visibles);
-	    txNombre.setVisible(visibles);
-	    lbNombre.setText(nuevo ? "Nombre:" : "Accionista:");
-	    txNombre.setEditable(nuevo);
+		lbNombre.setVisible(visibles);
+		txNombre.setVisible(visibles);
+		lbNombre.setText(nuevo ? "Nombre:" : "Accionista:");
+		txNombre.setEditable(nuevo);
 
-	    lbApellidos.setVisible(visibles && nuevo);
-	    txApellidos.setVisible(visibles && nuevo);
+		lbApellidos.setVisible(visibles && nuevo);
+		txApellidos.setVisible(visibles && nuevo);
 
-	    lbUsuario.setVisible(visibles && necesita);
-	    txUsuario.setVisible(visibles && necesita);
+		lbUsuario.setVisible(visibles && necesita);
+		txUsuario.setVisible(visibles && necesita);
 
-	    lbContrasena.setVisible(visibles && necesita);
-	    txContrasena.setVisible(visibles && necesita);
+		lbContrasena.setVisible(visibles && necesita);
+		txContrasena.setVisible(visibles && necesita);
 
-	    lbEmail.setVisible(visibles);
-	    txEmail.setVisible(visibles);
-	    txEmail.setEditable(true);
+		lbEmail.setVisible(visibles);
+		txEmail.setVisible(visibles);
+		txEmail.setEditable(true);
 
-	    if (!visibles) {
-	        txNombre.setText("");
-	        txApellidos.setText("");
-	        txEmail.setText("");
-	        txUsuario.setText("");
-	        txContrasena.setText("");
-	    }
+		if (!visibles) {
+			txNombre.setText("");
+			txApellidos.setText("");
+			txEmail.setText("");
+			txUsuario.setText("");
+			txContrasena.setText("");
+		}
 
-	    revalidate();
-	    repaint();
+		revalidate();
+		repaint();
 	}
 
 	private void mostrarMensaje(String texto, Color color) {
