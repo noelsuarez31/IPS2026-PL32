@@ -9,6 +9,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,6 +29,7 @@ import javax.swing.border.TitledBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 
+import giis.demo.model.equipo.EventoOcupacion;
 import giis.demo.model.equipo.ImportarPartidosService;
 import giis.demo.model.equipo.PartidoImportadoDTO;
 import giis.demo.ui.login.VentanaPrincipal;
@@ -350,6 +352,22 @@ public class VentanaImportarPartidos extends JFrame {
 						"No se ha importado ningún partido porque ninguno de los partidos cargados es válido.", 
 						"Sin partidos válidos", JOptionPane.WARNING_MESSAGE);
 				return;
+			}
+
+			// Informar al usuario si se han sobreescrito actividades de menor prioridad
+			List<EventoOcupacion> sobreescritas = service.getUltimasActividadesSobreescritas();
+			if (sobreescritas != null && !sobreescritas.isEmpty()) {
+				DateTimeFormatter fmt = DateTimeFormatter.ofPattern("HH:mm");
+				StringBuilder sb = new StringBuilder();
+				sb.append("Se han sobreescrito las siguientes ").append(sobreescritas.size())
+				  .append(" actividad(es) con menor prioridad debido a los partidos importados:\n\n");
+				for (EventoOcupacion e : sobreescritas) {
+					sb.append(" • [").append(e.getTipo()).append("] ").append(e.getDetalle())
+					  .append(" (").append(e.getHoraInicio().format(fmt)).append(" - ")
+					  .append(e.getHoraFin().format(fmt)).append(")\n");
+				}
+				JOptionPane.showMessageDialog(this, sb.toString(), 
+						"Actividades sobreescritas", JOptionPane.INFORMATION_MESSAGE);
 			}
 
 			// Dejar solo los inválidos en la lista y en la tabla

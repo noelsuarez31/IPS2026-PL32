@@ -24,6 +24,11 @@ import giis.demo.model.reserva.Instalacion;
 public class ImportarPartidosService {
 
 	private JDBC jdbc = new JDBC();
+	private List<EventoOcupacion> ultimasActividadesSobreescritas = new ArrayList<>();
+
+	public List<EventoOcupacion> getUltimasActividadesSobreescritas() {
+		return ultimasActividadesSobreescritas;
+	}
 
 	/**
 	 * Carga y parsea los partidos desde un archivo .csv o .json.
@@ -292,30 +297,42 @@ public class ImportarPartidosService {
 				continue;
 			}
 
-			// 8. Colisión con eventos de ocupación en la base de datos (Partido, Entrenamiento, Reserva, Jardinería)
+			// 8. Colisión con eventos de ocupación en la base de datos (solo no sobreescribibles: Partido, Entrenamiento)
 			try {
 				List<EventoOcupacion> eventos = jdbc.obtenerEventosOcupacionPartido(idLocal, idInstalacion, dto.getFecha());
 				boolean colisionBBDD = false;
+				List<String> sobreescritasNombres = new ArrayList<>();
 				for (EventoOcupacion ev : eventos) {
 					if (dto.getHoraInicio().isBefore(ev.getHoraFin()) && dto.getHoraFin().isAfter(ev.getHoraInicio())) {
-						dto.setValido(false);
-						dto.setMotivo("Colisión con " + ev.getTipo().toLowerCase() + " (" + ev.getHoraInicio().format(fmtHora) + " - " + ev.getHoraFin().format(fmtHora) + ")");
-						colisionBBDD = true;
-						break;
+						if (!ev.isSobreescribible()) {
+							dto.setValido(false);
+							dto.setMotivo("Colisión con " + ev.getTipo().toLowerCase() + " (" + ev.getHoraInicio().format(fmtHora) + " - " + ev.getHoraFin().format(fmtHora) + ")");
+							colisionBBDD = true;
+							break;
+						} else {
+							String tipo = ev.getTipo().toLowerCase();
+							if (!sobreescritasNombres.contains(tipo)) {
+								sobreescritasNombres.add(tipo);
+							}
+						}
 					}
 				}
 				if (colisionBBDD) {
 					continue;
+				}
+
+				// Pasa todas las validaciones
+				dto.setValido(true);
+				if (!sobreescritasNombres.isEmpty()) {
+					dto.setMotivo("Correcto (sobreescribe " + String.join(", ", sobreescritasNombres) + ")");
+				} else {
+					dto.setMotivo("Correcto");
 				}
 			} catch (SQLException e) {
 				dto.setValido(false);
 				dto.setMotivo("Error al consultar disponibilidad en BBDD");
 				continue;
 			}
-
-			// Pasa todas las validaciones
-			dto.setValido(true);
-			dto.setMotivo("Correcto");
 		}
 	}
 
@@ -336,6 +353,7 @@ public class ImportarPartidosService {
 		Map<String, Integer> mapaEquiposPropios = cargarMapaEquiposPropios();
 
 		List<PartidoImportadoDTO> importados = new ArrayList<>();
+		ultimasActividadesSobreescritas.clear();
 
 		for (PartidoImportadoDTO dto : partidos) {
 			if (dto.isValido()) {
@@ -347,6 +365,26 @@ public class ImportarPartidosService {
 					mapaEquipos.put(dto.getEquipoVisitante().toLowerCase(), idVisitante);
 				}
 				Integer idInstalacion = mapaInstalaciones.get(dto.getInstalacion().toLowerCase());
+
+				// Cancelar actividades sobreescribibles coincidentes (menor prioridad)
+				List<EventoOcupacion> cancelables = jdbc.obtenerSobreescribiblesPartidoSolapados(idLocal, idInstalacion,
+						dto.getFecha(), dto.getHoraInicio(), dto.getHoraFin());
+				if (cancelables != null && !cancelables.isEmpty()) {
+					jdbc.cancelarEventosSobreescritos(cancelables);
+					for (EventoOcupacion c : cancelables) {
+						boolean yaExiste = false;
+						for (EventoOcupacion ya : ultimasActividadesSobreescritas) {
+							if (ya.getIdReferencia() == c.getIdReferencia() && ya.getOrigen().equals(c.getOrigen())) {
+								yaExiste = true;
+								break;
+							}
+						}
+						if (!yaExiste) {
+							ultimasActividadesSobreescritas.add(c);
+						}
+					}
+				}
+
 				jdbc.insertarPartidoImportado(idLocal, idVisitante, idInstalacion, 
 						dto.getFecha(), dto.getHoraInicio(), dto.getHoraFin());
 				importados.add(dto);

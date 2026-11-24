@@ -986,6 +986,13 @@ public class JDBC {
 	}
 
 	/**
+	 * Cancela y elimina de la base de datos las actividades sobreescritas (reservas, jardinería, franjas, entrevistas).
+	 */
+	public void cancelarEventosSobreescritos(List<EventoOcupacion> cancelables) throws SQLException {
+		EquipoJdbc.cancelarEventosSobreescritos(con, cancelables);
+	}
+
+	/**
 	 * Registra el partido, sus precios de sección y cancela atómicamente los
 	 * eventos sobreescritos.
 	 */

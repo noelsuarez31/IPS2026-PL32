@@ -403,6 +403,51 @@ public class EquipoJdbc {
 	}
 	
 	/**
+	 * Cancela y elimina de la base de datos las actividades sobreescritas de menor prioridad
+	 * (reservas, tareas de mantenimiento, franjas y entrevistas).
+	 */
+	public static void cancelarEventosSobreescritos(Connection con, List<EventoOcupacion> cancelables) throws SQLException {
+		if (cancelables == null || cancelables.isEmpty()) {
+			return;
+		}
+		for (EventoOcupacion e : cancelables) {
+			if ("RESERVA".equals(e.getOrigen())) {
+				try (PreparedStatement pst = con.prepareStatement(DELETE_RESERVA_BY_ID)) {
+					pst.setInt(1, e.getIdReferencia());
+					pst.executeUpdate();
+				}
+				GestionLogSesion.registrarModificacionBBDD("delete", "Reserva sobreescrita por partido (id=" + e.getIdReferencia() + ")");
+			} else if ("TAREA_MANTENIMIENTO".equals(e.getOrigen())) {
+				try (PreparedStatement pst = con.prepareStatement(DELETE_TAREA_MANTENIMIENTO_JARDINEROS)) {
+					pst.setInt(1, e.getIdReferencia());
+					pst.executeUpdate();
+				}
+				try (PreparedStatement pst = con.prepareStatement(DELETE_TAREA_MANTENIMIENTO_BY_ID)) {
+					pst.setInt(1, e.getIdReferencia());
+					pst.executeUpdate();
+				}
+				GestionLogSesion.registrarModificacionBBDD("delete", "Tarea mantenimiento sobreescrita por partido (id=" + e.getIdReferencia() + ")");
+			} else if ("ENTREVISTA".equals(e.getOrigen())) {
+				try (PreparedStatement pst = con.prepareStatement(DELETE_ENTREVISTA_BY_FRANJA)) {
+					pst.setInt(1, e.getIdReferencia());
+					pst.executeUpdate();
+				}
+				try (PreparedStatement pst = con.prepareStatement(DELETE_FRANJA_BY_ID)) {
+					pst.setInt(1, e.getIdReferencia());
+					pst.executeUpdate();
+				}
+				GestionLogSesion.registrarModificacionBBDD("delete", "Entrevista sobreescrita por partido (id=" + e.getIdReferencia() + ")");
+			} else if ("FRANJA".equals(e.getOrigen())) {
+				try (PreparedStatement pst = con.prepareStatement(DELETE_FRANJA_BY_ID)) {
+					pst.setInt(1, e.getIdReferencia());
+					pst.executeUpdate();
+				}
+				GestionLogSesion.registrarModificacionBBDD("delete", "Franja horaria sobreescrita por partido (id=" + e.getIdReferencia() + ")");
+			}
+		}
+	}
+	
+	/**
 	 * Guarda el partido escogido eliminando los eventos
 	 * de ocupacion coincidentes
 	 * de forma atomica
@@ -428,39 +473,7 @@ public class EquipoJdbc {
 		con.setAutoCommit(false);
 		try {
 			// A. Eliminar eventos sobreescritos de menor prioridad
-			if (cancelables != null) {
-				for (EventoOcupacion e : cancelables) {
-					if ("RESERVA".equals(e.getOrigen())) {
-						try (PreparedStatement pst = con.prepareStatement(DELETE_RESERVA_BY_ID)) {
-							pst.setInt(1, e.getIdReferencia());
-							pst.executeUpdate();
-						}
-					} 	else if ("TAREA_MANTENIMIENTO".equals(e.getOrigen())) {
-						try (PreparedStatement pst = con.prepareStatement(DELETE_TAREA_MANTENIMIENTO_JARDINEROS)) {
-							pst.setInt(1, e.getIdReferencia());
-							pst.executeUpdate();
-						}
-						try (PreparedStatement pst = con.prepareStatement(DELETE_TAREA_MANTENIMIENTO_BY_ID)) {
-							pst.setInt(1, e.getIdReferencia());
-							pst.executeUpdate();
-						}
-					} else if ("ENTREVISTA".equals(e.getOrigen())) {
-						try (PreparedStatement pst = con.prepareStatement(DELETE_ENTREVISTA_BY_FRANJA)) {
-							pst.setInt(1, e.getIdReferencia());
-							pst.executeUpdate();
-						}
-						try (PreparedStatement pst = con.prepareStatement(DELETE_FRANJA_BY_ID)) {
-							pst.setInt(1, e.getIdReferencia());
-							pst.executeUpdate();
-						}
-					} else if ("FRANJA".equals(e.getOrigen())) {
-						try (PreparedStatement pst = con.prepareStatement(DELETE_FRANJA_BY_ID)) {
-							pst.setInt(1, e.getIdReferencia());
-							pst.executeUpdate();
-						}
-					}
-				}
-			}
+			cancelarEventosSobreescritos(con, cancelables);
 			
 			// B. Insertar el Partido y recuperar su id generado
 			int idPartidoGenerado;
