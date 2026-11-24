@@ -793,4 +793,8 @@ public class VentanaPrincipal extends JFrame {
 		});
 	}
 	
+	public UsuarioAutenticado getUsuario() {
+		return usuario;
+	}
+	
 }
