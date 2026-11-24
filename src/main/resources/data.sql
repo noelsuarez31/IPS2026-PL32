@@ -3096,7 +3096,7 @@ INSERT INTO "HorarioPeriodico" ("dni_empleado", "dia_semana", "hora_inicio", "ho
 
 INSERT INTO "HorarioEspecifico" ("dni_empleado", "fecha", "hora_inicio", "hora_fin") VALUES
 ('70707070D', '2026-11-26', '17:00', '20:00');
-((SELECT last_insert_rowid()), '2026-11-20', 'Leve', 'Mejora, vuelve a correr suave');
+
 
 UPDATE Lesion SET fecha_alta = '2026-07-29' WHERE dni_jugador = '22222222B' AND fecha = '2026-07-15';
 UPDATE Lesion SET fecha_alta = '2026-09-02' WHERE dni_jugador = '93000002B' AND fecha = '2026-08-20';
