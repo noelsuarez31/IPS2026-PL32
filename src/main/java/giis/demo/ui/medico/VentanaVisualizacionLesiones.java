@@ -80,7 +80,6 @@ public class VentanaVisualizacionLesiones extends JFrame {
 	private EmpleadoDeportivo[] todosJugadores;
 	private EmpleadoDeportivo[] jugadoresDelEquipo;
 	private JButton btActualizar;
-	private JButton btNuevaLesion;
 
 	/**
 	 * Create the frame.
@@ -360,8 +359,7 @@ public class VentanaVisualizacionLesiones extends JFrame {
 	private JPanel getPanel_1_2() {
 		if (panelBotones == null) {
 			panelBotones = new JPanel();
-			panelBotones.setLayout(new GridLayout(0, 4, 4, 0));
-			panelBotones.add(getBtNuevaLesion());
+			panelBotones.setLayout(new GridLayout(0, 3, 4, 0));
 			panelBotones.add(getBtActualizar());
 			panelBotones.add(getBtVer());
 			panelBotones.add(getBtCerrar());
@@ -507,19 +505,6 @@ public class VentanaVisualizacionLesiones extends JFrame {
 			btActualizar.setBackground(new Color(128, 255, 128));
 		}
 		return btActualizar;
-	}
-	private JButton getBtNuevaLesion() {
-		if (btNuevaLesion == null) {
-			btNuevaLesion = new JButton("Nueva Lesion");
-			btNuevaLesion.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-				}
-			});
-			btNuevaLesion.setMnemonic('N');
-			btNuevaLesion.setEnabled(false);
-			btNuevaLesion.setBackground(new Color(128, 255, 128));
-		}
-		return btNuevaLesion;
 	}
 	
 	private void abrirVentanaregistrarEvolucion() {
