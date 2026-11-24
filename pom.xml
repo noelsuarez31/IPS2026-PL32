@@ -115,6 +115,13 @@
 		    <version>2.11</version>
 		</dependency>
 
+		<!--  imagenes .webp -->
+		<dependency>
+			<groupId>com.twelvemonkeys.imageio</groupId>
+			<artifactId>imageio-webp</artifactId>
+			<version>3.15.3</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>

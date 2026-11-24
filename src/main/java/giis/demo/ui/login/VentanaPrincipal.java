@@ -48,6 +48,8 @@ import giis.demo.model.tienda.AvisoVendedores;
 import giis.demo.model.tienda.GenerarFacturaService;
 import giis.demo.model.tienda.GestionVendedores;
 import giis.demo.model.tienda.VentaMerchandising;
+import giis.demo.model.vacaciones.AlertaGerente;
+import giis.demo.model.vacaciones.GestionVacaciones;
 import giis.demo.ui.abonos.VentanaAbono;
 import giis.demo.ui.abonos.entradas.VentanaIdentificacion;
 import giis.demo.ui.accion.VentanaCampanasAcciones;
@@ -76,6 +78,7 @@ import giis.demo.ui.noticias.VentanaVisualizarNoticias;
 import giis.demo.ui.reserva.VentanaReserva;
 import giis.demo.ui.tienda.DialogoAvisoVendedores;
 import giis.demo.ui.tienda.VentanaTienda;
+import giis.demo.ui.vacaciones.VentanaSeleccionarVacaciones;
 
 public class VentanaPrincipal extends JFrame {
 	private GenerarFacturaService generarFacturaService = new GenerarFacturaService();
@@ -84,6 +87,7 @@ public class VentanaPrincipal extends JFrame {
 	private GestionHorariosPeriodicos ghp = new GestionHorariosPeriodicos();
 	private GestionHorariosEspecificos ghe = new GestionHorariosEspecificos();
 	private GestionHorarioSemanal ghs = new GestionHorarioSemanal();
+	private GestionVacaciones gv = new GestionVacaciones();
 	private CrearFranjaService cfs = new CrearFranjaService();
 	private CrearEntrevistaService ces = new CrearEntrevistaService();
 	private GestorEmpleados gestorEmpleados = new GestorEmpleados();
@@ -128,7 +132,7 @@ public class VentanaPrincipal extends JFrame {
 		this.vl = vl;
 		this.usuario = vl.getUsuarioAutenticado();
 
-		setTitle("Ventana Inicial");
+		setTitle("Inicio de sesión");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 820, 420);
 		contentPane = new JPanel();
@@ -144,6 +148,7 @@ public class VentanaPrincipal extends JFrame {
 		actualizarAccionesDisponibles();
 
 		this.setLocationRelativeTo(null);
+		javax.swing.SwingUtilities.invokeLater(this::comprobarYMostrarAlertasGerente);
 
 		// cuando la ventana ya este visible
 		SwingUtilities.invokeLater(this::comprobarVendedoresTienda);
@@ -423,6 +428,48 @@ public class VentanaPrincipal extends JFrame {
 		return this.ghs;
 	}
 
+	public GestionVacaciones getGestionVacaciones() {
+		return this.gv;
+	}
+
+	public UsuarioAutenticado getUsuarioAutenticado() {
+		return this.usuario;
+	}
+
+	private void abrirVentanaSeleccionarVacaciones() {
+		GestionLogSesion.registrarAccion("Ventana Seleccionar Vacaciones");
+		VentanaSeleccionarVacaciones ventana = new VentanaSeleccionarVacaciones(this);
+		this.setVisible(false);
+		ventana.setVisible(true);
+	}
+
+	private void comprobarYMostrarAlertasGerente() {
+		if (usuario == null || !usuario.tienePosicion(Posicion.GERENTE)) {
+			return;
+		}
+		try {
+			java.util.List<AlertaGerente> alertas = gv.obtenerAlertasPendientesGerente();
+			if (alertas != null && !alertas.isEmpty()) {
+				StringBuilder sb = new StringBuilder();
+				sb.append("Se han registrado nuevas solicitudes de vacaciones con turnos/tareas invalidados:\n\n");
+				for (AlertaGerente a : alertas) {
+					sb.append("[").append(a.getFechaCreacion()).append("] ")
+							.append(a.getMensaje()).append("\n\n");
+				}
+				gv.marcarAlertasGerenteComoLeidas();
+				GestionLogSesion.registrarAccion(
+						"Notificación de alertas de vacaciones al gerente (" + alertas.size() + ")");
+				JOptionPane.showMessageDialog(
+						this,
+						sb.toString().trim(),
+						"Alerta al Gerente - Turnos y Tareas Invalidados por Vacaciones",
+						JOptionPane.WARNING_MESSAGE);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
 	private void abrirVentaAbono() {
 
 		GestionLogSesion.registrarAccion("Ventana Comprar Abono");
@@ -648,6 +695,15 @@ public class VentanaPrincipal extends JFrame {
 		}
 		return panelOpciones;
 	}
+	
+	private boolean esCampanaFase3() {
+		try {
+			giis.demo.model.accion.Campana c = new giis.demo.model.accion.GestionCompraCampana().obtenerCampanaActiva();
+			return c != null && c.getFase() == giis.demo.model.accion.Campana.ULTIMA_FASE;
+		} catch (SQLException e) {
+			return false;
+		}
+	}
 
 	private void actualizarAccionesDisponibles() {
 		
@@ -657,15 +713,20 @@ public class VentanaPrincipal extends JFrame {
 		if (usuario.esEmpleado() ) {
 			//AÑADIR LO Q PUEDA VER TODO EL MUNDO
 			añadirBoton("Panel de noticias", this::abrirVentanaVisualizarNoticia);
+
 		}
 		
 		if(usuario.esEmpleadoNoDeportivo()) {
 			añadirBoton("Consultar horarios", this::abrirVentanaHorarioSemanal);
+			añadirBoton("Seleccionar vacaciones", this::abrirVentanaSeleccionarVacaciones);
 		}
 
 		if (usuario.esAccionista()) {
 			añadirBoton("Portal accionista", this::abrirVentanaPortalAccionista);
 			añadirBoton("Comprar acciones", this::abrirVentanaCompraAcciones);
+			añadirBoton("Comprar acciones de campaña", this::abrirVentanaCompraCampana);
+		} else if (esCampanaFase3()) {
+			// En fase 3 cualquier persona puede comprar acciones
 			añadirBoton("Comprar acciones de campaña", this::abrirVentanaCompraCampana);
 		}
 
@@ -788,10 +849,11 @@ public class VentanaPrincipal extends JFrame {
 			añadirBoton(panelSubmenu, "Añadir equipo", this::abrirVentanaAñadirEquipo);
 			añadirBoton(panelSubmenu, "Planificar partido", this::gestionPlanificarPartido);
 			añadirBoton(panelSubmenu, "Añadir servicio de mantenimiento", this::abrirVentanaAñadirMantenimiento);
-			añadirBoton(panelSubmenu, "Importar partidos", this::abrirVentanaImportarPartidos);
-		});
+			añadirBoton(panelSubmenu, "Importar partidos", this::abrirVentanaImportarPartidos);});
+
 	}
 
+	
 	private void abrirVentanaHorario() {
 		abrirSubmenu("Horarios", () -> {
 			añadirBoton(panelSubmenu, "Añadir horario periódico", this::abrirVentanaAñadirHorarioPeriodico);
@@ -803,6 +865,7 @@ public class VentanaPrincipal extends JFrame {
 		abrirSubmenu("Empleados", () -> {
 			añadirBoton(panelSubmenu, "Alta de empleado", this::abrirVentanaAltaEmpleado);
 			añadirBoton(panelSubmenu, "Modificar/Eliminar empleado", this::abrirVentanaGestionEmpleados);
+			añadirBoton(panelSubmenu, "Añadir servicio de mantenimiento", this::abrirVentanaAñadirMantenimiento);
 		});
 	}
 

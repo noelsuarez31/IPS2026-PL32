@@ -1,0 +1,51 @@
+equipo_local,visitante,fecha,hora_inicio,hora_fin,instalacion
+Real Oviedo,Sporting,2027-04-01,10:00,12:00,Campo de fútbol 1
+Real Oviedo A,Racing,2027-04-02,12:00,14:00,Campo de fútbol 2
+Real Oviedo B,Levante,2027-04-03,16:00,18:00,Campo de fútbol 3
+Real Oviedo C,Alavés,2027-04-04,18:00,20:00,Campo de fútbol 1
+Real Oviedo,Mirandés,2027-04-05,10:00,12:00,Campo de fútbol 2
+Real Oviedo A,Eibar,2027-04-06,12:00,14:00,Campo de fútbol 3
+Real Oviedo B,Burgos,2027-04-07,16:00,18:00,Campo de fútbol 1
+Real Oviedo C,Tenerife,2027-04-08,18:00,20:00,Campo de fútbol 2
+Real Oviedo,Zaragoza,2027-04-09,10:00,12:00,Campo de fútbol 3
+Real Oviedo A,Huesca,2027-04-10,12:00,14:00,Campo de fútbol 1
+Real Oviedo B,Elche,2027-04-11,16:00,18:00,Campo de fútbol 2
+Real Oviedo C,Málaga,2027-04-12,18:00,20:00,Campo de fútbol 3
+Real Oviedo,Cádiz,2027-04-13,10:00,12:00,Campo de fútbol 1
+Real Oviedo A,Granada,2027-04-14,12:00,14:00,Campo de fútbol 2
+Real Oviedo B,Córdoba,2027-04-15,16:00,18:00,Campo de fútbol 3
+Real Oviedo C,Almería,2027-04-16,18:00,20:00,Campo de fútbol 1
+Real Oviedo,Deportivo,2027-04-17,10:00,12:00,Campo de fútbol 2
+Real Oviedo A,Ferrol,2027-04-18,12:00,14:00,Campo de fútbol 3
+Real Oviedo B,Cartagena,2027-04-19,16:00,18:00,Campo de fútbol 1
+Real Oviedo C,Eldense,2027-04-20,18:00,20:00,Campo de fútbol 2
+Real Oviedo,Albacete,2027-04-21,10:00,12:00,Campo de fútbol 3
+Real Oviedo A,Castellón,2027-04-22,12:00,14:00,Campo de fútbol 1
+Real Oviedo B,Sporting,2027-04-23,16:00,18:00,Campo de fútbol 2
+Real Oviedo C,Racing,2027-04-24,18:00,20:00,Campo de fútbol 3
+Real Oviedo,Levante,2027-04-25,10:00,12:00,Campo de fútbol 1
+Real Oviedo A,Alavés,2027-04-26,12:00,14:00,Campo de fútbol 2
+Real Oviedo B,Mirandés,2027-04-27,16:00,18:00,Campo de fútbol 3
+Real Oviedo C,Eibar,2027-04-28,18:00,20:00,Campo de fútbol 1
+Real Oviedo,Burgos,2027-04-29,10:00,12:00,Campo de fútbol 2
+Real Oviedo A,Tenerife,2027-04-30,12:00,14:00,Campo de fútbol 3
+Real Oviedo B,Zaragoza,2027-05-01,16:00,18:00,Campo de fútbol 1
+Real Oviedo C,Huesca,2027-05-02,18:00,20:00,Campo de fútbol 2
+Real Oviedo,Elche,2027-05-03,10:00,12:00,Campo de fútbol 3
+Real Oviedo A,Málaga,2027-05-04,12:00,14:00,Campo de fútbol 1
+Real Oviedo B,Cádiz,2027-05-05,16:00,18:00,Campo de fútbol 2
+Real Oviedo C,Granada,2027-05-06,18:00,20:00,Campo de fútbol 3
+Real Oviedo,Córdoba,2027-05-07,10:00,12:00,Campo de fútbol 1
+Real Oviedo A,Almería,2027-05-08,12:00,14:00,Campo de fútbol 2
+Real Oviedo B,Deportivo,2027-05-09,16:00,18:00,Campo de fútbol 3
+Real Oviedo C,Ferrol,2027-05-10,18:00,20:00,Campo de fútbol 1
+Real Oviedo,Cartagena,2027-05-11,10:00,12:00,Campo de fútbol 2
+Real Oviedo A,Eldense,2027-05-12,12:00,14:00,Campo de fútbol 3
+Real Oviedo B,Albacete,2027-05-13,16:00,18:00,Campo de fútbol 1
+Real Oviedo C,Castellón,2027-05-14,18:00,20:00,Campo de fútbol 2
+Real Oviedo,Sporting,2027-05-15,10:00,12:00,Campo de fútbol 3
+Real Oviedo A,Racing,2027-05-16,12:00,14:00,Campo de fútbol 1
+Real Oviedo B,Levante,2027-05-17,16:00,18:00,Campo de fútbol 2
+Real Oviedo C,Alavés,2027-05-18,18:00,20:00,Campo de fútbol 3
+Real Oviedo,Mirandés,2027-05-19,10:00,12:00,Campo de fútbol 1
+Real Oviedo A,Eibar,2027-05-20,12:00,14:00,Campo de fútbol 2
