@@ -15,11 +15,13 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.imageio.ImageIO;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
@@ -722,8 +724,11 @@ public class VentanaVisualizarNoticias extends JFrame {
 		}
 
 		try {
-			ImageIcon original = new ImageIcon(file.getAbsolutePath());
-			Image img = original.getImage();
+			BufferedImage buffered = ImageIO.read(file);
+			Image img = (buffered != null) ? buffered : new ImageIcon(file.getAbsolutePath()).getImage();
+			if (img == null) {
+				return null;
+			}
 			int origW = img.getWidth(null);
 			int origH = img.getHeight(null);
 			if (origW <= 0 || origH <= 0) {
