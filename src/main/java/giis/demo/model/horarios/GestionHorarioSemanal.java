@@ -71,6 +71,10 @@ public class GestionHorarioSemanal {
 			LocalDate diaIterado = lunesSemana.plusDays(i);
 			int numDiaSemana = i + 1;
 
+			if (jdbc.tieneVacacionEnFecha(dniEmpleado, diaIterado.toString())) {
+				continue;
+			}
+
 			// Filtramos específicos de este día concreto
 			List<HorarioEspecifico> especificosDelDia = new ArrayList<>();
 			for (HorarioEspecifico he : especificosSemana) {

@@ -1,6 +1,9 @@
 -- Primero se borran todas las tablas, respetando las claves foráneas.
 
 --Para giis.demo.tkrun:
+DROP TABLE IF EXISTS AlertaGerente;
+DROP TABLE IF EXISTS ElementoInvalidadoVacacion;
+DROP TABLE IF EXISTS VacacionEmpleado;
 drop table if exists Noticia;
 drop table if exists ImagenNoticia;
 DROP TABLE IF EXISTS Entrada;
@@ -381,4 +384,34 @@ CREATE TABLE IF NOT EXISTS "EvolucionLesion" (
 	
 	FOREIGN KEY ("id_lesion") REFERENCES Lesion("id")
 );
+
+CREATE TABLE IF NOT EXISTS "VacacionEmpleado" (
+	"id_vacacion" INTEGER PRIMARY KEY AUTOINCREMENT,
+	"dni_empleado" TEXT NOT NULL,
+	"fecha" DATE NOT NULL,
+	"dia_semana" TEXT NOT NULL,
+	"estado" TEXT NOT NULL DEFAULT 'Confirmada',
+	UNIQUE("dni_empleado", "fecha"),
+	FOREIGN KEY("dni_empleado") REFERENCES "EmpleadoNoDeportivo"("dni") ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS "ElementoInvalidadoVacacion" (
+	"id_invalidado" INTEGER PRIMARY KEY AUTOINCREMENT,
+	"dni_empleado" TEXT NOT NULL,
+	"fecha" DATE NOT NULL,
+	"tipo" TEXT NOT NULL,
+	"detalle" TEXT NOT NULL,
+	FOREIGN KEY("dni_empleado") REFERENCES "EmpleadoNoDeportivo"("dni") ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS "AlertaGerente" (
+	"id_alerta" INTEGER PRIMARY KEY AUTOINCREMENT,
+	"dni_empleado" TEXT NOT NULL,
+	"nombre_empleado" TEXT NOT NULL,
+	"fecha_creacion" TEXT NOT NULL,
+	"mensaje" TEXT NOT NULL,
+	"leida" INTEGER NOT NULL DEFAULT 0 CHECK("leida" IN (0, 1)),
+	FOREIGN KEY("dni_empleado") REFERENCES "EmpleadoNoDeportivo"("dni") ON DELETE CASCADE ON UPDATE CASCADE
+);
+
 
