@@ -284,15 +284,26 @@ public class VentanaRegistrarEvolucion extends JFrame {
 			cbAlta = new JCheckBox("Dar de alta al jugador");
 			cbAlta.setBounds(15, 202, 170, 23);
 			cbAlta.addActionListener(new ActionListener() {
+				
 				public void actionPerformed(ActionEvent e) {
+					
 					boolean seleccionado = cbAlta.isSelected();
 					getDcFechaAlta().setEnabled(seleccionado);
+					
 					if (seleccionado) {
+						
 						getDcFechaAlta().setDate(new Date());
 						getCbEstado().setEnabled(false);
+						
+						getCbValoracion().setSelectedItem("Leve");
+						getCbValoracion().setEnabled(false);
+						
 					} else {
+						
 						getDcFechaAlta().setDate(null);
 						getCbEstado().setEnabled(true);
+						
+						getCbValoracion().setEnabled(true);
 					}
 				}
 			});
