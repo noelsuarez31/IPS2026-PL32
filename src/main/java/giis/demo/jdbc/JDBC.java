@@ -1269,19 +1269,129 @@ public class JDBC {
 		GestionLogSesion.registrarModificacionBBDD("insert", "Noticia (" + noticia.getTitular() + ")");
 	}
 	
+	/**
+	 * Obtiene todos los jugadores
+	 * @return jugadores
+	 * @throws SQLException
+	 */
 	public List<EmpleadoDeportivo> getJugadores() throws SQLException {
 		return EmpleadoDeportivoJdbc.getJugadores(con);
 	}
 	
+	/**
+	 * Obtiene las lesiones de un jugador
+	 * @param dniJugador
+	 * @return lista con las lesiones del jugdor
+	 * @throws SQLException
+	 */
 	public List<Lesion> getLesionesJugador(String dniJugador) throws SQLException {
 		return LesionJdbc.getLesionesJugador(con, dniJugador);
 	}
 	
+	/**
+	 * Obtiene las evoluciones de una lesion
+	 * @param idLesion
+	 * @return lista con las evoluciones de la lesion especificada
+	 * @throws SQLException
+	 */
 	public List<EvolucionLesion> getEvolucionLesion(int idLesion) throws SQLException {
 		return LesionJdbc.getEvolucionLesion(con, idLesion);
 	}
 	
+	/**
+	 * Obtiene los jugadores con equipo asignado
+	 * @return
+	 * @throws SQLException
+	 */
 	public List<EmpleadoDeportivo> getJugadoresConEquipo() throws SQLException {
 		return EmpleadoDeportivoJdbc.getJugadoresConEquipo(con);
+	}
+	
+	/**
+	 * Obtiene el equipo de un jugador
+	 * @param dni
+	 * @return
+	 * @throws SQLException
+	 */
+	public int getIdEquipoJugador(String dni) throws SQLException {
+		return LesionJdbc.getIdEquipoJugador(con, dni);
+	}
+
+	/**
+	 * Obtiene los partidos de un dia
+	 * @param idEquipo
+	 * @param fecha
+	 * @return
+	 * @throws SQLException
+	 */
+	public List<String> getPartidosEquipoDia(int idEquipo, LocalDate fecha) throws SQLException {
+		return LesionJdbc.getPartidosEquipoDia(con, idEquipo, fecha);
+	}
+
+	/**
+	 * Obtiene los entrenamiento de un dia
+	 * @param idEquipo
+	 * @param fecha
+	 * @return
+	 * @throws SQLException
+	 */
+	public List<String> getEntrenamientosEquipoDia(int idEquipo, LocalDate fecha) throws SQLException {
+		return LesionJdbc.getEntrenamientosEquipoDia(con, idEquipo, fecha);
+	}
+
+	/**
+	 * Registra una lesion nueva y su primera evolucion
+	 */
+	public void registrarLesion(String dniJugador, LocalDate fecha, String tipo, String origen, String valoracion,
+			String descripcion) throws SQLException {
+		boolean autoCommitOriginal = con.getAutoCommit();
+		try {
+			con.setAutoCommit(false);
+			int idLesion = LesionJdbc.insertarLesion(con, dniJugador, fecha, tipo, origen, Lesion.ESTADO_INICIAL);
+			LesionJdbc.insertarEvolucion(con, idLesion, new EvolucionLesion(fecha, valoracion, descripcion));
+			con.commit();
+			GestionLogSesion.registrarModificacionBBDD("insert",
+					"Lesion (jugador=" + dniJugador + ", tipo=" + tipo + ", fecha=" + fecha + ")");
+		} catch (SQLException e) {
+			con.rollback();
+			throw e;
+		} finally {
+			con.setAutoCommit(autoCommitOriginal);
+		}
+	}
+
+	/**
+	 * Añade una evolucion y actualiza el estado de la lesion 
+	 */
+	public void registrarEvolucion(Lesion lesion, EvolucionLesion evolucion, String nuevoEstado, LocalDate fechaAlta)
+			throws SQLException {
+		
+		boolean autoCommitOriginal = con.getAutoCommit();
+		
+		try {
+			
+			con.setAutoCommit(false);
+			
+			LesionJdbc.insertarEvolucion(con, lesion.getId(), evolucion);
+			LesionJdbc.actualizarEstado(con, lesion.getId(), nuevoEstado, fechaAlta);
+			
+			con.commit();
+			
+			GestionLogSesion.registrarModificacionBBDD("insert",
+					"EvolucionLesion (lesion=" + lesion.getId() + ", fecha=" + evolucion.getFecha() + ")");
+			GestionLogSesion.registrarModificacionBBDD("update",
+					"Lesion (id=" + lesion.getId() + ", estado=" + nuevoEstado + ")");
+		
+		} catch (SQLException e) {
+			
+			con.rollback();
+			
+			throw e;
+			
+		} finally {
+			
+			con.setAutoCommit(autoCommitOriginal);
+			
+		}
 	}
 }
