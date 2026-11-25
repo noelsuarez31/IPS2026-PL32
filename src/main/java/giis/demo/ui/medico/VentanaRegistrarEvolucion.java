@@ -9,6 +9,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 
@@ -34,6 +36,7 @@ import com.toedter.calendar.JDateChooser;
 import giis.demo.model.medico.EvolucionLesion;
 import giis.demo.model.medico.GestionLesiones;
 import giis.demo.model.medico.Lesion;
+import giis.demo.util.ApplicationException;
 
 public class VentanaRegistrarEvolucion extends JFrame {
 
@@ -71,7 +74,6 @@ public class VentanaRegistrarEvolucion extends JFrame {
 	private VentanaVisualizacionLesiones vvl;
 	private Lesion lesion;
 	private GestionLesiones gestionLesiones;
-
 
 	public VentanaRegistrarEvolucion(VentanaVisualizacionLesiones vvl, Lesion lesion) {
 		this.vvl = vvl;
@@ -176,8 +178,8 @@ public class VentanaRegistrarEvolucion extends JFrame {
 	private JPanel getPanelNuevaEntrada() {
 		if (panelNuevaEntrada == null) {
 			panelNuevaEntrada = new JPanel();
-			panelNuevaEntrada.setBorder(new TitledBorder(null, "Nueva Entrada: ", TitledBorder.LEADING,
-					TitledBorder.TOP, null, null));
+			panelNuevaEntrada.setBorder(
+					new TitledBorder(null, "Nueva Entrada: ", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 			panelNuevaEntrada.setLayout(null);
 
 			panelNuevaEntrada.add(getLbFecha());
@@ -361,41 +363,60 @@ public class VentanaRegistrarEvolucion extends JFrame {
 	}
 
 	private void cargarDatosLesion() {
+
 		if (lesion != null) {
+
 			String texto = String.format("Fecha inicio: %s  |  Tipo: %s  |  Origen: %s  |  Estado: %s",
+
 					lesion.getFecha() != null ? lesion.getFecha().toString() : "-",
 					lesion.getTipo() != null ? lesion.getTipo() : "-",
 					lesion.getOrigen() != null ? lesion.getOrigen() : "-",
 					lesion.getEstado() != null ? lesion.getEstado() : "-");
+
 			getLbDatosLesion().setText(texto);
 
-			if ("Alta".equalsIgnoreCase(lesion.getEstado()) || "Curada".equalsIgnoreCase(lesion.getEstado())) {
+			if (lesion.estaRecuperada()) {
+
 				getCbAlta().setSelected(true);
 				getCbAlta().setEnabled(false);
 				getCbEstado().setEnabled(false);
+				getDcFecha().setEnabled(false);
+				getCbValoracion().setEnabled(false);
+				getTaActualizacion().setEnabled(false);
+				getDcFechaAlta().setEnabled(false);
+				getBtGuardar().setEnabled(false);
+
+			} else {
+
+				getCbEstado().setSelectedItem(lesion.getEstado());
+
 			}
 		}
 	}
 
 	private void cargarEvolucionPrevia() {
+
 		if (lesion != null && gestionLesiones != null) {
+
 			try {
+
 				List<EvolucionLesion> evoluciones = gestionLesiones.getEvolucion(lesion);
 				modeloEvolucion.setRowCount(0);
+
 				for (EvolucionLesion ev : evoluciones) {
-					modeloEvolucion.addRow(new Object[] {
-							ev.getFecha() != null ? ev.getFecha().toString() : "",
-							ev.getValoracion(),
-							ev.getActualizacion()
-					});
+					modeloEvolucion.addRow(new Object[] { ev.getFecha() != null ? ev.getFecha().toString() : "",
+							ev.getValoracion(), ev.getActualizacion() });
 				}
 			} catch (Exception e) {
-				//TODO
+				
+				JOptionPane.showMessageDialog(this, "Error al cargar la evolución previa: " + e.getMessage(), "Error",
+						JOptionPane.ERROR_MESSAGE);
 			}
 		}
 	}
 
 	private void guardarEvolucion() {
+
 		if (getDcFecha().getDate() == null) {
 			JOptionPane.showMessageDialog(this, "Debe seleccionar una fecha para la evolución.", "Aviso",
 					JOptionPane.WARNING_MESSAGE);
@@ -418,19 +439,21 @@ public class VentanaRegistrarEvolucion extends JFrame {
 		}
 
 		String valoracion = (String) getCbValoracion().getSelectedItem();
-		String nuevoEstado = darAlta ? "Alta" : (String) getCbEstado().getSelectedItem();
+		String nuevoEstado = darAlta ? Lesion.RECUPERADO : (String) getCbEstado().getSelectedItem();
+		LocalDate fecha = aLocalDate(getDcFecha().getDate());
+		LocalDate fechaAlta = darAlta ? aLocalDate(getDcFechaAlta().getDate()) : null;
 
 		try {
-			
-			//TODO
-			
-			JOptionPane.showMessageDialog(this, "Evolución registrada correctamente.", "Éxito",
-					JOptionPane.INFORMATION_MESSAGE);
-			volver();
-		} catch (Exception ex) {
-			JOptionPane.showMessageDialog(this, "Error al registrar la evolución: " + ex.getMessage(), "Error",
-					JOptionPane.ERROR_MESSAGE);
+			gestionLesiones.registrarEvolucion(lesion, fecha, valoracion, actualizacion, nuevoEstado, fechaAlta);
+		} catch (ApplicationException ex) {
+			JOptionPane.showMessageDialog(this, ex.getMessage(), "Aviso", JOptionPane.WARNING_MESSAGE);
+			return;
 		}
+
+		JOptionPane.showMessageDialog(this, "Evolución registrada correctamente.", "Éxito",
+				JOptionPane.INFORMATION_MESSAGE);
+		vvl.recargarTabla();
+		volver();
 	}
 
 	private void volver() {
@@ -438,5 +461,9 @@ public class VentanaRegistrarEvolucion extends JFrame {
 			vvl.setVisible(true);
 		}
 		this.dispose();
+	}
+
+	private LocalDate aLocalDate(Date d) {
+		return d == null ? null : d.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 	}
 }

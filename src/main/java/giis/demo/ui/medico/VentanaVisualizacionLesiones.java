@@ -205,7 +205,7 @@ public class VentanaVisualizacionLesiones extends JFrame {
 			btConsultar = new JButton("Consultar");
 			btConsultar.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					consultar();
+					recargarTabla();
 				}
 			});
 			btConsultar.setMnemonic('N');
@@ -435,7 +435,8 @@ public class VentanaVisualizacionLesiones extends JFrame {
 		this.dispose();
 	}
 
-	private void consultar() {
+	void recargarTabla() {
+		
 		modelo.setRowCount(0);
 		btVer.setEnabled(false);
 

@@ -13,6 +13,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.text.Normalizer;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -26,6 +28,7 @@ import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
@@ -40,7 +43,9 @@ import com.toedter.calendar.JDateChooser;
 import giis.demo.model.empleado.EmpleadoDeportivo;
 import giis.demo.model.equipo.Equipo;
 import giis.demo.model.medico.GestionLesiones;
+import giis.demo.model.medico.OrigenLesion;
 import giis.demo.ui.login.VentanaPrincipal;
+import giis.demo.util.ApplicationException;
 
 public class VentanaRegistrarLesion extends JFrame {
 
@@ -220,9 +225,18 @@ public class VentanaRegistrarLesion extends JFrame {
 	}
 
 	private JList<EmpleadoDeportivo> getListaJugadores() {
+
 		if (listaJugadores == null) {
+
 			modeloListaJugadores = new DefaultListModel<>();
 			listaJugadores = new JList<>(modeloListaJugadores);
+
+			listaJugadores.addListSelectionListener(e -> {
+				if (!e.getValueIsAdjusting() && modeloEventos != null) {
+					modeloEventos.clear();
+				}
+			});
+
 			listaJugadores.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 			listaJugadores.setCellRenderer(new DefaultListCellRenderer() {
 				private static final long serialVersionUID = 1L;
@@ -232,7 +246,7 @@ public class VentanaRegistrarLesion extends JFrame {
 						boolean isSelected, boolean cellHasFocus) {
 					if (value instanceof EmpleadoDeportivo) {
 						EmpleadoDeportivo ed = (EmpleadoDeportivo) value;
-						value = ed.getNombre() + " " + ed.getApellido() + " (" + ed.getPosicion() + ")";
+						value = ed.getNombre() + " " + ed.getApellido();
 					}
 					return super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 				}
@@ -308,10 +322,18 @@ public class VentanaRegistrarLesion extends JFrame {
 	}
 
 	private JDateChooser getDcFecha() {
+
 		if (dcFecha == null) {
+
 			dcFecha = new JDateChooser();
 			dcFecha.setBounds(65, 45, 135, 24);
 			dcFecha.setDate(new Date());
+
+			dcFecha.addPropertyChangeListener("date", e -> {
+				if (modeloEventos != null) {
+					modeloEventos.clear();
+				}
+			});
 		}
 		return dcFecha;
 	}
@@ -322,8 +344,11 @@ public class VentanaRegistrarLesion extends JFrame {
 			btConsultarEventos.setMnemonic('C');
 			btConsultarEventos.setBounds(545, 12, 100, 26);
 			btConsultarEventos.addActionListener(new ActionListener() {
+				
 				public void actionPerformed(ActionEvent e) {
+					
 					consultarEventosDelDia();
+					
 				}
 			});
 		}
@@ -449,11 +474,85 @@ public class VentanaRegistrarLesion extends JFrame {
 			btGuardar.setMnemonic('G');
 			btGuardar.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					// En la siguiente fase conectamos la lógica de negocio
+					guardarLesion();
 				}
 			});
 		}
 		return btGuardar;
+	}
+
+	private void consultarEventosDelDia() {
+		
+		modeloEventos.clear();
+		EmpleadoDeportivo jugador = getListaJugadores().getSelectedValue();
+		
+		if (jugador == null) {
+			JOptionPane.showMessageDialog(this, "Debe seleccionar un jugador de la lista.", "Aviso", JOptionPane.WARNING_MESSAGE);
+			return;
+		}
+		if (getDcFecha().getDate() == null) {
+			JOptionPane.showMessageDialog(this, "Debe seleccionar una fecha.", "Aviso", JOptionPane.WARNING_MESSAGE);
+			return;
+		}
+		
+		LocalDate fecha = aLocalDate(getDcFecha().getDate());
+		OrigenLesion origen = getOrigenSeleccionado();
+
+		try {
+			List<String> eventos = gl.getEventosEquipo(jugador, origen, fecha);
+			
+			if (eventos.isEmpty()) {
+				
+				JOptionPane.showMessageDialog(this,
+						"El equipo del jugador no tiene " + (origen == OrigenLesion.PARTIDO ? "partidos" : "entrenamientos") + " ese día.",
+						"Información", JOptionPane.INFORMATION_MESSAGE);
+				return;
+			}
+			
+			for (String ev : eventos) {
+				modeloEventos.addElement(ev);
+			}
+		} catch (ApplicationException ex) {
+			JOptionPane.showMessageDialog(this, ex.getMessage(), "Aviso", JOptionPane.WARNING_MESSAGE);
+		}
+	}
+
+	private void guardarLesion() {
+		
+		try {
+			
+			gl.registrarLesion(getListaJugadores().getSelectedValue(), getOrigenSeleccionado(),
+					getListaEventos().getSelectedValue(), aLocalDate(getDcFecha().getDate()),
+					getTxTipoLesion().getText(), (String) getCbValoracion().getSelectedItem(),
+					getTxActualizacion().getText());
+		
+		} catch (ApplicationException ex) {
+			
+			JOptionPane.showMessageDialog(this, ex.getMessage(), "Aviso", JOptionPane.WARNING_MESSAGE);
+			return;
+		}
+		
+		JOptionPane.showMessageDialog(this, "Lesión registrada correctamente.", "Información",
+				JOptionPane.INFORMATION_MESSAGE);
+		
+		getTxTipoLesion().setText("");
+		getTxActualizacion().setText("");
+		modeloEventos.clear();
+		getListaJugadores().clearSelection();
+	}
+
+	private OrigenLesion getOrigenSeleccionado() {
+		if (getRbEntrenamiento().isSelected()) {
+			return OrigenLesion.ENTRENAMIENTO;
+		}
+		if (getRbOtro().isSelected()) {
+			return OrigenLesion.OTRO;
+		}
+		return OrigenLesion.PARTIDO;
+	}
+
+	private LocalDate aLocalDate(Date d) {
+		return d == null ? null : d.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 	}
 
 	private JButton getBtCancelar() {
@@ -515,15 +614,14 @@ public class VentanaRegistrarLesion extends JFrame {
 	}
 
 	private void alternarVisibilidadEventos(boolean visible) {
+
+		modeloEventos.clear();
+
 		getListaEventos().setEnabled(visible);
 		getBtConsultarEventos().setEnabled(visible);
 		if (!visible) {
 			modeloEventos.clear();
 		}
-	}
-
-	private void consultarEventosDelDia() {
-		// TODO
 	}
 
 	private String normalizar(String s) {
