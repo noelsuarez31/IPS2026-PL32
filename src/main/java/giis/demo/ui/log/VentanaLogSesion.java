@@ -20,7 +20,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
@@ -42,9 +41,9 @@ public class VentanaLogSesion extends JFrame {
 	private VentanaPrincipal vp;
 	private GestionLogSesion gestionLogSesion;
 
-	// Zona Norte: Archivo de sesión y desplegables de filtro
+	// Zona Norte: Archivo de sesión (selector individual o TODOS) y desplegables de filtro
 	private JLabel lblArchivoSesion;
-	private JTextField txtArchivoSesion;
+	private JComboBox<String> cbArchivoSesion;
 	private JLabel lblFiltrar;
 	private JComboBox<String> cbFiltrar;
 	private JLabel lblUsuario;
@@ -87,17 +86,17 @@ public class VentanaLogSesion extends JFrame {
 	private void inicializarComponentes() {
 		setTitle("Consultar log de la sesión");
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setBounds(100, 100, 940, 500);
-		setMinimumSize(new Dimension(780, 420));
+		setBounds(100, 100, 1020, 520);
+		setMinimumSize(new Dimension(840, 420));
 
 		JPanel contentPane = new JPanel(new BorderLayout(10, 10));
 		contentPane.setBorder(new EmptyBorder(10, 15, 10, 15));
 		setContentPane(contentPane);
 
-		// 1. ZONA NORTE: Nombre del archivo de sesión y filtros a la derecha
+		// 1. ZONA NORTE: Selector de archivo de sesión (individual o TODOS) y filtros a la derecha
 		JPanel panelNorte = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 5));
 		panelNorte.add(getLblArchivoSesion());
-		panelNorte.add(getTxtArchivoSesion());
+		panelNorte.add(getCbArchivoSesion());
 		panelNorte.add(getLblFiltrar());
 		panelNorte.add(getCbFiltrar());
 		panelNorte.add(getLblUsuario());
@@ -144,6 +143,12 @@ public class VentanaLogSesion extends JFrame {
 		getTablaEventos().setModel(modeloEventos);
 		configurarAnchosColumnas();
 
+		getCbArchivoSesion().addActionListener(e -> {
+			if (!actualizandoCombos) {
+				SwingUtil.exceptionWrapper(() -> cargarEventosSegunArchivoSeleccionado());
+			}
+		});
+
 		getCbFiltrar().addActionListener(e -> {
 			if (!actualizandoCombos) {
 				SwingUtil.exceptionWrapper(() -> aplicarFiltrosYActualizarVista());
@@ -185,17 +190,66 @@ public class VentanaLogSesion extends JFrame {
 	}
 
 	/**
-	 * Vuelve a leer el archivo .log de la sesión actual desde disco, actualiza el selector
-	 * de usuarios manteniendo la selección previa si sigue existiendo y recarga la tabla.
+	 * Recarga la lista de archivos .log disponibles en disco manteniendo la selección previa
+	 * si sigue existiendo (o seleccionando el archivo de la sesión actual al abrir),
+	 * y actualiza la tabla y los filtros.
 	 */
 	public void actualizarDesdeArchivo() {
-		getTxtArchivoSesion().setText(gestionLogSesion.getRutaArchivoSesionActual());
-		eventosCargados = gestionLogSesion.leerEventosSesionActual();
-		actualizarComboUsuarios();
+		actualizarComboArchivos();
+		cargarEventosSegunArchivoSeleccionado();
+	}
+
+	private void actualizarComboArchivos() {
+		actualizandoCombos = true;
+		try {
+			Object seleccionPrevia = getCbArchivoSesion().getSelectedItem();
+			String archivoPrevio = (seleccionPrevia != null) ? seleccionPrevia.toString() : null;
+			String archivoActual = gestionLogSesion.getRutaArchivoSesionActual();
+
+			List<String> archivos = gestionLogSesion.listarArchivosSesion();
+			DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
+			model.addElement(GestionLogSesion.OPCION_TODOS_ARCHIVOS);
+			for (String ruta : archivos) {
+				model.addElement(ruta);
+			}
+
+			getCbArchivoSesion().setModel(model);
+			if (archivoPrevio != null
+					&& (GestionLogSesion.OPCION_TODOS_ARCHIVOS.equals(archivoPrevio)
+							|| archivos.contains(archivoPrevio))) {
+				getCbArchivoSesion().setSelectedItem(archivoPrevio);
+			} else {
+				getCbArchivoSesion().setSelectedItem(archivoActual);
+			}
+		} finally {
+			actualizandoCombos = false;
+		}
+	}
+
+	private void cargarEventosSegunArchivoSeleccionado() {
+		Object seleccionado = getCbArchivoSesion().getSelectedItem();
+		String archivoSeleccionado = (seleccionado != null)
+				? seleccionado.toString()
+				: gestionLogSesion.getRutaArchivoSesionActual();
+
+		boolean esTodos = GestionLogSesion.OPCION_TODOS_ARCHIVOS.equals(archivoSeleccionado);
+		if (esTodos) {
+			eventosCargados = gestionLogSesion.leerEventosTodosLosArchivos();
+			getLblRegistroEventos().setText("Registro de eventos (todas las sesiones):");
+		} else {
+			eventosCargados = gestionLogSesion.leerEventosArchivo(archivoSeleccionado);
+			if (archivoSeleccionado.equals(gestionLogSesion.getRutaArchivoSesionActual())) {
+				getLblRegistroEventos().setText("Registro de eventos sesión actual:");
+			} else {
+				getLblRegistroEventos().setText("Registro de eventos sesión seleccionada:");
+			}
+		}
+
+		actualizarComboUsuarios(esTodos);
 		aplicarFiltrosYActualizarVista();
 	}
 
-	private void actualizarComboUsuarios() {
+	private void actualizarComboUsuarios(boolean habilitarFiltroUsuario) {
 		actualizandoCombos = true;
 		try {
 			Object seleccionPrevia = getCbUsuario().getSelectedItem();
@@ -210,7 +264,10 @@ public class VentanaLogSesion extends JFrame {
 			}
 
 			getCbUsuario().setModel(model);
-			if (usuarios.contains(usuarioPrevio) || GestionLogSesion.FILTRO_TODOS.equals(usuarioPrevio)) {
+			getCbUsuario().setEnabled(habilitarFiltroUsuario);
+
+			if (habilitarFiltroUsuario
+					&& (usuarios.contains(usuarioPrevio) || GestionLogSesion.FILTRO_TODOS.equals(usuarioPrevio))) {
 				getCbUsuario().setSelectedItem(usuarioPrevio);
 			} else {
 				getCbUsuario().setSelectedItem(GestionLogSesion.FILTRO_TODOS);
@@ -222,7 +279,9 @@ public class VentanaLogSesion extends JFrame {
 
 	private void aplicarFiltrosYActualizarVista() {
 		String filtroTipo = String.valueOf(getCbFiltrar().getSelectedItem());
-		String filtroUsuario = String.valueOf(getCbUsuario().getSelectedItem());
+		String filtroUsuario = getCbUsuario().isEnabled()
+				? String.valueOf(getCbUsuario().getSelectedItem())
+				: GestionLogSesion.FILTRO_TODOS;
 
 		List<EventoLog> filtrados = gestionLogSesion.filtrarEventos(eventosCargados, filtroTipo, filtroUsuario);
 
@@ -258,13 +317,12 @@ public class VentanaLogSesion extends JFrame {
 		return lblArchivoSesion;
 	}
 
-	private JTextField getTxtArchivoSesion() {
-		if (txtArchivoSesion == null) {
-			txtArchivoSesion = new JTextField();
-			txtArchivoSesion.setEditable(false);
-			txtArchivoSesion.setPreferredSize(new Dimension(240, 26));
+	public JComboBox<String> getCbArchivoSesion() {
+		if (cbArchivoSesion == null) {
+			cbArchivoSesion = new JComboBox<>();
+			cbArchivoSesion.setPreferredSize(new Dimension(295, 26));
 		}
-		return txtArchivoSesion;
+		return cbArchivoSesion;
 	}
 
 	private JLabel getLblFiltrar() {
