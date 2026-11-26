@@ -18,6 +18,7 @@ import giis.demo.model.empleado.EmpleadoDeportivo;
 import giis.demo.model.entradas.enumerados.TipoSeccion;
 import giis.demo.model.equipo.Equipo;
 import giis.demo.model.equipo.EventoOcupacion;
+import giis.demo.model.log.GestionLogSesion;
 
 public class EquipoJdbc {
 
@@ -402,6 +403,51 @@ public class EquipoJdbc {
 	}
 	
 	/**
+	 * Cancela y elimina de la base de datos las actividades sobreescritas de menor prioridad
+	 * (reservas, tareas de mantenimiento, franjas y entrevistas).
+	 */
+	public static void cancelarEventosSobreescritos(Connection con, List<EventoOcupacion> cancelables) throws SQLException {
+		if (cancelables == null || cancelables.isEmpty()) {
+			return;
+		}
+		for (EventoOcupacion e : cancelables) {
+			if ("RESERVA".equals(e.getOrigen())) {
+				try (PreparedStatement pst = con.prepareStatement(DELETE_RESERVA_BY_ID)) {
+					pst.setInt(1, e.getIdReferencia());
+					pst.executeUpdate();
+				}
+				GestionLogSesion.registrarModificacionBBDD("delete", "Reserva sobreescrita por partido (id=" + e.getIdReferencia() + ")");
+			} else if ("TAREA_MANTENIMIENTO".equals(e.getOrigen())) {
+				try (PreparedStatement pst = con.prepareStatement(DELETE_TAREA_MANTENIMIENTO_JARDINEROS)) {
+					pst.setInt(1, e.getIdReferencia());
+					pst.executeUpdate();
+				}
+				try (PreparedStatement pst = con.prepareStatement(DELETE_TAREA_MANTENIMIENTO_BY_ID)) {
+					pst.setInt(1, e.getIdReferencia());
+					pst.executeUpdate();
+				}
+				GestionLogSesion.registrarModificacionBBDD("delete", "Tarea mantenimiento sobreescrita por partido (id=" + e.getIdReferencia() + ")");
+			} else if ("ENTREVISTA".equals(e.getOrigen())) {
+				try (PreparedStatement pst = con.prepareStatement(DELETE_ENTREVISTA_BY_FRANJA)) {
+					pst.setInt(1, e.getIdReferencia());
+					pst.executeUpdate();
+				}
+				try (PreparedStatement pst = con.prepareStatement(DELETE_FRANJA_BY_ID)) {
+					pst.setInt(1, e.getIdReferencia());
+					pst.executeUpdate();
+				}
+				GestionLogSesion.registrarModificacionBBDD("delete", "Entrevista sobreescrita por partido (id=" + e.getIdReferencia() + ")");
+			} else if ("FRANJA".equals(e.getOrigen())) {
+				try (PreparedStatement pst = con.prepareStatement(DELETE_FRANJA_BY_ID)) {
+					pst.setInt(1, e.getIdReferencia());
+					pst.executeUpdate();
+				}
+				GestionLogSesion.registrarModificacionBBDD("delete", "Franja horaria sobreescrita por partido (id=" + e.getIdReferencia() + ")");
+			}
+		}
+	}
+	
+	/**
 	 * Guarda el partido escogido eliminando los eventos
 	 * de ocupacion coincidentes
 	 * de forma atomica
@@ -427,39 +473,7 @@ public class EquipoJdbc {
 		con.setAutoCommit(false);
 		try {
 			// A. Eliminar eventos sobreescritos de menor prioridad
-			if (cancelables != null) {
-				for (EventoOcupacion e : cancelables) {
-					if ("RESERVA".equals(e.getOrigen())) {
-						try (PreparedStatement pst = con.prepareStatement(DELETE_RESERVA_BY_ID)) {
-							pst.setInt(1, e.getIdReferencia());
-							pst.executeUpdate();
-						}
-					} 	else if ("TAREA_MANTENIMIENTO".equals(e.getOrigen())) {
-						try (PreparedStatement pst = con.prepareStatement(DELETE_TAREA_MANTENIMIENTO_JARDINEROS)) {
-							pst.setInt(1, e.getIdReferencia());
-							pst.executeUpdate();
-						}
-						try (PreparedStatement pst = con.prepareStatement(DELETE_TAREA_MANTENIMIENTO_BY_ID)) {
-							pst.setInt(1, e.getIdReferencia());
-							pst.executeUpdate();
-						}
-					} else if ("ENTREVISTA".equals(e.getOrigen())) {
-						try (PreparedStatement pst = con.prepareStatement(DELETE_ENTREVISTA_BY_FRANJA)) {
-							pst.setInt(1, e.getIdReferencia());
-							pst.executeUpdate();
-						}
-						try (PreparedStatement pst = con.prepareStatement(DELETE_FRANJA_BY_ID)) {
-							pst.setInt(1, e.getIdReferencia());
-							pst.executeUpdate();
-						}
-					} else if ("FRANJA".equals(e.getOrigen())) {
-						try (PreparedStatement pst = con.prepareStatement(DELETE_FRANJA_BY_ID)) {
-							pst.setInt(1, e.getIdReferencia());
-							pst.executeUpdate();
-						}
-					}
-				}
-			}
+			cancelarEventosSobreescritos(con, cancelables);
 			
 			// B. Insertar el Partido y recuperar su id generado
 			int idPartidoGenerado;
@@ -517,6 +531,63 @@ public class EquipoJdbc {
 		}
 		return LocalTime.parse(hStr,
 				DateTimeFormatter.ofPattern(hStr.length() == 5 ? "HH:mm" : "HH:mm:ss"));
+	}
+	
+	/**
+	 * Inserta un partido importado desde archivo externo en la base de datos.
+	 */
+	public static void insertarPartidoImportado(Connection con, int idLocal, int idVisitante, int idInstalacion,
+			LocalDate fecha, LocalTime horaInicio, LocalTime horaFin) throws SQLException {
+		String sql = "INSERT INTO Partido(fecha, hora_inicio, hora_fin, id_local, id_visitante, id_instalacion, dia_del_club) "
+				+ "VALUES (?, ?, ?, ?, ?, ?, 0)";
+
+		try (PreparedStatement ps = con.prepareStatement(sql)) {
+			ps.setString(1, fecha.toString());
+			ps.setString(2, horaInicio.toString());
+			ps.setString(3, horaFin.toString());
+			ps.setInt(4, idLocal);
+			ps.setInt(5, idVisitante);
+			ps.setInt(6, idInstalacion);
+			ps.executeUpdate();
+		}
+
+		GestionLogSesion.registrarModificacionBBDD("insert", 
+				"Partido (local=" + idLocal + ", visitante=" + idVisitante + ", fecha=" + fecha + ")");
+	}
+	
+	/**
+	 * Obtiene el ID del equipo visitante por nombre. Si no existe en la base de datos,
+	 * lo inserta automáticamente con su nombre (es_propio = 0) asignándole la categoría y tipo
+	 * del equipo local con el que compite, y devuelve el ID autogenerado.
+	 */
+	public static int obtenerOCrearEquipoVisitante(Connection con, String nombreVisitante, int idLocal) throws SQLException {
+		String sqlSelect = "SELECT id_equipo FROM Equipo WHERE LOWER(nombre) = LOWER(?)";
+		try (PreparedStatement ps = con.prepareStatement(sqlSelect)) {
+			ps.setString(1, nombreVisitante.trim());
+			try (ResultSet rs = ps.executeQuery()) {
+				if (rs.next()) {
+					return rs.getInt("id_equipo");
+				}
+			}
+		}
+
+		String sqlInsert = "INSERT INTO Equipo (nombre, es_propio, tipo_equipo, id_categoria) "
+				+ "VALUES (?, 0, (SELECT tipo_equipo FROM Equipo WHERE id_equipo = ?), (SELECT id_categoria FROM Equipo WHERE id_equipo = ?))";
+		try (PreparedStatement ps = con.prepareStatement(sqlInsert, Statement.RETURN_GENERATED_KEYS)) {
+			ps.setString(1, nombreVisitante.trim());
+			ps.setInt(2, idLocal);
+			ps.setInt(3, idLocal);
+			ps.executeUpdate();
+			try (ResultSet rs = ps.getGeneratedKeys()) {
+				if (rs.next()) {
+					int idGenerado = rs.getInt(1);
+					GestionLogSesion.registrarModificacionBBDD("insert", 
+							"Equipo visitante (id=" + idGenerado + ", nombre=" + nombreVisitante.trim() + ")");
+					return idGenerado;
+				}
+			}
+		}
+		throw new SQLException("No se pudo obtener el ID del equipo visitante insertado: " + nombreVisitante);
 	}
 
 }

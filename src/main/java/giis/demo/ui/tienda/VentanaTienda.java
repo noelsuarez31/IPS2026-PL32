@@ -11,6 +11,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +37,8 @@ import giis.demo.model.email.ResumenCompra;
 import giis.demo.model.email.ServicioEmail;
 import giis.demo.model.email.ValidadorEmail;
 import giis.demo.model.tienda.FiltroProducto;
+import giis.demo.model.tienda.FranjaTienda;
+import giis.demo.model.tienda.HorarioTienda;
 import giis.demo.model.tienda.Producto;
 import giis.demo.model.tienda.VentaMerchandising;
 import giis.demo.ui.login.VentanaPrincipal;
@@ -44,6 +47,12 @@ public class VentanaTienda extends JFrame {
 
     private static final long serialVersionUID = 1L;
     private static final Dimension TAMANO_BOTON_PRODUCTO = new Dimension(160, 170);
+    private static final DateTimeFormatter FORMATO_HORA = DateTimeFormatter.ofPattern("HH:mm");
+    private static final DateTimeFormatter FORMATO_MOMENTO = DateTimeFormatter.ofPattern("HH:mm 'del' dd/MM/yyyy");
+    private static final Color FONDO_DENTRO_HORARIO = new Color(227, 241, 228);
+    private static final Color TEXTO_DENTRO_HORARIO = new Color(20, 73, 26);
+    private static final Color FONDO_FUERA_HORARIO = new Color(247, 225, 225);
+    private static final Color TEXTO_FUERA_HORARIO = new Color(110, 20, 20);
     private VentaMerchandising controladorVenta;
 
     private JPanel contentPane;
@@ -53,8 +62,7 @@ public class VentanaTienda extends JFrame {
     private JTextField txEmailCliente;
     private JTable tablaPedido;
     private DefaultTableModel modeloTablaPedido;
-    // Producto de cada fila de la tabla (mismo orden), para eliminar por fila y no
-    // por nombre
+    // Producto de cada fila de la tabla (mismo orden), para eliminar por fila y no por nombre
     private List<Producto> productosEnTabla = new ArrayList<>();
 
     private AccionBotonProducto accionBotonProducto = new AccionBotonProducto();
@@ -69,6 +77,11 @@ public class VentanaTienda extends JFrame {
             public void windowClosed(java.awt.event.WindowEvent e) {
                 cerrarVenta(ventanaPrincipal);
             }
+
+            @Override
+            public void windowOpened(java.awt.event.WindowEvent e) {
+                avisarSiFueraDeHorario();
+            }
         });
         setBounds(100, 100, 900, 600);
         setLocationRelativeTo(ventanaPrincipal);
@@ -76,12 +89,55 @@ public class VentanaTienda extends JFrame {
         contentPane = new JPanel(new BorderLayout());
         setContentPane(contentPane);
 
+        contentPane.add(crearPanelHorario(), BorderLayout.NORTH);
         contentPane.add(crearPanelCentral(), BorderLayout.CENTER);
         contentPane.add(crearPanelPedido(), BorderLayout.EAST);
         contentPane.add(crearPanelSur(), BorderLayout.SOUTH);
 
         generarBotonesCatalogo();
         actualizarVistaCesta();
+    }
+
+    /**
+     * HU 36817: franja superior con el horario de apertura, verde dentro del horario y roja fuera. Se calcula al abrir
+     * la ventana. Fuera del horario se puede seguir vendiendo.
+     */
+    private JPanel crearPanelHorario() {
+        LocalDateTime ahora = LocalDateTime.now();
+        FranjaTienda franja = HorarioTienda.franjaEn(ahora);
+        boolean dentro = franja != null;
+
+        JLabel lbEstado = new JLabel(
+                dentro ? "Dentro del horario de apertura · hasta las " + franja.getHoraFin().format(FORMATO_HORA)
+                        : "Fuera del horario de apertura · se reanuda "
+                                + HorarioTienda.cuando(ahora, HorarioTienda.siguienteApertura(ahora)));
+        lbEstado.setFont(lbEstado.getFont().deriveFont(Font.BOLD));
+        lbEstado.setForeground(dentro ? TEXTO_DENTRO_HORARIO : TEXTO_FUERA_HORARIO);
+
+        JPanel pnHorario = new JPanel(new BorderLayout(10, 0));
+        pnHorario.setBackground(dentro ? FONDO_DENTRO_HORARIO : FONDO_FUERA_HORARIO);
+        pnHorario.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createMatteBorder(0, 0, 1, 0, dentro ? TEXTO_DENTRO_HORARIO : TEXTO_FUERA_HORARIO),
+                BorderFactory.createEmptyBorder(6, 10, 6, 10)));
+        pnHorario.add(lbEstado, BorderLayout.WEST);
+        pnHorario.add(new JLabel("Horario: " + HorarioTienda.DESCRIPCION), BorderLayout.EAST);
+        return pnHorario;
+    }
+
+    /**
+     * Fuera del horario de apertura se avisa al abrir la tienda, pero se deja vender igualmente
+     */
+    private void avisarSiFueraDeHorario() {
+        LocalDateTime ahora = LocalDateTime.now();
+        if (HorarioTienda.estaAbierta(ahora)) {
+            return;
+        }
+        String reanuda = HorarioTienda.cuando(ahora, HorarioTienda.siguienteApertura(ahora));
+        JOptionPane.showMessageDialog(this,
+                "La tienda está fuera de su horario de apertura (" + HorarioTienda.DESCRIPCION + ").\n" + "Son las "
+                        + ahora.format(FORMATO_MOMENTO) + ". El horario se reanuda " + reanuda + ".\n\n"
+                        + "Puede continuar con la venta igualmente.",
+                "Fuera del horario de apertura", JOptionPane.INFORMATION_MESSAGE);
     }
 
     private JPanel crearPanelCentral() {
@@ -93,8 +149,7 @@ public class VentanaTienda extends JFrame {
         pnArticulos = new JPanel(new GridLayout(0, 3, 5, 5));
         pnArticulos.setBorder(new LineBorder(Color.GRAY, 1));
 
-        // La rejilla va anclada arriba para que, con pocos productos, los botones no se
-        // estiren
+        // La rejilla va anclada arriba para que, con pocos productos, los botones no se estiren
         JPanel pnContenedor = new JPanel(new BorderLayout());
         pnContenedor.add(pnArticulos, BorderLayout.NORTH);
 
@@ -320,7 +375,8 @@ public class VentanaTienda extends JFrame {
     }
 
     private ResumenCompra construirResumenEmail() {
-        ResumenCompra resumen = new ResumenCompra("Merchandising", "Venta Merchandising", LocalDateTime.now(), controladorVenta.getCesta().getTotal());
+        ResumenCompra resumen = new ResumenCompra("Merchandising", "Venta Merchandising", LocalDateTime.now(),
+                controladorVenta.getCesta().getTotal());
         for (Map.Entry<Producto, Integer> linea : controladorVenta.getCesta().getLineas().entrySet()) {
             Producto p = linea.getKey();
             int unidades = linea.getValue();
@@ -344,9 +400,11 @@ public class VentanaTienda extends JFrame {
         for (Map.Entry<Producto, Integer> linea : controladorVenta.getCesta().getLineas().entrySet()) {
             Producto p = linea.getKey();
             int unidades = linea.getValue();
-            sb.append(String.format("- %s: %d x %.2f € = %.2f €\n", p.getNombre(), unidades, p.getPrecio(), p.getPrecio() * unidades));
+            sb.append(String.format("- %s: %d x %.2f € = %.2f €\n", p.getNombre(), unidades, p.getPrecio(),
+                    p.getPrecio() * unidades));
         }
-        sb.append(String.format("\nUnidades totales: %d\nPrecio total a cobrar: %.2f €", controladorVenta.getCesta().getTotalUnidades(), controladorVenta.getCesta().getTotal()));
+        sb.append(String.format("\nUnidades totales: %d\nPrecio total a cobrar: %.2f €",
+                controladorVenta.getCesta().getTotalUnidades(), controladorVenta.getCesta().getTotal()));
         return sb.toString();
     }
 

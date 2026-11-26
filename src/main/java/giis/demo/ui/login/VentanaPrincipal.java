@@ -8,7 +8,10 @@ import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -20,6 +23,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 
@@ -29,6 +33,7 @@ import giis.demo.model.entrevistas.CrearEntrevistaService;
 import giis.demo.model.entrevistas.CrearFranjaService;
 import giis.demo.model.equipo.AñadirEquipoService;
 import giis.demo.model.equipo.CrearEntrenamientoService;
+import giis.demo.model.equipo.ImportarPartidosService;
 import giis.demo.model.equipo.PlanificarPartidoService;
 import giis.demo.model.historial.HistorialVentas;
 import giis.demo.model.horarios.GestionHorarioSemanal;
@@ -39,7 +44,11 @@ import giis.demo.model.log.GestionLogSesion;
 import giis.demo.model.noticias.AñadirNoticiaService;
 import giis.demo.model.noticias.VisualizarNoticiasService;
 import giis.demo.model.rol.UsuarioAutenticado;
+import giis.demo.model.tienda.AvisoVendedores;
+import giis.demo.model.tienda.GestionVendedores;
 import giis.demo.model.tienda.VentaMerchandising;
+import giis.demo.model.vacaciones.AlertaGerente;
+import giis.demo.model.vacaciones.GestionVacaciones;
 import giis.demo.ui.abonos.VentanaAbono;
 import giis.demo.ui.abonos.entradas.VentanaIdentificacion;
 import giis.demo.ui.accion.VentanaCampanasAcciones;
@@ -53,6 +62,7 @@ import giis.demo.ui.entrevistas.VentanaCrearEntrevistas;
 import giis.demo.ui.entrevistas.VentanaCrearFranjas;
 import giis.demo.ui.equipo.VentanaAñadirEquipo;
 import giis.demo.ui.equipo.VentanaCrearEntrenamiento;
+import giis.demo.ui.equipo.VentanaImportarPartidos;
 import giis.demo.ui.equipo.VentanaPlanificarPartido;
 import giis.demo.ui.historial.VentanaHistorialVentas;
 import giis.demo.ui.horarios.VentanaHorarioEspecifico;
@@ -66,7 +76,9 @@ import giis.demo.ui.medico.VentanaVisualizacionLesiones;
 import giis.demo.ui.noticias.VentanaAñadirNoticia;
 import giis.demo.ui.noticias.VentanaVisualizarNoticias;
 import giis.demo.ui.reserva.VentanaReserva;
+import giis.demo.ui.tienda.DialogoAvisoVendedores;
 import giis.demo.ui.tienda.VentanaTienda;
+import giis.demo.ui.vacaciones.VentanaSeleccionarVacaciones;
 
 public class VentanaPrincipal extends JFrame {
 
@@ -75,6 +87,7 @@ public class VentanaPrincipal extends JFrame {
 	private GestionHorariosPeriodicos ghp = new GestionHorariosPeriodicos();
 	private GestionHorariosEspecificos ghe = new GestionHorariosEspecificos();
 	private GestionHorarioSemanal ghs = new GestionHorarioSemanal();
+	private GestionVacaciones gv = new GestionVacaciones();
 	private CrearFranjaService cfs = new CrearFranjaService();
 	private CrearEntrevistaService ces = new CrearEntrevistaService();
 	private GestorEmpleados gestorEmpleados = new GestorEmpleados();
@@ -109,6 +122,7 @@ public class VentanaPrincipal extends JFrame {
 
 	private AñadirNoticiaService añadirNoticiaService = new AñadirNoticiaService();
 	private VisualizarNoticiasService visualizarNoticiaService = new VisualizarNoticiasService();
+	private ImportarPartidosService importarPartidosService = new ImportarPartidosService();
 
 	/**
 	 * Create the frame.
@@ -118,7 +132,7 @@ public class VentanaPrincipal extends JFrame {
 		this.vl = vl;
 		this.usuario = vl.getUsuarioAutenticado();
 
-		setTitle("Ventana Inicial");
+		setTitle("Inicio de sesión");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 820, 420);
 		contentPane = new JPanel();
@@ -134,7 +148,47 @@ public class VentanaPrincipal extends JFrame {
 		actualizarAccionesDisponibles();
 
 		this.setLocationRelativeTo(null);
+		javax.swing.SwingUtilities.invokeLater(this::comprobarYMostrarAlertasGerente);
 
+		// cuando la ventana ya este visible
+		SwingUtilities.invokeLater(this::comprobarVendedoresTienda);
+	}
+
+	/**
+	 * HU 36817: al entrar el gerente se le avisa si faltan vendedores en la tienda, ahora mismo o en lo que queda de
+	 * semana. Tambien se llama al volver de asignar horarios desde el aviso, para que desaparezca si ya esta cubierto.
+	 */
+	private void comprobarVendedoresTienda() {
+		if (!usuario.tienePosicion(Posicion.GERENTE)) {
+			return;
+		}
+		try {
+			AvisoVendedores aviso = new GestionVendedores(ghs).comprobar(LocalDateTime.now());
+			if (aviso.hayAviso()) {
+				new DialogoAvisoVendedores(this, aviso, () -> asignarHorarioDesdeAviso(true),
+						() -> asignarHorarioDesdeAviso(false)).setVisible(true);
+			}
+		} catch (SQLException e) {
+			JOptionPane.showMessageDialog(this, "No se han podido comprobar los vendedores de la tienda.", "Error",
+					JOptionPane.ERROR_MESSAGE);
+		}
+	}
+
+	/**
+	 * Abre la ventana de horarios desde el aviso de vendedores y, al cerrarla, vuelve a comprobar
+	 */
+	private void asignarHorarioDesdeAviso(boolean periodico) {
+		GestionLogSesion.registrarAccion(periodico ? "Ventana Horario Periódico" : "Ventana Horario Específico");
+		JFrame ventana = periodico ? new VentanaHorarioPeriodico(this) : new VentanaHorarioEspecifico(this);
+		ventana.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosed(WindowEvent e) {
+				setVisible(true);
+				comprobarVendedoresTienda();
+			}
+		});
+		setVisible(false);
+		ventana.setVisible(true);
 	}
 
 	private void actualizarDatosUsuario() {
@@ -384,6 +438,48 @@ public class VentanaPrincipal extends JFrame {
 		return this.ghs;
 	}
 
+	public GestionVacaciones getGestionVacaciones() {
+		return this.gv;
+	}
+
+	public UsuarioAutenticado getUsuarioAutenticado() {
+		return this.usuario;
+	}
+
+	private void abrirVentanaSeleccionarVacaciones() {
+		GestionLogSesion.registrarAccion("Ventana Seleccionar Vacaciones");
+		VentanaSeleccionarVacaciones ventana = new VentanaSeleccionarVacaciones(this);
+		this.setVisible(false);
+		ventana.setVisible(true);
+	}
+
+	private void comprobarYMostrarAlertasGerente() {
+		if (usuario == null || !usuario.tienePosicion(Posicion.GERENTE)) {
+			return;
+		}
+		try {
+			java.util.List<AlertaGerente> alertas = gv.obtenerAlertasPendientesGerente();
+			if (alertas != null && !alertas.isEmpty()) {
+				StringBuilder sb = new StringBuilder();
+				sb.append("Se han registrado nuevas solicitudes de vacaciones con turnos/tareas invalidados:\n\n");
+				for (AlertaGerente a : alertas) {
+					sb.append("[").append(a.getFechaCreacion()).append("] ")
+							.append(a.getMensaje()).append("\n\n");
+				}
+				gv.marcarAlertasGerenteComoLeidas();
+				GestionLogSesion.registrarAccion(
+						"Notificación de alertas de vacaciones al gerente (" + alertas.size() + ")");
+				JOptionPane.showMessageDialog(
+						this,
+						sb.toString().trim(),
+						"Alerta al Gerente - Turnos y Tareas Invalidados por Vacaciones",
+						JOptionPane.WARNING_MESSAGE);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
 	private void abrirVentaAbono() {
 
 		GestionLogSesion.registrarAccion("Ventana Comprar Abono");
@@ -490,6 +586,13 @@ public class VentanaPrincipal extends JFrame {
 		this.setVisible(false);
 		ventana.setVisible(true);
 	}
+	
+	private void abrirVentanaImportarPartidos() {
+		GestionLogSesion.registrarAccion("Ventana Importar Partidos");
+		VentanaImportarPartidos vImpPartidos = new VentanaImportarPartidos(this);
+		this.setVisible(false);
+		vImpPartidos.setVisible(true);
+	}
 
 	public AñadirNoticiaService getAñadirNoticiaService() {
 		return añadirNoticiaService;
@@ -502,6 +605,11 @@ public class VentanaPrincipal extends JFrame {
 	public CrearEntrenamientoService getCrearEntrenamientoService() {
 		return this.crearEntrenoService;
 	}
+	
+	public ImportarPartidosService getImportarPartidosService() {
+		return this.importarPartidosService;
+	}
+
 	private JPanel getPanelUser() {
 		if (panelUser == null) {
 			panelUser = new JPanel(new GridLayout(2, 1, 5, 10));
@@ -593,6 +701,15 @@ public class VentanaPrincipal extends JFrame {
 		}
 		return panelOpciones;
 	}
+	
+	private boolean esCampanaFase3() {
+		try {
+			giis.demo.model.accion.Campana c = new giis.demo.model.accion.GestionCompraCampana().obtenerCampanaActiva();
+			return c != null && c.getFase() == giis.demo.model.accion.Campana.ULTIMA_FASE;
+		} catch (SQLException e) {
+			return false;
+		}
+	}
 
 	private void actualizarAccionesDisponibles() {
 		
@@ -602,15 +719,20 @@ public class VentanaPrincipal extends JFrame {
 		if (usuario.esEmpleado() ) {
 			//AÑADIR LO Q PUEDA VER TODO EL MUNDO
 			añadirBoton("Panel de noticias", this::abrirVentanaVisualizarNoticia);
+
 		}
 		
 		if(usuario.esEmpleadoNoDeportivo()) {
 			añadirBoton("Consultar horarios", this::abrirVentanaHorarioSemanal);
+			añadirBoton("Seleccionar vacaciones", this::abrirVentanaSeleccionarVacaciones);
 		}
 
 		if (usuario.esAccionista()) {
 			añadirBoton("Portal accionista", this::abrirVentanaPortalAccionista);
 			añadirBoton("Comprar acciones", this::abrirVentanaCompraAcciones);
+			añadirBoton("Comprar acciones de campaña", this::abrirVentanaCompraCampana);
+		} else if (esCampanaFase3()) {
+			// En fase 3 cualquier persona puede comprar acciones
 			añadirBoton("Comprar acciones de campaña", this::abrirVentanaCompraCampana);
 		}
 
@@ -735,9 +857,11 @@ public class VentanaPrincipal extends JFrame {
 			añadirBoton(panelSubmenu, "Añadir equipo", this::abrirVentanaAñadirEquipo);
 			añadirBoton(panelSubmenu, "Planificar partido", this::gestionPlanificarPartido);
 			añadirBoton(panelSubmenu, "Añadir servicio de mantenimiento", this::abrirVentanaAñadirMantenimiento);
-		});
+			añadirBoton(panelSubmenu, "Importar partidos", this::abrirVentanaImportarPartidos);});
+
 	}
 
+	
 	private void abrirVentanaHorario() {
 		abrirSubmenu("Horarios", () -> {
 			añadirBoton(panelSubmenu, "Añadir horario periódico", this::abrirVentanaAñadirHorarioPeriodico);
@@ -749,6 +873,7 @@ public class VentanaPrincipal extends JFrame {
 		abrirSubmenu("Empleados", () -> {
 			añadirBoton(panelSubmenu, "Alta de empleado", this::abrirVentanaAltaEmpleado);
 			añadirBoton(panelSubmenu, "Modificar/Eliminar empleado", this::abrirVentanaGestionEmpleados);
+			añadirBoton(panelSubmenu, "Añadir servicio de mantenimiento", this::abrirVentanaAñadirMantenimiento);
 		});
 	}
 

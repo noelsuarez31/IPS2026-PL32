@@ -1,0 +1,26 @@
+[
+  {
+    "equipoLocal": "Real Oviedo",
+    "equipoVisitante": "Real Oviedo",
+    "fecha": "2027-01-20",
+    "horaInicio": "16:00",
+    "horaFin": "18:00",
+    "instalacion": "Campo de fútbol 1"
+  },
+  {
+    "equipoLocal": "FC Barcelona",
+    "equipoVisitante": "Sporting",
+    "fecha": "2027-01-21",
+    "horaInicio": "18:00",
+    "horaFin": "20:00",
+    "instalacion": "Campo de fútbol 1"
+  },
+  {
+    "equipoLocal": "Real Oviedo",
+    "equipoVisitante": "Racing",
+    "fecha": "2027-01-22",
+    "horaInicio": "12:00",
+    "horaFin": "14:00",
+    "instalacion": "Estadio Santiago Bernabeu"
+  }
+]

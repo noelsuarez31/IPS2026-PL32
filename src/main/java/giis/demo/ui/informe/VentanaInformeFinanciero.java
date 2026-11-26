@@ -63,7 +63,7 @@ public class VentanaInformeFinanciero extends JFrame {
 
         setTitle("Informe financiero");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setBounds(100, 100, 900, 660);
+        setBounds(100, 100, 1000, 720);
         addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
             public void windowClosed(java.awt.event.WindowEvent e) {

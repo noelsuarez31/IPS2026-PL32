@@ -480,7 +480,7 @@ public class VentanaAñadirNoticia extends JFrame {
 		}
 
 		chooser.setDialogTitle("Seleccionar imagen para la noticia");
-		chooser.setFileFilter(new FileNameExtensionFilter("Imágenes (JPG, PNG, GIF)", "jpg", "jpeg", "png", "gif"));
+		chooser.setFileFilter(new FileNameExtensionFilter("Imágenes (JPG, PNG, GIF, WEBP)", "jpg", "jpeg", "png", "gif", "webp"));
 		chooser.setMultiSelectionEnabled(true);
 
 		int resultado = chooser.showOpenDialog(this);

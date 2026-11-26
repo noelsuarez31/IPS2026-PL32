@@ -43,6 +43,7 @@ import giis.demo.jdbc.reservas.ReservaJdbc;
 import giis.demo.jdbc.reservas.UsuarioJdbc;
 import giis.demo.jdbc.tienda.ProductoJdbc;
 import giis.demo.jdbc.tienda.RegistrarVentaMerchandising;
+import giis.demo.jdbc.vacaciones.VacacionesJdbc;
 import giis.demo.model.abonos.Abonado;
 import giis.demo.model.abonos.Abono;
 import giis.demo.model.accion.Accion;
@@ -74,6 +75,9 @@ import giis.demo.model.reserva.Intervalo;
 import giis.demo.model.reserva.Reserva;
 import giis.demo.model.reserva.Usuario;
 import giis.demo.model.tienda.Producto;
+import giis.demo.model.vacaciones.AlertaGerente;
+import giis.demo.model.vacaciones.ElementoInvalidadoVacacion;
+import giis.demo.model.vacaciones.VacacionEmpleado;
 import giis.demo.util.ApplicationException;
 import giis.demo.util.UnexpectedException;
 
@@ -989,6 +993,13 @@ public class JDBC {
 	}
 
 	/**
+	 * Cancela y elimina de la base de datos las actividades sobreescritas (reservas, jardinería, franjas, entrevistas).
+	 */
+	public void cancelarEventosSobreescritos(List<EventoOcupacion> cancelables) throws SQLException {
+		EquipoJdbc.cancelarEventosSobreescritos(con, cancelables);
+	}
+
+	/**
 	 * Registra el partido, sus precios de sección y cancela atómicamente los
 	 * eventos sobreescritos.
 	 */
@@ -1204,6 +1215,25 @@ public class JDBC {
 				"CampanaAccionista / Accion (comprador=" + comprador.getDni() + ", unidades=" + unidades + ")");
 		return resultado;
 	}
+	
+	/**
+	 * Inserta un partido importado desde archivo externo en la base de datos.
+	 */
+	public void insertarPartidoImportado(int idLocal, int idVisitante, int idInstalacion,
+			LocalDate fecha, LocalTime horaInicio, LocalTime horaFin) throws SQLException {
+		EquipoJdbc.insertarPartidoImportado(con, idLocal, idVisitante, idInstalacion, fecha,
+				horaInicio, horaFin);
+
+		GestionLogSesion.registrarModificacionBBDD("insert", 
+				"Partido (local=" + idLocal + ", visitante=" + idVisitante + ", fecha=" + fecha + ")");
+	}
+	
+	/**
+	 * Obtiene el ID del equipo visitante o lo registra si no existe en la base de datos.
+	 */
+	public int obtenerOCrearEquipoVisitante(String nombreVisitante, int idLocal) throws SQLException {
+		return EquipoJdbc.obtenerOCrearEquipoVisitante(con, nombreVisitante, idLocal);
+	}
 
 	/**
 	 * Comprueba si existe una cuenta de un miembro según su DNI y tipo.
@@ -1393,5 +1423,42 @@ public class JDBC {
 			con.setAutoCommit(autoCommitOriginal);
 			
 		}
+	}
+
+	public List<VacacionEmpleado> getVacacionesEmpleado(String dniEmpleado) throws SQLException {
+		return VacacionesJdbc.getVacacionesEmpleado(con, dniEmpleado);
+	}
+
+	public boolean tieneVacacionEnFecha(String dniEmpleado, String fecha) throws SQLException {
+		return VacacionesJdbc.tieneVacacionEnFecha(con, dniEmpleado, fecha);
+	}
+
+	public List<ElementoInvalidadoVacacion> getElementosInvalidadosVacacion(String dniEmpleado) throws SQLException {
+		return VacacionesJdbc.getElementosInvalidadosEmpleado(con, dniEmpleado);
+	}
+
+	public List<TareaMantenimiento> getTareasEmpleadoEnFecha(String dniEmpleado, String fecha) throws SQLException {
+		return VacacionesJdbc.getTareasEmpleadoEnFecha(con, dniEmpleado, fecha);
+	}
+
+	public List<TareaMantenimiento> getTareasEmpleado(String dniEmpleado) throws SQLException {
+		return VacacionesJdbc.getTareasEmpleado(con, dniEmpleado);
+	}
+
+	public void confirmarVacacionesEmpleado(String dniEmpleado, List<VacacionEmpleado> vacaciones,
+			List<ElementoInvalidadoVacacion> invalidados, AlertaGerente alerta) throws SQLException {
+		VacacionesJdbc.confirmarVacaciones(con, dniEmpleado, vacaciones, invalidados, alerta);
+		GestionLogSesion.registrarModificacionBBDD("insert",
+				"VacacionEmpleado (empleado=" + dniEmpleado + ", dias=" + vacaciones.size()
+						+ ", invalidados=" + (invalidados != null ? invalidados.size() : 0) + ")");
+	}
+
+	public List<AlertaGerente> getAlertasGerentePendientes() throws SQLException {
+		return VacacionesJdbc.getAlertasGerentePendientes(con);
+	}
+
+	public void marcarAlertasGerenteComoLeidas() throws SQLException {
+		VacacionesJdbc.marcarAlertasGerenteComoLeidas(con);
+		GestionLogSesion.registrarModificacionBBDD("update", "AlertaGerente (marcadas como leídas)");
 	}
 }

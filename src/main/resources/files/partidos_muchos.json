@@ -1,0 +1,402 @@
+[
+  {
+    "equipoLocal": "Real Oviedo",
+    "equipoVisitante": "Sporting",
+    "fecha": "2027-06-01",
+    "horaInicio": "10:00",
+    "horaFin": "12:00",
+    "instalacion": "Campo de fútbol 1"
+  },
+  {
+    "equipoLocal": "Real Oviedo A",
+    "equipoVisitante": "Racing",
+    "fecha": "2027-06-02",
+    "horaInicio": "12:00",
+    "horaFin": "14:00",
+    "instalacion": "Campo de fútbol 2"
+  },
+  {
+    "equipoLocal": "Real Oviedo B",
+    "equipoVisitante": "Levante",
+    "fecha": "2027-06-03",
+    "horaInicio": "16:00",
+    "horaFin": "18:00",
+    "instalacion": "Campo de fútbol 3"
+  },
+  {
+    "equipoLocal": "Real Oviedo C",
+    "equipoVisitante": "Alavés",
+    "fecha": "2027-06-04",
+    "horaInicio": "18:00",
+    "horaFin": "20:00",
+    "instalacion": "Campo de fútbol 1"
+  },
+  {
+    "equipoLocal": "Real Oviedo",
+    "equipoVisitante": "Mirandés",
+    "fecha": "2027-06-05",
+    "horaInicio": "10:00",
+    "horaFin": "12:00",
+    "instalacion": "Campo de fútbol 2"
+  },
+  {
+    "equipoLocal": "Real Oviedo A",
+    "equipoVisitante": "Eibar",
+    "fecha": "2027-06-06",
+    "horaInicio": "12:00",
+    "horaFin": "14:00",
+    "instalacion": "Campo de fútbol 3"
+  },
+  {
+    "equipoLocal": "Real Oviedo B",
+    "equipoVisitante": "Burgos",
+    "fecha": "2027-06-07",
+    "horaInicio": "16:00",
+    "horaFin": "18:00",
+    "instalacion": "Campo de fútbol 1"
+  },
+  {
+    "equipoLocal": "Real Oviedo C",
+    "equipoVisitante": "Tenerife",
+    "fecha": "2027-06-08",
+    "horaInicio": "18:00",
+    "horaFin": "20:00",
+    "instalacion": "Campo de fútbol 2"
+  },
+  {
+    "equipoLocal": "Real Oviedo",
+    "equipoVisitante": "Zaragoza",
+    "fecha": "2027-06-09",
+    "horaInicio": "10:00",
+    "horaFin": "12:00",
+    "instalacion": "Campo de fútbol 3"
+  },
+  {
+    "equipoLocal": "Real Oviedo A",
+    "equipoVisitante": "Huesca",
+    "fecha": "2027-06-10",
+    "horaInicio": "12:00",
+    "horaFin": "14:00",
+    "instalacion": "Campo de fútbol 1"
+  },
+  {
+    "equipoLocal": "Real Oviedo B",
+    "equipoVisitante": "Elche",
+    "fecha": "2027-06-11",
+    "horaInicio": "16:00",
+    "horaFin": "18:00",
+    "instalacion": "Campo de fútbol 2"
+  },
+  {
+    "equipoLocal": "Real Oviedo C",
+    "equipoVisitante": "Málaga",
+    "fecha": "2027-06-12",
+    "horaInicio": "18:00",
+    "horaFin": "20:00",
+    "instalacion": "Campo de fútbol 3"
+  },
+  {
+    "equipoLocal": "Real Oviedo",
+    "equipoVisitante": "Cádiz",
+    "fecha": "2027-06-13",
+    "horaInicio": "10:00",
+    "horaFin": "12:00",
+    "instalacion": "Campo de fútbol 1"
+  },
+  {
+    "equipoLocal": "Real Oviedo A",
+    "equipoVisitante": "Granada",
+    "fecha": "2027-06-14",
+    "horaInicio": "12:00",
+    "horaFin": "14:00",
+    "instalacion": "Campo de fútbol 2"
+  },
+  {
+    "equipoLocal": "Real Oviedo B",
+    "equipoVisitante": "Córdoba",
+    "fecha": "2027-06-15",
+    "horaInicio": "16:00",
+    "horaFin": "18:00",
+    "instalacion": "Campo de fútbol 3"
+  },
+  {
+    "equipoLocal": "Real Oviedo C",
+    "equipoVisitante": "Almería",
+    "fecha": "2027-06-16",
+    "horaInicio": "18:00",
+    "horaFin": "20:00",
+    "instalacion": "Campo de fútbol 1"
+  },
+  {
+    "equipoLocal": "Real Oviedo",
+    "equipoVisitante": "Deportivo",
+    "fecha": "2027-06-17",
+    "horaInicio": "10:00",
+    "horaFin": "12:00",
+    "instalacion": "Campo de fútbol 2"
+  },
+  {
+    "equipoLocal": "Real Oviedo A",
+    "equipoVisitante": "Ferrol",
+    "fecha": "2027-06-18",
+    "horaInicio": "12:00",
+    "horaFin": "14:00",
+    "instalacion": "Campo de fútbol 3"
+  },
+  {
+    "equipoLocal": "Real Oviedo B",
+    "equipoVisitante": "Cartagena",
+    "fecha": "2027-06-19",
+    "horaInicio": "16:00",
+    "horaFin": "18:00",
+    "instalacion": "Campo de fútbol 1"
+  },
+  {
+    "equipoLocal": "Real Oviedo C",
+    "equipoVisitante": "Eldense",
+    "fecha": "2027-06-20",
+    "horaInicio": "18:00",
+    "horaFin": "20:00",
+    "instalacion": "Campo de fútbol 2"
+  },
+  {
+    "equipoLocal": "Real Oviedo",
+    "equipoVisitante": "Albacete",
+    "fecha": "2027-06-21",
+    "horaInicio": "10:00",
+    "horaFin": "12:00",
+    "instalacion": "Campo de fútbol 3"
+  },
+  {
+    "equipoLocal": "Real Oviedo A",
+    "equipoVisitante": "Castellón",
+    "fecha": "2027-06-22",
+    "horaInicio": "12:00",
+    "horaFin": "14:00",
+    "instalacion": "Campo de fútbol 1"
+  },
+  {
+    "equipoLocal": "Real Oviedo B",
+    "equipoVisitante": "Sporting",
+    "fecha": "2027-06-23",
+    "horaInicio": "16:00",
+    "horaFin": "18:00",
+    "instalacion": "Campo de fútbol 2"
+  },
+  {
+    "equipoLocal": "Real Oviedo C",
+    "equipoVisitante": "Racing",
+    "fecha": "2027-06-24",
+    "horaInicio": "18:00",
+    "horaFin": "20:00",
+    "instalacion": "Campo de fútbol 3"
+  },
+  {
+    "equipoLocal": "Real Oviedo",
+    "equipoVisitante": "Levante",
+    "fecha": "2027-06-25",
+    "horaInicio": "10:00",
+    "horaFin": "12:00",
+    "instalacion": "Campo de fútbol 1"
+  },
+  {
+    "equipoLocal": "Real Oviedo A",
+    "equipoVisitante": "Alavés",
+    "fecha": "2027-06-26",
+    "horaInicio": "12:00",
+    "horaFin": "14:00",
+    "instalacion": "Campo de fútbol 2"
+  },
+  {
+    "equipoLocal": "Real Oviedo B",
+    "equipoVisitante": "Mirandés",
+    "fecha": "2027-06-27",
+    "horaInicio": "16:00",
+    "horaFin": "18:00",
+    "instalacion": "Campo de fútbol 3"
+  },
+  {
+    "equipoLocal": "Real Oviedo C",
+    "equipoVisitante": "Eibar",
+    "fecha": "2027-06-28",
+    "horaInicio": "18:00",
+    "horaFin": "20:00",
+    "instalacion": "Campo de fútbol 1"
+  },
+  {
+    "equipoLocal": "Real Oviedo",
+    "equipoVisitante": "Burgos",
+    "fecha": "2027-06-29",
+    "horaInicio": "10:00",
+    "horaFin": "12:00",
+    "instalacion": "Campo de fútbol 2"
+  },
+  {
+    "equipoLocal": "Real Oviedo A",
+    "equipoVisitante": "Tenerife",
+    "fecha": "2027-06-30",
+    "horaInicio": "12:00",
+    "horaFin": "14:00",
+    "instalacion": "Campo de fútbol 3"
+  },
+  {
+    "equipoLocal": "Real Oviedo B",
+    "equipoVisitante": "Zaragoza",
+    "fecha": "2027-07-01",
+    "horaInicio": "16:00",
+    "horaFin": "18:00",
+    "instalacion": "Campo de fútbol 1"
+  },
+  {
+    "equipoLocal": "Real Oviedo C",
+    "equipoVisitante": "Huesca",
+    "fecha": "2027-07-02",
+    "horaInicio": "18:00",
+    "horaFin": "20:00",
+    "instalacion": "Campo de fútbol 2"
+  },
+  {
+    "equipoLocal": "Real Oviedo",
+    "equipoVisitante": "Elche",
+    "fecha": "2027-07-03",
+    "horaInicio": "10:00",
+    "horaFin": "12:00",
+    "instalacion": "Campo de fútbol 3"
+  },
+  {
+    "equipoLocal": "Real Oviedo A",
+    "equipoVisitante": "Málaga",
+    "fecha": "2027-07-04",
+    "horaInicio": "12:00",
+    "horaFin": "14:00",
+    "instalacion": "Campo de fútbol 1"
+  },
+  {
+    "equipoLocal": "Real Oviedo B",
+    "equipoVisitante": "Cádiz",
+    "fecha": "2027-07-05",
+    "horaInicio": "16:00",
+    "horaFin": "18:00",
+    "instalacion": "Campo de fútbol 2"
+  },
+  {
+    "equipoLocal": "Real Oviedo C",
+    "equipoVisitante": "Granada",
+    "fecha": "2027-07-06",
+    "horaInicio": "18:00",
+    "horaFin": "20:00",
+    "instalacion": "Campo de fútbol 3"
+  },
+  {
+    "equipoLocal": "Real Oviedo",
+    "equipoVisitante": "Córdoba",
+    "fecha": "2027-07-07",
+    "horaInicio": "10:00",
+    "horaFin": "12:00",
+    "instalacion": "Campo de fútbol 1"
+  },
+  {
+    "equipoLocal": "Real Oviedo A",
+    "equipoVisitante": "Almería",
+    "fecha": "2027-07-08",
+    "horaInicio": "12:00",
+    "horaFin": "14:00",
+    "instalacion": "Campo de fútbol 2"
+  },
+  {
+    "equipoLocal": "Real Oviedo B",
+    "equipoVisitante": "Deportivo",
+    "fecha": "2027-07-09",
+    "horaInicio": "16:00",
+    "horaFin": "18:00",
+    "instalacion": "Campo de fútbol 3"
+  },
+  {
+    "equipoLocal": "Real Oviedo C",
+    "equipoVisitante": "Ferrol",
+    "fecha": "2027-07-10",
+    "horaInicio": "18:00",
+    "horaFin": "20:00",
+    "instalacion": "Campo de fútbol 1"
+  },
+  {
+    "equipoLocal": "Real Oviedo",
+    "equipoVisitante": "Cartagena",
+    "fecha": "2027-07-11",
+    "horaInicio": "10:00",
+    "horaFin": "12:00",
+    "instalacion": "Campo de fútbol 2"
+  },
+  {
+    "equipoLocal": "Real Oviedo A",
+    "equipoVisitante": "Eldense",
+    "fecha": "2027-07-12",
+    "horaInicio": "12:00",
+    "horaFin": "14:00",
+    "instalacion": "Campo de fútbol 3"
+  },
+  {
+    "equipoLocal": "Real Oviedo B",
+    "equipoVisitante": "Albacete",
+    "fecha": "2027-07-13",
+    "horaInicio": "16:00",
+    "horaFin": "18:00",
+    "instalacion": "Campo de fútbol 1"
+  },
+  {
+    "equipoLocal": "Real Oviedo C",
+    "equipoVisitante": "Castellón",
+    "fecha": "2027-07-14",
+    "horaInicio": "18:00",
+    "horaFin": "20:00",
+    "instalacion": "Campo de fútbol 2"
+  },
+  {
+    "equipoLocal": "Real Oviedo",
+    "equipoVisitante": "Sporting",
+    "fecha": "2027-07-15",
+    "horaInicio": "10:00",
+    "horaFin": "12:00",
+    "instalacion": "Campo de fútbol 3"
+  },
+  {
+    "equipoLocal": "Real Oviedo A",
+    "equipoVisitante": "Racing",
+    "fecha": "2027-07-16",
+    "horaInicio": "12:00",
+    "horaFin": "14:00",
+    "instalacion": "Campo de fútbol 1"
+  },
+  {
+    "equipoLocal": "Real Oviedo B",
+    "equipoVisitante": "Levante",
+    "fecha": "2027-07-17",
+    "horaInicio": "16:00",
+    "horaFin": "18:00",
+    "instalacion": "Campo de fútbol 2"
+  },
+  {
+    "equipoLocal": "Real Oviedo C",
+    "equipoVisitante": "Alavés",
+    "fecha": "2027-07-18",
+    "horaInicio": "18:00",
+    "horaFin": "20:00",
+    "instalacion": "Campo de fútbol 3"
+  },
+  {
+    "equipoLocal": "Real Oviedo",
+    "equipoVisitante": "Mirandés",
+    "fecha": "2027-07-19",
+    "horaInicio": "10:00",
+    "horaFin": "12:00",
+    "instalacion": "Campo de fútbol 1"
+  },
+  {
+    "equipoLocal": "Real Oviedo A",
+    "equipoVisitante": "Eibar",
+    "fecha": "2027-07-20",
+    "horaInicio": "12:00",
+    "horaFin": "14:00",
+    "instalacion": "Campo de fútbol 2"
+  }
+]
