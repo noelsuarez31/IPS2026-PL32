@@ -36,7 +36,6 @@ public class VentanaEvolucionLesiones extends JFrame {
 	
 	private VentanaVisualizacionLesiones vvl;
 	private Lesion lesion;
-	
 	private CerrarVentana cv;
 
 	public VentanaEvolucionLesiones(VentanaVisualizacionLesiones vvl, Lesion lesion) {
