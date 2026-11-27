@@ -1,22 +1,10 @@
 package giis.demo.ui.reserva;
 
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
-
-import giis.demo.model.reserva.Instalacion;
-import giis.demo.model.reserva.Reserva;
-import giis.demo.model.reserva.Usuario;
-
 import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JTextField;
-import java.awt.GridLayout;
 import java.awt.Color;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
 import java.time.Duration;
@@ -25,7 +13,21 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.Date;
-import java.awt.event.ActionEvent;
+import java.util.List;
+
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.border.EmptyBorder;
+
+import giis.demo.model.reserva.Instalacion;
+import giis.demo.model.reserva.Reserva;
+import giis.demo.model.reserva.Usuario;
+import giis.demo.model.tienda.LineaFacturaDTO;
+import giis.demo.ui.tienda.VentanaFactura;
 
 public class VentaRegistroUsuario extends JDialog {
 
@@ -221,6 +223,7 @@ public class VentaRegistroUsuario extends JDialog {
 		if (btConfirmar == null) {
 			btConfirmar = new JButton("Confirmar");
 			btConfirmar.addActionListener(new ActionListener() {
+				@Override
 				public void actionPerformed(ActionEvent e) {
 
 					try {
@@ -255,6 +258,7 @@ public class VentaRegistroUsuario extends JDialog {
 			btCancelar = new JButton("Cancelar");
 			btCancelar.addActionListener(new ActionListener() {
 
+				@Override
 				public void actionPerformed(ActionEvent e) {
 
 					reiniciar();
@@ -338,6 +342,16 @@ public class VentaRegistroUsuario extends JDialog {
 						+ reserva.getImporte() + " €",
 				"Reserva confirmada", JOptionPane.INFORMATION_MESSAGE);
 
+		if (vr.getVp() != null) {
+			List<LineaFacturaDTO> lineasFactura = List.of(new LineaFacturaDTO(
+					"Reserva " + instalacion.getName() + " (" + fecha + " " + horaInicio + "-" + horaFin + ")",
+					1,
+					reserva.getImporte()));
+			vr.getVp().getGenerarFacturaService().prepararFactura(lineasFactura);
+			VentanaFactura vFactura = new VentanaFactura(vr.getVp());
+			vFactura.setVisible(true);
+		}
+		
 		return true;
 	}
 

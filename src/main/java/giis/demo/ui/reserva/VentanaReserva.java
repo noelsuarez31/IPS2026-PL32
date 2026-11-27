@@ -1,38 +1,11 @@
 package giis.demo.ui.reserva;
 
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
 import java.awt.BorderLayout;
-import javax.swing.JScrollPane;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JSpinner;
-import javax.swing.JTable;
-import javax.swing.ListSelectionModel;
-import javax.swing.SpinnerDateModel;
-
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-
-import javax.swing.JButton;
 import java.awt.Color;
 import java.awt.Component;
-
-import javax.swing.border.TitledBorder;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.DefaultTableModel;
-
-import giis.demo.model.reserva.Instalacion;
-import giis.demo.model.reserva.Intervalo;
-import giis.demo.model.reserva.RealizarReserva;
-import giis.demo.ui.login.VentanaPrincipal;
-
-import javax.swing.border.LineBorder;
-import javax.swing.border.EtchedBorder;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -41,12 +14,37 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.awt.event.ActionEvent;
-import javax.swing.JComboBox;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+
 import javax.swing.DefaultComboBoxModel;
-import java.awt.FlowLayout;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
+import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
+import javax.swing.SpinnerDateModel;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.EtchedBorder;
+import javax.swing.border.LineBorder;
+import javax.swing.border.TitledBorder;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
+
 import com.toedter.calendar.JDateChooser;
-import java.awt.GridLayout;
+
+import giis.demo.model.reserva.Instalacion;
+import giis.demo.model.reserva.Intervalo;
+import giis.demo.model.reserva.RealizarReserva;
+import giis.demo.ui.login.VentanaPrincipal;
 
 
 public class VentanaReserva extends JFrame {
@@ -113,6 +111,10 @@ public class VentanaReserva extends JFrame {
 		contentPane.add(getPanelHorario(), BorderLayout.CENTER);
 		setLocationRelativeTo(null);
 		addWindowListener(cv);
+	}
+	
+	public VentanaPrincipal getVp() {
+		return vp;
 	}
 
 	/**
@@ -187,6 +189,7 @@ public class VentanaReserva extends JFrame {
 		if (btConsulta == null) {
 			btConsulta = new JButton("Consultar");
 			btConsulta.addActionListener(new ActionListener() {
+				@Override
 				public void actionPerformed(ActionEvent e) {
 					consultarHorarios();
 				}
@@ -285,6 +288,7 @@ public class VentanaReserva extends JFrame {
 			btSiguiente = new JButton("Siguiente");
 			btSiguiente.setEnabled(false);
 			btSiguiente.addActionListener(new ActionListener() {
+				@Override
 				public void actionPerformed(ActionEvent e) {
 					registrarDatos();
 				}
@@ -624,6 +628,7 @@ public class VentanaReserva extends JFrame {
 		if (btVolver == null) {
 			btVolver = new JButton("Volver");
 			btVolver.addActionListener(new ActionListener() {
+				@Override
 				public void actionPerformed(ActionEvent e) {
 					try {
 						volverAlMenu();
@@ -670,6 +675,7 @@ public class VentanaReserva extends JFrame {
 			btCancelar = new JButton("Cancelar");
 			btCancelar.setEnabled(false);
 			btCancelar.addActionListener(new ActionListener() {
+				@Override
 				public void actionPerformed(ActionEvent e) {
 					try {
 						reiniciar();

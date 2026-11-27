@@ -65,6 +65,11 @@ public class GenerarFacturaService {
 	public void prepararFactura(Map<Producto, Integer> productosVendidos) {
 		prepararFactura(convertirProductosALineas(productosVendidos), obtenerEmisorPorDefecto());
 	}
+	
+	public void prepararFactura(List<LineaFacturaDTO> lineasVendidas) {
+		prepararFactura(lineasVendidas, obtenerEmisorPorDefecto());
+	}
+	
 	public void prepararFactura(List<LineaFacturaDTO> lineasVendidas, String nombreVendedor) {
 		this.fecha = LocalDate.now();
 		this.hora = LocalTime.now();

@@ -20,6 +20,7 @@ import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
@@ -52,7 +53,9 @@ import giis.demo.model.email.ValidadorEmail;
 import giis.demo.model.entradas.enumerados.TipoSeccion;
 import giis.demo.model.entradas.enumerados.TipoTribuna;
 import giis.demo.model.equipo.Equipo;
+import giis.demo.model.tienda.LineaFacturaDTO;
 import giis.demo.ui.login.VentanaPrincipal;
+import giis.demo.ui.tienda.VentanaFactura;
 
 /**
  * Create the frame.
@@ -553,6 +556,7 @@ public class VentanaAbono extends JFrame {
 			btFinalizar = new JButton("Finalizar");
 			btFinalizar.setBackground(new Color(128, 255, 128));
 			btFinalizar.addActionListener(new ActionListener() {
+				@Override
 				public void actionPerformed(ActionEvent e) {
 
 					finalizar();
@@ -622,6 +626,15 @@ public class VentanaAbono extends JFrame {
 							+ abono.getFila() + ", asiento " + abono.getAsiento() + "\nPrecio: " + abono.getPrecio()
 							+ " €",
 					"Venta realizada", JOptionPane.INFORMATION_MESSAGE);
+			
+			List<LineaFacturaDTO> lineasFactura = List.of(new LineaFacturaDTO(
+					"Abono " + abono.getCategoria() + " (" + equipo.getNombre()
+							+ " - Fila " + abono.getFila() + ", Asiento " + abono.getAsiento() + ")",
+					1,
+					abono.getPrecio()));
+			vp.getGenerarFacturaService().prepararFactura(lineasFactura);
+			VentanaFactura vFactura = new VentanaFactura(vp);
+			vFactura.setVisible(true);
 
 			actualizarTablaAsientos();
 			reiniciar();
@@ -860,6 +873,7 @@ public class VentanaAbono extends JFrame {
 			btConsultar = new JButton("Consultar");
 			btConsultar.setBackground(new Color(128, 255, 128));
 			btConsultar.addActionListener(new ActionListener() {
+				@Override
 				public void actionPerformed(ActionEvent e) {
 					consultarAbonado();
 				}
@@ -1006,6 +1020,7 @@ public class VentanaAbono extends JFrame {
 			btVolver = new JButton("Volver");
 			btVolver.setBackground(new Color(255, 128, 128));
 			btVolver.addActionListener(new ActionListener() {
+				@Override
 				public void actionPerformed(ActionEvent e) {
 					volverAlMenu();
 				}
@@ -1021,6 +1036,7 @@ public class VentanaAbono extends JFrame {
 			btCancelar = new JButton("Cancelar");
 			btCancelar.setBackground(new Color(255, 128, 128));
 			btCancelar.addActionListener(new ActionListener() {
+				@Override
 				public void actionPerformed(ActionEvent e) {
 
 					reiniciar();

@@ -6,6 +6,7 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
+import java.util.List;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
@@ -26,6 +27,8 @@ import giis.demo.model.email.ServicioEmail;
 import giis.demo.model.email.ValidadorEmail;
 import giis.demo.model.entradas.Partido;
 import giis.demo.model.entradas.VentaDeEntradas;
+import giis.demo.model.tienda.LineaFacturaDTO;
+import giis.demo.ui.tienda.VentanaFactura;
 
 public class CompraEntradasAbonados extends JFrame {
 
@@ -257,6 +260,7 @@ public class CompraEntradasAbonados extends JFrame {
 		if (btCancelar == null) {
 			btCancelar = new JButton("Cancelar");
 			btCancelar.addActionListener(new ActionListener() {
+				@Override
 				public void actionPerformed(ActionEvent e) {
 
 					cancelar();
@@ -286,6 +290,7 @@ public class CompraEntradasAbonados extends JFrame {
 		if (btFinalizar == null) {
 			btFinalizar = new JButton("Finalizar");
 			btFinalizar.addActionListener(new ActionListener() {
+				@Override
 				public void actionPerformed(ActionEvent e) {
 					finalizar();
 				}
@@ -338,6 +343,14 @@ public class CompraEntradasAbonados extends JFrame {
 			JOptionPane.showMessageDialog(this, "No se ha podido enviar el email al usuario");
 			e.printStackTrace();
 		}
+		
+		List<LineaFacturaDTO> lineasFactura = List.of(new LineaFacturaDTO(
+				"Entrada Abonado (Día del club) - " + partido.toString(),
+				1,
+				partido.getPrecioAbonado()));
+		vi.getVp().getGenerarFacturaService().prepararFactura(lineasFactura);
+		VentanaFactura vFactura = new VentanaFactura(vi.getVp());
+		vFactura.setVisible(true);
 
 		JOptionPane.showMessageDialog(this, "Entrada vendida correctamente.");
 
@@ -369,6 +382,7 @@ public class CompraEntradasAbonados extends JFrame {
 			}
 
 			cbPartido.addActionListener(new ActionListener() {
+				@Override
 				public void actionPerformed(ActionEvent e) {
 					cargarAbono();
 				}

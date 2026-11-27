@@ -1,23 +1,22 @@
 package giis.demo.ui.abonos.entradas;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.sql.SQLException;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
 import giis.demo.model.entradas.VentaDeEntradas;
 import giis.demo.ui.login.VentanaPrincipal;
-
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JTextField;
-import java.awt.Color;
-import java.awt.event.ActionListener;
-import java.sql.SQLException;
-import java.awt.event.ActionEvent;
 
 public class VentanaIdentificacion extends JDialog {
 
@@ -54,6 +53,7 @@ public class VentanaIdentificacion extends JDialog {
 			{
 				JButton btVolver = new JButton("Volver");
 				btVolver.addActionListener(new ActionListener() {
+					@Override
 					public void actionPerformed(ActionEvent e) {
 
 						volverAlMenu();
@@ -68,6 +68,7 @@ public class VentanaIdentificacion extends JDialog {
 			{
 				JButton btVerificar = new JButton("Verificar");
 				btVerificar.addActionListener(new ActionListener() {
+					@Override
 					public void actionPerformed(ActionEvent e) {
 
 						try {
@@ -90,6 +91,10 @@ public class VentanaIdentificacion extends JDialog {
 				this.setLocationRelativeTo(null);
 			}
 		}
+	}
+	
+	public VentanaPrincipal getVp() {
+		return vp;
 	}
 
 	private void continuar() throws SQLException {

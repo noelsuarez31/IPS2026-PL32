@@ -12,6 +12,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -34,8 +35,9 @@ import giis.demo.model.accion.InfoCompra;
 import giis.demo.model.accion.ResultadoCompra;
 import giis.demo.model.email.ResumenCompra;
 import giis.demo.model.email.ServicioEmail;
-import giis.demo.ui.login.VentanaInicio;
+import giis.demo.model.tienda.LineaFacturaDTO;
 import giis.demo.ui.login.VentanaPrincipal;
+import giis.demo.ui.tienda.VentanaFactura;
 import giis.demo.util.ApplicationException;
 
 public class VentanaCompraCampana extends JFrame {
@@ -157,8 +159,9 @@ public class VentanaCompraCampana extends JFrame {
 	}
 
 	private void dniModificado() {
-		if (!ajustandoDni && infoActual != null)
+		if (!ajustandoDni && infoActual != null) {
 			reiniciarComprador();
+		}
 	}
 
 	private void cargarEstadoInicial() {
@@ -199,18 +202,20 @@ public class VentanaCompraCampana extends JFrame {
 
 		} catch (ApplicationException e) {
 			reiniciarComprador();
-			if (GestionCompraCampana.MSG_SIN_CAMPANA.equals(e.getMessage()))
+			if (GestionCompraCampana.MSG_SIN_CAMPANA.equals(e.getMessage())) {
 				mostrarSinCampana();
-			else
+			} else {
 				JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+			}
 		} catch (SQLException e) {
 			mostrarErrorBaseDatos(e);
 		}
 	}
 
 	private void comprar() {
-		if (infoActual == null)
+		if (infoActual == null) {
 			return;
+		}
 		InfoCompra info = infoActual;
 
 		int unidades;
@@ -233,8 +238,9 @@ public class VentanaCompraCampana extends JFrame {
 				"Resumen de la compra:\n\nAcciones: " + unidades + "\nPrecio unitario: " + ResumenCompra.precio(precio)
 						+ "\nImporte total: " + ResumenCompra.precio(total) + "\n\n¿Confirmar la compra?",
 				"Confirmar compra", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-		if (respuesta != JOptionPane.YES_OPTION)
+		if (respuesta != JOptionPane.YES_OPTION) {
 			return;
+		}
 
 		String emailDestino = GestionCompraCampana.emailDestino(info, txEmail.getText());
 		try {
@@ -270,18 +276,31 @@ public class VentanaCompraCampana extends JFrame {
 							+ ".\n\nNo se ha podido enviar el email a " + emailDestino + ".\nInforme al comprador.",
 					"Email no enviado", JOptionPane.WARNING_MESSAGE);
 		}
-		if (resultado.isCampanaCerrada())
+		if (resultado.isCampanaCerrada()) {
 			JOptionPane.showMessageDialog(this,
 					"Con esta compra se han vendido todas las acciones:\nla campaña se ha cerrado automáticamente.",
 					"Campaña cerrada", JOptionPane.INFORMATION_MESSAGE);
+		}
 
+		if (vp != null) {
+			List<LineaFacturaDTO> lineasFactura = List.of(new LineaFacturaDTO(
+					"Acciones Campaña: " + info.getCampana().getNombre(),
+					resultado.getUnidades(),
+					resultado.getPrecioUnitario(),
+					resultado.getTotal()));
+			vp.getGenerarFacturaService().prepararFactura(lineasFactura);
+			VentanaFactura vFactura = new VentanaFactura(vp);
+			vFactura.setVisible(true);
+		}
+		
 		ajustandoDni = true;
 		txDni.setText("");
 		ajustandoDni = false;
-		if (resultado.isCampanaCerrada())
+		if (resultado.isCampanaCerrada()) {
 			mostrarSinCampana();
-		else
+		} else {
 			reiniciarComprador();
+		}
 	}
 
 	private boolean enviarEmail(String destinatario, Campana campana, ResultadoCompra resultado) {

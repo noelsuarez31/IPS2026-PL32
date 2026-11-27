@@ -41,7 +41,9 @@ import giis.demo.model.entradas.Partido;
 import giis.demo.model.entradas.VentaDeEntradas;
 import giis.demo.model.entradas.enumerados.TipoSeccion;
 import giis.demo.model.entradas.enumerados.TipoTribuna;
+import giis.demo.model.tienda.LineaFacturaDTO;
 import giis.demo.ui.login.VentanaPrincipal;
+import giis.demo.ui.tienda.VentanaFactura;
 
 public class VentanaVentaEntradas extends JFrame {
 
@@ -307,6 +309,7 @@ public class VentanaVentaEntradas extends JFrame {
 			btBuscarAsientos.setBounds(256, 56, 130, 28);
 			btBuscarAsientos.addActionListener(new ActionListener() {
 
+				@Override
 				public void actionPerformed(ActionEvent e) {
 
 					try {
@@ -485,6 +488,7 @@ public class VentanaVentaEntradas extends JFrame {
 			btCancelar.setBounds(256, 90, 130, 28);
 			btCancelar.addActionListener(new ActionListener() {
 
+				@Override
 				public void actionPerformed(ActionEvent e) {
 
 					reiniciar();
@@ -561,6 +565,19 @@ public class VentanaVentaEntradas extends JFrame {
 			JOptionPane.showMessageDialog(this, "No se ha podido enviar el email al usuario");
 			e.printStackTrace();
 		}
+		
+		Partido partidoFact = (Partido) getCbPartido().getSelectedItem();
+		TipoSeccion seccionFact = (TipoSeccion) getCbSeccion().getSelectedItem();
+		int numEntradasFact = venta.getButacasSeleccionadas().size();
+		double precioUnitFact = venta.getPrecio(partidoFact.getId_partido(), seccionFact.name());
+
+		List<LineaFacturaDTO> lineasFactura = List.of(new LineaFacturaDTO(
+				"Entradas " + partidoFact.toString() + " (" + seccionFact.name() + ")",
+				numEntradasFact,
+				precioUnitFact));
+		vp.getGenerarFacturaService().prepararFactura(lineasFactura);
+		VentanaFactura vFactura = new VentanaFactura(vp);
+		vFactura.setVisible(true);
 
 		VentanaVentaConfirmacion vvc = new VentanaVentaConfirmacion(this);
 		vvc.setVisible(true);
@@ -806,6 +823,7 @@ public class VentanaVentaEntradas extends JFrame {
 		if (btVolver == null) {
 			btVolver = new JButton("Volver al menú");
 			btVolver.addActionListener(new ActionListener() {
+				@Override
 				public void actionPerformed(ActionEvent e) {
 
 					try {
@@ -834,6 +852,7 @@ public class VentanaVentaEntradas extends JFrame {
 		if (btConfirma == null) {
 			btConfirma = new JButton("Confirmar compra");
 			btConfirma.addActionListener(new ActionListener() {
+				@Override
 				public void actionPerformed(ActionEvent e) {
 
 					if (!comprobarEmail()) {
