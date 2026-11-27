@@ -226,24 +226,29 @@ public class GenerarFacturaService {
 		stream.append("(LINEAS DE LA VENTA:) Tj\n");
 		stream.append("0 -20 Td\n");
 		stream.append("/F1 10 Tf\n");
-		stream.append("(----------------------------------------------------------------------------------------------) Tj\n");
+		stream.append("(--------------------------------------------------------------------------------) Tj\n");
 		stream.append("0 -16 Td\n");
-		stream.append("(Producto                                    Uds.    Precio Unit.       Subtotal) Tj\n");
+		stream.append("(Producto                                    Uds.    Precio Unit.        Subtotal) Tj\n");
 		stream.append("0 -14 Td\n");
-		stream.append("(----------------------------------------------------------------------------------------------) Tj\n");
+		stream.append("(--------------------------------------------------------------------------------) Tj\n");
 
 		for (LineaFacturaDTO linea : lineasVenta) {
+			List<String> partes = envolverTexto(linea.getProducto(), 42);
 			stream.append("0 -18 Td\n");
-			String fila = String.format("%-42s   %3d      %7.2f EUR      %7.2f EUR",
-					truncar(linea.getProducto(), 40),
+			String primeraFila = String.format("%-42s  %4d  %10.2f EUR  %10.2f EUR",
+					partes.get(0),
 					linea.getUnidades(),
 					linea.getPrecioUnitario(),
 					linea.getSubtotal());
-			stream.append("(").append(escaparPdf(fila)).append(") Tj\n");
+			stream.append("(").append(escaparPdf(primeraFila)).append(") Tj\n");
+			for (int i = 1; i < partes.size(); i++) {
+				stream.append("0 -14 Td\n");
+				stream.append("(").append(escaparPdf(partes.get(i))).append(") Tj\n");
+			}
 		}
 
 		stream.append("0 -16 Td\n");
-		stream.append("(----------------------------------------------------------------------------------------------) Tj\n");
+		stream.append("(--------------------------------------------------------------------------------) Tj\n");
 		stream.append("0 -28 Td\n");
 		stream.append("/F1 11 Tf\n");
 		stream.append("(").append(escaparPdf(String.format("Precio Base: %.2f EUR", precioBase))).append(") Tj\n");
@@ -303,11 +308,29 @@ public class GenerarFacturaService {
 				.replace("ñ", "n").replace("Ñ", "N").replace("º", "o");
 	}
 
-	private String truncar(String s, int max) {
-		if (s == null) {
-			return "";
+	/**
+	 * Divide un texto largo en múltiples líneas de máximo {@code maxAncho} caracteres
+	 * respetando palabras cuando es posible para mostrar todo el concepto sin recortes.
+	 */
+	private List<String> envolverTexto(String texto, int maxAncho) {
+		List<String> lineas = new ArrayList<>();
+		if (texto == null || texto.isBlank()) {
+			lineas.add("");
+			return lineas;
 		}
-		return s.length() <= max ? s : s.substring(0, max - 3) + "...";
+		String restante = texto.trim();
+		while (restante.length() > maxAncho) {
+			int corte = restante.lastIndexOf(' ', maxAncho);
+			if (corte <= 0) {
+				corte = maxAncho;
+			}
+			lineas.add(restante.substring(0, corte).trim());
+			restante = restante.substring(corte).trim();
+		}
+		if (!restante.isEmpty()) {
+			lineas.add(restante);
+		}
+		return lineas;
 	}
 
 	// Getters para la vista
