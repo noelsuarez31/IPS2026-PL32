@@ -72,6 +72,7 @@ import giis.demo.ui.horarios.VentanaHorarioSemanal;
 import giis.demo.ui.informe.VentanaInformeFinanciero;
 import giis.demo.ui.log.VentanaLogSesion;
 import giis.demo.ui.mantenimiento.VentanaAsignarMantenimiento;
+import giis.demo.ui.medico.VentanaRegistrarLesion;
 import giis.demo.ui.medico.VentanaVisualizacionLesiones;
 import giis.demo.ui.noticias.VentanaAñadirNoticia;
 import giis.demo.ui.noticias.VentanaVisualizarNoticias;
@@ -104,7 +105,7 @@ public class VentanaPrincipal extends JFrame {
 	private JLabel lbRol;
 	private JTextField tfRol;
 
-	private JPanel panelOpciones; // antes JScrollPane
+	private JPanel panelOpciones;
 	private CardLayout cardLayout;
 	private JPanel panelBotones;
 	private JPanel panelSubmenu;
@@ -370,7 +371,17 @@ public class VentanaPrincipal extends JFrame {
 		this.setVisible(false);
 		vLesiones.setVisible(true);
 	}
+	
+	private void abrirVentanaRegistroLesiones() {
 
+		GestionLogSesion.registrarAccion("Ventana Registro de lesiones");
+
+		VentanaRegistrarLesion vLesiones = new VentanaRegistrarLesion(this);
+		
+		this.setVisible(false);
+		vLesiones.setVisible(true);
+	}
+	
 	public CrearFranjaService getCrearFranjaService() {
 		return this.cfs;
 	}
@@ -737,6 +748,8 @@ public class VentanaPrincipal extends JFrame {
 		
 		if (usuario.tienePosicion(Posicion.MEDICO)) {
 			añadirBoton("Visualizar lesiones", this::abrirVentanaLesiones);
+			añadirBoton("Registrar lesiones", this::abrirVentanaRegistroLesiones);
+
 		}
 
 		if (usuario.tienePosicion(Posicion.GERENTE)) {

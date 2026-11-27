@@ -8,7 +8,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-
 import giis.demo.model.empleado.EmpleadoDeportivo;
 import giis.demo.model.empleado.Posicion;
 import giis.demo.model.equipo.CategoriaEquipo;
@@ -56,6 +55,16 @@ public class EmpleadoDeportivoJdbc {
 			"SELECT be.dni, be.nombre, be.apellido, be.salario, "
 			+ "be.fecha_nacimiento, be.numero_de_telefono, "
 			+ "m.nombre_usuario, m.contrasena, ed.posicion "
+			+ "FROM BaseEmpleado be "
+			+ "JOIN EmpleadoDeportivo ed ON be.dni = ed.dni "
+			+ "JOIN Miembro m ON be.dni = m.dni AND m.tipo = 'EMPLEADO' "
+			+ "WHERE ed.posicion = ? "
+			+ "ORDER BY be.apellido, be.nombre";
+	
+	private static final String QUERY_GET_ALL_PLAYERS_FROM_TEAM =
+			"SELECT be.dni, be.nombre, be.apellido, be.salario, "
+			+ "be.fecha_nacimiento, be.numero_de_telefono, "
+			+ "m.nombre_usuario, m.contrasena, ed.posicion, ed.id_equipo "
 			+ "FROM BaseEmpleado be "
 			+ "JOIN EmpleadoDeportivo ed ON be.dni = ed.dni "
 			+ "JOIN Miembro m ON be.dni = m.dni AND m.tipo = 'EMPLEADO' "
@@ -230,6 +239,34 @@ public class EmpleadoDeportivoJdbc {
 							Posicion.valueOf(rs.getString("posicion")),
 							rs.getString("nombre_usuario"),
 							rs.getString("contrasena")));
+				}
+			}
+		}
+		return jugadores;
+	}
+
+
+	public static List<EmpleadoDeportivo> getJugadoresConEquipo(Connection con) throws SQLException {
+		
+		List<EmpleadoDeportivo> jugadores = new ArrayList<>();
+		try (PreparedStatement pst = con.prepareStatement(QUERY_GET_ALL_PLAYERS_FROM_TEAM)) {
+			pst.setString(1, Posicion.JUGADOR.name());
+			try (ResultSet rs = pst.executeQuery()) {
+				while (rs.next()) {
+					EmpleadoDeportivo jugador = new EmpleadoDeportivo(
+							rs.getString("dni"),
+							rs.getString("nombre"),
+							rs.getString("apellido"),
+							rs.getBigDecimal("salario"),
+							LocalDate.parse(rs.getString("fecha_nacimiento")),
+							rs.getString("numero_de_telefono"),
+							Posicion.valueOf(rs.getString("posicion")),
+							rs.getString("nombre_usuario"),
+							rs.getString("contrasena"));
+					
+					jugador.setIdEquipo(rs.getInt("id_equipo"));
+					
+					jugadores.add(jugador);
 				}
 			}
 		}

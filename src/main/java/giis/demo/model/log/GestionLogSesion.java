@@ -10,20 +10,24 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import giis.demo.util.UnexpectedException;
 
 /**
  * Servicio de gestión del archivo de log por sesión.
- * Registra todas las acciones de cada usuario y las modificaciones realizadas en la BBDD
- * en un archivo único por sesión dentro del directorio {@code logs/}.
+ * Registra las acciones de cada usuario y las modificaciones realizadas en la BBDD
+ * creando un archivo independiente por sesión de usuario dentro del directorio {@code logs/}.
  */
 public class GestionLogSesion {
 
 	public static final String DIRECTORIO_LOGS = "logs";
+	public static final String OPCION_TODOS_ARCHIVOS = "TODOS";
 	public static final String FILTRO_TODOS = "Todos";
 	public static final String FILTRO_SOLO_BBDD = "Solo modificaciones BD";
 	public static final String FILTRO_SOLO_ACCIONES = "Solo acciones del usuario";
@@ -47,16 +51,32 @@ public class GestionLogSesion {
 	 * para no sobrescribir ni mezclar sesiones anteriores.
 	 */
 	public static Path iniciarNuevaSesion() {
+		return iniciarNuevaSesion(null);
+	}
+
+	/**
+	 * Inicia una nueva sesión para un usuario concreto creando un archivo de log independiente.
+	 * Si el archivo de sesión anterior estaba vacío (0 bytes, por ejemplo antes del primer login),
+	 * lo elimina para evitar archivos huérfanos vacíos.
+	 */
+	public static Path iniciarNuevaSesion(String usuario) {
 		synchronized (LOCK) {
 			try {
+				eliminarSiEstaVacio(archivoSesionActual);
+
 				Path dirLogs = Paths.get(DIRECTORIO_LOGS);
 				Files.createDirectories(dirLogs);
 
 				String marcaTiempo = LocalDateTime.now().format(FORMATO_NOMBRE_ARCHIVO);
-				Path candidato = dirLogs.resolve("sesion_" + marcaTiempo + ".log");
+				String sufijoUsuario = sanitizarParaNombreArchivo(usuario);
+				String base = sufijoUsuario.isEmpty()
+						? "sesion_" + marcaTiempo
+						: "sesion_" + marcaTiempo + "_" + sufijoUsuario;
+
+				Path candidato = dirLogs.resolve(base + ".log");
 				int sufijo = 2;
 				while (Files.exists(candidato)) {
-					candidato = dirLogs.resolve("sesion_" + marcaTiempo + "_" + sufijo + ".log");
+					candidato = dirLogs.resolve(base + "_" + sufijo + ".log");
 					sufijo++;
 				}
 
@@ -69,26 +89,49 @@ public class GestionLogSesion {
 		}
 	}
 
+	private static void eliminarSiEstaVacio(Path archivo) {
+		if (archivo == null) {
+			return;
+		}
+		try {
+			if (Files.exists(archivo) && Files.size(archivo) == 0L) {
+				Files.deleteIfExists(archivo);
+			}
+		} catch (IOException e) {
+			// Ignorar si no se puede eliminar un archivo temporal vacío
+		}
+	}
+
+	private static String sanitizarParaNombreArchivo(String valor) {
+		if (valor == null || valor.isBlank()) {
+			return "";
+		}
+		return valor.trim().replaceAll("[^a-zA-Z0-9._-]", "_");
+	}
+
 	/**
 	 * Garantiza que existe un archivo de log inicializado para la sesión actual.
 	 */
 	private static Path asegurarSesionIniciada() {
 		synchronized (LOCK) {
 			if (archivoSesionActual == null || !Files.exists(archivoSesionActual)) {
-				return iniciarNuevaSesion();
+				String usuarioParaArchivo = USUARIO_POR_DEFECTO.equals(usuarioActivo) ? null : usuarioActivo;
+				return iniciarNuevaSesion(usuarioParaArchivo);
 			}
 			return archivoSesionActual;
 		}
 	}
 
 	/**
-	 * Establece los datos del usuario autenticado en la sesión actual.
+	 * Establece los datos del usuario autenticado e inicia un archivo de log propio
+	 * para su sesión, de modo que cada inicio de sesión disponga de su propio fichero.
 	 */
 	public static void setUsuarioActivo(String usuario, String dni, String rol) {
 		synchronized (LOCK) {
 			usuarioActivo = (usuario == null || usuario.isBlank()) ? USUARIO_POR_DEFECTO : usuario.trim();
 			dniActivo = (dni == null || dni.isBlank()) ? null : dni.trim();
 			rolActivo = (rol == null || rol.isBlank()) ? ROL_POR_DEFECTO : rol.trim();
+			iniciarNuevaSesion(usuarioActivo);
 		}
 	}
 
@@ -170,7 +213,54 @@ public class GestionLogSesion {
 	public String getRutaArchivoSesionActual() {
 		synchronized (LOCK) {
 			Path archivo = asegurarSesionIniciada();
-			return archivo.toString().replace('\\', '/');
+			return normalizarRuta(archivo);
+		}
+	}
+
+	private static String normalizarRuta(Path archivo) {
+		return archivo.toString().replace('\\', '/');
+	}
+
+	/**
+	 * Devuelve las rutas normalizadas de todos los archivos .log existentes en {@code logs/},
+	 * ordenados del más reciente al más antiguo. Incluye siempre el archivo de la sesión actual
+	 * y excluye otros archivos vacíos (0 bytes).
+	 */
+	public List<String> listarArchivosSesion() {
+		synchronized (LOCK) {
+			Path actual = asegurarSesionIniciada();
+			String rutaActual = normalizarRuta(actual);
+			Path dirLogs = Paths.get(DIRECTORIO_LOGS);
+			List<Path> encontrados = new ArrayList<>();
+
+			if (Files.isDirectory(dirLogs)) {
+				try (Stream<Path> stream = Files.list(dirLogs)) {
+					stream.filter(Files::isRegularFile)
+							.filter(p -> p.getFileName().toString().toLowerCase().endsWith(".log"))
+							.forEach(p -> {
+								try {
+									if (normalizarRuta(p).equals(rutaActual) || Files.size(p) > 0L) {
+										encontrados.add(p);
+									}
+								} catch (IOException e) {
+									// Ignorar archivos inaccesibles
+								}
+							});
+				} catch (IOException e) {
+					throw new UnexpectedException(e);
+				}
+			}
+
+			encontrados.sort(Comparator.comparing((Path p) -> p.getFileName().toString()).reversed());
+
+			List<String> rutas = new ArrayList<>();
+			for (Path p : encontrados) {
+				rutas.add(normalizarRuta(p));
+			}
+			if (!rutas.contains(rutaActual)) {
+				rutas.add(0, rutaActual);
+			}
+			return rutas;
 		}
 	}
 
@@ -178,9 +268,22 @@ public class GestionLogSesion {
 	 * Lee desde disco todos los eventos registrados en el archivo de la sesión actual.
 	 */
 	public List<EventoLog> leerEventosSesionActual() {
+		return leerEventosArchivo(getRutaArchivoSesionActual());
+	}
+
+	/**
+	 * Lee desde disco todos los eventos de un archivo .log concreto.
+	 */
+	public List<EventoLog> leerEventosArchivo(String rutaArchivo) {
 		synchronized (LOCK) {
-			Path archivo = asegurarSesionIniciada();
 			List<EventoLog> eventos = new ArrayList<>();
+			if (rutaArchivo == null || rutaArchivo.isBlank()) {
+				return eventos;
+			}
+			Path archivo = Paths.get(rutaArchivo);
+			if (!Files.exists(archivo)) {
+				return eventos;
+			}
 			try {
 				List<String> lineas = Files.readAllLines(archivo, StandardCharsets.UTF_8);
 				for (String linea : lineas) {
@@ -196,6 +299,22 @@ public class GestionLogSesion {
 				throw new UnexpectedException(e);
 			}
 			return eventos;
+		}
+	}
+
+	/**
+	 * Lee y combina los eventos de todos los archivos .log existentes en {@code logs/}
+	 * en orden cronológico (de sesiones más antiguas a más recientes).
+	 */
+	public List<EventoLog> leerEventosTodosLosArchivos() {
+		synchronized (LOCK) {
+			List<String> archivos = new ArrayList<>(listarArchivosSesion());
+			Collections.reverse(archivos);
+			List<EventoLog> todos = new ArrayList<>();
+			for (String ruta : archivos) {
+				todos.addAll(leerEventosArchivo(ruta));
+			}
+			return todos;
 		}
 	}
 
@@ -241,7 +360,7 @@ public class GestionLogSesion {
 	}
 
 	/**
-	 * Devuelve la lista de usuarios distintos que han intervenido en la sesión actual,
+	 * Devuelve la lista de usuarios distintos que han intervenido en los eventos dados,
 	 * manteniendo su orden de aparición.
 	 */
 	public List<String> obtenerUsuariosSesion(List<EventoLog> eventos) {
